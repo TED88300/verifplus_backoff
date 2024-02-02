@@ -1,0 +1,280 @@
+﻿i;ID;ORDRE;Libellè;Aide
+0;PDT;0;Eau + Additif;S’emploie sur les feux de classes A (bois, papiers, ...) et B (essence, fioul, ...) avec additif.
+1;PDT;1;CO2;S’emploie sur les feux de classes B (essence, fioul, ...). Efficace sur feu d'origine électrique.
+2;PDT;2;Poudre ABC;S’emploie sur les feux de classes A (bois, papiers, ...), B (essence, fioul, ...), C ( gaz, produits chimiques, ...).
+3;PDT;3;Eau + Additif Batterie Lithium-ion;S’emploie sur les feux de de batteries Lithium-ion.
+4;PDT;4;Eau + Additif Ecologique;S’emploie sur les feux de classes A (bois, papiers, ...) et B (essence, fioul, ...) avec additif.
+5;PDT;5;Eau + Additif Sans Fluor;S’emploie sur les feux de classes A (bois, papiers, ...) et B (essence, fioul, ...) avec additif.
+6;PDT;6;Douche portative;Conçue pour une intervention d’urgence, est destinée à refroidir et nettoyer une victime de brûlures thermiques ou chimiques.
+7;PDT;7;Eau;S’emploie sur les feux de classes A (bois, papiers, ...).
+8;PDT;8;Eau + Antigel;S’emploie sur les feux de classes A (bois, papiers, ...), -10°C + 60°C.
+9;PDT;9;Eau + Additif + Antigel;S’emploie sur les feux de classes A (bois, papiers, ...) et B (essence, fioul, ...) avec additif, -10°C + 60°C.
+10;PDT;10;Brouillard Eau + Additif;S’emploie sur les feux de classes A (bois, papiers, ...) et B (essence, fioul, ...) avec additif.
+11;PDT;11;Brouillard Eau;S’emploie sur les feux de classes A (bois, papiers, ...).
+12;PDT;12;Poudre BC;S’emploie sur les feux de classes B (essence, fioul, ...), C ( gaz, produits chimiques, ...).
+13;PDT;13;Poudre D;S’emploie sur tous les types de feux de classe D (feux de métaux).
+14;PDT;14;Modèle Déco;Modèle Décoratif autre q'un extincteur rouge (Or, Chrome, …)
+15;PDT;15;Foam;S’emploie sur les feux de classes A (bois, papiers, ...) et B (essence, fioul, ...) avec additif.
+16;PDT;16;FM200;Agit principalement par le mécanisme physique de l'absorption de la chaleur et par l'inhibition de la réaction en chaîne responsable de la combustion, sans abaisser pour autant de manière significative la teneur en oxygène de l'air.
+17;PDT;17;Novec 1230;Novec 1230 est un fluide anti-incendie de pointe efficace en quelques secondes, sûr pour l’environnement et les hommes.
+18;PDT;18;IG-55;Gaz inerte composé de 50% d’Argon et 50% d’azote.
+19;PDT;19;Argon;Gaz écologique, non toxique, présent dans l’air ambiant à une concentration très faible, et qui agit par diminution du taux d’oxygène de l’air.
+20;PDT;20;HFC-227 ea;Il présente de bonnes caractéristiques de propreté, de faible toxicité et de bonnes performances d'extinction des incendies. Il est principalement utilisé pour un système d'extinction total par inondation.
+21;PRS;0;PA;Pression Auxiliaire (Extincteur démontable)
+22;PRS;1;PP;Pression Permanante (Extincteur non démontable)
+23;CLF;0;A;A (bois, papiers, ...).
+24;CLF;1;AB;A (bois, papiers, ...), B (essence, fioul, ...).
+25;CLF;2;ABC;A (bois, papiers, ...), B (essence, fioul, ...), C ( gaz, produits chimiques, ...).
+26;CLF;3;ABF;A (bois, papiers, ...), B (essence, fioul, ...) et F (huiles, graisses animales, ...).
+27;CLF;4;B;B (essence, fioul, ...).
+28;CLF;5;BC;B (essence, fioul, ...), C ( gaz, produits chimiques, ...).
+29;CLF;6;D;D : Feux de métaux (Poudre et copeaux de Magnésium, Aluminium, Métaux Alcalins (Lithium, Sodium, Potassium, …)
+30;CLF;7;F;F : Feux liés aux auxiliaires de cuisson (huiles, graisses animales,…).
+31;CLF;8;Douche portative;"Destinée à refroidir et nettoyer une victime 
+de brûlures thermiques ou chimiques."
+32;MOB;0;Portatif;Extincteur conçu pour être porté et utilisé à la main et qui, en ordre de fonctionnement, a une masse inférieure ou égale à 20kg
+33;MOB;1;Mobile sur roues sphérique;Extincteur conçu pour être transporté et actionné manuellement et dont la masse total est supérieure à 20kg. Un extincteur mobile est monté sur roues.
+34;MOB;2;Mobile sur roues cylindrique;Extincteur conçu pour être transporté et actionné manuellement et dont la masse total est supérieure à 20kg. Un extincteur mobile est monté sur roues.
+35;MOB;3;Pendulaire fixe Automatique;Extincteur conçu pour être fixé au dessus d'un risque à protéger.
+36;MOB;4;Perche fixe Automatique;Extincteur conçu pour être fixé au sol avec un système de déclenchement placé au dessus d'un risque à protéger.
+37;MOB;5;Perche fixe réglable Automatique;Extincteur conçu pour être fixé au sol avec un système de déclenchement placé au dessus d'un risque à protéger.
+38;MOB;6;Gondole à solvants fixe Automatique;Système d'extinction conçu pour être fixé dans un compartiment avec un système de déclenchement placé au dessus d'un risque à protéger.
+39;MOB;7;A Tirette;Système d'extinction conçu pour être déclenché à distance par un câble et une tirette.
+40;MOB;8;A Tirette/Sprinkler;Système d'extinction conçu pour être déclenché à distance par un sprinkler, un câble et une tirette.
+41;MOB;9;Fixe 24h/24h DAC;Système d'extinction conçu pour être déclenché à distance ou de manière automatique.
+42;MOB;10;Poste Fixe ;Système d'extinction conçu pour être déclenché à distance ou de manière automatique.
+43;FAB;0;65 - Eurofeu;Fabricant extincteur
+44;FAB;1;32 - Andrieu;Fabricant extincteur
+45;FAB;2;15 - Desautel;Fabricant extincteur
+46;FAB;3;83 - Industrias Auca;Fabricant extincteur
+47;FAB;4;31 - Sicli;Fabricant extincteur
+48;FAB;5;73 - Gloria Gmbh;Fabricant extincteur
+49;FAB;6;07 - Rot;Fabricant extincteur
+50;FAB;7;100 - Isogard;Fabricant extincteur
+51;FAB;8;111 - Anaf;Fabricant extincteur
+52;FAB;9;110 - Mobiak SA;Fabricant extincteur
+53;FAB;10;17 - Dubernard;Fabricant extincteur
+54;FAB;11;47 - France Incendie;Fabricant extincteur
+55;FAB;12;56 - Parflam;Fabricant extincteur
+56;FAB;13;147 - Minimax;Fabricant extincteur
+57;FAB;14;102 - Total Feuerschutz GmbH;Fabricant extincteur
+58;FAB;15;104 - Presto;Fabricant extincteur
+59;FAB;16;145 - Power Saint LTD;Fabricant extincteur
+60;FAB;17;148 - ABS slr;Fabricant extincteur
+61;FAB;18;152 - Ogniochron SA;Fabricant extincteur
+62;FAB;19;Marquage EN 3;Extincteur Portatif Conforme à la norme EN 3
+63;FAB;20;Marquage EN 1866-1;Extincteur Mobile Conforme à la norme EN 1866-1
+64;FAB;21;Marquage CE;
+65;FAB;22;Autre Marquage;
+66;EMP;0;Bureaux;
+67;EMP;1;Bureaux administartif;
+68;EMP;2;Bureaux direction;
+69;EMP;3;Bureaux secrétariat;
+70;EMP;4;Photocopieur;
+71;EMP;5;Magasin;
+72;EMP;6;Réserve;
+73;EMP;7;Archives;
+74;EMP;8;Réception;
+75;EMP;9;Espace d'attente;
+76;EMP;10;Espace d'attente sécurisé EAS;
+77;EMP;11;Issue de secours;
+78;EMP;12;Ascenseur;
+79;EMP;13;Machinerie d'Ascenseur;
+80;EMP;14;Hall;
+81;EMP;15;Couloir;
+82;EMP;16;Entrée;
+83;EMP;17;SAS Entrée;
+84;EMP;18;Sortie;
+85;EMP;19;Salle de pause;
+86;EMP;20;Salle de jeux;
+87;EMP;21;Salle de réunion;
+88;EMP;22;Salle de sport;
+89;EMP;23;Salle de cinéma;
+90;EMP;24;Réfectoire;
+91;EMP;25;Restaurant;
+92;EMP;26;Salle de restauration;
+93;EMP;27;Cuisine;
+94;EMP;28;Friteuse;
+95;EMP;29;Four à pizza;
+96;EMP;30;Grill;
+97;EMP;31;Reserve;
+98;EMP;32;Chambre froide négative C°;
+99;EMP;33;Chambre froide positive C°;
+100;EMP;34;Piano cuisine;
+101;EMP;35;Laboratoire;
+102;EMP;36;Buanderie;
+103;EMP;37;Local informatique;
+104;EMP;38;Local serveur;
+105;EMP;39;Local stockage;
+106;EMP;40;Tableau électrique;
+107;EMP;41;Armoire électrique;
+108;EMP;42;TGBT;
+109;EMP;43;Local électrique haute tension;
+110;EMP;44;Local déchets;
+111;EMP;45;Espace déchets;
+112;EMP;46;Benne à déchets;
+113;EMP;47;Garage;
+114;EMP;48;Fosse garage;
+115;EMP;49;Véhicule;
+116;EMP;50;Camion;
+117;EMP;51;Cabine camion;
+118;EMP;52;Remorque Camion;
+119;EMP;53;Camion plateau;
+120;EMP;54;Quais de chargement;
+121;EMP;55;Espace livraison;
+122;EMP;56;Espace lavage;
+123;EMP;57;Parking;
+124;EMP;58;Etage;
+125;EMP;59;Mezzanine;
+126;EMP;60;Demi-niveau;
+127;EMP;61;Chaufferie fioul;
+128;EMP;62;Chaufferie gaz;
+129;EMP;63;Chaufferie bois;
+130;EMP;64;Chaudière;
+131;EMP;65;Atelier;
+132;EMP;66;Cuve gasoil;
+133;EMP;67;Cuve essence;
+134;EMP;68;Cuve éthanol;
+135;EMP;69;Cuve GPL;
+136;EMP;70;Cuve gaz inflammable;
+137;EMP;71;Cuve liquides inflammable;
+138;EMP;72;Borne de recharge électrique;
+139;EMP;73;Station distribution carburant;
+140;EMP;74;Ilot de distribution carburant;
+141;EMP;75;Machinerie d'ascenseur;
+142;EMP;76;Compresseur;
+143;EMP;77;Groupe électrogène;
+144;EMP;78;Moteur électrique;
+145;EMP;79;Ensemble bureautique;
+146;EMP;80;Transformateur;
+147;EMP;81;Stockage intérieur > à 3m de hauteur;
+148;EMP;82;Stockage extérieur > à 3m de hauteur;
+149;EMP;83;Stockage intérieur </= à 3m de hauteur;
+150;EMP;84;Stockage extérieur </= à 3m de hauteur;
+151;EMP;85;Local peinture;
+152;EMP;86;Cabine peinture;
+153;ZNE;0;Bâtiment;
+154;ZNE;1;Véhicule;
+155;ZNE;2;Céllule;
+156;ZNE;3;Immeuble;
+157;ZNE;4;Partie commune;
+158;ZNE;5;Zone tertiaire;
+159;ZNE;6;Zone industrille;
+160;ZNE;7;Zone commerciale;
+161;ZNE;8;Zone administrative;
+162;ZNE;9;Zone logistique;
+163;ZNE;10;Zone de stockage;
+164;ZNE;11;Zone intérieure;
+165;ZNE;12;Zone extérieure;
+166;ZNE;13;Zone peinture;
+167;ANN;0;1990;
+168;ANN;1;1991;
+169;ANN;2;1992;
+170;ANN;3;1993;
+171;ANN;4;1994;
+172;ANN;5;1995;
+173;ANN;6;1996;
+174;ANN;7;1997;
+175;ANN;8;1998;
+176;ANN;9;1999;
+177;ANN;10;2000;
+178;ANN;11;2001;
+179;ANN;12;2002;
+180;ANN;13;2003;
+181;ANN;14;2004;
+182;ANN;15;2005;
+183;ANN;16;2006;
+184;ANN;17;2007;
+185;ANN;18;2008;
+186;ANN;19;2009;
+187;ANN;20;2010;
+188;ANN;21;2011;
+189;ANN;22;2012;
+190;ANN;23;2013;
+191;ANN;24;2014;
+192;ANN;25;2015;
+193;ANN;26;2016;
+194;ANN;27;2017;
+195;ANN;28;2018;
+196;ANN;29;2019;
+197;ANN;30;2020;
+198;ANN;31;2021;
+199;ANN;32;2022;
+200;ANN;33;2023;
+201;ANN;34;2024;
+202;ANN;35;2025;
+203;ANN;36;2026;
+204;ANN;37;2027;
+205;ANN;38;2028;
+206;ANN;39;2029;
+207;ANN;40;2030;
+208;ANN;41;2031;
+209;ANN;42;2032;
+210;ANN;43;2033;
+211;ANN;44;2034;
+212;ANN;45;2035;
+213;ANN;46;2036;
+214;ANN;47;2037;
+215;ANN;48;2038;
+216;ANN;49;2039;
+217;ANN;50;2040;
+218;ANN;51;2041;
+219;ANN;52;2042;
+220;ANN;53;2043;
+221;ANN;54;2044;
+222;ANN;55;2045;
+223;ANN;56;2046;
+224;ANN;57;2047;
+225;ANN;58;2048;
+226;ANN;59;2049;
+227;ANN;60;2050;
+228;ANN;61;2051;
+229;ANN;62;2052;
+230;ANN;63;2053;
+231;ANN;64;2054;
+232;ANN;65;2055;
+233;ANN;66;2056;
+234;ANN;67;2057;
+235;ANN;68;2058;
+236;ANN;69;2059;
+237;ANN;70;2060;
+238;ANN;71;2061;
+239;ANN;72;2062;
+240;ANN;73;2063;
+241;ANN;74;2064;
+242;ANN;75;2065;
+243;ANN;76;2066;
+244;ANN;77;2067;
+245;ANN;78;2068;
+246;ANN;79;2069;
+247;ANN;80;2070;
+248;ANN;81;2071;
+249;ANN;82;2072;
+250;ANN;83;2073;
+251;ANN;84;2074;
+252;ANN;85;2075;
+253;ANN;86;2076;
+254;ANN;87;2077;
+255;ANN;88;2078;
+256;ANN;89;2079;
+257;ANN;90;2080;
+258;ANN;91;2081;
+259;ANN;92;2082;
+260;ANN;93;2083;
+261;ANN;94;2084;
+262;ANN;95;2085;
+263;ANN;96;2086;
+264;ANN;97;2087;
+265;ANN;98;2088;
+266;ANN;99;2089;
+267;ANN;100;2090;
+268;ANN;101;2091;
+269;ANN;102;2092;
+270;ANN;103;2093;
+271;ANN;104;2094;
+272;ANN;105;2095;
+273;ANN;106;2096;
+274;ANN;107;2097;
+275;ANN;108;2098;
+276;ANN;109;2099;
+277;ANN;110;2100;

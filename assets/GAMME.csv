@@ -1,0 +1,183 @@
+Code Back office;Description;Fabricant;Pression;Classes de feu;Maniabilité;Modèle;Charge;Gamme associée au fabricant;Code article Distributeur
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;6 Litres;Spit;132
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;9 Litres;Spit;137
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;6 Litres;Spit;013100
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;9 Litres;Spit;013600
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Antigel;6 Litres;Spit;001350
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Antigel;9 Litres;Spit;001390
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif Ecologique;3 Litres;Spit;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;6 Litres;Spit;1340
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;9 Litres;Spit;140
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;6 Kilos;Spit;112
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;9 Kilos;Spit;115
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;2 Kilos;Spit;151
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;5 Kilos;Spit;154
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 (Ech. Std.) Alu;2 Kilos;Ech. Standard CO2;152
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 (Ech. Std.) Alu;5 Kilos;Ech. Standard CO2;155
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 (Ech. Std.) Acier;2 Kilos;Ech. Standard CO2;152
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 (Ech. Std.) Acier;5 Kilos;Ech. Standard CO2;155
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;0,5 Litres;Lith-Ex;141
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;1 Litres;Lith-Ex;142
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;2 Litres;Lith-Ex;143
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;6 Litres;Lith-Ex;145
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;9 Litres;Lith-Ex;149
+FAB;Extincteur Mobile;65 - Eurofeu;PA;A;Mobile cylindrique;Eau + Additif Lith-Ex;25 Litres;Lith-Ex;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;A;Mobile cylindrique;Eau + Additif Lith-Ex;50 Litres;Lith-Ex;150
+FAB;Extincteur Mobile;65 - Eurofeu;PA;A;Mobile cylindrique;Eau + Additif Lith-Ex;100 Litres;Lith-Ex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;6 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;9 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;6 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;9 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Hautes performances;6 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Hautes performances;9 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Antigel;6 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Antigel;9 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif Ecologique;3 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;6 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;9 Litres;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;2 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;5 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;1 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;2 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;4 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;6 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;9 Kilos;Afrex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;6 Litres;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;9 Litres;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;6 Litres;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;9 Litres;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;2 Kilos;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;5 Kilos;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;6 Kilos;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;9 Kilos;Arex;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;6 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;9 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif ;6 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif ;9 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;6 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;A;Portatif;Eau;9 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Antigel;6 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Antigel;9 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Hautes performances;6 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif Hautes performances;9 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif Ecologique;3 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;6 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;9 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Brouillard Eau;3 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Brouillard Eau + Additif;3 Litres;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;2 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;5 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;1 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;2 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;6 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;9 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;12 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;6 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;9 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC Biex;6 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC Biex;9 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC Biex;12 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC Granito;6 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC Granito;9 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;D;Portatif;Poudre D Feux de métaux;6 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;D;Portatif;Poudre D Feux de métaux;9 Kilos;Eurofeu;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;6 Litres;Eurextrem;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;9 Litres;Eurextrem;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;6 Kilos;Eurextrem;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;9 Kilos;Eurextrem;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC;6 Kilos;Eurextrem;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;BC;Portatif;Poudre BC;9 Kilos;Eurextrem;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;6 Litres;Stark;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;AB;Portatif;Eau + Additif;9 Litres;Stark;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;6 Litres;Stark;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABF;Portatif;Eau + Additif Ecologique;9 Litres;Stark;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;6 Kilos;Stark;
+FAB;Extincteur Portatif;65 - Eurofeu;PA;ABC;Portatif;Poudre ABC;9 Kilos;Stark;
+FAB;Douche portative;65 - Eurofeu;PA;Douche;Portatif;Douche portative;6 Litres;Douche;
+FAB;Douche portative;65 - Eurofeu;PA;Douche;Portatif;Douche portative;9 Litres;Douche;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;A;Mobile cylindrique;Eau;50 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;AB;Mobile cylindrique;Eau + Additif;25 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;AB;Mobile cylindrique;Eau + Additif;50 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;AB;Mobile cylindrique;Eau + Antigel;50 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;AB;Mobile cylindrique;Eau + Additif Antigel;50 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;ABF;Mobile cylindrique;Eau + Additif Ecologique;50 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;AB;Mobile cylindrique;Eau + Additif;100 Litres;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;ABC;Mobile cylindrique;Poudre ABC;25 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;BC;Mobile cylindrique;Poudre BC;25 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;D;Mobile cylindrique;Poudre D Feux de métaux;25 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;ABC;Mobile cylindrique;Poudre ABC;50 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;BC;Mobile cylindrique;Poudre BC;50 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;D;Mobile cylindrique;Poudre D Feux de métaux;50 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;ABC;Mobile cylindrique;Poudre ABC;100 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;BC;Mobile cylindrique;Poudre BC;100 Kilos;Stopfeu 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;AB;Mobile sphérique;Eau + Additif;50 Litres;NGH - Shérique;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;A;Mobile sphérique;Eau;50 Litres;NGH - Shérique;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;A;Mobile sphérique;Eau + Antigel;50 Litres;NGH - Shérique;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;D;Mobile sphérique;Poudre D Feux de métaux;50 Kilos;NGH - Shérique;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;ABC;Mobile sphérique;Poudre ABC;50 Kilos;NGH - Shérique;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;BC;Mobile sphérique;Poudre BC Granito;50 Kilos;NGH - Shérique;
+FAB;Extincteur Mobile;65 - Eurofeu;PA;BC;Mobile sphérique;Poudre BC Biex;50 Kilos;NGH - Shérique;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif ;3 Litres;Perfex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif ;6 Litres;Perfex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif ;9 Litres;Perfex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;6 Kilos;Perfex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;9 Kilos;Perfex;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif ;6 Litres;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif ;9 Litres;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif ;6 Litres;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif ;9 Litres;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;2 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;5 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;1 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;2 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;4 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;6 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC;9 Kilos;Exper;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif ;6 Litres;Exper +;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABF;Portatif;Eau + Additif ;9 Litres;Exper +;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;6 Litres;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;A;Portatif;Eau + Additif Lith-Ex;9 Litres;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif Ecologique;6 Litres;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif Ecologique;9 Litres;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;BC;Portatif;Poudre BC Monnex;6 Kilos;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;BC;Portatif;Poudre BC Monnex;9 Kilos;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif Déco Argenté;3 Litres;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif Déco Doré;3 Litres;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif Déco Argenté;6 Litres;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;AB;Portatif;Eau + Additif Déco Doré;6 Litres;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC Déco Argenté;6 Kilos;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;ABC;Portatif;Poudre ABC Déco Doré;6 Kilos;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 Déco Argenté;2 Kilos;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 Déco Argenté;5 Kilos;Décoratif;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;AB;Mobile cylindrique;Eau + Additif Ecologique;50 Litres;Perfex 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;AB;Mobile cylindrique;Eau + Additif;50 Litres;Perfex 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;ABC;Mobile cylindrique;Poudre ABC;50 Kilos;Perfex 2;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;BC;Mobile cylindrique;Poudre BC;50 Kilos;Perfex 2;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 Déco Doré;2 Kilos;Décoratif;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2 Déco Doré;5 Kilos;Décoratif;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;B;Mobile cylindrique;CO2 ;10 Kilos;CO2 sur roues;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;B;Mobile cylindrique;CO2 ;20 Kilos;CO2 sur roues;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;B;Mobile cylindrique;CO2 ;30 Kilos;CO2 sur roues;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;B;Mobile cylindrique;CO2 ;50 Kilos;CO2 sur roues;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;B;Mobile cylindrique;CO2 ;2x10 Kilos;CO2 sur roues;
+FAB;Extincteur Mobile;65 - Eurofeu;PP;B;Mobile cylindrique;CO2;10 Kilos;CO2 sur roues Vanne à volant;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;2 Kilos;CO2 Amagnétique;
+FAB;Extincteur Portatif;65 - Eurofeu;PP;B;Portatif;CO2;5 Kilos;CO2 Amagnétique;
+FAB;Extincteur Marine;65 - Eurofeu;PP;B;A Tirette;CO2;2 Kilos;A Tirette;
+FAB;Extincteur Marine;65 - Eurofeu;PP;B;A Tirette;CO2;5 Kilos;CO2 à Tirette;
+FAB;Extincteur Marine;65 - Eurofeu;PP;B;A Tirette;CO2;10 Kilos;CO2 à Tirette;
+FAB;Extincteur Marine;65 - Eurofeu;PP;B;A Tirette;CO2;20 Kilos;CO2 à Tirette;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Pendulaire Auto;Poudre ABC Pendulaire;1 Kilos;Pendulaire Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Pendulaire Auto;Poudre ABC Pendulaire;3 Kilos;Pendulaire Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Pendulaire Auto;Poudre ABC Pendulaire;6 Kilos;Pendulaire Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;BC;Pendulaire Auto;Poudre BC Pendulaire 68 C°;6 Kilos;Pendulaire Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;BC;Pendulaire Auto;Poudre BC Pendulaire 93 C°;6 Kilos;Pendulaire Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Gondole Auto;Poudre ABC Pendulaire;6 Kilos;Gondole Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Perche fixe Auto;Poudre ABC ;9 Kilos;Perche fixe Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;BC;Perche fixe Auto;Poudre BC ;9 Kilos;Perche fixe Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;AB;Perche réglable Auto;Eau + Additif;9 Litres;Perche réglable Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;AB;Perche réglable Auto;Eau + Additif;12 Litres;Perche réglable Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Perche réglable Auto;Poudre ABC ;9 Kilos;Perche réglable Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;ABC;Perche réglable Auto;Poudre ABC ;12 Kilos;Perche réglable Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;BC;Perche réglable Auto;Poudre BC ;9 Kilos;Perche réglable Auto;
+FAB;Extincteur automatique;65 - Eurofeu;PP;BC;Perche réglable Auto;Poudre BC ;12 Kilos;Perche réglable Auto;
