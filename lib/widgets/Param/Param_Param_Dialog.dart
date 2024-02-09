@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
@@ -37,7 +37,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
   Param_Param wParam_Param = Param_Param.Param_ParamInit();
   String Title = "Verif+ : Paramètres ";
 
-//  List<EasyTableColumn<Param_Param>> wColumns = [];
+//  List<DaviColumn<Param_Param>> wColumns = [];
   bool bReload = true;
 
   Future Reload() async {
@@ -252,27 +252,27 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
 
 
   Widget Param_ParamGridWidget() {
-    List<EasyTableColumn<Param_Param>> wColumns = [
-      new EasyTableColumn(
+    List<DaviColumn<Param_Param>> wColumns = [
+      new DaviColumn(
           grow: 2,
           name: 'Id',
           stringValue: (row) => "${row.Param_Param_ID} ${row.Param_Param_Ordre}"
               ""),
-      new EasyTableColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Param_Param_Text),
+      new DaviColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Param_Param_Text),
     ];
 
     print("Param_ParamGridWidget");
-    EasyTableModel<Param_Param>? _model;
-    _model = EasyTableModel<Param_Param>(rows: DbTools.ListParam_Paramsearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Param_Param>(
+    DaviModel<Param_Param>? _model;
+    _model = DaviModel<Param_Param>(rows: DbTools.ListParam_Paramsearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Param_Param>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (paramParam) => _onRowTap(context, paramParam),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -317,7 +317,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
     );
   }
 
-  Widget _buildDelete(BuildContext context, RowData<Param_Param> rowData) {
+  Widget _buildDelete(BuildContext context, DaviRow<Param_Param> rowData) {
     return IconButton(
       icon: Icon(
         Icons.delete,
@@ -325,7 +325,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
         size: 18.0,
       ),
       onPressed: () async {
-        DbTools.delParam_Param(rowData.row);
+        DbTools.delParam_Param(rowData.data);
         await Reload();
       },
     );

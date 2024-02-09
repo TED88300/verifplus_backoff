@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles.dart';
@@ -332,26 +332,29 @@ class _Articles_screenState extends State<Articles_screen> {
   }
 
   Widget ArtGridWidget() {
-    List<EasyTableColumn<Art>> wColumns = [
-      new EasyTableColumn(grow: 2, name: 'Id', stringValue: (row) => "${row.Art_Id}"),
-      new EasyTableColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Art_Lib),
-      new EasyTableColumn(name: 'Groupe', grow: 18, stringValue: (row) => row.Art_Groupe),
-      new EasyTableColumn(name: 'Famille', grow: 18, stringValue: (row) => row.Art_Fam),
-      new EasyTableColumn(name: 'Sous-Famille', grow: 18, stringValue: (row) => row.Art_Sous_Fam),
+    List<DaviColumn<Art>> wColumns = [
+      new DaviColumn(grow: 2, name: 'Id', stringValue: (row) => "${row.Art_Id}"),
+      new DaviColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Art_Lib),
+      new DaviColumn(name: 'Groupe', grow: 18, stringValue: (row) => row.Art_Groupe),
+      new DaviColumn(name: 'Famille', grow: 18, stringValue: (row) => row.Art_Fam),
+      new DaviColumn(name: 'Sous-Famille', grow: 18, stringValue: (row) => row.Art_Sous_Fam),
     ];
 
     print("ArtGridWidget");
-    EasyTableModel<Art>? _model;
-    _model = EasyTableModel<Art>(rows: DbTools.ListArtsearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Art>(
+    DaviModel<Art>? _model;
+    _model = DaviModel<Art>(rows: DbTools.ListArtsearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Art>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (Art) => _onRowTap(context, Art),
         ),
-        data: EasyTableThemeData(
+
+        
+
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -489,7 +492,7 @@ class _Articles_screenState extends State<Articles_screen> {
     );
   }
 
-  Widget _buildDelete(BuildContext context, RowData<Art> rowData) {
+ /* Widget _buildDelete(BuildContext context, DaviRow<Art> rowData) {
     return IconButton(
       icon: Icon(
         Icons.delete,
@@ -497,11 +500,11 @@ class _Articles_screenState extends State<Articles_screen> {
         size: 18.0,
       ),
       onPressed: () async {
-        DbTools.delArt(rowData.row);
+        DbTools.delArt(rowData.data);
         await Reload();
       },
     );
-  }
+  }*/
 
   Widget DropdownButtonGroupe() {
     print("DropdownButtonGroupe $selectedValueGroupe");

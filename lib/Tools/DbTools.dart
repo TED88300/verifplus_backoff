@@ -2,6 +2,7 @@ import "dart:async";
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -18,6 +19,7 @@ import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
 import 'package:verifplus_backoff/Tools/Srv_InterMissions.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
+import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_Niveau_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Niveau_Hab.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Gamme.dart';
@@ -30,11 +32,11 @@ import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning_Interv.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Srv_User_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_User_Hab.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
+import 'package:verifplus_backoff/Tools/save_file_web.dart';
 import 'package:verifplus_backoff/Tools/shared_pref.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
@@ -50,7 +52,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.73";
+  static var gVersion = "v1.0.74";
   static bool gTED = true;
 
   static var notif = Notif();
@@ -750,7 +752,12 @@ class DbTools {
     if (ListNF074_Gammes == null) return false;
     print("getNF074_CtrlGammesArticles ${ListNF074_Gammes.length}");
     if (ListNF074_Gammes.length > 0) {
-  //    print("getNF074_CtrlGammesArticles return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Gammes.length; i++) {
+        var element = ListNF074_Gammes[i];
+        associateList.add({"Code": "${element.NF074_Gammes_REF}", "Desc": "${element.NF074_Gammes_GAM}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlGammesArticles");
       return true;
     }
     return false;
@@ -915,10 +922,30 @@ class DbTools {
     print("getNF074_CtrlPiecesActionsArticles1 ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_CtrlPiecesActionsArticles1 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Actions.length; i++) {
+        var element = ListNF074_Pieces_Actions[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Actions_CodeArticlePD1}", "Desc": "${element.NF074_Pieces_Actions_DescriptionPD1}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPiecesActionsArticles1");
+
       return true;
     }
     return false;
   }
+
+  static Future exportCSV(List<Map<String, dynamic>> list, String wName) async {
+    List<List<dynamic>> rows = [];
+    rows.add(["Code", "Desc"]);
+    for (var map in list) {
+      rows.add([map["Code"], map["Desc"]]);
+    }
+    String csv = const ListToCsvConverter().convert(fieldDelimiter : ";",rows);
+    List<int> bytes = utf8.encode(csv);
+    await FileSaveHelper.saveAndLaunchFile(bytes, '$wName.csv');
+  }
+
+
 
   static Future<bool> getNF074_CtrlPiecesActionsArticles2() async {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE NF074_Pieces_Actions_Code_article_PD2 != '' AND NF074_Pieces_Actions_Code_article_PD2 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Actions_Code_article_PD2;";
@@ -927,6 +954,13 @@ class DbTools {
     print("getNF074_CtrlPiecesActionsArticles2 ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_CtrlPiecesActionsArticles2 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Actions.length; i++) {
+        var element = ListNF074_Pieces_Actions[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Actions_CodeArticlePD2}", "Desc": "${element.NF074_Pieces_Actions_DescriptionPD2}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPiecesActionsArticles2");
+
       return true;
     }
     return false;
@@ -939,6 +973,13 @@ class DbTools {
     print("getNF074_CtrlPiecesActionsArticles3 ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_CtrlPiecesActionsArticles3 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Actions.length; i++) {
+        var element = ListNF074_Pieces_Actions[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Actions_CodeArticlePD3}", "Desc": "${element.NF074_Pieces_Actions_DescriptionPD3}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPiecesActionsArticles3");
+
       return true;
     }
     return false;
@@ -1010,6 +1051,12 @@ class DbTools {
     print("getNF074_CtrlPieceDetArticles1 ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_CtrlPieceDetArticles1 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Det.length; i++) {
+        var element = ListNF074_Pieces_Det[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Det_CodeArticlePD1}", "Desc": "${element.NF074_Pieces_Det_DescriptionPD1}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPieceDetArticles1");
       return true;
     }
     return false;
@@ -1022,6 +1069,12 @@ class DbTools {
     print("getNF074_CtrlPieceDetArticles2 ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_CtrlPieceDetArticles2 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Det.length; i++) {
+        var element = ListNF074_Pieces_Det[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Det_CodeArticlePD2}", "Desc": "${element.NF074_Pieces_Det_DescriptionPD2}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPieceDetArticles2");
       return true;
     }
     return false;
@@ -1034,6 +1087,12 @@ class DbTools {
     print("getNF074_CtrlPieceDetArticles3 ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_CtrlPieceDetArticles3 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Det.length; i++) {
+        var element = ListNF074_Pieces_Det[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Det_CodeArticlePD3}", "Desc": "${element.NF074_Pieces_Det_DescriptionPD3}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPieceDetArticles3");
       return true;
     }
     return false;
@@ -1140,6 +1199,12 @@ class DbTools {
     print("getNF074_CtrlPieceDetIncArticles1 ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_CtrlPieceDetIncArticles1 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Det_Inc.length; i++) {
+        var element = ListNF074_Pieces_Det_Inc[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Det_Inc_CodeArticlePD1}", "Desc": "${element.NF074_Pieces_Det_Inc_DescriptionPD1}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPieceDetIncArticles1");
       return true;
     }
     return false;
@@ -1152,6 +1217,12 @@ class DbTools {
     print("getNF074_CtrlPieceDetIncArticles2 ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_CtrlPieceDetIncArticles2 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Det_Inc.length; i++) {
+        var element = ListNF074_Pieces_Det_Inc[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Det_Inc_CodeArticlePD2}", "Desc": "${element.NF074_Pieces_Det_Inc_DescriptionPD2}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPieceDetIncArticles2");
       return true;
     }
     return false;
@@ -1164,6 +1235,12 @@ class DbTools {
     print("getNF074_CtrlPieceDetIncArticles3 ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_CtrlPieceDetIncArticles3 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Pieces_Det_Inc.length; i++) {
+        var element = ListNF074_Pieces_Det_Inc[i];
+        associateList.add({"Code": "${element.NF074_Pieces_Det_Inc_CodeArticlePD3}", "Desc": "${element.NF074_Pieces_Det_Inc_DescriptionPD3}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlPieceDetIncArticles3");
       return true;
     }
     return false;
@@ -1258,6 +1335,13 @@ class DbTools {
     print("getNF074_CtrlMixteProduitArticles1 ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_CtrlMixteProduitArticles1 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Mixte_Produit.length; i++) {
+        var element = ListNF074_Mixte_Produit[i];
+        associateList.add({"Code": "${element.NF074_Mixte_Produit_CodeArticlePD1}", "Desc": "${element.NF074_Mixte_Produit_DescriptionPD1}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlMixteProduitArticles1");
+
       return true;
     }
     return false;
@@ -1272,6 +1356,13 @@ class DbTools {
     print("getNF074_CtrlMixteProduitArticles2 ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_CtrlMixteProduitArticles2 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Mixte_Produit.length; i++) {
+        var element = ListNF074_Mixte_Produit[i];
+        associateList.add({"Code": "${element.NF074_Mixte_Produit_CodeArticlePD2}", "Desc": "${element.NF074_Mixte_Produit_DescriptionPD2}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlMixteProduitArticles2");
+
       return true;
     }
     return false;
@@ -1286,6 +1377,13 @@ class DbTools {
     print("getNF074_CtrlMixteProduitArticles3 ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_CtrlMixteProduitArticles3 return TRUE");
+      List<Map<String, dynamic>> associateList = [];
+      for (int i = 0; i < ListNF074_Mixte_Produit.length; i++) {
+        var element = ListNF074_Mixte_Produit[i];
+        associateList.add({"Code": "${element.NF074_Mixte_Produit_CodeArticlePD3}", "Desc": "${element.NF074_Mixte_Produit_DescriptionPD3}"});
+      }
+      await exportCSV(associateList , "getNF074_CtrlMixteProduitArticles3");
+
       return true;
     }
     return false;
@@ -3191,7 +3289,7 @@ class DbTools {
   static Article_Fam_Ebp gArticle_Fam_Ebp = Article_Fam_Ebp.Article_Fam_EbpInit();
 
   static Future<bool> getArticle_Fam_EbpAll() async {
-    ListArticle_Fam_Ebp = await getArticle_Fam_Ebp_API_Post("select", "select * from Articles_Fam_Ebp ORDER BY Article_Fam_Code");
+    ListArticle_Fam_Ebp = await getArticle_Fam_Ebp_API_Post("select", "select * from Articles_Fam_Ebp ORDER BY Article_Fam_Description");
 
     if (ListArticle_Fam_Ebp == null) return false;
 //    print("getArticle_Fam_EbpAll ${ListArticle_Fam_Ebp.length}");

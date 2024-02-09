@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Ebp.dart';
@@ -16,7 +16,7 @@ class Article_Ebp_Liste extends StatefulWidget {
 }
 
 class Article_Ebp_ListeState extends State<Article_Ebp_Liste> {
-  EasyTableModel<Article_Ebp>? _model;
+  DaviModel<Article_Ebp>? _model;
 
   final Search_TextController = TextEditingController();
 
@@ -44,14 +44,20 @@ class Article_Ebp_ListeState extends State<Article_Ebp_Liste> {
     for (int i = 0; i < DbTools.ListArticle_Fam_Ebp.length; i++) {
       Article_Fam_Ebp element = DbTools.ListArticle_Fam_Ebp[i];
       if (DbTools.gArticle_Fam_Ebp.Article_Fam_Code.isEmpty) {
-        if (element.Article_Fam_Code_Parent.isEmpty) ListParam_FiltreFam.add("${element.Article_Fam_Libelle}");
-        ListParam_FiltreFamID.add(element.Article_Fam_Code);
+        if (element.Article_Fam_Code_Parent.isEmpty)
+          {
+            ListParam_FiltreFam.add("${element.Article_Fam_Description}");
+            ListParam_FiltreFamID.add(element.Article_Fam_Code);
+          }
       }
     }
 
+    print(" Reload ListParam_FiltreFam ${DbTools.ListParam_FiltreFam.length}");
+    print(" Reload ListParam_FiltreFamID ${DbTools.ListParam_FiltreFamID.length}");
+
     Search_TextController.text = "112";
     FiltreFam = ListParam_FiltreFam[0];
-    FiltreFamID = ListParam_FiltreFam[0];
+    FiltreFamID = ListParam_FiltreFamID[0];
 
     await DbTools.getArticle_EbpAll();
 
@@ -89,9 +95,18 @@ class Article_Ebp_ListeState extends State<Article_Ebp_Liste> {
         }
       }
       listarticleEbpsearchresulttmp.forEach((element) {
-        if (FiltreFamID.compareTo(element.Article_codeFamilleArticles) == 0) DbTools.ListArticle_Ebpsearchresult.add(element);
+        if (FiltreFamID.compareTo(element.Article_codeFamilleArticles) == 0) {
+          DbTools.ListArticle_Ebpsearchresult.add(element);
+        }
       });
     }
+
+    print(" Reload ListArticle_Ebpsearchresult ${DbTools.ListArticle_Ebpsearchresult.length}");
+
+    DbTools.ListArticle_Ebpsearchresult.forEach((element) {
+      print(" Reload element ${element.Article_codeArticle} ${element.Article_codeFamilleArticles} ${element.Article_LibelleFamilleArticle}");
+    });
+
     setState(() {});
   }
 
@@ -133,33 +148,33 @@ class Article_Ebp_ListeState extends State<Article_Ebp_Liste> {
   //********************************************
 
   Widget Article_EbpGridWidget() {
-    List<EasyTableColumn<Article_Ebp>> wColumns = [
-      new EasyTableColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ArticleID}"),
-      new EasyTableColumn(name: 'Code', width: 90, stringValue: (row) => "${row.Article_codeArticle}"),
-      new EasyTableColumn(name: 'Libellé', width: 300, stringValue: (row) => row.Article_Libelle),
-      new EasyTableColumn(name: 'Description', width: 650, stringValue: (row) => row.Article_descriptionCommercialeEnClair.replaceAll("\n", "").replaceAll("\r", "")),
-      new EasyTableColumn(name: 'Groupe', width: 200, stringValue: (row) => row.Article_Groupe),
-      new EasyTableColumn(name: 'Famille', width: 200, stringValue: (row) => row.Article_Fam),
-      new EasyTableColumn(name: 'Sous-Famille', grow: 200, stringValue: (row) => row.Article_Sous_Fam),
+    List<DaviColumn<Article_Ebp>> wColumns = [
+      new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ArticleID}"),
+      new DaviColumn(name: 'Code', width: 90, stringValue: (row) => "${row.Article_codeArticle}"),
+//      new DaviColumn(name: 'Libellé', width: 300, stringValue: (row) => row.Article_Libelle),
+      new DaviColumn(name: 'Description', width: 650, stringValue: (row) => row.Article_descriptionCommercialeEnClair.replaceAll("\n", "").replaceAll("\r", "")),
+      new DaviColumn(name: 'Groupe', width: 200, stringValue: (row) => row.Article_Groupe),
+      new DaviColumn(name: 'Famille', width: 400, stringValue: (row) => row.Article_LibelleFamilleArticle),
+      new DaviColumn(name: 'Sous-Famille', grow: 200, stringValue: (row) => row.Article_LibelleSousFamilleArticle),
     ];
 
-    _model = EasyTableModel<Article_Ebp>(
+    _model = DaviModel<Article_Ebp>(
       rows: DbTools.ListArticle_Ebpsearchresult,
       columns: wColumns,
     );
 
 //    print("columnsLength ${_model!.columnsLength}");
-//    _model!.columnInResizing : (EasyTableColumn<Article_Ebp> wColumn) => columnInResizing(context, wColumn);
+//    _model!.columnInResizing : (DaviColumn<Article_Ebp> wColumn) => columnInResizing(context, wColumn);
 
-    return new EasyTableTheme(
-        child: new EasyTable<Article_Ebp>(
+    return new DaviTheme(
+        child: new Davi<Article_Ebp>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (articleEbp) => _onRowTap(context, articleEbp),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -176,7 +191,7 @@ class Article_Ebp_ListeState extends State<Article_Ebp_Liste> {
     Reload();
   }
 
-  void columnInResizing(BuildContext context, EasyTableColumn<Article_Ebp> wColumn) async {}
+  void columnInResizing(BuildContext context, DaviColumn<Article_Ebp> wColumn) async {}
   void onHover(int i) async {}
 
 //**********************************
@@ -290,15 +305,11 @@ class Article_Ebp_ListeState extends State<Article_Ebp_Liste> {
             color: Colors.white,
           ),
           buttonHeight: 30,
-          buttonWidth: 340,
+          buttonWidth: 440,
           dropdownMaxHeight: 250,
           itemHeight: 32,
         )),
       ),
     ]);
   }
-
-
-
-
 }

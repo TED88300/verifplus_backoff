@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -528,57 +528,57 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
   }
 
   Widget Param_SaisieGridWidget() {
-    List<EasyTableColumn<Param_Saisie>> wColumns = [
-      new EasyTableColumn(
+    List<DaviColumn<Param_Saisie>> wColumns = [
+      new DaviColumn(
           name: 'Id',
           stringValue: (row) =>
               "${row.Param_Saisie_ID} ${row.Param_Saisie_Ordre}"
               ""),
-      EasyTableColumn(
+      DaviColumn(
           width: 30,
-          cellBuilder: (BuildContext context, RowData<Param_Saisie> data) {
+          cellBuilder: (BuildContext context, DaviRow<Param_Saisie> data) {
             return InkWell(
               child: const Icon(Icons.list_alt, size: 16),
               onTap: () async {
                 await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Param_Saisie_Param_screen(wType: data.row.Param_Saisie_ID)));
+                        builder: (context) => Param_Saisie_Param_screen(wType: data.data.Param_Saisie_ID)));
               },
             );
           }),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Libellé',
           grow: 18,
           stringValue: (row) => row.Param_Saisie_Label),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Aide', grow: 18, stringValue: (row) => row.Param_Saisie_Aide),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Contrôle',
           grow: 8,
           stringValue: (row) => row.Param_Saisie_Controle),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Affichage',
           grow: 8,
           stringValue: (row) =>
               "${row.Param_Saisie_Affichage} ${row.Param_Saisie_Ordre_Affichage}"),
 
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Colonne',
           grow: 8,
           stringValue: (row) =>
           "${row.Param_Saisie_Affichage_Titre}"),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Titre',
           grow: 6,
           stringValue: (row) =>
               "${row.Param_Saisie_Affichage_L1 ? "L1 ${row.Param_Saisie_Affichage_L1_Ordre}" : ""}${row.Param_Saisie_Affichage_L2 ? "L2 ${row.Param_Saisie_Affichage_L2_Ordre}" : ""}"),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Icône',
           grow: 4,
           stringValue: (row) =>
           "${row.Param_Saisie_Icon}"),
-      new EasyTableColumn(
+      new DaviColumn(
           name: 'Triger',
           grow: 4,
           stringValue: (row) =>
@@ -589,18 +589,18 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
     ];
 
     print("Param_SaisieGridWidget");
-    EasyTableModel<Param_Saisie>? _model;
+    DaviModel<Param_Saisie>? _model;
 
-    _model = EasyTableModel<Param_Saisie>(
+    _model = DaviModel<Param_Saisie>(
         rows: DbTools.ListParam_Saisiesearchresult, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<Param_Saisie>(
+    return new DaviTheme(
+        child: new Davi<Param_Saisie>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (paramParam) => _onRowTap(context, paramParam),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(
               color: gColors.secondary,
               bottomBorderHeight: 2,
@@ -611,7 +611,7 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
               textStyle: gColors.bodySaisie_B_B,
               resizeAreaWidth: 3,
               resizeAreaHoverColor: Colors.black,
-              sortIconColor: Colors.black,
+              sortIconColors: SortIconColors.all(Colors.black),
               expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
@@ -798,7 +798,7 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
     );
   }
   
-  Widget _buildDelete(BuildContext context, RowData<Param_Saisie> rowData) {
+  Widget _buildDelete(BuildContext context, DaviRow<Param_Saisie> rowData) {
     return IconButton(
       icon: Icon(
         Icons.delete,
@@ -806,7 +806,7 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
         size: 18.0,
       ),
       onPressed: () async {
-        DbTools.delParam_Saisie(rowData.row);
+        DbTools.delParam_Saisie(rowData.data);
         await Reload();
       },
     );

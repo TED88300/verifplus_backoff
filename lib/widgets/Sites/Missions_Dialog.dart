@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -403,40 +403,40 @@ class _MissionsState extends State<Missions> {
   }
 
   Widget InterMissionGridWidget() {
-    List<EasyTableColumn<InterMission>> wColumns = [
-      EasyTableColumn(
+    List<DaviColumn<InterMission>> wColumns = [
+      DaviColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, RowData<InterMission> aInterMission) {
+          cellBuilder: (BuildContext context, DaviRow<InterMission> aInterMission) {
             return Checkbox(
               checkColor: Colors.white,
               fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
                 return gColors.primary;
               }),
-              value: aInterMission.row.InterMission_Exec,
+              value: aInterMission.data.InterMission_Exec,
               onChanged: (bool? value) async {
-                aInterMission.row.InterMission_Exec = (value == true);
-                await DbTools.setInterMission(aInterMission.row);
+                aInterMission.data.InterMission_Exec = (value == true);
+                await DbTools.setInterMission(aInterMission.data);
                 setState(() {});
               },
             );
           }),
-      new EasyTableColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.InterMission_Nom),
-      new EasyTableColumn(name: 'Note', grow: 18, stringValue: (row) => row.InterMission_Note),
+      new DaviColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.InterMission_Nom),
+      new DaviColumn(name: 'Note', grow: 18, stringValue: (row) => row.InterMission_Note),
     ];
 
     print("InterMissionGridWidget");
-    EasyTableModel<InterMission>? _model;
-    _model = EasyTableModel<InterMission>(rows: DbTools.ListInterMissionsearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<InterMission>(
+    DaviModel<InterMission>? _model;
+    _model = DaviModel<InterMission>(rows: DbTools.ListInterMissionsearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<InterMission>(
           _model,
           visibleRowsCount: 10,
           onRowTap: (interMission) => _onRowTap(context, interMission),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

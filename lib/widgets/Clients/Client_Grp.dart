@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
@@ -436,24 +436,24 @@ class _Client_GrpState extends State<Client_Grp> {
   }
 
   Widget GroupeGridWidget() {
-    List<EasyTableColumn<Groupe>> wColumns = [
-      new EasyTableColumn(name: 'Code', width: 100, stringValue: (row) => row.Groupe_Code),
-      new EasyTableColumn(name: 'Nom', width: 450, stringValue: (row) => row.Groupe_Nom),
-      new EasyTableColumn(name: 'Adresse', width: 450, stringValue: (row) => "${row.Groupe_Adr1}"),
-      new EasyTableColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Groupe_CP}"),
-      new EasyTableColumn(name: 'Ville', width: 320, stringValue: (row) => "${row.Groupe_Ville}"),
+    List<DaviColumn<Groupe>> wColumns = [
+      new DaviColumn(name: 'Code', width: 100, stringValue: (row) => row.Groupe_Code),
+      new DaviColumn(name: 'Nom', width: 450, stringValue: (row) => row.Groupe_Nom),
+      new DaviColumn(name: 'Adresse', width: 450, stringValue: (row) => "${row.Groupe_Adr1}"),
+      new DaviColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Groupe_CP}"),
+      new DaviColumn(name: 'Ville', width: 320, stringValue: (row) => "${row.Groupe_Ville}"),
     ];
     print("GroupeGridWidget ${DbTools.ListGroupesearchresult.length}");
-    EasyTableModel<Groupe>? _model;
-    _model = EasyTableModel<Groupe>(rows: DbTools.ListGroupesearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Groupe>(visibleRowsCount: 16, _model, onRowTap: (Groupe) async {
+    DaviModel<Groupe>? _model;
+    _model = DaviModel<Groupe>(rows: DbTools.ListGroupesearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Groupe>(visibleRowsCount: 16, _model, onRowTap: (Groupe) async {
           DbTools.gGroupe = Groupe;
           AlimSaisie();
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 28,
             textStyle: gColors.bodySaisie_N_G,

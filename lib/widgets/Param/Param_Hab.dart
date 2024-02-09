@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Hab.dart';
@@ -23,7 +23,7 @@ class _Param_Hab_screenState extends State<Param_Hab_screen> {
   String selectedValueGrpHabID = "";
 
 
-//  List<EasyTableColumn<Param_Param>> wColumns = [];
+//  List<DaviColumn<Param_Param>> wColumns = [];
 
   Future Reload() async {
     await DbTools.getParam_HabAll();
@@ -268,14 +268,14 @@ class _Param_Hab_screenState extends State<Param_Hab_screen> {
 
   final Param_Hab_PDT_LigneTextController = TextEditingController();
 
-  Widget _buildLigneFieldPdt(BuildContext context, RowData<Param_Hab> data) {
+  Widget _buildLigneFieldPdt(BuildContext context, DaviRow<Param_Hab> data) {
 
 
     return TextFormField(
-      key: Key(data.row.Param_Hab_PDT),
-//      controller:  TextEditingController()..text = data.row.Param_Hab_PDT,
-      initialValue: data.row.Param_Hab_PDT,
-      onChanged: (value) => _onFieldChangeLabel(value, data.row),
+      key: Key(data.data.Param_Hab_PDT),
+//      controller:  TextEditingController()..text = data.data.Param_Hab_PDT,
+      initialValue: data.data.Param_Hab_PDT,
+      onChanged: (value) => _onFieldChangeLabel(value, data.data),
       style: gColors.bodySaisie_B_B,
     );
   }
@@ -287,26 +287,26 @@ class _Param_Hab_screenState extends State<Param_Hab_screen> {
 
 
   Widget Param_Saisie_ParamGridWidget() {
-    List<EasyTableColumn<Param_Hab>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.Param_HabId} ${row.Param_Hab_Ordre}"),
-      new EasyTableColumn(name: 'Modèle', grow: 12, cellBuilder: _buildLigneFieldPdt,),
-      new EasyTableColumn(name: 'Groupe', grow: 12, stringValue: (row) => "${row.Param_Hab_Grp}"),
+    List<DaviColumn<Param_Hab>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.Param_HabId} ${row.Param_Hab_Ordre}"),
+      new DaviColumn(name: 'Modèle', grow: 12, cellBuilder: _buildLigneFieldPdt,),
+      new DaviColumn(name: 'Groupe', grow: 12, stringValue: (row) => "${row.Param_Hab_Grp}"),
     ];
 
     print("Param_HabGridWidget");
-    EasyTableModel<Param_Hab>? _model;
+    DaviModel<Param_Hab>? _model;
 
-    _model = EasyTableModel<Param_Hab>(rows: DbTools.ListParam_Habsearchresult, columns: wColumns);
+    _model = DaviModel<Param_Hab>(rows: DbTools.ListParam_Habsearchresult, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<Param_Hab>(
+    return new DaviTheme(
+        child: new Davi<Param_Hab>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (paramHab) => _onRowTap(context, paramHab),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -380,7 +380,7 @@ class _Param_Hab_screenState extends State<Param_Hab_screen> {
   }
 
 
-  Widget _buildDelete(BuildContext context, RowData<Param_Saisie_Param> rowData) {
+  Widget _buildDelete(BuildContext context, DaviRow<Param_Saisie_Param> rowData) {
     return IconButton(
       icon: Icon(
         Icons.delete,
@@ -388,7 +388,7 @@ class _Param_Hab_screenState extends State<Param_Hab_screen> {
         size: 18.0,
       ),
       onPressed: () async {
-        DbTools.delParam_Saisie_Param(rowData.row);
+        DbTools.delParam_Saisie_Param(rowData.data);
         await Reload();
       },
     );

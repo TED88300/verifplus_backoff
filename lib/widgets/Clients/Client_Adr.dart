@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Adresses.dart';
@@ -387,25 +387,25 @@ class _Client_AdrState extends State<Client_Adr> {
   }
 
   Widget AdresseGridWidget() {
-    List<EasyTableColumn<Adresse>> wColumns = [
-      new EasyTableColumn(name: 'Code', grow: 1, stringValue: (row) => row.Adresse_Code),
-      new EasyTableColumn(name: 'Type', grow: 1, stringValue: (row) => row.Adresse_Type),
-      new EasyTableColumn(name: 'Nom', grow: 1, stringValue: (row) => row.Adresse_Nom),
-      new EasyTableColumn(name: 'Adresse', grow: 10, stringValue: (row) => "${row.Adresse_Adr1}"),
-      new EasyTableColumn(name: 'Cp', grow: 1, stringValue: (row) => "${row.Adresse_CP}"),
-      new EasyTableColumn(name: 'Ville', grow: 5, stringValue: (row) => "${row.Adresse_Ville}"),
+    List<DaviColumn<Adresse>> wColumns = [
+      new DaviColumn(name: 'Code', grow: 1, stringValue: (row) => row.Adresse_Code),
+      new DaviColumn(name: 'Type', grow: 1, stringValue: (row) => row.Adresse_Type),
+      new DaviColumn(name: 'Nom', grow: 1, stringValue: (row) => row.Adresse_Nom),
+      new DaviColumn(name: 'Adresse', grow: 10, stringValue: (row) => "${row.Adresse_Adr1}"),
+      new DaviColumn(name: 'Cp', grow: 1, stringValue: (row) => "${row.Adresse_CP}"),
+      new DaviColumn(name: 'Ville', grow: 5, stringValue: (row) => "${row.Adresse_Ville}"),
     ];
     print("AdresseGridWidget ${DbTools.ListAdressesearchresult.length}");
-    EasyTableModel<Adresse>? _model;
-    _model = EasyTableModel<Adresse>(rows: DbTools.ListAdressesearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Adresse>(visibleRowsCount: 16, _model, onRowTap: (Adresse) async {
+    DaviModel<Adresse>? _model;
+    _model = DaviModel<Adresse>(rows: DbTools.ListAdressesearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Adresse>(visibleRowsCount: 16, _model, onRowTap: (Adresse) async {
           DbTools.gAdresse = Adresse;
           AlimSaisie();
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

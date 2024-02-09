@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
@@ -436,10 +436,10 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
   }
 
 
-  Widget _buildLigneFieldAbrev(BuildContext context, RowData<Param_Saisie_Param> data) {
+  Widget _buildLigneFieldAbrev(BuildContext context, DaviRow<Param_Saisie_Param> data) {
     return TextFormField(
-      initialValue: data.row.Param_Saisie_Param_Abrev,
-      onChanged: (value) => _onFieldChangeAbrev(value, data.row),
+      initialValue: data.data.Param_Saisie_Param_Abrev,
+      onChanged: (value) => _onFieldChangeAbrev(value, data.data),
       style: gColors.bodySaisie_B_B,
     );
   }
@@ -451,11 +451,11 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
     setState(() {});
   }
 
-  Widget _buildLigneFieldLabel(BuildContext context, RowData<Param_Saisie_Param> data) {
-    print("_buildLigneFieldLabel ${data.row.Param_Saisie_Param_Abrev}");
+  Widget _buildLigneFieldLabel(BuildContext context, DaviRow<Param_Saisie_Param> data) {
+    print("_buildLigneFieldLabel ${data.data.Param_Saisie_Param_Abrev}");
     return TextFormField(
-      initialValue: data.row.Param_Saisie_Param_Label,
-      onChanged: (value) => _onFieldChangeLabel(value, data.row),
+      initialValue: data.data.Param_Saisie_Param_Label,
+      onChanged: (value) => _onFieldChangeLabel(value, data.data),
       style: gColors.bodySaisie_B_B,
     );
   }
@@ -467,10 +467,10 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
     setState(() {});
   }
 
-  Widget _buildLigneFieldAide(BuildContext context, RowData<Param_Saisie_Param> data) {
+  Widget _buildLigneFieldAide(BuildContext context, DaviRow<Param_Saisie_Param> data) {
     return TextFormField(
-      initialValue: data.row.Param_Saisie_Param_Aide,
-      onChanged: (value) => _onFieldChangeAide(value, data.row),
+      initialValue: data.data.Param_Saisie_Param_Aide,
+      onChanged: (value) => _onFieldChangeAide(value, data.data),
       style: gColors.bodySaisie_B_B,
     );
   }
@@ -482,32 +482,32 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
     setState(() {});
   }
 
-  EasyTableModel<Param_Saisie_Param>? _model;
+  DaviModel<Param_Saisie_Param>? _model;
 
   Widget Param_Saisie_ParamGridWidget() {
-    List<EasyTableColumn<Param_Saisie_Param>> wColumns = [
-      EasyTableColumn(name: 'Id', stringValue: (row) => "${row.Param_Saisie_Param_Id} ${row.Param_Saisie_Param_Ordre}"),
-      new EasyTableColumn(name: 'Libellé', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Label),
-      new EasyTableColumn(name: 'Abréviation', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Abrev),
-      new EasyTableColumn(name: 'Aide', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Aide),
-      new EasyTableColumn(name: 'Couleur', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Color),
-      EasyTableColumn(
+    List<DaviColumn<Param_Saisie_Param>> wColumns = [
+      DaviColumn(name: 'Id', stringValue: (row) => "${row.Param_Saisie_Param_Id} ${row.Param_Saisie_Param_Ordre}"),
+      new DaviColumn(name: 'Libellé', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Label),
+      new DaviColumn(name: 'Abréviation', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Abrev),
+      new DaviColumn(name: 'Aide', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Aide),
+      new DaviColumn(name: 'Couleur', grow: 12, stringValue: (row) => row.Param_Saisie_Param_Color),
+      DaviColumn(
           name: 'Défaut',
-          cellBuilder: (BuildContext context, RowData<Param_Saisie_Param> data) {
+          cellBuilder: (BuildContext context, DaviRow<Param_Saisie_Param> data) {
             return Checkbox(
               checkColor: Colors.white,
-              value: data.row.Param_Saisie_Param_Default,
+              value: data.data.Param_Saisie_Param_Default,
               onChanged: (bool? value) {
                 setState(() {});
               },
             );
           }),
-      EasyTableColumn(
+      DaviColumn(
           name: 'Init',
-          cellBuilder: (BuildContext context, RowData<Param_Saisie_Param> data) {
+          cellBuilder: (BuildContext context, DaviRow<Param_Saisie_Param> data) {
             return Checkbox(
               checkColor: Colors.white,
-              value: data.row.Param_Saisie_Param_Init,
+              value: data.data.Param_Saisie_Param_Init,
               onChanged: (bool? value) {
                 setState(() {});
               },
@@ -524,17 +524,17 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
 */
 
     _model = null;
-    _model = EasyTableModel<Param_Saisie_Param>(rows: DbTools.ListParam_Saisie_Paramsearchresult, columns: wColumns);
+    _model = DaviModel<Param_Saisie_Param>(rows: DbTools.ListParam_Saisie_Paramsearchresult, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<Param_Saisie_Param>(
+    return new DaviTheme(
+        child: new Davi<Param_Saisie_Param>(
           _model,
           visibleRowsCount: 18,
           onRowTap: (paramSaisieParam) => _onRowTap(context, paramSaisieParam),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -614,7 +614,7 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
     );
   }
 
-  Widget _buildDelete(BuildContext context, RowData<Param_Saisie_Param> rowData) {
+  Widget _buildDelete(BuildContext context, DaviRow<Param_Saisie_Param> rowData) {
     return IconButton(
       icon: Icon(
         Icons.delete,
@@ -622,7 +622,7 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
         size: 18.0,
       ),
       onPressed: () async {
-        DbTools.delParam_Saisie_Param(rowData.row);
+        DbTools.delParam_Saisie_Param(rowData.data);
         await Reload();
       },
     );

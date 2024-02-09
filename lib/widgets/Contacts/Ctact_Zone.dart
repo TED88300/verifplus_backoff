@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
@@ -350,27 +350,27 @@ class _Ctact_ZoneState extends State<Ctact_Zone> {
   }
 
   Widget ContactGridWidget() {
-    List<EasyTableColumn<Contact>> wColumns = [
-      new EasyTableColumn(name: 'Civ.', width: 60, stringValue: (row) => "${row.Contact_Civilite}"),
-      new EasyTableColumn(name: 'Nom', grow: 10, stringValue: (row) => "${row.Contact_Nom}"),
-      new EasyTableColumn(name: 'Prenom', grow: 10, stringValue: (row) => "${row.Contact_Prenom}"),
-      new EasyTableColumn(name: 'Fonction', grow: 2, stringValue: (row) => "${row.Contact_Fonction}"),
-      new EasyTableColumn(name: 'Sercice', grow: 2, stringValue: (row) => row.Contact_Service),
-      new EasyTableColumn(name: 'Fixe', grow: 1, stringValue: (row) => row.Contact_Tel1),
-      new EasyTableColumn(name: 'Portable', grow: 1, stringValue: (row) => row.Contact_Tel2),
-      new EasyTableColumn(name: 'eMail', grow: 5, stringValue: (row) => row.Contact_eMail),
+    List<DaviColumn<Contact>> wColumns = [
+      new DaviColumn(name: 'Civ.', width: 60, stringValue: (row) => "${row.Contact_Civilite}"),
+      new DaviColumn(name: 'Nom', grow: 10, stringValue: (row) => "${row.Contact_Nom}"),
+      new DaviColumn(name: 'Prenom', grow: 10, stringValue: (row) => "${row.Contact_Prenom}"),
+      new DaviColumn(name: 'Fonction', grow: 2, stringValue: (row) => "${row.Contact_Fonction}"),
+      new DaviColumn(name: 'Sercice', grow: 2, stringValue: (row) => row.Contact_Service),
+      new DaviColumn(name: 'Fixe', grow: 1, stringValue: (row) => row.Contact_Tel1),
+      new DaviColumn(name: 'Portable', grow: 1, stringValue: (row) => row.Contact_Tel2),
+      new DaviColumn(name: 'eMail', grow: 5, stringValue: (row) => row.Contact_eMail),
     ];
     print("ContactGridWidget ${DbTools.ListContactsearchresult.length}");
-    EasyTableModel<Contact>? _model;
-    _model = EasyTableModel<Contact>(rows: DbTools.ListContactsearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Contact>(visibleRowsCount: 24, _model, onRowTap: (Contact) async {
+    DaviModel<Contact>? _model;
+    _model = DaviModel<Contact>(rows: DbTools.ListContactsearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Contact>(visibleRowsCount: 24, _model, onRowTap: (Contact) async {
           DbTools.gContact = Contact;
           AlimSaisie();
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

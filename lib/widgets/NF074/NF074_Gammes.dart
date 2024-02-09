@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
@@ -22,7 +22,7 @@ class _NF074_Gammes_screenState extends State<NF074_Gammes_screen> with TickerPr
   bool iStrfImp = false;
 
   bool isLoad = false;
-//  List<EasyTableColumn<Param_Param>> wColumns = [];
+//  List<DaviColumn<Param_Param>> wColumns = [];
 
   Future Reload() async {
     await DbTools.getNF074_GammesAll();
@@ -138,8 +138,6 @@ class _NF074_Gammes_screenState extends State<NF074_Gammes_screen> with TickerPr
                       ],
                     ),
                     onTap: () async {
-
-
                           String wTable = "Gammes";
                           await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
 
@@ -172,27 +170,28 @@ class _NF074_Gammes_screenState extends State<NF074_Gammes_screen> with TickerPr
   }
 
   Widget Param_Saisie_ParamGridWidget() {
-    List<EasyTableColumn<NF074_Gammes>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_GammesId} "),
-      new EasyTableColumn(name: 'Fabricant', grow: 12, stringValue: (row) => "${row.NF074_Gammes_FAB}"),
-      new EasyTableColumn(name: 'Clé', grow: 12, stringValue: (row) => "${row.NF074_Gammes_DESC} / ${row.NF074_Gammes_PRS} / ${row.NF074_Gammes_CLF} / ${row.NF074_Gammes_MOB} / ${row.NF074_Gammes_PDT} / ${row.NF074_Gammes_POIDS} / ${row.NF074_Gammes_GAM}"),
-      new EasyTableColumn(name: 'Certif', grow: 1, stringValue: (row) => "${row.NF074_Gammes_NCERT}"),
+    List<DaviColumn<NF074_Gammes>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_GammesId} "),
+      new DaviColumn(name: 'Fabricant', grow: 12, stringValue: (row) => "${row.NF074_Gammes_FAB}"),
+      new DaviColumn(name: 'Clé', grow: 12, stringValue: (row) => "${row.NF074_Gammes_DESC} / ${row.NF074_Gammes_PRS} / ${row.NF074_Gammes_CLF} / ${row.NF074_Gammes_MOB} / ${row.NF074_Gammes_PDT} / ${row.NF074_Gammes_POIDS} / ${row.NF074_Gammes_GAM}"),
+      new DaviColumn(name: 'Certif', grow: 1, stringValue: (row) => "${row.NF074_Gammes_NCERT}"),
+      new DaviColumn(name: 'CODF', grow: 1, stringValue: (row) => "${row.NF074_Gammes_CODF}"),
     ];
 
  //   print("NF074_GammesGridWidget");
-    EasyTableModel<NF074_Gammes>? _model;
+    DaviModel<NF074_Gammes>? _model;
 
-    _model = EasyTableModel<NF074_Gammes>(rows: DbTools.ListNF074_Gammessearchresult, columns: wColumns);
+    _model = DaviModel<NF074_Gammes>(rows: DbTools.ListNF074_Gammessearchresult, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Gammes>(
+    return new DaviTheme(
+        child: new Davi<NF074_Gammes>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (paramHab) => _onRowTap(context, paramHab),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

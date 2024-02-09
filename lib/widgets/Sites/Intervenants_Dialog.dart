@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -132,33 +132,33 @@ class _IntervenantsState extends State<Intervenants> {
   }
 
   Widget UserGridWidget() {
-    List<EasyTableColumn<UserSelected>> wColumns = [
-      EasyTableColumn(
+    List<DaviColumn<UserSelected>> wColumns = [
+      DaviColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, RowData<UserSelected> aInterUser) {
+          cellBuilder: (BuildContext context, DaviRow<UserSelected> aInterUser) {
             return Checkbox(
               checkColor: Colors.white,
               fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
                 return gColors.primary;
               }),
-              value: aInterUser.row.Sel,
+              value: aInterUser.data.Sel,
               onChanged: (bool? value) async {
-                aInterUser.row.Sel = (value == true);
+                aInterUser.data.Sel = (value == true);
 //                setState(() {});
               },
             );
           }),
-      new EasyTableColumn(name: 'Nom', width: 330, stringValue: (row) => "${row.Nom}"),
+      new DaviColumn(name: 'Nom', width: 330, stringValue: (row) => "${row.Nom}"),
     ];
 
-    EasyTableModel<UserSelected>? _model;
-    _model = EasyTableModel<UserSelected>(rows: List_UserInter, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<UserSelected>(visibleRowsCount: 16, _model, onRowTap: (String) async {}),
-        data: EasyTableThemeData(
+    DaviModel<UserSelected>? _model;
+    _model = DaviModel<UserSelected>(rows: List_UserInter, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<UserSelected>(visibleRowsCount: 16, _model, onRowTap: (String) async {}),
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
@@ -408,39 +408,39 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   }
 
   Widget ZoneGridWidget() {
-    List<EasyTableColumn<Zone>> wColumns = [
+    List<DaviColumn<Zone>> wColumns = [
 
-      EasyTableColumn(
+      DaviColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, RowData<Zone> aZone) {
+          cellBuilder: (BuildContext context, DaviRow<Zone> aZone) {
             return InkWell(
                 child: const Icon(Icons.edit, size: 16),
                 onTap: () async {
-                  DbTools.gZone = aZone.row;
+                  DbTools.gZone = aZone.data;
                   await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog( ));
                 });
           }),
 
-      new EasyTableColumn(name: 'Code', width: 100, stringValue: (row) => row.Zone_Code),
-      new EasyTableColumn(name: 'Nom', width: 420, stringValue: (row) => row.Zone_Nom),
-      new EasyTableColumn(name: 'Adresse', width: 420, stringValue: (row) => "${row.Zone_Adr1}"),
-      new EasyTableColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Zone_CP}"),
-      new EasyTableColumn(name: 'Ville', width: 300, stringValue: (row) => "${row.Zone_Ville}"),
+      new DaviColumn(name: 'Code', width: 100, stringValue: (row) => row.Zone_Code),
+      new DaviColumn(name: 'Nom', width: 420, stringValue: (row) => row.Zone_Nom),
+      new DaviColumn(name: 'Adresse', width: 420, stringValue: (row) => "${row.Zone_Adr1}"),
+      new DaviColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Zone_CP}"),
+      new DaviColumn(name: 'Ville', width: 300, stringValue: (row) => "${row.Zone_Ville}"),
     ];
     print("ZoneGridWidget ${DbTools.ListZonesearchresult.length}");
-    EasyTableModel<Zone>? _model;
-    _model = EasyTableModel<Zone>(rows: DbTools.ListZonesearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Zone>(
+    DaviModel<Zone>? _model;
+    _model = DaviModel<Zone>(rows: DbTools.ListZonesearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Zone>(
             visibleRowsCount: 25,
             _model, onRowTap: (Zone) async {
           DbTools.gZone = Zone;
           AlimSaisie();
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
@@ -384,30 +384,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Piece_Det_IncArticles_GridWidget1() {
-    List<EasyTableColumn<NF074_Pieces_Det_Inc>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PRS}"),
+    List<DaviColumn<NF074_Pieces_Det_Inc>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PRS}"),
 
-      new EasyTableColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_CodeArticlePD1}"),
-      new EasyTableColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DescriptionPD1}"),
+      new DaviColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_CodeArticlePD1}"),
+      new DaviColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DescriptionPD1}"),
     ];
 
     //   print("NF074_Pieces_Det_IncGridWidget");
-    EasyTableModel<NF074_Pieces_Det_Inc>? _model;
+    DaviModel<NF074_Pieces_Det_Inc>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Det_Inc>(rows: DbTools.ListNF074_Pieces_Det_Inc, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Det_Inc>(rows: DbTools.ListNF074_Pieces_Det_Inc, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Det_Inc>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Det_Inc>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -418,30 +418,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Piece_Det_IncArticles_GridWidget2() {
-    List<EasyTableColumn<NF074_Pieces_Det_Inc>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PRS}"),
+    List<DaviColumn<NF074_Pieces_Det_Inc>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PRS}"),
 
-      new EasyTableColumn(name: 'CodeArticlePD2', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_CodeArticlePD2}"),
-      new EasyTableColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DescriptionPD2}"),
+      new DaviColumn(name: 'CodeArticlePD2', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_CodeArticlePD2}"),
+      new DaviColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DescriptionPD2}"),
     ];
 
     //   print("NF074_Pieces_Det_IncGridWidget");
-    EasyTableModel<NF074_Pieces_Det_Inc>? _model;
+    DaviModel<NF074_Pieces_Det_Inc>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Det_Inc>(rows: DbTools.ListNF074_Pieces_Det_Inc, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Det_Inc>(rows: DbTools.ListNF074_Pieces_Det_Inc, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Det_Inc>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Det_Inc>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -453,30 +453,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Piece_Det_IncArticles_GridWidget3() {
-    List<EasyTableColumn<NF074_Pieces_Det_Inc>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PRS}"),
+    List<DaviColumn<NF074_Pieces_Det_Inc>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_PRS}"),
 
-      new EasyTableColumn(name: 'CodeArticlePD3', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_CodeArticlePD3}"),
-      new EasyTableColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DescriptionPD3}"),
+      new DaviColumn(name: 'CodeArticlePD3', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_CodeArticlePD3}"),
+      new DaviColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_Inc_DescriptionPD3}"),
     ];
 
     //   print("NF074_Pieces_Det_IncGridWidget");
-    EasyTableModel<NF074_Pieces_Det_Inc>? _model;
+    DaviModel<NF074_Pieces_Det_Inc>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Det_Inc>(rows: DbTools.ListNF074_Pieces_Det_Inc, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Det_Inc>(rows: DbTools.ListNF074_Pieces_Det_Inc, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Det_Inc>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Det_Inc>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -489,30 +489,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Piece_DetArticles_GridWidget1() {
-    List<EasyTableColumn<NF074_Pieces_Det>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_DetId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PRS}"),
+    List<DaviColumn<NF074_Pieces_Det>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_DetId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PRS}"),
 
-      new EasyTableColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Det_CodeArticlePD1}"),
-      new EasyTableColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_DescriptionPD1}"),
+      new DaviColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Det_CodeArticlePD1}"),
+      new DaviColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_DescriptionPD1}"),
     ];
 
     //   print("NF074_Pieces_DetGridWidget");
-    EasyTableModel<NF074_Pieces_Det>? _model;
+    DaviModel<NF074_Pieces_Det>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Det>(rows: DbTools.ListNF074_Pieces_Det, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Det>(rows: DbTools.ListNF074_Pieces_Det, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Det>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Det>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -523,30 +523,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Piece_DetArticles_GridWidget2() {
-    List<EasyTableColumn<NF074_Pieces_Det>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_DetId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PRS}"),
+    List<DaviColumn<NF074_Pieces_Det>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_DetId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PRS}"),
 
-      new EasyTableColumn(name: 'CodeArticlePD2', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_CodeArticlePD2}"),
-      new EasyTableColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_DescriptionPD2}"),
+      new DaviColumn(name: 'CodeArticlePD2', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_CodeArticlePD2}"),
+      new DaviColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_DescriptionPD2}"),
     ];
 
     //   print("NF074_Pieces_DetGridWidget");
-    EasyTableModel<NF074_Pieces_Det>? _model;
+    DaviModel<NF074_Pieces_Det>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Det>(rows: DbTools.ListNF074_Pieces_Det, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Det>(rows: DbTools.ListNF074_Pieces_Det, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Det>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Det>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -558,30 +558,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Piece_DetArticles_GridWidget3() {
-    List<EasyTableColumn<NF074_Pieces_Det>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_DetId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PRS}"),
+    List<DaviColumn<NF074_Pieces_Det>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_DetId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Det_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Det_PRS}"),
 
-      new EasyTableColumn(name: 'CodeArticlePD3', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_CodeArticlePD3}"),
-      new EasyTableColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_DescriptionPD3}"),
+      new DaviColumn(name: 'CodeArticlePD3', grow: 3, stringValue: (row) => "${row.NF074_Pieces_Det_CodeArticlePD3}"),
+      new DaviColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Det_DescriptionPD3}"),
     ];
 
     //   print("NF074_Pieces_DetGridWidget");
-    EasyTableModel<NF074_Pieces_Det>? _model;
+    DaviModel<NF074_Pieces_Det>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Det>(rows: DbTools.ListNF074_Pieces_Det, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Det>(rows: DbTools.ListNF074_Pieces_Det, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Det>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Det>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -593,30 +593,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
 
 
   Widget Mixte_ProduitArticles_GridWidget1() {
-    List<EasyTableColumn<NF074_Mixte_Produit>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Mixte_ProduitId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Mixte_Produit_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_POIDS}"),
+    List<DaviColumn<NF074_Mixte_Produit>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Mixte_ProduitId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Mixte_Produit_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_POIDS}"),
 
 
-      new EasyTableColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Mixte_Produit_CodeArticlePD1}"),
-      new EasyTableColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Mixte_Produit_DescriptionPD1}"),
+      new DaviColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Mixte_Produit_CodeArticlePD1}"),
+      new DaviColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Mixte_Produit_DescriptionPD1}"),
     ];
 
     //   print("NF074_Mixte_ProduitGridWidget");
-    EasyTableModel<NF074_Mixte_Produit>? _model;
+    DaviModel<NF074_Mixte_Produit>? _model;
 
-    _model = EasyTableModel<NF074_Mixte_Produit>(rows: DbTools.ListNF074_Mixte_Produit, columns: wColumns);
+    _model = DaviModel<NF074_Mixte_Produit>(rows: DbTools.ListNF074_Mixte_Produit, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Mixte_Produit>(
+    return new DaviTheme(
+        child: new Davi<NF074_Mixte_Produit>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -625,30 +625,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
   }
 
   Widget Mixte_ProduitArticles_GridWidget2() {
-    List<EasyTableColumn<NF074_Mixte_Produit>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Mixte_ProduitId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Mixte_Produit_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_POIDS}"),
+    List<DaviColumn<NF074_Mixte_Produit>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Mixte_ProduitId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Mixte_Produit_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_POIDS}"),
 
 
-      new EasyTableColumn(name: 'CodeArticlePD2', grow: 2, stringValue: (row) => "${row.NF074_Mixte_Produit_CodeArticlePD2}"),
-      new EasyTableColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Mixte_Produit_DescriptionPD2}"),
+      new DaviColumn(name: 'CodeArticlePD2', grow: 2, stringValue: (row) => "${row.NF074_Mixte_Produit_CodeArticlePD2}"),
+      new DaviColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Mixte_Produit_DescriptionPD2}"),
     ];
 
     //   print("NF074_Mixte_ProduitGridWidget");
-    EasyTableModel<NF074_Mixte_Produit>? _model;
+    DaviModel<NF074_Mixte_Produit>? _model;
 
-    _model = EasyTableModel<NF074_Mixte_Produit>(rows: DbTools.ListNF074_Mixte_Produit, columns: wColumns);
+    _model = DaviModel<NF074_Mixte_Produit>(rows: DbTools.ListNF074_Mixte_Produit, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Mixte_Produit>(
+    return new DaviTheme(
+        child: new Davi<NF074_Mixte_Produit>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -657,30 +657,30 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
   }
 
   Widget Mixte_ProduitArticles_GridWidget3() {
-    List<EasyTableColumn<NF074_Mixte_Produit>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Mixte_ProduitId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Mixte_Produit_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_POIDS}"),
+    List<DaviColumn<NF074_Mixte_Produit>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Mixte_ProduitId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Mixte_Produit_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Mixte_Produit_POIDS}"),
 
 
-      new EasyTableColumn(name: 'CodeArticlePD3', grow: 2, stringValue: (row) => "${row.NF074_Mixte_Produit_CodeArticlePD3}"),
-      new EasyTableColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Mixte_Produit_DescriptionPD3}"),
+      new DaviColumn(name: 'CodeArticlePD3', grow: 2, stringValue: (row) => "${row.NF074_Mixte_Produit_CodeArticlePD3}"),
+      new DaviColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Mixte_Produit_DescriptionPD3}"),
     ];
 
     //   print("NF074_Mixte_ProduitGridWidget");
-    EasyTableModel<NF074_Mixte_Produit>? _model;
+    DaviModel<NF074_Mixte_Produit>? _model;
 
-    _model = EasyTableModel<NF074_Mixte_Produit>(rows: DbTools.ListNF074_Mixte_Produit, columns: wColumns);
+    _model = DaviModel<NF074_Mixte_Produit>(rows: DbTools.ListNF074_Mixte_Produit, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Mixte_Produit>(
+    return new DaviTheme(
+        child: new Davi<NF074_Mixte_Produit>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -689,29 +689,29 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
   }
 
   Widget Param_Saisie_ParamGridWidget1() {
-    List<EasyTableColumn<NF074_Pieces_Actions>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_ActionsId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Actions_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PRS}"),
-      new EasyTableColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Actions_CodeArticlePD1}"),
-      new EasyTableColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Actions_DescriptionPD1}"),
+    List<DaviColumn<NF074_Pieces_Actions>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_ActionsId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Actions_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PRS}"),
+      new DaviColumn(name: 'CodeArticlePD1', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Actions_CodeArticlePD1}"),
+      new DaviColumn(name: 'DescriptionPD1', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Actions_DescriptionPD1}"),
     ];
 
     //   print("NF074_Pieces_ActionsGridWidget");
-    EasyTableModel<NF074_Pieces_Actions>? _model;
+    DaviModel<NF074_Pieces_Actions>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Actions>(rows: DbTools.ListNF074_Pieces_Actions, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Actions>(rows: DbTools.ListNF074_Pieces_Actions, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Actions>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Actions>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -720,29 +720,29 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
   }
 
   Widget Param_Saisie_ParamGridWidget2() {
-    List<EasyTableColumn<NF074_Pieces_Actions>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_ActionsId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Actions_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PRS}"),
-      new EasyTableColumn(name: 'CodeArticlePD2', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Actions_CodeArticlePD2}"),
-      new EasyTableColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Actions_DescriptionPD2}"),
+    List<DaviColumn<NF074_Pieces_Actions>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_ActionsId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Actions_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PRS}"),
+      new DaviColumn(name: 'CodeArticlePD2', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Actions_CodeArticlePD2}"),
+      new DaviColumn(name: 'DescriptionPD2', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Actions_DescriptionPD2}"),
     ];
 
     //   print("NF074_Pieces_ActionsGridWidget");
-    EasyTableModel<NF074_Pieces_Actions>? _model;
+    DaviModel<NF074_Pieces_Actions>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Actions>(rows: DbTools.ListNF074_Pieces_Actions, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Actions>(rows: DbTools.ListNF074_Pieces_Actions, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Actions>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Actions>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -750,29 +750,29 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
         ));
   }
   Widget Param_Saisie_ParamGridWidget3() {
-    List<EasyTableColumn<NF074_Pieces_Actions>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_ActionsId} "),
-      new EasyTableColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Actions_DESC}"),
-      new EasyTableColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PDT}"),
-      new EasyTableColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_POIDS}"),
-      new EasyTableColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PRS}"),
-      new EasyTableColumn(name: 'CodeArticlePD3', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Actions_CodeArticlePD3}"),
-      new EasyTableColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Actions_DescriptionPD3}"),
+    List<DaviColumn<NF074_Pieces_Actions>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_ActionsId} "),
+      new DaviColumn(name: 'DESC', grow: 5, stringValue: (row) => "${row.NF074_Pieces_Actions_DESC}"),
+      new DaviColumn(name: 'PDT', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PDT}"),
+      new DaviColumn(name: 'POIDS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_POIDS}"),
+      new DaviColumn(name: 'PRS', grow: 1, stringValue: (row) => "${row.NF074_Pieces_Actions_PRS}"),
+      new DaviColumn(name: 'CodeArticlePD3', grow: 2, stringValue: (row) => "${row.NF074_Pieces_Actions_CodeArticlePD3}"),
+      new DaviColumn(name: 'DescriptionPD3', grow: 8, stringValue: (row) => "${row.NF074_Pieces_Actions_DescriptionPD3}"),
     ];
 
     //   print("NF074_Pieces_ActionsGridWidget");
-    EasyTableModel<NF074_Pieces_Actions>? _model;
+    DaviModel<NF074_Pieces_Actions>? _model;
 
-    _model = EasyTableModel<NF074_Pieces_Actions>(rows: DbTools.ListNF074_Pieces_Actions, columns: wColumns);
+    _model = DaviModel<NF074_Pieces_Actions>(rows: DbTools.ListNF074_Pieces_Actions, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Pieces_Actions>(
+    return new DaviTheme(
+        child: new Davi<NF074_Pieces_Actions>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -781,28 +781,28 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
   }
 
   Widget GammesArticles_GridWidget() {
-    List<EasyTableColumn<NF074_Gammes>> wColumns = [
-      new EasyTableColumn(name: 'Id', stringValue: (row) => "${row.NF074_GammesId} "),
-      new EasyTableColumn(name: 'Ref', grow: 2, stringValue: (row) => "${row.NF074_Gammes_REF}"),
-      new EasyTableColumn(name: 'Codf', grow: 2, stringValue: (row) => "${row.NF074_Gammes_CODF}"),
-      new EasyTableColumn(name: 'Fabricant', grow: 6, stringValue: (row) => "${row.NF074_Gammes_FAB}"),
-      new EasyTableColumn(name: 'Clé', grow: 12, stringValue: (row) => "${row.NF074_Gammes_DESC} / ${row.NF074_Gammes_PRS} / ${row.NF074_Gammes_CLF} / ${row.NF074_Gammes_MOB} / ${row.NF074_Gammes_PDT} / ${row.NF074_Gammes_POIDS} / ${row.NF074_Gammes_GAM}"),
-      new EasyTableColumn(name: 'Certif', grow: 2, stringValue: (row) => "${row.NF074_Gammes_NCERT}"),
+    List<DaviColumn<NF074_Gammes>> wColumns = [
+      new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_GammesId} "),
+      new DaviColumn(name: 'Ref', grow: 2, stringValue: (row) => "${row.NF074_Gammes_REF}"),
+      new DaviColumn(name: 'Codf', grow: 2, stringValue: (row) => "${row.NF074_Gammes_CODF}"),
+      new DaviColumn(name: 'Fabricant', grow: 6, stringValue: (row) => "${row.NF074_Gammes_FAB}"),
+      new DaviColumn(name: 'Clé', grow: 12, stringValue: (row) => "${row.NF074_Gammes_DESC} / ${row.NF074_Gammes_PRS} / ${row.NF074_Gammes_CLF} / ${row.NF074_Gammes_MOB} / ${row.NF074_Gammes_PDT} / ${row.NF074_Gammes_POIDS} / ${row.NF074_Gammes_GAM}"),
+      new DaviColumn(name: 'Certif', grow: 2, stringValue: (row) => "${row.NF074_Gammes_NCERT}"),
     ];
 
     //   print("NF074_GammesGridWidget");
-    EasyTableModel<NF074_Gammes>? _model;
+    DaviModel<NF074_Gammes>? _model;
 
-    _model = EasyTableModel<NF074_Gammes>(rows: DbTools.ListNF074_Gammes, columns: wColumns);
+    _model = DaviModel<NF074_Gammes>(rows: DbTools.ListNF074_Gammes, columns: wColumns);
 
-    return new EasyTableTheme(
-        child: new EasyTable<NF074_Gammes>(
+    return new DaviTheme(
+        child: new Davi<NF074_Gammes>(
           _model,
           visibleRowsCount: 24,
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

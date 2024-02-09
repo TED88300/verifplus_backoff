@@ -1,7 +1,7 @@
 import 'dart:js_interop';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_menu_bar/pluto_menu_bar.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -132,7 +132,7 @@ class _Clients_screenState extends State<Clients_screen> {
       moreIconColor: Colors.white,
       menus: HoverMenus,
     );
-    print("wPlutoMenuBar ${wPlutoMenuBar.isDefinedAndNotNull}");
+
 
     initLib();
     Title = "Verif+ : Clients ";
@@ -160,23 +160,23 @@ class _Clients_screenState extends State<Clients_screen> {
   }
 
   Widget ClientGridWidget() {
-    List<EasyTableColumn<Client>> wColumns = [
-      new EasyTableColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ClientId}"),
-      new EasyTableColumn(name: 'Forme', width: 100, stringValue: (row) => "${row.Client_Civilite}"),
-      new EasyTableColumn(name: 'Raison Social', width: 500, stringValue: (row) => "${row.Client_Nom}"),
-      new EasyTableColumn(name: 'Code', width: 250, stringValue: (row) => "${row.Client_Depot}"),
-      new EasyTableColumn(name: 'Famille', width: 150, stringValue: (row) => "${(row.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(row.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(row.Client_Famille)]}"),
-      new EasyTableColumn(name: 'Commercial', width: 300, stringValue: (row) => row.Client_Commercial),
-      new EasyTableColumn(name: 'CP', width: 100, stringValue: (row) => row.Adresse_CP),
-      new EasyTableColumn(name: 'Ville', width: 400, stringValue: (row) => row.Adresse_Ville),
-      new EasyTableColumn(name: 'Pays', width: 250, stringValue: (row) => row.Adresse_Pays),
+    List<DaviColumn<Client>> wColumns = [
+      new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ClientId}"),
+      new DaviColumn(name: 'Forme', width: 100, stringValue: (row) => "${row.Client_Civilite}"),
+      new DaviColumn(name: 'Raison Social', width: 500, stringValue: (row) => "${row.Client_Nom}"),
+      new DaviColumn(name: 'Code', width: 250, stringValue: (row) => "${row.Client_Depot}"),
+      new DaviColumn(name: 'Famille', width: 150, stringValue: (row) => "${(row.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(row.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(row.Client_Famille)]}"),
+      new DaviColumn(name: 'Commercial', width: 300, stringValue: (row) => row.Client_Commercial),
+      new DaviColumn(name: 'CP', width: 100, stringValue: (row) => row.Adresse_CP),
+      new DaviColumn(name: 'Ville', width: 400, stringValue: (row) => row.Adresse_Ville),
+      new DaviColumn(name: 'Pays', width: 250, stringValue: (row) => row.Adresse_Pays),
     ];
 
     print("ClientGridWidget");
-    EasyTableModel<Client>? _model;
-    _model = EasyTableModel<Client>(rows: DbTools.ListClientsearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Client>(_model, visibleRowsCount: 24, onRowTap: (Client) async {
+    DaviModel<Client>? _model;
+    _model = DaviModel<Client>(rows: DbTools.ListClientsearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Client>(_model, visibleRowsCount: 24, onRowTap: (Client) async {
           await showDialog(
             context: context,
             builder: (BuildContext context) => new Client_Dialog(client: Client),
@@ -184,9 +184,9 @@ class _Clients_screenState extends State<Clients_screen> {
           print("APRES Client_Dialog");
           await Reload();
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

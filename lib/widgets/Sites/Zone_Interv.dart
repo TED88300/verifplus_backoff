@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -402,15 +402,15 @@ class _Zone_IntervState extends State<Zone_Interv> {
   }
 
   Widget InterventionGridWidget() {
-    List<EasyTableColumn<Intervention>> wColumns = [
-      EasyTableColumn(
+    List<DaviColumn<Intervention>> wColumns = [
+      DaviColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, RowData<Intervention> aIntervention) {
+          cellBuilder: (BuildContext context, DaviRow<Intervention> aIntervention) {
             return InkWell(
                 child: const Icon(Icons.edit, size: 16),
                 onTap: () async {
-                  DbTools.gIntervention = aIntervention.row;
+                  DbTools.gIntervention = aIntervention.data;
                   print("DbTools.gIntervention.InterventionId ${DbTools.gIntervention.InterventionId}");
                   await showDialog(
                       context: context,
@@ -419,27 +419,27 @@ class _Zone_IntervState extends State<Zone_Interv> {
                           ));
                 });
           }),
-      new EasyTableColumn(name: 'Date', width: 100, stringValue: (row) => "${row.Intervention_Date}"),
-      new EasyTableColumn(name: 'Organes', width: 100, stringValue: (row) => "${DbTools.getParam_Param_Text("Type_Organe", row.Intervention_Parcs_Type!)}"),
-      new EasyTableColumn(name: 'Type', width: 100, stringValue: (row) => "${row.Intervention_Type}"),
-      new EasyTableColumn(name: 'Status', width: 100, stringValue: (row) => "${row.Intervention_Status}"),
-      new EasyTableColumn(name: 'Facturation', width: 100, stringValue: (row) => "${row.Intervention_Facturation}"),
-      new EasyTableColumn(name: 'Responsable', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable!)}"),
-      new EasyTableColumn(name: 'Remarque', width: 480, stringValue: (row) => "${row.Intervention_Remarque!.replaceAll("\n", " - ")}"),
-      new EasyTableColumn(name: 'Organes', width: 80, stringValue: (row) => "${row.Cnt}", cellAlignment: Alignment.center),
+      new DaviColumn(name: 'Date', width: 100, stringValue: (row) => "${row.Intervention_Date}"),
+      new DaviColumn(name: 'Organes', width: 100, stringValue: (row) => "${DbTools.getParam_Param_Text("Type_Organe", row.Intervention_Parcs_Type!)}"),
+      new DaviColumn(name: 'Type', width: 100, stringValue: (row) => "${row.Intervention_Type}"),
+      new DaviColumn(name: 'Status', width: 100, stringValue: (row) => "${row.Intervention_Status}"),
+      new DaviColumn(name: 'Facturation', width: 100, stringValue: (row) => "${row.Intervention_Facturation}"),
+      new DaviColumn(name: 'Responsable', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable!)}"),
+      new DaviColumn(name: 'Remarque', width: 480, stringValue: (row) => "${row.Intervention_Remarque!.replaceAll("\n", " - ")}"),
+      new DaviColumn(name: 'Organes', width: 80, stringValue: (row) => "${row.Cnt}", cellAlignment: Alignment.center),
     ];
     print("InterventionGridWidget ${DbTools.ListInterventionsearchresult.length}");
-    EasyTableModel<Intervention>? _model;
-    _model = EasyTableModel<Intervention>(rows: DbTools.ListInterventionsearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Intervention>(visibleRowsCount: 16, _model, onRowTap: (Intervention) async {
+    DaviModel<Intervention>? _model;
+    _model = DaviModel<Intervention>(rows: DbTools.ListInterventionsearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Intervention>(visibleRowsCount: 16, _model, onRowTap: (Intervention) async {
           DbTools.gIntervention = Intervention;
 
           AlimSaisie();
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

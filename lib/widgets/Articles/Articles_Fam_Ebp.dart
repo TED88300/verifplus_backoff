@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Fam_Ebp.dart';
@@ -19,9 +19,9 @@ class _Articles_Fam_EbpState extends State<Articles_Fam_Ebp> {
   bool bReload = true;
   bool bsetSt = true;
 
-  List<EasyTableColumn<Article_Fam_Ebp>> wColumns = [];
+  List<DaviColumn<Article_Fam_Ebp>> wColumns = [];
 
-  EasyTableModel<Article_Fam_Ebp>? _model;
+  DaviModel<Article_Fam_Ebp>? _model;
 
   Future Reload() async {
     print("Articles_Fam_Ebp Reload");
@@ -57,31 +57,31 @@ class _Articles_Fam_EbpState extends State<Articles_Fam_Ebp> {
 
 
     wColumns.clear();
-    wColumns.add(EasyTableColumn(
+    wColumns.add(DaviColumn(
         grow: 2,
         name: 'Id',
         stringValue: (row) => "${row.Article_FamId}"
             ""));
 
     if (DbTools.gArticle_Fam_Ebp.Article_Fam_Code.isEmpty)
-      wColumns.add(new EasyTableColumn(
+      wColumns.add(new DaviColumn(
           width: 30,
-          cellBuilder: (BuildContext context, RowData<Article_Fam_Ebp> data) {
+          cellBuilder: (BuildContext context, DaviRow<Article_Fam_Ebp> data) {
             return InkWell(
               child: const Icon(Icons.list_alt, size: 16),
               onTap: () async {
-                DbTools.gArticle_Fam_Ebp = data.row;
+                DbTools.gArticle_Fam_Ebp = data.data;
                 print("SS Fam");
                 Reload();
 //              Navigator.push(context, MaterialPageRoute(builder: (context) => Articles_SsFam_Ebp()));
               },
             );
           }));
-    wColumns.add(new EasyTableColumn(name: 'Code', grow: 1, stringValue: (row) => row.Article_Fam_Code));
-    wColumns.add(new EasyTableColumn(name: 'Description', grow: 18, stringValue: (row) => row.Article_Fam_Description));
-    wColumns.add(new EasyTableColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Article_Fam_Libelle));
+    wColumns.add(new DaviColumn(name: 'Code', grow: 1, stringValue: (row) => row.Article_Fam_Code));
+    wColumns.add(new DaviColumn(name: 'Description', grow: 18, stringValue: (row) => row.Article_Fam_Description));
+    wColumns.add(new DaviColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Article_Fam_Libelle));
 
-    _model = EasyTableModel<Article_Fam_Ebp>(rows: DbTools.ListArticle_Fam_Ebpsearchresult, columns: wColumns);
+    _model = DaviModel<Article_Fam_Ebp>(rows: DbTools.ListArticle_Fam_Ebpsearchresult, columns: wColumns);
 
     setState(() {});
   }
@@ -246,15 +246,15 @@ class _Articles_Fam_EbpState extends State<Articles_Fam_Ebp> {
   }
 
   Widget Article_Fam_EbpGridWidget() {
-    return new EasyTableTheme(
-        child: new EasyTable<Article_Fam_Ebp>(
+    return new DaviTheme(
+        child: new Davi<Article_Fam_Ebp>(
           _model,
           visibleRowsCount: 24,
           onRowTap: (articleFamEbp) => _onRowTap(context, articleFamEbp),
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,

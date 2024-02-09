@@ -92,7 +92,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       menus: HoverMenus,
     );
 
-    print("wPlutoMenuBar ${wPlutoMenuBar.isDefinedAndNotNull}");
 
     print("initLib > ${widget.client.ClientId}");
 

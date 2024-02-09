@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Ebp.dart';
@@ -16,7 +16,7 @@ class Articles_Ebp_Link extends StatefulWidget {
 }
 
 class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
-  EasyTableModel<Articles_Link_Ebp>? _model;
+  DaviModel<Articles_Link_Ebp>? _model;
 
   final Search_TextController = TextEditingController();
 
@@ -148,34 +148,34 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
   //********************************************
 
   Widget Article_EbpGridWidget() {
-    List<EasyTableColumn<Articles_Link_Ebp>> wColumns = [
-      new EasyTableColumn(name: 'Id', width : 60, stringValue: (row) => "${row.Articles_LinkId}"),
-      new EasyTableColumn(name: 'Type', width : 90, stringValue: (row) => "${row.Articles_Link_TypeChildID}"),
-      new EasyTableColumn(name: 'Code', width : 120, stringValue: (row) => "${row.Articles_Link_ChildID}"),
-      new EasyTableColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_ChildID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
-      new EasyTableColumn(name: "Main d'Œuvre", width : 120, stringValue: (row) => "${row.Articles_Link_MoID}"),
-      new EasyTableColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_MoID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
-      new EasyTableColumn(name: 'Temps', width : 100,  stringValue: (row) => row.Articles_Link_Tps, cellAlignment : Alignment.centerRight),
+    List<DaviColumn<Articles_Link_Ebp>> wColumns = [
+      new DaviColumn(name: 'Id', width : 60, stringValue: (row) => "${row.Articles_LinkId}"),
+      new DaviColumn(name: 'Type', width : 90, stringValue: (row) => "${row.Articles_Link_TypeChildID}"),
+      new DaviColumn(name: 'Code', width : 120, stringValue: (row) => "${row.Articles_Link_ChildID}"),
+      new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_ChildID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
+      new DaviColumn(name: "Main d'Œuvre", width : 120, stringValue: (row) => "${row.Articles_Link_MoID}"),
+      new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_MoID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
+      new DaviColumn(name: 'Temps', width : 100,  stringValue: (row) => row.Articles_Link_Tps, cellAlignment : Alignment.centerRight),
 
 
-      new EasyTableColumn(name: "Dénaturation", width : 120, stringValue: (row) => "${row.Articles_Link_DnID}"),
-      new EasyTableColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_DnID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
+      new DaviColumn(name: "Dénaturation", width : 120, stringValue: (row) => "${row.Articles_Link_DnID}"),
+      new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_DnID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
 
 
     ];
-    _model = EasyTableModel<Articles_Link_Ebp>(rows: DbTools.ListArticles_Link_Ebpsearchresult,       columns: wColumns,);
+    _model = DaviModel<Articles_Link_Ebp>(rows: DbTools.ListArticles_Link_Ebpsearchresult,       columns: wColumns,);
 
 
-    return new EasyTableTheme(
-        child: new EasyTable<Articles_Link_Ebp>(
+    return new DaviTheme(
+        child: new Davi<Articles_Link_Ebp>(
           _model,
           visibleRowsCount: 28,
           onRowTap: (articlesLinkEbp) => _onRowTap(context, articlesLinkEbp),
 
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -195,7 +195,7 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
     Reload();
   }
 
-  void columnInResizing(BuildContext context, EasyTableColumn<Articles_Link_Ebp> wColumn) async {
+  void columnInResizing(BuildContext context, DaviColumn<Articles_Link_Ebp> wColumn) async {
 
   }
   void onHover(int i) async {

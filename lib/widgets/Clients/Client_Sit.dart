@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
@@ -541,15 +541,15 @@ class _Client_SitState extends State<Client_Sit> {
   }
 
   Widget GroupeGridWidget() {
-    List<EasyTableColumn<Groupe>> wColumns = [
-      new EasyTableColumn(name: 'Groupes', grow: 1, stringValue: (row) => row.Groupe_Nom),
+    List<DaviColumn<Groupe>> wColumns = [
+      new DaviColumn(name: 'Groupes', grow: 1, stringValue: (row) => row.Groupe_Nom),
     ];
 
     print("GroupeGridWidget ${DbTools.ListGroupe.length}");
-    EasyTableModel<Groupe>? _model;
-    _model = EasyTableModel<Groupe>(rows: DbTools.ListGroupe, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Groupe>(visibleRowsCount: 17, _model, onRowTap: (aGroupe) async {
+    DaviModel<Groupe>? _model;
+    _model = DaviModel<Groupe>(rows: DbTools.ListGroupe, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Groupe>(visibleRowsCount: 17, _model, onRowTap: (aGroupe) async {
           DbTools.gGroupe = aGroupe;
 
           SelGroupe = DbTools.ListGroupe.indexOf(aGroupe);
@@ -565,9 +565,9 @@ class _Client_SitState extends State<Client_Sit> {
 
           setState(() {});
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           row: RowThemeData(color: (rowIndex) {
             return SelGroupe == rowIndex ? gColors.secondarytxt : Colors.white;
           }),
@@ -579,15 +579,15 @@ class _Client_SitState extends State<Client_Sit> {
   }
 
   Widget SiteGridWidget() {
-    List<EasyTableColumn<Site>> wColumns = [
-      EasyTableColumn(
+    List<DaviColumn<Site>> wColumns = [
+      DaviColumn(
           pinStatus: PinStatus.left,
           width: 30,
-          cellBuilder: (BuildContext context, RowData<Site> aSite) {
+          cellBuilder: (BuildContext context, DaviRow<Site> aSite) {
             return InkWell(
                 child: const Icon(Icons.edit, size: 16),
                 onTap: () async {
-                  DbTools.gSite = aSite.row;
+                  DbTools.gSite = aSite.data;
                   DbTools.gViewAdr = "";
                   DbTools.gViewCtact = "";
                   await showDialog(
@@ -597,17 +597,17 @@ class _Client_SitState extends State<Client_Sit> {
                           ));
                 });
           }),
-      new EasyTableColumn(name: 'Code', width: 50, stringValue: (row) => row.Site_Code),
-      new EasyTableColumn(name: 'Nom', width: 240, stringValue: (row) => row.Site_Nom),
-      new EasyTableColumn(name: 'Adresse', width: 240, stringValue: (row) => "${row.Site_Adr1}"),
-      new EasyTableColumn(name: 'Cp', width: 80, stringValue: (row) => "${row.Site_CP}"),
-      new EasyTableColumn(name: 'Ville', width: 180, stringValue: (row) => "${row.Site_Ville}"),
+      new DaviColumn(name: 'Code', width: 50, stringValue: (row) => row.Site_Code),
+      new DaviColumn(name: 'Nom', width: 240, stringValue: (row) => row.Site_Nom),
+      new DaviColumn(name: 'Adresse', width: 240, stringValue: (row) => "${row.Site_Adr1}"),
+      new DaviColumn(name: 'Cp', width: 80, stringValue: (row) => "${row.Site_CP}"),
+      new DaviColumn(name: 'Ville', width: 180, stringValue: (row) => "${row.Site_Ville}"),
     ];
     print("SiteGridWidget ${DbTools.ListSitesearchresult.length}");
-    EasyTableModel<Site>? _model;
-    _model = EasyTableModel<Site>(rows: DbTools.ListSitesearchresult, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Site>(
+    DaviModel<Site>? _model;
+    _model = DaviModel<Site>(rows: DbTools.ListSitesearchresult, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Site>(
           visibleRowsCount: 17,
           _model,
           onRowTap: (aSite) async {
@@ -616,9 +616,9 @@ class _Client_SitState extends State<Client_Sit> {
             AlimSaisie();
           },
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           row: RowThemeData(color: (rowIndex) {
             return SelSite == rowIndex ? gColors.secondarytxt : Colors.white;
           }),

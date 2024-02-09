@@ -1,5 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Ebp.dart';
@@ -17,7 +17,7 @@ class Articles_Ebp_Link_Verif extends StatefulWidget {
 }
 
 class Articles_Ebp_Link_VerifState extends State<Articles_Ebp_Link_Verif> {
-  EasyTableModel<Articles_Link_Verif_Ebp>? _model;
+  DaviModel<Articles_Link_Verif_Ebp>? _model;
 
   final Search_TextController = TextEditingController();
 
@@ -157,27 +157,27 @@ class Articles_Ebp_Link_VerifState extends State<Articles_Ebp_Link_Verif> {
   //********************************************
 
   Widget Article_EbpGridWidget() {
-    List<EasyTableColumn<Articles_Link_Verif_Ebp>> wColumns = [
-      new EasyTableColumn(name: 'Id', width : 60, stringValue: (row) => "${row.Articles_Link_VerifId}"),
-      new EasyTableColumn(name: 'Vérif', width : 120, stringValue: (row) => "${row.Articles_Link_Verif_TypeVerif}"),
-      new EasyTableColumn(name: 'Type', width : 90, stringValue: (row) => "${row.Articles_Link_Verif_TypeChildID}"),
-      new EasyTableColumn(name: 'Code', width : 120, stringValue: (row) => "${row.Articles_Link_Verif_ChildID}"),
-      new EasyTableColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_Verif_ChildID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
+    List<DaviColumn<Articles_Link_Verif_Ebp>> wColumns = [
+      new DaviColumn(name: 'Id', width : 60, stringValue: (row) => "${row.Articles_Link_VerifId}"),
+      new DaviColumn(name: 'Vérif', width : 120, stringValue: (row) => "${row.Articles_Link_Verif_TypeVerif}"),
+      new DaviColumn(name: 'Type', width : 90, stringValue: (row) => "${row.Articles_Link_Verif_TypeChildID}"),
+      new DaviColumn(name: 'Code', width : 120, stringValue: (row) => "${row.Articles_Link_Verif_ChildID}"),
+      new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_Verif_ChildID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
 
     ];
-    _model = EasyTableModel<Articles_Link_Verif_Ebp>(rows: DbTools.ListArticles_Link_Verif_Ebpsearchresult,       columns: wColumns,);
+    _model = DaviModel<Articles_Link_Verif_Ebp>(rows: DbTools.ListArticles_Link_Verif_Ebpsearchresult,       columns: wColumns,);
 
 
-    return new EasyTableTheme(
-        child: new EasyTable<Articles_Link_Verif_Ebp>(
+    return new DaviTheme(
+        child: new Davi<Articles_Link_Verif_Ebp>(
           _model,
           visibleRowsCount: 28,
           onRowTap: (articlesLinkVerifEbp) => _onRowTap(context, articlesLinkVerifEbp),
 
         ),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -197,7 +197,7 @@ class Articles_Ebp_Link_VerifState extends State<Articles_Ebp_Link_Verif> {
     Reload();
   }
 
-  void columnInResizing(BuildContext context, EasyTableColumn<Articles_Link_Verif_Ebp> wColumn) async {
+  void columnInResizing(BuildContext context, DaviColumn<Articles_Link_Verif_Ebp> wColumn) async {
 
   }
   void onHover(int i) async {

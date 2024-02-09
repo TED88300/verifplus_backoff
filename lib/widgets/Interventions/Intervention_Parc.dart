@@ -1,4 +1,4 @@
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
@@ -317,23 +317,23 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
 
   
   Widget ParcGridWidget() {
-    List<EasyTableColumn<Parc_Ent>> wColumns = [
+    List<DaviColumn<Parc_Ent>> wColumns = [
 
-      new EasyTableColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ParcsId}"),
-      new EasyTableColumn(name: 'Organe', grow: 10, stringValue: (row) => "${row.Parcs_Date_Desc}"),
+      new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ParcsId}"),
+      new DaviColumn(name: 'Organe', grow: 10, stringValue: (row) => "${row.Parcs_Date_Desc}"),
 
 
     ];
     print("ParcGridWidget ${DbTools.ListParc_Ent.length}");
-    EasyTableModel<Parc_Ent>? _model;
-    _model = EasyTableModel<Parc_Ent>(rows: DbTools.ListParc_Ent, columns: wColumns);
-    return new EasyTableTheme(
-        child: new EasyTable<Parc_Ent>(visibleRowsCount: 16, _model, onRowTap: (Contact) async {
+    DaviModel<Parc_Ent>? _model;
+    _model = DaviModel<Parc_Ent>(rows: DbTools.ListParc_Ent, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Parc_Ent>(visibleRowsCount: 16, _model, onRowTap: (Contact) async {
 
         }),
-        data: EasyTableThemeData(
+        data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColor: Colors.black, expandableName: false),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
