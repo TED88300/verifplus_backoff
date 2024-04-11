@@ -1,9 +1,10 @@
-
+import 'package:davi/davi.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Upload.dart';
@@ -54,9 +55,7 @@ class User_EditState extends State<User_Edit> {
   int selectedValueUser_TypeUserID = 0;
 
   static List<String> ListParam_ParamDepot = [];
-  static List<String> ListParam_ParamDepotID = [];
   String selectedValueDepot = "";
-  String selectedValueDepotID = "";
 
   Uint8List pic = Uint8List.fromList([0]);
   late Image wImage;
@@ -88,13 +87,17 @@ class User_EditState extends State<User_Edit> {
   }
 
   Future Reload() async {
+
+    await DbTools.getClient_User_CSIP(widget.user.UserID);
+
+
     await DbTools.getParam_ParamAll();
-    print("getParam_Param ${DbTools.ListParam_Param.length}");
+    print("ListParam_ParamAll ${DbTools.ListParam_Param.length}");
 
     String wUserImg = "User_${widget.user.UserID}.jpg";
-    pic =      await gColors.getImage(wUserImg);
+    pic = await gColors.getImage(wUserImg);
 
-    print("pic $wUserImg");// ${pic}");
+    print("pic $wUserImg"); // ${pic}");
     if (pic.length > 0) {
       wImage = Image.memory(
         pic,
@@ -249,21 +252,17 @@ class User_EditState extends State<User_Edit> {
       }
     }
 
+    await DbTools.getAdresseType("AGENCE");
     ListParam_ParamDepot.clear();
-    ListParam_ParamDepotID.clear();
-    DbTools.ListParam_ParamAll.forEach((element) {
-      if (element.Param_Param_Type.compareTo("Type_Depot") == 0) {
-        ListParam_ParamDepot.add(element.Param_Param_Text);
-        ListParam_ParamDepotID.add(element.Param_Param_ID);
-      }
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListParam_ParamDepot.add(wAdresse.Adresse_Nom);
     });
+
     selectedValueDepot = ListParam_ParamDepot[0];
-    selectedValueDepotID = ListParam_ParamDepotID[0];
     for (int i = 0; i < ListParam_ParamDepot.length; i++) {
       String element = ListParam_ParamDepot[i];
       if (element.compareTo("${widget.user.User_Depot}") == 0) {
         selectedValueDepot = element;
-        selectedValueDepotID = ListParam_ParamDepotID[i];
       }
     }
 
@@ -514,7 +513,6 @@ class User_EditState extends State<User_Edit> {
                             await Reload();
                           },
                         ),
-
                         Container(
                           width: 10,
                         ),
@@ -529,8 +527,6 @@ class User_EditState extends State<User_Edit> {
                             await Reload();
                           },
                         ),
-
-
                         Spacer(),
                         Container(
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
@@ -560,9 +556,22 @@ class User_EditState extends State<User_Edit> {
                   Container(
                     child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Container(
-                        width: dWidth / 2,
-                        child: EditUser(),
-                      ),
+                          width: dWidth / 2,
+                          child: Column(
+                            children: [
+                              EditUser(),
+
+                              Container(
+                                child: Text("LISTING CLIENT",style: gColors.bodyText_B_B,),
+                              ),
+
+
+                          Container(
+                            padding: const EdgeInsets.all(20.0),
+                            child:
+                            ClientGridWidget(),),
+                            ],
+                          )),
                       Container(
                         width: dWidth / 2,
                         child: EditUser2(),
@@ -936,9 +945,8 @@ class User_EditState extends State<User_Edit> {
           value: selectedValueDepot,
           onChanged: (value) {
             setState(() {
-              selectedValueDepotID = ListParam_ParamDepotID[ListParam_ParamDepot.indexOf(value!)];
-              selectedValueDepot = value;
-              print("selectedValueDepot $selectedValueDepotID $selectedValueDepot");
+              selectedValueDepot = value!;
+              print("selectedValueDepot $selectedValueDepot");
               setState(() {});
             });
           },
@@ -974,7 +982,7 @@ class User_EditState extends State<User_Edit> {
     return Container(
         padding: const EdgeInsets.all(20.0),
         child: Container(
-          height: 320,
+          height: 380,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           decoration: BoxDecoration(
@@ -1122,4 +1130,32 @@ class User_EditState extends State<User_Edit> {
     print("UploadFilePicker <");
     print("UploadFilePicker <<");
   }
+
+
+  Widget ClientGridWidget() {
+    List<DaviColumn<Client>> wColumns = [
+      new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ClientId}"),
+      new DaviColumn(name: 'Forme', width: 100, stringValue: (row) => "${row.Client_Civilite}"),
+      new DaviColumn(name: 'Raison Social', width: 500, stringValue: (row) => "${row.Client_Nom}"),
+      new DaviColumn(name: 'Agence', width: 250, stringValue: (row) => "${row.Client_Depot}"),
+      new DaviColumn(name: 'Origine', width: 100, stringValue: (row) => row.Adresse_Adr1),
+    ];
+
+    print("ClientGridWidget");
+    DaviModel<Client>? _model;
+    _model = DaviModel<Client>(rows: DbTools.ListClient_CSIP_Total, columns: wColumns);
+    return new DaviTheme(
+        child: new Davi<Client>(_model, visibleRowsCount: 22,),
+        data: DaviThemeData(
+          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
+          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
+          cell: CellThemeData(
+            contentHeight: 24,
+            textStyle: gColors.bodySaisie_N_G,
+          ),
+        ));
+  }
+
+
+
 }

@@ -38,7 +38,7 @@ class gColors {
 
   static const Color secondaryF = Color(0xFF0c5302);
   static const Color secondaryF2 = Color(0xFF0a4702);
-  static const Color LinearGradient1 = Color(0xFFaaaaaa);
+  static const Color LinearGradient1 = primary; //Color(0xFFaaaaaa);
   static const Color LinearGradient2 = Color(0xFFf6f6f6);
   static const Color LinearGradient3 = Color(0xFFe6e6e6);
   static const Color TextColor1 = Color(0xFF222222);
@@ -369,7 +369,7 @@ class gColors {
 
   static TextStyle get bodyTitle1_B_Wr => TextStyle(
         color: white,
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: FontWeight.bold,
       );
 
@@ -399,7 +399,7 @@ class gColors {
       );
 
   static TextStyle get bodySaisie_B_G => TextStyle(
-        color: TextColor2,
+        color: grey,
         fontSize: wNorm,
         fontWeight: FontWeight.bold,
       );
@@ -775,16 +775,15 @@ class gColors {
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        //print("-----------x getImage contentLength ${response.contentLength}");
+        print("-----------x getImage contentLength ${response.contentLength}");
 
         return await response.stream.toBytes();
-        // print("getImage wTmp $wTmp");
       } else {
-        //print("-----------x getImage Error ${response.statusCode}");
+        print("-----------x getImage Error ${response.statusCode}");
         return new Uint8List(0);
       }
     } catch (e) {
-      //print("-----------x getImage Error ${e}");
+      print("-----------x getImage Error ${e}");
 
       return new Uint8List(0);
     }
@@ -827,7 +826,7 @@ class gColors {
                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                 child: Text(
                   wLabel,
-                  style: gColors.bodySaisie_B_G,
+                  style: gColors.bodySaisie_N_G,
                 ),
               )
             : Container(
@@ -980,7 +979,7 @@ class gColors {
           //  width: lWidth,
           child: Text(
             wLabel,
-            style: gColors.bodySaisie_B_G,
+            style: gColors.bodySaisie_N_G,
           ),
         ),
         Text(
@@ -1006,12 +1005,12 @@ class gColors {
             width: lWidth,
           child: Text(
             wLabel,
-            style: gColors.bodySaisie_B_G,
+            style: gColors.bodySaisie_N_G,
           ),
         ),
         Text(
           " : ",
-          style: gColors.bodySaisie_B_B,
+          style: gColors.bodySaisie_N_B,
         ),
         Container(
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
@@ -1034,11 +1033,11 @@ class gColors {
             width: lWidth,
             child: Text(
               wLabel,
-              style: gColors.bodySaisie_B_G,
+              style: gColors.bodySaisie_N_G,
             ),
           ),
           Text(
-            " : ",
+            ":  ",
             style: gColors.bodySaisie_B_B,
           ),
           Container(
@@ -1076,7 +1075,7 @@ class gColors {
 //        width: lWidth,
         child: Text(
           wLabel,
-          style: gColors.bodySaisie_B_G,
+          style: gColors.bodySaisie_N_G,
         ),
       ),
       wWidth == 0
@@ -1130,7 +1129,7 @@ class gColors {
 //        width: lWidth,
         child: Text(
           wLabel,
-          style: gColors.bodySaisie_B_G,
+          style: gColors.bodySaisie_N_G,
         ),
       ),
       wWidth == 0
@@ -1163,10 +1162,12 @@ class gColors {
 
   static Widget DropdownButtonTypeInter(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
 
+/*
     print("DropdownButtonTypeInter ${wlistTypeinter.length}");
     print("DropdownButtonTypeInter initValue $initValue");
     print("DropdownButtonTypeInter wList_TypeInter ${wlistTypeinter.toString()}");
     print("DropdownButtonTypeInter wList_TypeInterID ${wlistTypeinterid.toString()}");
+*/
 
     if (wlistTypeinter.length == 0) return Container();
 
@@ -1181,18 +1182,20 @@ class gColors {
         .toList();
 
 
+
+
     if (wlistTypeinter.indexOf(initValue) <0)
       return Container();
 
-    String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
 
+    String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
 
     return Row(children: [
       Container(
         width: lWidth,
         child: Text(
           wLabel,
-          style: gColors.bodySaisie_B_G,
+          style: gColors.bodySaisie_N_G,
         ),
       ),
       wWidth == 0
@@ -1201,7 +1204,7 @@ class gColors {
               width: wWidth,
               child: Text(
                 " : ",
-                style: gColors.bodySaisie_B_G,
+                style: gColors.bodySaisie_N_G,
               ),
             ),
       Container(
@@ -1213,9 +1216,7 @@ class gColors {
             String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
             initValue = value as String;
             onChanged(initValue);
-
           },
-
           buttonHeight: 30,
           dropdownMaxHeight: 800,
           itemHeight: 32,

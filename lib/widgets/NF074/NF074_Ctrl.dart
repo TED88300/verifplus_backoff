@@ -381,8 +381,7 @@ class _NF074_Ctrl_screenState extends State<NF074_Ctrl_screen> with TickerProvid
     );
   }
 
-
-
+  
   Widget Piece_Det_IncArticles_GridWidget1() {
     List<DaviColumn<NF074_Pieces_Det_Inc>> wColumns = [
       new DaviColumn(name: 'Id', stringValue: (row) => "${row.NF074_Pieces_Det_IncId} "),

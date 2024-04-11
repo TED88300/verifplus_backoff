@@ -33,11 +33,11 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   List<String> ListParam_ParamFam = [];
   List<String> ListParam_ParamFamID = [];
 
+  int SelZone = 0;
+
 
   List<String> ListParam_ParamDepot = [];
-  List<String> ListParam_ParamDepotID = [];
   String selectedValueDepot = "";
-  String selectedValueDepotID = "";
 
 
   final Search_TextController = TextEditingController();
@@ -50,13 +50,13 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   void initLib() async {
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Zones_Zone");
 
-    await DbTools.getParam_ParamFam("Type_Depot");
+    await DbTools.getAdresseType( "AGENCE");
     ListParam_ParamDepot.clear();
-    ListParam_ParamDepot.addAll(DbTools.ListParam_ParamFam);
-    ListParam_ParamDepotID.clear();
-    ListParam_ParamDepotID.addAll(DbTools.ListParam_ParamFamID);
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListParam_ParamDepot.add(wAdresse.Adresse_Nom);
+    });
     selectedValueDepot = ListParam_ParamDepot[0];
-    selectedValueDepotID = ListParam_ParamDepotID[0];
+
 
     DbTools.gZone = Zone.ZoneInit();
     await Reload();
@@ -107,12 +107,10 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     textController_Zone_Rem.text = DbTools.gZone.Zone_Rem;
 
     selectedValueDepot = ListParam_ParamDepot[0];
-    selectedValueDepotID = ListParam_ParamDepotID[0];
     for (int i = 0; i < ListParam_ParamDepot.length; i++) {
       String element = ListParam_ParamDepot[i];
       if (element.compareTo("${DbTools.gZone.Zone_Depot}") == 0) {
         selectedValueDepot = element;
-        selectedValueDepotID = ListParam_ParamDepotID[i];
       }
     }
 
@@ -291,13 +289,12 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   }
 
   void ToolsBarAdd() async {
-    print("ToolsBarAdd");
     await DbTools.addZone(DbTools.gSite.SiteId);
-
-    print("DbTools.gLastID ${DbTools.gLastID}");
-
     await Reload();
     DbTools.getZoneID(DbTools.gLastID);
+    DbTools.gZone.Zone_Nom = "???";
+    await DbTools.setZone(DbTools.gZone);
+    await Filtre();
     AlimSaisie();
   }
 
@@ -434,13 +431,19 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     return new DaviTheme(
         child: new Davi<Zone>(
             visibleRowsCount: 25,
-            _model, onRowTap: (Zone) async {
-          DbTools.gZone = Zone;
+            _model, onRowTap: (aZone) async {
+          SelZone = DbTools.ListZonesearchresult.indexOf(aZone);
+
+          DbTools.gZone = aZone;
           AlimSaisie();
         }),
         data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
           headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
+          row: RowThemeData(color: (rowIndex) {
+            return SelZone == rowIndex ? gColors.secondarytxt : Colors.white;
+          }),
+
           cell: CellThemeData(
             contentHeight: 24,
             textStyle: gColors.bodySaisie_N_G,
@@ -472,9 +475,8 @@ class _Zones_ZoneState extends State<Zones_Zone> {
               value: selectedValueDepot,
               onChanged: (value) {
                 setState(() {
-                  selectedValueDepotID = ListParam_ParamDepotID[ListParam_ParamDepot.indexOf(value!)];
-                  selectedValueDepot = value;
-                  print("selectedValueDepot $selectedValueDepotID $selectedValueDepot");
+                  selectedValueDepot = value!;
+                  print("selectedValueDepot  $selectedValueDepot");
                   setState(() {});
                 });
               },

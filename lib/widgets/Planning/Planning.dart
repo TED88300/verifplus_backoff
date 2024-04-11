@@ -97,10 +97,13 @@ class _PlanningState extends State<Planning> {
   void initLib() async {
 
     await DbTools.initListFam();
-
-    await DbTools.getParam_ParamFam("Type_Depot");
+    await DbTools.getAdresseType( "AGENCE");
     ListDepot.clear();
-    ListDepot.addAll(DbTools.ListParam_ParamFam);
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListDepot.add(wAdresse.Adresse_Nom);
+    });
+
+
 
     DbTools.gClient = Client.ClientInit();
     DbTools.gClient.ClientId = -1;
@@ -429,7 +432,7 @@ class _PlanningState extends State<Planning> {
         ),
         Container(
           alignment: Alignment.centerLeft,
-          width: 200,
+          width: 185,
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(

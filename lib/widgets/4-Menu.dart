@@ -8,6 +8,7 @@ import 'package:verifplus_backoff/Tools/Srv_Articles_Fam_Ebp.dart';
 import 'package:verifplus_backoff/Tools/shared_Cookies.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/2-login.dart';
+import 'package:verifplus_backoff/widgets/Agences/Agences.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Fam_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
@@ -227,6 +228,18 @@ class _MenuState extends State<Menu> {
               setState(() {
                 DbTools.gDemndeReload = true;
                 wAff = Param_Fam_screen(wType: "TypeAdr", wSsFam: false, wTitle: "Types d'adresses");
+              });
+            },
+          ),
+
+          PlutoMenuItem(
+            title: "Agences",
+            icon: Icons.people,
+            onTap: () {
+              wTitre = "Agences";
+              setState(() {
+                DbTools.gDemndeReload = true;
+                wAff = Agences();
               });
             },
           ),

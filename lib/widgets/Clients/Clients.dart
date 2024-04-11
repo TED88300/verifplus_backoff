@@ -28,9 +28,8 @@ class _Clients_screenState extends State<Clients_screen> {
   List<String> ListParam_FiltreFamID = [];
 
   List<String> ListParam_FiltreDepot = [];
-  List<String> ListParam_FiltreDepotID = [];
   String FiltreDepot = "";
-  String FiltreDepotID = "";
+
 
   Future Reload() async {
     await DbTools.getParam_ParamFam("FamClient");
@@ -40,18 +39,19 @@ class _Clients_screenState extends State<Clients_screen> {
     ListParam_FiltreFamID.clear();
     ListParam_FiltreFamID.addAll(DbTools.ListParam_FiltreFamID);
 
-    await DbTools.getParam_ParamFam("Type_Depot");
+    await DbTools.getAdresseType( "AGENCE");
     ListParam_FiltreDepot.clear();
-    ListParam_FiltreDepot.addAll(DbTools.ListParam_FiltreFam);
-    ListParam_FiltreDepotID.clear();
-    ListParam_FiltreDepotID.addAll(DbTools.ListParam_FiltreFamID);
+    ListParam_FiltreDepot.add("Tous");
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListParam_FiltreDepot.add(wAdresse.Adresse_Nom);
+    });
 
     Search_TextController.text = "";
     FiltreFam = ListParam_FiltreFam[0];
     FiltreFamID = ListParam_FiltreFam[0];
 
     FiltreDepot = ListParam_FiltreDepot[0];
-    FiltreDepotID = ListParam_FiltreDepotID[0];
+
 
     await DbTools.getClientAll();
     bReload = false;
@@ -81,7 +81,6 @@ class _Clients_screenState extends State<Clients_screen> {
     }
 
     ListClientsearchresultTmp2.clear();
-    FiltreDepotID = ListParam_FiltreDepotID[ListParam_FiltreDepot.indexOf(FiltreDepot)];
 
     if (FiltreDepot.compareTo("Tous") == 0) {
       ListClientsearchresultTmp2.addAll(ListClientsearchresultTmp);
@@ -164,9 +163,9 @@ class _Clients_screenState extends State<Clients_screen> {
       new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ClientId}"),
       new DaviColumn(name: 'Forme', width: 100, stringValue: (row) => "${row.Client_Civilite}"),
       new DaviColumn(name: 'Raison Social', width: 500, stringValue: (row) => "${row.Client_Nom}"),
-      new DaviColumn(name: 'Code', width: 250, stringValue: (row) => "${row.Client_Depot}"),
+      new DaviColumn(name: 'Agence', width: 250, stringValue: (row) => "${row.Client_Depot}"),
       new DaviColumn(name: 'Famille', width: 150, stringValue: (row) => "${(row.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(row.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(row.Client_Famille)]}"),
-      new DaviColumn(name: 'Commercial', width: 300, stringValue: (row) => row.Client_Commercial),
+      new DaviColumn(name: 'Commercial', width: 300, stringValue: (row) => row.Users_Nom),
       new DaviColumn(name: 'CP', width: 100, stringValue: (row) => row.Adresse_CP),
       new DaviColumn(name: 'Ville', width: 400, stringValue: (row) => row.Adresse_Ville),
       new DaviColumn(name: 'Pays', width: 250, stringValue: (row) => row.Adresse_Pays),
@@ -204,6 +203,9 @@ class _Clients_screenState extends State<Clients_screen> {
     Client wClient = await Client.ClientInit();
     await DbTools.addClient(wClient);
     wClient.ClientId = DbTools.gLastID;
+    await DbTools.getAdresseClientType(wClient.ClientId, "FACT");
+    await DbTools.getAdresseClientType(wClient.ClientId, "LIVR");
+
     wClient.Client_Nom = "???";
     await showDialog(
       context: context,
@@ -308,7 +310,7 @@ class _Clients_screenState extends State<Clients_screen> {
             color: Colors.white,
           ),
           buttonHeight: 30,
-          buttonWidth: 230,
+          buttonWidth: 330,
           dropdownMaxHeight: 250,
           itemHeight: 32,
         )),
@@ -343,9 +345,8 @@ class _Clients_screenState extends State<Clients_screen> {
           value: FiltreDepot,
           onChanged: (value) {
             setState(() {
-              FiltreDepotID = ListParam_FiltreDepotID[ListParam_FiltreDepot.indexOf(value!)];
-              FiltreDepot = value;
-              print(">>>>>>>>>>>>>>>>> FiltreDepot $FiltreDepotID $FiltreDepot");
+              FiltreDepot = value!;
+              print(">>>>>>>>>>>>>>>>> FiltreDepot  $FiltreDepot");
               Filtre();
             });
           },

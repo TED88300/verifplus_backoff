@@ -13,6 +13,7 @@ import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Fact.dart';
+import 'package:verifplus_backoff/widgets/Agences/Agences.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Grp.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Map.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Sit.dart';
@@ -22,6 +23,14 @@ import 'package:verifplus_backoff/widgets/Contacts/Ctact_Site.dart';
 class Client_Fact_Controller {
   late void Function() AlimSaisie;
 }
+
+// SELECT * FROM Clients, Users Where Clients.Client_Commercial = Users.UserID;
+// SELECT Clients.* FROM Clients, Groupes, Sites, Users where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId AND Sites.Site_ResourceId = UserID;
+
+//SELECT Clients.*, Intervention_Responsable FROM Clients, Groupes, Sites, Zones, Interventions, Users where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = Users.UserID;
+//SELECT Clients.*, Intervention_Responsable2 FROM Clients, Groupes, Sites, Zones, Interventions, Users where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = Users.UserID;
+
+//SELECT Clients.*, Planning_ResourceId FROM Clients, Groupes, Sites, Zones, Interventions, Planning, Users where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = Users.UserID;
 
 class Client_Dialog extends StatefulWidget {
   final Client client;
@@ -42,7 +51,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   TextEditingController textController_Siret = TextEditingController();
   TextEditingController textController_NAF = TextEditingController();
   TextEditingController textController_TVA = TextEditingController();
-  TextEditingController textController_Commercial = TextEditingController();
   TextEditingController textController_Createur = TextEditingController();
   TextEditingController textController_Ct_Debut = TextEditingController();
   TextEditingController textController_Ct_Fin = TextEditingController();
@@ -73,12 +81,25 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   late Widget wPlutoMenuBar;
 
   List<String> ListParam_ParamDepot = [];
-  List<String> ListParam_ParamDepotID = [];
   String selectedValueDepot = "";
-  String selectedValueDepotID = "";
+
+
+  List<String> ListParam_ParamRglt = [];
+  List<String> ListParam_ParamRgltID = [];
+  String selectedValueRglt = "";
+  String selectedValueRgltID = "";
+
+
+  String selectedUserInter = "";
+  String selectedUserInterID = "";
+
+
 
   String wRep = "";
   Future initLib() async {
+
+    await DbTools.initListFam();
+
     HoverMenus = gColors.makeMenus(context);
     print("initState ${HoverMenus.length}");
     wPlutoMenuBar = new PlutoMenuBar(
@@ -92,9 +113,22 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       menus: HoverMenus,
     );
 
+    await DbTools.getParam_ParamFam("RgltClient");
+    ListParam_ParamRglt.clear();
+    ListParam_ParamRglt.addAll(DbTools.ListParam_ParamFam);
+    ListParam_ParamRgltID.clear();
+    ListParam_ParamRgltID.addAll(DbTools.ListParam_ParamFamID);
+
+
+    selectedValueRglt = ListParam_ParamRglt[0];
+    for (int i = 0; i < ListParam_ParamRglt.length; i++) {
+      String element = ListParam_ParamRglt[i];
+      if (element.compareTo("${wClient.Client_Rglt}") == 0) {
+        selectedValueRglt = element;
+      }
+    }
 
     print("initLib > ${widget.client.ClientId}");
-
     await DbTools.getParam_Saisie_Param("Type");
     ListParam_Saisie_ParamType.clear();
     ListParam_Saisie_ParamType.addAll(DbTools.ListParam_Saisie_Param);
@@ -109,19 +143,30 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     wClient = widget.client;
     DbTools.gClient = wClient;
 
-    await DbTools.getParam_ParamFam("Type_Depot");
+    selectedUserInter = DbTools.List_UserInter[0];
+    selectedUserInterID = DbTools.List_UserInterID[0];
+
+    if (wClient.Client_Commercial.isNotEmpty) {
+      DbTools.getUserid("${wClient.Client_Commercial}");
+      if (DbTools.gUser.UserID > 0 )
+        {
+          selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+          print("selectedUserInter $selectedUserInter");
+          selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+        }
+    }
+
+    await DbTools.getAdresseType( "AGENCE");
     ListParam_ParamDepot.clear();
-    ListParam_ParamDepot.addAll(DbTools.ListParam_ParamFam);
-    ListParam_ParamDepotID.clear();
-    ListParam_ParamDepotID.addAll(DbTools.ListParam_ParamFamID);
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListParam_ParamDepot.add(wAdresse.Adresse_Nom);
+    });
 
     selectedValueDepot = ListParam_ParamDepot[0];
-    selectedValueDepotID = ListParam_ParamDepotID[0];
     for (int i = 0; i < ListParam_ParamDepot.length; i++) {
       String element = ListParam_ParamDepot[i];
       if (element.compareTo("${wClient.Client_Depot}") == 0) {
         selectedValueDepot = element;
-        selectedValueDepotID = ListParam_ParamDepotID[i];
       }
     }
 
@@ -137,7 +182,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     textController_Siret.text = wClient.Client_Siret;
     textController_NAF.text = wClient.Client_NAF;
     textController_TVA.text = wClient.Client_TVA;
-    textController_Commercial.text = wClient.Client_Commercial;
     textController_Createur.text = wClient.Client_Createur;
     textController_Ct_Debut.text = wClient.Client_Ct_Debut;
     textController_Ct_Fin.text = wClient.Client_Ct_Fin;
@@ -267,13 +311,11 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   Widget taBarContainer() {
     return TabContainer(
       tabDuration : Duration(milliseconds: 600),
-      color: Colors.black26,
+      color: gColors.primary,
       children: widgetChildren,
 
       selectedTextStyle: gColors.bodyTitle20_B_Wr,
       unselectedTextStyle: gColors.bodyTitle1_B_Gr,
-
-
       tabs: [
         'Fact. / Livr.',
         'Groupes',
@@ -351,7 +393,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                         Container(
                           width: 30,
                         ),
-                        gColors.CheckBoxField(120, 8, "Personne physique", isClient_PersPhys, (sts) => setState(() => isClient_PersPhys = sts!)),
+                        gColors.CheckBoxField(150, 8, "Personne physique", isClient_PersPhys, (sts) => setState(() => isClient_PersPhys = sts!)),
                         Container(
                           width: 30,
                         ),
@@ -380,7 +422,15 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                     ),
                     Row(
                       children: [
-                        gColors.TxtField(-1, 64, "Commercial", textController_Commercial),
+                        gColors.DropdownButtonTypeInter(80, 8, "Commercial", selectedUserInter, (sts) {
+                          setState(() {
+                            selectedUserInter = sts!;
+                            selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+                          });
+                        }, DbTools.List_UserInter, DbTools.List_UserInterID),
+
+
+
                         DropdownButtonDepot(),
                       ],
                     ),
@@ -401,6 +451,12 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                           width: 10,
                         ),
                         gColors.Txt(160, "Dernère Facturation", "31/05/2023"),
+                        Container(
+                          width: 10,
+                        ),
+
+                        DropdownButtonRglt(),
+
                       ],
                     ),
                     Container(
@@ -432,7 +488,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                             children: [
                               Text(
                                 "Début :  ",
-                                style: gColors.bodySaisie_B_G,
+                                style: gColors.bodySaisie_N_G,
                               ),
                               Text(
                                 "${textController_Ct_Debut.text.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(textController_Ct_Debut.text))}",
@@ -457,7 +513,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                             children: [
                               Text(
                                 "Fin :  ",
-                                style: gColors.bodySaisie_B_G,
+                                style: gColors.bodySaisie_N_G,
                               ),
                               Text(
                                 "${textController_Ct_Fin.text.isEmpty ? '' : DateFormat('dd/MM/yyyy').format(DateTime.parse(textController_Ct_Fin.text))}",
@@ -652,6 +708,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     print("ToolsBarSave");
     wClient.Client_Famille = selectedValueFamID;
 
+    wClient.Client_Rglt = selectedValueRglt;
     wClient.Client_Depot = selectedValueDepot;
 
     wClient.Client_CL_Pr = isClient_CL_Pr;
@@ -662,8 +719,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     wClient.Client_Siret = textController_Siret.text;
     wClient.Client_NAF = textController_NAF.text;
     wClient.Client_TVA = textController_TVA.text;
-    wClient.Client_Commercial = textController_Commercial.text;
-
+    wClient.Client_Commercial = selectedUserInterID;
     wClient.Client_Createur = textController_Createur.text;
 
     wClient.Client_Contrat = isCt;
@@ -792,7 +848,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       Container(
         width: 70,
         child: Text("Agence : ",
-          style: gColors.bodySaisie_B_B,),
+          style: gColors.bodySaisie_N_B,),
       ),
       Container(
         child: DropdownButtonHideUnderline(
@@ -805,15 +861,14 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                 value: item,
                 child: Text(
                   "$item",
-                  style: gColors.bodyTitle1_B_Gr,
+                  style: gColors.bodySaisie_B_G,
                 ),
               )).toList(),
           value: selectedValueDepot,
           onChanged: (value) {
             setState(() {
-              selectedValueDepotID = ListParam_ParamDepotID[ListParam_ParamDepot.indexOf(value!)];
-              selectedValueDepot = value;
-              print("selectedValueDepot $selectedValueDepotID $selectedValueDepot");
+              selectedValueDepot = value!;
+              print("selectedValueDepot $selectedValueDepot");
               setState(() {});
             });
           },
@@ -825,4 +880,51 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       ),
     ]);
   }
+
+
+
+
+
+  Widget DropdownButtonRglt() {
+    return Row(children: [
+      Container(
+        width: 5,
+      ),
+      Container(
+        width: 90,
+        child: Text("Règlement : ",
+          style: gColors.bodySaisie_N_G,),
+      ),
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              hint: Text(
+                'Séléctionner un règlement',
+                style: gColors.bodyTitle1_N_Gr,
+              ),
+              items: ListParam_ParamRglt.map((item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_G,
+                ),
+              )).toList(),
+              value: selectedValueRglt,
+              onChanged: (value) {
+                setState(() {
+                  selectedValueRglt = value!;
+                  print("selectedValueRglt $selectedValueRglt");
+                  setState(() {});
+                });
+              },
+              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+              buttonHeight: 30,
+              dropdownMaxHeight: 800,
+              itemHeight: 32,
+            )),
+      ),
+    ]);
+  }
+
+
 }

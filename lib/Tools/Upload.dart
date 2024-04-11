@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -10,8 +13,14 @@ import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/stub_file_picking/platform_file_picker.dart';
 import 'package:verifplus_backoff/stub_file_picking/web_file_picker.dart';
+import 'package:image/image.dart' as IMG;
 
 class Upload {
+
+
+
+
+
   static Future<void> UploadFilePicker(String imagepath, VoidCallback onSetState) async {
     print("UploadFilePicker $imagepath");
 
@@ -28,7 +37,15 @@ class Upload {
       print("imagepath $imagepath");
       FlutterWebFile file = files[0];
       print("file " + file.file.name);
-      var stream = file.fileBytes;
+      List<int> stream = file.fileBytes;
+
+      Uint8List bytes = Uint8List.fromList(stream);
+
+      IMG.Image? img = await IMG.decodeImage(bytes);
+      IMG.Image resized = await IMG.copyResize(img!, width: 940, maintainAspect: true);
+      List<int> stream2 = await IMG.encodeJpg(resized);
+
+
 
       String wPath = DbTools.SrvUrl;
       var uri = Uri.parse(wPath.toString());
@@ -39,7 +56,13 @@ class Upload {
         'imagepath': imagepath,
       });
 
-      var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream, filename: basename("xxx.jpg"));
+
+      print("stream ${stream.length} stream2 ${stream2.length} " );
+
+
+
+
+      var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream2, filename: basename("xxx.jpg"));
       request.files.add(multipartFile);
       var response = await request.send();
       print(response.statusCode);
@@ -144,8 +167,6 @@ class Upload {
         if (response2.statusCode == 200) {
           response2.stream.transform(utf8.decoder).listen((value) async{
             print("importcsv OK " + value);
-
-
           });
         } else {
           print("importcsv error  ${response2.statusCode}");

@@ -14,8 +14,6 @@ class NF074_Histo_Normes_screen extends StatefulWidget {
 class _NF074_Histo_Normes_screenState extends State<NF074_Histo_Normes_screen> with TickerProviderStateMixin {
   NF074_Histo_Normes wNF074_Histo_Normes = NF074_Histo_Normes.NF074_Histo_NormesInit();
 
-
-
   int iboucle = 0;
   late AnimationController acontroller;
   bool iStrfExp = false;
@@ -39,8 +37,6 @@ class _NF074_Histo_Normes_screenState extends State<NF074_Histo_Normes_screen> w
 
   void initLib() async {
     await DbTools.getParam_ParamAll();
-
-
     Reload();
   }
 
@@ -140,16 +136,53 @@ class _NF074_Histo_Normes_screenState extends State<NF074_Histo_Normes_screen> w
                       ],
                     ),
                     onTap: () async {
-
-
                           String wTable = "Histo_Normes";
                           await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
-
                           print("iStrfExp B ${iStrfExp}");
                         }
                   ),
 
                   Spacer(),
+                  InkWell(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.settings,
+                            color:  Colors.red ,
+                            size: 24.0,
+                          ),
+                          Container(
+                            width: 8,
+                          ),
+                          Text(
+                            "Purge ",
+                            style: gColors.bodySaisie_N_G,
+                          )
+                        ],
+                      ),
+                      onTap: () async {
+
+                        for (int i = 0; i < DbTools.ListNF074_Histo_Normes.length; i++) {
+                          var element = DbTools.ListNF074_Histo_Normes[i];
+                          if (element.NF074_Histo_Normes_NCERT.contains("  "))
+                            {
+                              String  R = element.NF074_Histo_Normes_NCERT.replaceAll("  ", " ");
+                              print("element.NF074_Histo_Normes_NCERT.replaceAll("  ", " ") ${R}");
+
+                              element.NF074_Histo_Normes_NCERT = R;
+                              DbTools.setNF074_Histo_Normes(element);
+
+                            }
+                        }
+
+                        Reload();
+
+
+                      }
+                  ),
+                  Container(
+                    width: 36,
+                  ),
 
                   Text(
                     iStrfExp ? "Export ${iboucle} / ${DbTools.ListNF074_Histo_Normes.length}" : "Histo_Normes ${DbTools.ListNF074_Histo_Normes.length}",

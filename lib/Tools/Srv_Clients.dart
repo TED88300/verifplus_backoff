@@ -3,9 +3,8 @@ class Client {
   String Client_CodeGC = "";
   bool Client_CL_Pr = false;
   String Client_Famille = "";
+  String Client_Rglt = "";
   String Client_Depot = "";
-
-
   bool Client_PersPhys = false;
   bool Client_OK_DataPerso = false;
   String Client_Civilite = "";
@@ -21,13 +20,20 @@ class Client {
   String Client_Ct_Fin = "";
   String Client_Organes = "";
 
+  String Users_Nom = "";
+
+
   String Adresse_Adr1     = "";
   String Adresse_CP     = "";
   String Adresse_Ville  = "";
   String Adresse_Pays   = "";
 
+
+  String Client_Origine_CSIP   = "";
+
+
   static ClientInit() {
-    return Client(0, "", false, "", "", false, false, "", "", "", "", "", "", "", false, "","", "", "", "", "", "", "");
+    return Client(0, "", false, "", "","", false, false, "", "", "", "", "", "", "", false, "","", "", "", "", "", "", "", "");
   }
 
   Client(
@@ -35,6 +41,7 @@ class Client {
     String Client_CodeGC,
     bool Client_CL_Pr,
     String Client_Famille,
+    String Client_Rglt,
       String Client_Depot,
     bool Client_PersPhys,
     bool Client_OK_DataPerso,
@@ -51,7 +58,7 @@ class Client {
     String Client_Ct_Debut        ,
       String Client_Ct_Fin        ,
     String Client_Organes      ,
-
+      String Users_Nom      ,
 
     String Adresse_Adr1,
       String Adresse_CP,
@@ -62,6 +69,7 @@ class Client {
     this.Client_CodeGC = Client_CodeGC;
     this.Client_CL_Pr = Client_CL_Pr;
     this.Client_Famille = Client_Famille;
+    this.Client_Rglt = Client_Rglt;
     this.Client_Depot = Client_Depot;
     this.Client_PersPhys = Client_PersPhys;
     this.Client_OK_DataPerso = Client_OK_DataPerso;
@@ -77,6 +85,7 @@ class Client {
     this.Client_Ct_Debut       = Client_Ct_Debut      ;
     this.Client_Ct_Fin       = Client_Ct_Fin      ;
     this.Client_Organes     = Client_Organes    ;
+    this.Users_Nom     = Users_Nom    ;
 
 
     this.Adresse_Adr1      = Adresse_Adr1     ;
@@ -98,6 +107,7 @@ class Client {
       json['Client_CodeGC'],
       int.parse(json['Client_CL_Pr']) == 1,
       json['Client_Famille'],
+      json['Client_Rglt'],
       json['Client_Depot'],
       int.parse(json['Client_PersPhys']) == 1,
       int.parse(json['Client_OK_DataPerso']) == 1,
@@ -113,6 +123,7 @@ class Client {
       json['Client_Ct_Debut'],
       json['Client_Ct_Fin'],
       json['Client_Organes'],
+      json['Users_Nom'],
       json['Adresse_Adr1'],
       json['Adresse_CP'],
       json['Adresse_Ville'],
@@ -122,12 +133,47 @@ class Client {
     return wTmp;
   }
 
+  factory Client.fromJson_CSIP(Map<String, dynamic> json) {
+    print("json $json");
+
+    Client wTmp = Client(
+      int.parse(json['ClientId']),
+      json['Client_CodeGC'],
+      int.parse(json['Client_CL_Pr']) == 1,
+      json['Client_Famille'],
+      json['Client_Rglt'],
+      json['Client_Depot'],
+      int.parse(json['Client_PersPhys']) == 1,
+      int.parse(json['Client_OK_DataPerso']) == 1,
+      json['Client_Civilite'],
+      json['Client_Nom'],
+      json['Client_Siret'],
+      json['Client_NAF'],
+      json['Client_TVA'],
+      json['Client_Commercial'],
+      json['Client_Createur'],
+      int.parse(json['Client_Contrat']) == 1,
+      json['Client_TypeContrat'],
+      json['Client_Ct_Debut'],
+      json['Client_Ct_Fin'],
+      json['Client_Organes'],
+      "",
+      "","","",""
+    );
+
+    return wTmp;
+  }
+
+
+
+
   String Desc() {
     return '$ClientId, '
         '$ClientId '
         '$Client_CodeGC '
         '$Client_CL_Pr '
         '$Client_Famille '
+        '$Client_Rglt '
         '$Client_Depot '
         '$Client_PersPhys '
         '$Client_OK_DataPerso '
@@ -144,6 +190,7 @@ class Client {
         '$Client_TypeContrat '
         '$Client_Ct_Debut '
         '$Client_Ct_Fin '
+        '$Client_Organes '
         '$Client_Organes '
 
         '$Adresse_CP    '

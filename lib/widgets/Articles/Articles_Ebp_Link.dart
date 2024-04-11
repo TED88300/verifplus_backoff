@@ -5,8 +5,6 @@ import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Ebp.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Link_Ebp.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-
-
 //113 Poudre ABC 6kg
 
 

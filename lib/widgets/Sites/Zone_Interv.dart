@@ -33,6 +33,11 @@ class _Zone_IntervState extends State<Zone_Interv> {
   String selectedUserInter = "";
   String selectedUserInterID = "";
 
+  String selectedUserInter2 = "";
+  String selectedUserInterID2 = "";
+
+
+
   DateTime wDateTime = DateTime.now();
 
   Future initLib() async {
@@ -52,6 +57,9 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
+
+    selectedUserInter2 = DbTools.List_UserInter[0];
+    selectedUserInterID2 = DbTools.List_UserInterID[0];
 
     await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
     Filtre();
@@ -74,22 +82,47 @@ class _Zone_IntervState extends State<Zone_Interv> {
   }
 
   void AlimSaisie() async {
+
+    print("AlimSaisie A");
+
+
+
     if (DbTools.gIntervention.Intervention_Type!.isNotEmpty) {
       selectedTypeInter = DbTools.gIntervention.Intervention_Type!;
+      print("selectedTypeInter ${selectedTypeInter}");
+
+      print("selectedTypeInter ${selectedTypeInter}");
+      print("selectedTypeInter ${DbTools.List_TypeInter.indexOf(selectedTypeInter)}");
+
       selectedTypeInterID = DbTools.List_TypeInterID[DbTools.List_TypeInter.indexOf(selectedTypeInter)];
     }
 
+    print("AlimSaisie B");
+
+
     if (DbTools.gIntervention.Intervention_Status!.isNotEmpty) {
       selectedStatusInter = DbTools.gIntervention.Intervention_Status!;
+      print("selectedStatusInter ${selectedStatusInter}");
       selectedStatusInterID = DbTools.List_StatusInterID[DbTools.List_StatusInter.indexOf(selectedStatusInter)];
     }
 
+
+    print("AlimSaisie C");
+
     if (DbTools.gIntervention.Intervention_Facturation!.isNotEmpty) {
+
       selectedFactInter = DbTools.gIntervention.Intervention_Facturation!;
+      print("selectedFactInter ${selectedFactInter}");
       selectedFactInterID = DbTools.List_FactInterID[DbTools.List_FactInter.indexOf(selectedFactInter)];
     }
 
+    print("AlimSaisie D");
 
+    selectedUserInter = DbTools.List_UserInter[0];
+    selectedUserInterID = DbTools.List_UserInterID[0];
+
+    selectedUserInter2 = DbTools.List_UserInter[0];
+    selectedUserInterID2 = DbTools.List_UserInterID[0];
 
     if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
       DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
@@ -98,14 +131,19 @@ class _Zone_IntervState extends State<Zone_Interv> {
       selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
+    if (DbTools.gIntervention.Intervention_Responsable2!.isNotEmpty) {
+      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable2!);
+      selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter2 $selectedUserInter2");
+      selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
+    }
+
     textController_Intervention_Date.text = DbTools.gIntervention.Intervention_Date!;
-
     textController_Intervention_Type.text = DbTools.gIntervention.Intervention_Type!;
-
     textController_Intervention_Remarque.text = "${DbTools.gIntervention.Intervention_Remarque!}";
 
     await DbTools.getPlanning_InterventionIdRes(DbTools.gIntervention.InterventionId!);
-    print("DbTools.ListUserH ${DbTools.ListUserH.length}");
+    print("DbTools.ListUserH ${DbTools.gIntervention.InterventionId!} ${DbTools.ListUserH.length}");
 
     setState(() {});
   }
@@ -203,13 +241,15 @@ class _Zone_IntervState extends State<Zone_Interv> {
     DbTools.gIntervention.Intervention_Status = selectedStatusInter;
     DbTools.gIntervention.Intervention_Facturation = selectedFactInter;
     DbTools.gIntervention.Intervention_Responsable = "$selectedUserInterID";
+    DbTools.gIntervention.Intervention_Responsable2 = "$selectedUserInterID2";
     DbTools.gIntervention.Intervention_Remarque = textController_Intervention_Remarque.text;
     await DbTools.setIntervention(DbTools.gIntervention);
     await Filtre();
   }
 
   void ToolsBarAdd() async {
-    await DbTools.addIntervention(DbTools.gSite.SiteId, "2023/06/22", "Verif");
+    String wNow = DateFormat('yyyy/MM/dd').format(DateTime.now());
+    await DbTools.addIntervention(DbTools.gZone.ZoneId, wNow, "Vérification");
     DbTools.getInterventionID(DbTools.gLastID);
     await initLib();
   }
@@ -349,9 +389,8 @@ class _Zone_IntervState extends State<Zone_Interv> {
                             print("onCHANGE selectedFactInterID $selectedFactInterID");
                           });
                         }, DbTools.List_FactInter, DbTools.List_FactInterID),
-                  selectedUserInter.isEmpty
-                      ? Container()
-                      : gColors.DropdownButtonTypeInter(100, 8, "Responsable", selectedUserInter, (sts) {
+
+                  gColors.DropdownButtonTypeInter(180, 8, "Responsable Commercial", selectedUserInter, (sts) {
                           setState(() {
                             selectedUserInter = sts!;
                             selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
@@ -359,6 +398,19 @@ class _Zone_IntervState extends State<Zone_Interv> {
                             print("onCHANGE selectedUserInterID $selectedUserInterID");
                           });
                         }, DbTools.List_UserInter, DbTools.List_UserInterID),
+
+
+                  gColors.DropdownButtonTypeInter(180, 8, "Responsable Technique", selectedUserInter2, (sts) {
+                    setState(() {
+                      selectedUserInter2 = sts!;
+                      selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
+                      print("onCHANGE selectedUserInter2 $selectedUserInter2");
+                      print("onCHANGE selectedUserInterID2 $selectedUserInterID2");
+                    });
+                  }, DbTools.List_UserInter, DbTools.List_UserInterID),
+
+
+
                   Row(
                     children: [
                       Container(
@@ -424,7 +476,8 @@ class _Zone_IntervState extends State<Zone_Interv> {
       new DaviColumn(name: 'Type', width: 100, stringValue: (row) => "${row.Intervention_Type}"),
       new DaviColumn(name: 'Status', width: 100, stringValue: (row) => "${row.Intervention_Status}"),
       new DaviColumn(name: 'Facturation', width: 100, stringValue: (row) => "${row.Intervention_Facturation}"),
-      new DaviColumn(name: 'Responsable', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable!)}"),
+      new DaviColumn(name: 'Resp. Comm', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable!)}"),
+      new DaviColumn(name: 'Resp. Tech', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable2!)}"),
       new DaviColumn(name: 'Remarque', width: 480, stringValue: (row) => "${row.Intervention_Remarque!.replaceAll("\n", " - ")}"),
       new DaviColumn(name: 'Organes', width: 80, stringValue: (row) => "${row.Cnt}", cellAlignment: Alignment.center),
     ];

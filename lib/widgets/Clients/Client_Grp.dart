@@ -35,10 +35,8 @@ class _Client_GrpState extends State<Client_Grp> {
   List<String> ListParam_ParamDepot = [];
   List<String> ListParam_ParamDepotID = [];
   String selectedValueDepot = "";
-  String selectedValueDepotID = "";
 
-
-
+  int SelGroupe = 0;
 
   final Search_TextController = TextEditingController();
   Future Reload() async {
@@ -52,12 +50,11 @@ class _Client_GrpState extends State<Client_Grp> {
   void initLib() async {
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Client_Grp");
 
-    await DbTools.getParam_ParamFam("Type_Depot");
+    await DbTools.getAdresseType( "AGENCE");
     ListParam_ParamDepot.clear();
-    ListParam_ParamDepot.addAll(DbTools.ListParam_ParamFam);
-    ListParam_ParamDepotID.clear();
-    ListParam_ParamDepotID.addAll(DbTools.ListParam_ParamFamID);
-
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListParam_ParamDepot.add(wAdresse.Adresse_Nom);
+    });
 
 
     DbTools.gGroupe = Groupe.GroupeInit();
@@ -104,12 +101,10 @@ class _Client_GrpState extends State<Client_Grp> {
     textController_Groupe_Rem.text = DbTools.gGroupe.Groupe_Rem;
 
     selectedValueDepot = ListParam_ParamDepot[0];
-    selectedValueDepotID = ListParam_ParamDepotID[0];
     for (int i = 0; i < ListParam_ParamDepot.length; i++) {
       String element = ListParam_ParamDepot[i];
       if (element.compareTo("${DbTools.gGroupe.Groupe_Depot}") == 0) {
         selectedValueDepot = element;
-        selectedValueDepotID = ListParam_ParamDepotID[i];
       }
     }
 
@@ -136,12 +131,7 @@ class _Client_GrpState extends State<Client_Grp> {
   }
 
 
-
-
   void initState() {
-
-
-
     initLib();
     super.initState();
   }
@@ -315,13 +305,12 @@ class _Client_GrpState extends State<Client_Grp> {
   }
 
   void ToolsBarAdd() async {
-    print("ToolsBarAdd");
     await DbTools.addGroupe(DbTools.gClient.ClientId, "SITE");
-
-    print("DbTools.gLastID ${DbTools.gLastID}");
-
     await Reload();
     DbTools.getGroupeID(DbTools.gLastID);
+    DbTools.gGroupe.Groupe_Nom = "???";
+    await DbTools.setGroupe(DbTools.gGroupe);
+    await Filtre();
     AlimSaisie();
   }
 
@@ -447,13 +436,20 @@ class _Client_GrpState extends State<Client_Grp> {
     DaviModel<Groupe>? _model;
     _model = DaviModel<Groupe>(rows: DbTools.ListGroupesearchresult, columns: wColumns);
     return new DaviTheme(
-        child: new Davi<Groupe>(visibleRowsCount: 16, _model, onRowTap: (Groupe) async {
-          DbTools.gGroupe = Groupe;
+        child: new Davi<Groupe>(visibleRowsCount: 16, _model,
+            onRowTap: (aGroupe) async {
+          SelGroupe = DbTools.ListGroupesearchresult.indexOf(aGroupe);
+          DbTools.gGroupe = aGroupe;
           AlimSaisie();
         }),
         data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
           headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
+
+          row: RowThemeData(color: (rowIndex) {
+            return SelGroupe == rowIndex ? gColors.secondarytxt : Colors.white;
+          }),
+
           cell: CellThemeData(
             contentHeight: 28,
             textStyle: gColors.bodySaisie_N_G,
@@ -485,9 +481,8 @@ class _Client_GrpState extends State<Client_Grp> {
               value: selectedValueDepot,
               onChanged: (value) {
                 setState(() {
-                  selectedValueDepotID = ListParam_ParamDepotID[ListParam_ParamDepot.indexOf(value!)];
-                  selectedValueDepot = value;
-                  print("selectedValueDepot $selectedValueDepotID $selectedValueDepot");
+                  selectedValueDepot = value!;
+                  print("selectedValueDepot  $selectedValueDepot");
                   setState(() {});
                 });
               },

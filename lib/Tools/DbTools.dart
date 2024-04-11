@@ -52,7 +52,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.74";
+  static var gVersion = "v1.0.82";
   static bool gTED = true;
 
   static var notif = Notif();
@@ -201,10 +201,17 @@ class DbTools {
 
     if (ListUser == null) return false;
 
-    print("getUserName ${ListUser.length}");
+    print("getUserAll ${ListUser.length}");
 
     if (ListUser.length > 0) {
-      print("getUserName return TRUE");
+/*
+      print("getUserAll return TRUE");
+      for (int i = 0; i < ListUser.length; i++) {
+        var wUser = ListUser[i];
+        print("getUserAll ${wUser.UserID} ${wUser.User_Nom} ${wUser.User_Prenom}");
+      }
+*/
+
 
       return true;
     }
@@ -829,6 +836,14 @@ class DbTools {
     return false;
   }
 
+
+  static Future<bool> setNF074_Histo_Normes(NF074_Histo_Normes aNF074_Histo_Normes) async {
+    String wSlq = "UPDATE NF074_Histo_Normes SET NF074_Histo_Normes_NCERT = ${aNF074_Histo_Normes.NF074_Histo_Normes_NCERT} WHERE Param_HabId = ${aNF074_Histo_Normes.NF074_Histo_NormesId}";
+    gColors.printWrapped("setNF074_Histo_Normes " + wSlq);
+    bool ret = await add_API_Post("upddel", wSlq);
+    print("setNF074_Histo_Normes ret " + ret.toString());
+    return ret;
+  }
 
 
 
@@ -1499,7 +1514,7 @@ class DbTools {
     bool ret = await add_API_Post("insert", wSlq);
     print("Add_Hierarchie ret " + ret.toString());
 
-    wSlq = "INSERT INTO Sites (Site_GroupeId, Site_Depot,Site_Code, Site_Nom,  Site_Adr1, Site_Adr2, Site_Adr3, Site_Adr4, Site_CP, Site_Ville, Site_Pays, Site_Acces, Site_Rem)     SELECT $gLastID,Client_Depot,Adresse_Code,Client_Nom,Adresse_Adr1,Adresse_Adr2,Adresse_Adr3,Adresse_Adr4,Adresse_CP,Adresse_Ville,Adresse_Pays,Adresse_Acces,Adresse_Rem FROM Adresses , Clients WHERE Adresse_Type = 'LIVR' AND Adresse_ClientId = ClientId AND Adresse_ClientId = $clientId";
+    wSlq = "INSERT INTO Sites (Site_GroupeId, Site_Depot,Site_Code, Site_Nom,  Site_Adr1, Site_Adr2, Site_Adr3, Site_Adr4, Site_CP, Site_Ville, Site_Pays, Site_Acces, Site_Rem, Site_ResourceId)     SELECT $gLastID,Client_Depot,Adresse_Code,Client_Nom,Adresse_Adr1,Adresse_Adr2,Adresse_Adr3,Adresse_Adr4,Adresse_CP,Adresse_Ville,Adresse_Pays,Adresse_Acces,Adresse_Rem, ${gClient.Client_Commercial} FROM Adresses , Clients WHERE Adresse_Type = 'LIVR' AND Adresse_ClientId = ClientId AND Adresse_ClientId = $clientId";
     print("Add_Hierarchie " + wSlq);
     ret = await add_API_Post("insert", wSlq);
     print("Add_Hierarchie ret " + ret.toString());
@@ -1567,8 +1582,139 @@ class DbTools {
   static List<Client> ListClientsearchresult = [];
   static Client gClient = Client.ClientInit();
 
+  //*****************************
+  //*****************************
+  //*****************************
+
+  static List<Client> ListClient_CSIP = [];
+  static List<Client> ListClient_CSIP_Total = [];
+
+  static Future<bool> getClient_User_CSIP(int wUserID) async {
+
+    DbTools.ListClient_CSIP_Total.clear();
+    await DbTools.getClient_User_C(wUserID);
+    DbTools.ListClient_CSIP.forEach((wClient) {
+      wClient.Adresse_Adr1 = "C";
+      DbTools.ListClient_CSIP_Total.add(wClient);
+    });
+
+
+    await DbTools.getClient_User_S(wUserID);
+    DbTools.ListClient_CSIP.forEach((wClient) {
+      wClient.Adresse_Adr1 = "S";
+      DbTools.ListClient_CSIP_Total.add(wClient);
+    });
+
+    await DbTools.getClient_User_I(wUserID);
+    DbTools.ListClient_CSIP.forEach((wClient) {
+      wClient.Adresse_Adr1 = "I";
+      DbTools.ListClient_CSIP_Total.add(wClient);
+    });
+
+    await DbTools.getClient_User_I2(wUserID);
+    DbTools.ListClient_CSIP.forEach((wClient) {
+      wClient.Adresse_Adr1 = "I2";
+      DbTools.ListClient_CSIP_Total.add(wClient);
+    });
+
+    await DbTools.getClient_User_P(wUserID);
+    DbTools.ListClient_CSIP.forEach((wClient) {
+      wClient.Adresse_Adr1 = "P";
+      DbTools.ListClient_CSIP_Total.add(wClient);
+    });
+
+    return false;
+
+  }
+/*
+
+  SELECT Clients.* FROM Clients Where Clients.Client_Commercial = 11
+  UNION
+  SELECT Clients.* FROM Clients, Groupes, Sites where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId AND Sites.Site_ResourceId = 11
+  UNION
+  SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = 11
+  UNION
+  SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = 11
+  UNION
+  SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions, Planning where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = 11;
+*/
+
+  static Future<bool> getClient_User_C(int wUserID) async {
+    String wSlq = "SELECT Clients.* FROM Clients Where Clients.Client_Commercial = $wUserID";
+    //print("getClient_User_C ${wSlq}");
+    ListClient_CSIP = await getClient_CSIP_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    //print("getClient_User_C ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_C return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> getClient_User_S(int wUserID) async {
+    String wSlq = "SELECT Clients.* FROM Clients, Groupes, Sites where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId AND Sites.Site_ResourceId = $wUserID";
+    //print("getClient_User_S ${wSlq}");
+    ListClient_CSIP = await getClient_CSIP_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    //print("getClient_User_S ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_S return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> getClient_User_I(int wUserID) async {
+    String wSlq = "SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = $wUserID";
+    //print("getClient_User_S ${wSlq}");
+    ListClient_CSIP = await getClient_CSIP_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    //print("getClient_User_S ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_S return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> getClient_User_I2(int wUserID) async {
+    String wSlq = "SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = $wUserID";
+    //print("getClient_User_S ${wSlq}");
+    ListClient_CSIP = await getClient_CSIP_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    //print("getClient_User_S ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_S return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> getClient_User_P(int wUserID) async {
+    String wSlq = "SELECT Clients.*, Planning_ResourceId FROM Clients, Groupes, Sites, Zones, Interventions, Planning where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = $wUserID";
+    //print("getClient_User_S ${wSlq}");
+    ListClient_CSIP = await getClient_CSIP_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    //print("getClient_User_S ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_S return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+  //*****************************
+  //*****************************
+  //*****************************
+
+
+
   static Future<bool> getClientAll() async {
-    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' ORDER BY Client_Nom;";
+ //   String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' ORDER BY Client_Nom;";
+    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID ORDER BY Client_Nom;";
+
     print("getClientAll wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
 
@@ -1616,6 +1762,9 @@ class DbTools {
             "Client_CodeGC = \"${Client.Client_CodeGC}\", " +
         "Client_CL_Pr = ${Client.Client_CL_Pr}, " +
         "Client_Famille = \"${Client.Client_Famille}\", " +
+
+        "Client_Rglt = \"${Client.Client_Rglt}\", " +
+
         "Client_Depot = \"${Client.Client_Depot}\", " +
         "Client_PersPhys = ${Client.Client_PersPhys}, " +
         "Client_OK_DataPerso = ${Client.Client_OK_DataPerso}, " +
@@ -1679,6 +1828,31 @@ class DbTools {
     return [];
   }
 
+  static Future<List<Client>> getClient_CSIP_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      print("getClient_CSIP_API_Post response ${response.statusCode}");
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+      if (items != null) {
+        List<Client> ClientList = await items.map<Client>((json) {
+          return Client.fromJson_CSIP(json);
+        }).toList();
+        return ClientList;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+
+
   //*****************************
   //*****************************
   //*****************************
@@ -1711,7 +1885,7 @@ class DbTools {
 
   static Future<bool> getAdresseClientType(int ClientID, String Type) async {
     String wSlq = "select * from Adresses  where Adresse_ClientId = $ClientID AND Adresse_Type = '$Type' ORDER BY Adresse_Type";
-//    print("getAdresseClientType SQL ${wSlq}");
+    print("getAdresseClientType  Type $Type SQL ${wSlq}");
 
     ListAdresse = await getAdresse_API_Post("select", wSlq);
 
@@ -1722,11 +1896,33 @@ class DbTools {
 //      print("getAdresseClientType return TRUE");
       return true;
     } else {
-      addAdresse(ClientID, Type);
-      getAdresseClientType(ClientID, Type);
+      print("getAdresseClientType  Type $Type addAdresse >");
+      await addAdresse(ClientID, Type);
+      print("getAdresseClientType  Type $Type addAdresse <");
+      await getAdresseClientType(ClientID, Type);
+      print("getAdresseClientType  Type $Type addAdresse <<<");
     }
     return false;
   }
+
+  static Future<bool> getAdresseType(String Type) async {
+    String wSlq = "select * from Adresses  where  Adresse_Type = '$Type' ORDER BY Adresse_Type";
+//    print("getAdresseClientType SQL ${wSlq}");
+
+    ListAdresse = await getAdresse_API_Post("select", wSlq);
+
+    if (ListAdresse == null) return false;
+    //  print("getAdresseClientType ${ListAdresse.length}");
+    if (ListAdresse.length > 0) {
+      gAdresse = ListAdresse[0];
+//      print("getAdresseClientType return TRUE");
+      return true;
+    }
+
+    return false;
+  }
+
+
 
   static Future<bool> getAdresseClient(int ClientID) async {
     String wSlq = "select * from Adresses  where Adresse_ClientId = $ClientID  ORDER BY Adresse_Type,Adresse_Adr1";
@@ -1767,6 +1963,7 @@ class DbTools {
   }
 
   static Future<bool> addAdresse(int adresseClientid, String Type) async {
+    print("addAdresse Type ${Type}");
     String wValue = "NULL, $adresseClientid, '$Type'";
     String wSlq = "INSERT INTO Adresses (AdresseId, Adresse_ClientId, Adresse_Type) VALUES ($wValue)";
     print("addAdresse " + wSlq);
@@ -2245,6 +2442,7 @@ class DbTools {
         "Intervention_Facturation            = \"${Intervention.Intervention_Facturation}\", " +
         "Intervention_Histo_Facturation      = \"${Intervention.Intervention_Histo_Facturation}\", " +
         "Intervention_Responsable            = \"${Intervention.Intervention_Responsable}\", " +
+        "Intervention_Responsable2            = \"${Intervention.Intervention_Responsable2}\", " +
         "Intervention_Intervenants           = \"${Intervention.Intervention_Intervenants}\", " +
         "Intervention_Reglementation         = \"${Intervention.Intervention_Reglementation}\", " +
         "Intervention_Signataire_Client      = \"${Intervention.Intervention_Signataire_Client}\", " +
@@ -2259,8 +2457,8 @@ class DbTools {
   }
 
   static Future<bool> addIntervention(int interventionZoneid, String Date, String Verif) async {
-    String wValue = "NULL, $interventionZoneid, '$Date' , '$Verif', '' ";
-    String wSlq = "INSERT INTO Interventions (InterventionId, Intervention_ZoneId, Intervention_Date, Intervention_Type, Intervention_Remarque) VALUES ($wValue)";
+    String wValue = "NULL, $interventionZoneid, '$Date' , '$Verif', '', ${gSite.Site_ResourceId} ";
+    String wSlq = "INSERT INTO Interventions (InterventionId, Intervention_ZoneId, Intervention_Date, Intervention_Type, Intervention_Remarque, Intervention_Responsable) VALUES ($wValue)";
     print("addIntervention " + wSlq);
     bool ret = await add_API_Post("insert", wSlq);
     print("addIntervention ret " + ret.toString());

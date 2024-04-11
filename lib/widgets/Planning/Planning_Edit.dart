@@ -38,6 +38,7 @@ class _Planning_EditState extends State<Planning_Edit> {
   String selectedFactInterID = "";
 
   String selectedUserInter = "";
+  String selectedUserInter2 = "";
 
   int ResourceId = 0;
   String ResourceNom = "";
@@ -65,8 +66,13 @@ class _Planning_EditState extends State<Planning_Edit> {
 
     await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
     print("gUser ${DbTools.gUser.Desc()}");
-
     selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+
+
+    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable2!);
+    print("gUser ${DbTools.gUser.Desc()}");
+    selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+
 
     setState(() {});
   }
@@ -165,15 +171,14 @@ class _Planning_EditState extends State<Planning_Edit> {
                       ),
                     ],
                   ),
-            (IntevId < 0)
-                ? Container()
-                : Row(
+
+           Row(
                     children: [
                       Container(
                         width: 20,
                       ),
                       Text(
-                        "Responsable : ",
+                        "Responsable Commercial : ",
                         style: gColors.bodyTitle1_B_Gr,
                         textAlign: TextAlign.start,
                       ),
@@ -184,6 +189,28 @@ class _Planning_EditState extends State<Planning_Edit> {
                       ),
                     ],
                   ),
+
+
+           Row(
+              children: [
+                Container(
+                  width: 20,
+                ),
+                Text(
+                  "Responsable Technique : ",
+                  style: gColors.bodyTitle1_B_Gr,
+                  textAlign: TextAlign.start,
+                ),
+                Text(
+                  "${selectedUserInter2}",
+                  style: gColors.bodyTitle1_N_Gr,
+                  textAlign: TextAlign.start,
+                ),
+              ],
+            ),
+
+
+
             Row(
               children: [
                 Container(

@@ -75,8 +75,11 @@ class _Client_FactState extends State<Client_Fact> {
     wIs_Hierarchie = await DbTools.Count_Hierarchie(DbTools.gClient.ClientId);
     print(">>>>>>>>>>>>>>@@@@@@@@@@>>>>>>>>>> wCount_Hierarchie $wIs_Hierarchie");
 
+
+    print("••••• initLib Client_Fact getAdresseClientType");
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
+    print("••••• initLib Client_Fact getContactClientAdrType");
     await DbTools.getContactClientAdrType(DbTools.gClient.ClientId, DbTools.gAdresse.AdresseId, "LIVR");
     DbTools.gContactLivr = DbTools.ListContact[0];
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "FACT");

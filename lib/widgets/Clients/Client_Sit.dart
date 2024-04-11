@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:davi/davi.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
+import 'package:verifplus_backoff/Tools/Upload.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamSite_Dialog.dart';
@@ -37,11 +39,11 @@ class _Client_SitState extends State<Client_Sit> {
   String selectedUserInterID = "";
 
   List<String> ListParam_ParamDepot = [];
-  List<String> ListParam_ParamDepotID = [];
   String selectedValueDepot = "";
-  String selectedValueDepotID = "";
 
-
+  Uint8List pic = Uint8List.fromList([0]);
+  late Image wImage;
+  bool imageisload = false;
 
   final Search_TextController = TextEditingController();
   int SelGroupe = 0;
@@ -53,6 +55,10 @@ class _Client_SitState extends State<Client_Sit> {
   int GrpID = 0;
 
   Future Reload() async {
+
+
+
+
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
     print("initLib getGroupesClient ${DbTools.ListGroupe.length}");
     print("initLib DbTools.ListGroupe[0].GroupeId ${DbTools.ListGroupe[0].GroupeId}");
@@ -86,17 +92,21 @@ class _Client_SitState extends State<Client_Sit> {
   }
 
   void initLib() async {
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Client_Sit");
 
-    await DbTools.getParam_ParamFam("Type_Depot");
+
+
+
+    await DbTools.getAdresseType( "AGENCE");
     ListParam_ParamDepot.clear();
-    ListParam_ParamDepot.addAll(DbTools.ListParam_ParamFam);
-    ListParam_ParamDepotID.clear();
-    ListParam_ParamDepotID.addAll(DbTools.ListParam_ParamFamID);
+    DbTools.ListAdresse.forEach((wAdresse) {
+      ListParam_ParamDepot.add(wAdresse.Adresse_Nom);
+    });
+
+
 
 
     DbTools.gSite = Site.SiteInit();
-
+    DbTools.ListSitesearchresult.clear();
     await Reload();
     await AlimSaisie();
   }
@@ -152,12 +162,10 @@ class _Client_SitState extends State<Client_Sit> {
     }
 
     selectedValueDepot = ListParam_ParamDepot[0];
-    selectedValueDepotID = ListParam_ParamDepotID[0];
     for (int i = 0; i < ListParam_ParamDepot.length; i++) {
       String element = ListParam_ParamDepot[i];
       if (element.compareTo("${DbTools.gSite.Site_Depot}") == 0) {
         selectedValueDepot = element;
-        selectedValueDepotID = ListParam_ParamDepotID[i];
       }
     }
 
@@ -175,11 +183,36 @@ class _Client_SitState extends State<Client_Sit> {
       selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
+    imageisload = false;
+    String wUserImg = "Site_${DbTools.gSite.SiteId}.jpg";
+    pic =      await gColors.getImage(wUserImg);
+    print("pic $wUserImg");// ${pic}");
+    if (pic.length > 0) {
+      wImage = Image.memory(
+        pic,
+        fit: BoxFit.scaleDown,
+        width: 200,
+        height: 200,
+      );
+    } else {
+      wImage = Image(
+        image: AssetImage('assets/images/Avatar.png'),
+        height: 200,
+      );
+    }
+    imageisload = true;
+
+
 
     setState(() {});
   }
 
   void initState() {
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Client_Sit");
+    wImage = Image(
+      image: AssetImage('assets/images/Avatar.png'),
+      height: 200,
+    );
     initLib();
     super.initState();
   }
@@ -257,6 +290,7 @@ class _Client_SitState extends State<Client_Sit> {
                 ],
               ),
               ContentSiteCadre(context),
+              ContentSitePhoto(context),
             ],
           ),
         ],
@@ -370,11 +404,9 @@ class _Client_SitState extends State<Client_Sit> {
       DbTools.gGroupe.GroupeId,
     );
     DbTools.getSiteID(DbTools.gLastID);
-    DbTools.gSite.Site_Nom = "Sa";
+    DbTools.gSite.Site_Nom = "???";
     await DbTools.setSite(DbTools.gSite);
-
     await Filtre();
-
     AlimSaisie();
   }
 
@@ -414,6 +446,79 @@ class _Client_SitState extends State<Client_Sit> {
     );
   }
 
+
+  Widget ContentSitePhoto(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 380,
+          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
+          padding: EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: gColors.primary, width: 1),
+            borderRadius: BorderRadius.circular(5),
+            shape: BoxShape.rectangle,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Photo(),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 50,
+          top: 12,
+          child: Container(
+            padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+            color: Colors.white,
+            child: Text(
+              'Site',
+              style: TextStyle(color: Colors.black, fontSize: 12),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void onSetState() async {
+    print("Parent onMaj() Relaod()");
+    AlimSaisie();
+  }
+
+
+  Widget Photo() {
+    String wImgPath = "${DbTools.SrvImg}Site_${DbTools.gSite.SiteId}.jpg";
+    print("wImgPath $wImgPath");
+    return Container(
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Row(
+          children: [
+            IconButton(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              icon: Image.asset("assets/images/Photo.png"),
+              onPressed: () async {
+                await _startFilePicker(onSetState);
+              },
+            ),
+            Container(width: 10),
+            (imageisload) ? wImage : Container(),
+            Container(width: 10),
+
+          ],
+        ));
+  }
+
+  _startFilePicker(VoidCallback onSetState) async {
+    print("UploadFilePicker > Site_${DbTools.gSite.SiteId}.jpg");
+    await Upload.UploadFilePicker("Site_${DbTools.gSite.SiteId}.jpg", onSetState);
+    print("UploadFilePicker <");
+    print("UploadFilePicker <<");
+  }
+
+
   Widget ContentSite(BuildContext context) {
     String wMes = "";
 
@@ -452,14 +557,16 @@ class _Client_SitState extends State<Client_Sit> {
                       DropdownButtonDepot(),                    ],
                   ),
 
+
+
+
+
                   Row(
                     children: [
-                      gColors.DropdownButtonTypeInter(100, 8, "Responsable", selectedUserInter, (sts) {
+                      gColors.DropdownButtonTypeInter(90, 8, "Resp. Comm", selectedUserInter, (sts) {
                     setState(() {
                       selectedUserInter = sts!;
                       selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
-                      print("onCHANGE selectedUserInter $selectedUserInter");
-                      print("onCHANGE selectedUserInterID $selectedUserInterID");
                     });
                   }, DbTools.List_UserInter, DbTools.List_UserInterID),
                               ],
@@ -653,9 +760,8 @@ class _Client_SitState extends State<Client_Sit> {
               value: selectedValueDepot,
               onChanged: (value) {
                 setState(() {
-                  selectedValueDepotID = ListParam_ParamDepotID[ListParam_ParamDepot.indexOf(value!)];
-                  selectedValueDepot = value;
-                  print("selectedValueDepot $selectedValueDepotID $selectedValueDepot");
+                  selectedValueDepot = value!;
+                  print("selectedValueDepot  $selectedValueDepot");
                   setState(() {});
                 });
               },
