@@ -26,21 +26,31 @@ class _ParamSiteState extends State<ParamSite> {
   String wTitle = "";
 
   static List<String> listMes = [
-    "Règle APSAD R4, R5, R17",
-    "ERT",
-    "ERP",
-    "Habitation",
-    "IGH",
-    "ICPE",
-    "DREAL",
+    "Règle APSAD R1 / Sprinkleurs",
+    "Règle APSAD D2 / Brouillard d'eau",
+    "Règle APSAD R3 / Maintenance colonnes incendies",
+    "Règle APSAD R4 / Extincteurs portatifs et mobiles",
+    "Règle APSAD R5 / RIA et PIA",
+    "Règle APSAD R7  / Détection incendie",
+    "Règle APSAD R12 / Extinction mousse à haut foisonnement",
+    "Règle APSAD R13 / Extinction automatique à gaz",
+    "Règle APSAD R16 / Compartimentage",
+    "Règle APSAD R17 / Désenfumage naturel",
+    "ERT (Etablissement recevant des travailleurs)",
+    "ERP (Etablissement recevant du public)",
+    "IGH (Immeuble de grander hauteur)",
+    "DREAL (Direction régionale de l'environnement, de l'aménagement et du logement)",
     "Autres",
   ];
-  static List<bool> itemlistApp = [false, false, false, false, false, false, false, false];
+  static List<bool> itemlistApp = [false, false, false, false, false, false, false, false, false, false,false, false, false, false, false,];
 
   void initLib() async {
     String siteApsad = DbTools.gSite.Site_APSAD!;
     if (siteApsad.isNotEmpty) {
       itemlistApp = json.decode(siteApsad).cast<bool>().toList();
+    }
+    for (int i = itemlistApp.length; i < 15; i++) {
+      itemlistApp.add(false);
     }
     setState(() {});
   }
@@ -55,21 +65,27 @@ class _ParamSiteState extends State<ParamSite> {
 
     List<Widget> cclistMes = [];
     for (int i = 0; i < listMes.length; i++) {
+      print("_buildPopupDialog A");
       var wlistMes = listMes[i];
-      var witemlistApp = itemlistApp[i];
+      print("_buildPopupDialog B");
+      var witemlistApp = false;
+      if (i < itemlistApp.length)
+{
+  witemlistApp = itemlistApp[i];
 
-      print("listMes[i] ${listMes[i]} ${itemlistApp[i]}");
+}
+      print("_buildPopupDialog C");
+
 
       cclistMes.add(
 
           gColors.CheckBoxField(
-          200,
+          400,
           8,
           "$wlistMes",
           witemlistApp,
           (sts) => setState(() {
                 itemlistApp[i] = sts!;
-
                 print("itemlistApp ${itemlistApp.toString()}");
               }))
 
@@ -77,6 +93,7 @@ class _ParamSiteState extends State<ParamSite> {
 
       );
     }
+    print("_buildPopupDialog D");
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -90,7 +107,7 @@ class _ParamSiteState extends State<ParamSite> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width / 3;
-    double height = 380; //MediaQuery.of(context).size.height - 200;
+    double height = 650; //MediaQuery.of(context).size.height - 200;
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       title: Container(
@@ -103,7 +120,7 @@ class _ParamSiteState extends State<ParamSite> {
               Text(
                 "Vérif+ : Paramètres Site",
                 textAlign: TextAlign.center,
-                style: gColors.bodyTitle1_B_Wr,
+                style: gColors.bodyTitle1_B_W,
               ),
             ],
           )),
@@ -127,7 +144,7 @@ class _ParamSiteState extends State<ParamSite> {
                 height: 20,
               ),
               Text(
-                "Réglementations",
+                "Règlementations applicables à l'établissement du client",
                 style: gColors.bodyTitle1_B_G.copyWith(decoration: TextDecoration.underline),
               ),
               Container(

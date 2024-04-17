@@ -34,7 +34,7 @@ class Param_Saisie_screen extends StatefulWidget {
 
 class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
   Param_Saisie wParam_Saisie = Param_Saisie.Param_SaisieInit();
-  String Title = "Verif+ : Paramètres ";
+  String Title = "Vérif+ : Paramètres ";
 
   static List<String> ListParam_ParamOrgane = [];
   static List<String> ListParam_ParamOrganeID = [];
@@ -151,7 +151,7 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
     super.initState();
     initLib();
 
-    Title = "Verif+ : Paramètres - ${widget.wTitle}";
+    Title = "Vérif+ : Paramètres - ${widget.wTitle}";
   }
 
   @override

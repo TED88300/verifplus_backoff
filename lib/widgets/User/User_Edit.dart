@@ -341,7 +341,7 @@ class User_EditState extends State<User_Edit> {
                   Text(
                     "Vérif+ : Edition Utilisateur ",
                     textAlign: TextAlign.center,
-                    style: gColors.bodyTitle1_B_Wr,
+                    style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
                   Container(

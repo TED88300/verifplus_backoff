@@ -31,7 +31,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     print("initState >");
     initLib();
     super.initState();
-    Title = "Verif+ : Intervention";
+    Title = "Vérif+ : Intervention";
     print("initState <");
   }
 
@@ -76,7 +76,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                       Text(
                         Title,
                         textAlign: TextAlign.center,
-                        style: gColors.bodyTitle1_B_Wr,
+                        style: gColors.bodyTitle1_B_W,
                       ),
                       Spacer(),
                       Container(

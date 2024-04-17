@@ -15,6 +15,7 @@ import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Fact.dart';
 import 'package:verifplus_backoff/widgets/Agences/Agences.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Grp.dart';
+import 'package:verifplus_backoff/widgets/Clients/Client_Interv.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Map.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Sit.dart';
 import 'package:verifplus_backoff/widgets/Contacts/Ctact_Grp.dart';
@@ -26,11 +27,9 @@ class Client_Fact_Controller {
 
 // SELECT * FROM Clients, Users Where Clients.Client_Commercial = Users.UserID;
 // SELECT Clients.* FROM Clients, Groupes, Sites, Users where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId AND Sites.Site_ResourceId = UserID;
-
-//SELECT Clients.*, Intervention_Responsable FROM Clients, Groupes, Sites, Zones, Interventions, Users where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = Users.UserID;
-//SELECT Clients.*, Intervention_Responsable2 FROM Clients, Groupes, Sites, Zones, Interventions, Users where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = Users.UserID;
-
-//SELECT Clients.*, Planning_ResourceId FROM Clients, Groupes, Sites, Zones, Interventions, Planning, Users where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = Users.UserID;
+// SELECT Clients.*, Intervention_Responsable FROM Clients, Groupes, Sites, Zones, Interventions, Users where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = Users.UserID;
+// SELECT Clients.*, Intervention_Responsable2 FROM Clients, Groupes, Sites, Zones, Interventions, Users where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = Users.UserID;
+// SELECT Clients.*, Planning_ResourceId FROM Clients, Groupes, Sites, Zones, Interventions, Planning, Users where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = Users.UserID;
 
 class Client_Dialog extends StatefulWidget {
   final Client client;
@@ -88,8 +87,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   List<String> ListParam_ParamRgltID = [];
   String selectedValueRglt = "";
   String selectedValueRgltID = "";
-
-
+  String selectedValueForme = "";
   String selectedUserInter = "";
   String selectedUserInterID = "";
 
@@ -119,7 +117,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ListParam_ParamRgltID.clear();
     ListParam_ParamRgltID.addAll(DbTools.ListParam_ParamFamID);
 
-
     selectedValueRglt = ListParam_ParamRglt[0];
     for (int i = 0; i < ListParam_ParamRglt.length; i++) {
       String element = ListParam_ParamRglt[i];
@@ -127,6 +124,16 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
         selectedValueRglt = element;
       }
     }
+
+    selectedValueForme = DbTools.ListParam_ParamForme[0];
+    for (int i = 0; i < DbTools.ListParam_ParamForme.length; i++) {
+      String wForme = DbTools.ListParam_ParamForme[i];
+      print("element [$wForme]");
+      if (wForme.compareTo("${wClient.Client_Civilite}") == 0) {
+        selectedValueForme = wForme;
+      }
+    }
+    print("selectedValueForme ($selectedValueForme)");
 
     print("initLib > ${widget.client.ClientId}");
     await DbTools.getParam_Saisie_Param("Type");
@@ -193,8 +200,8 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       selectedValueFam = ListParam_ParamFam[ListParam_ParamFamID.indexOf(selectedValueFamID)];
     }
     print("selected ${wClient.Client_Famille} FAMILLE  $selectedValueFamID $selectedValueFam");
-    Title = "Verif+ : Fiche client";
-    print("initLib <>>");
+    Title = "Vérif+ : Fiche client";
+    print("initLib <<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
     setState(() {});
   }
@@ -249,7 +256,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                       Text(
                         Title,
                         textAlign: TextAlign.center,
-                        style: gColors.bodyTitle1_B_Wr,
+                        style: gColors.bodyTitle1_B_W,
                       ),
                       Spacer(),
                       Container(
@@ -275,7 +282,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       Client_Fact(client_Fact_Controller: client_Fact_Controller,),
       (DbTools.gViewCtact.compareTo("Groupe") == 0) ? Ctact_Grp(onMaj: onMaj,) : Client_Grp(onMaj: onMaj,),
       (DbTools.gViewCtact.compareTo("Site") == 0) ? Ctact_Site(onMaj: onMaj,) : Client_Sit(onMaj: onMaj,),
-      wScreen("Echéances"),
+      Client_Interv(onMaj: onMaj,),
       wScreen("Docs ventes"),
       wScreen("Articles/parc"),
       wScreen("Stat"),
@@ -297,7 +304,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
               ContentDetailCadre(context),
               Container(
                 width: screenWidth,
-                height: screenHeight - 325,
+                height: screenHeight - 300,
 //                color: Colors.red,
                 child: taBarContainer(),
               ),
@@ -313,14 +320,14 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       tabDuration : Duration(milliseconds: 600),
       color: gColors.primary,
       children: widgetChildren,
-
-      selectedTextStyle: gColors.bodyTitle20_B_Wr,
+      selectedTextStyle: gColors.bodyTitle1_B_Wr,
       unselectedTextStyle: gColors.bodyTitle1_B_Gr,
+      tabExtent: 40,
       tabs: [
         'Fact. / Livr.',
         'Groupes',
         'Sites',
-        'Echéances',
+        'Historique',
         'Docs ventes',
         'Articles/parc',
         'Stat',
@@ -384,7 +391,8 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                   children: [
                     Row(
                       children: [
-                        gColors.TxtField(-1, 16, "Forme", textController_Civilite),
+                        DropdownButtonForme(),
+//                        gColors.TxtField(-1, 16, "Forme", textController_Civilite),
                         Container(
                           width: 30,
                         ),
@@ -428,37 +436,11 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                             selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
                           });
                         }, DbTools.List_UserInter, DbTools.List_UserInterID),
-
-
-
                         DropdownButtonDepot(),
-                      ],
-                    ),
-                    Container(
-                      height: 5,
-                    ),
-                    Row(
-                      children: [
-                        gColors.TxtNum(80, "CAHT annuel", 10345),
-                        gColors.TxtNum(80, "Solde actuel", -345),
-
-                        Container(
-                          width: 20,
-                        ),
-
-                        gColors.Txt(160, "Première Facturation", "31/05/2020"),
-                        Container(
-                          width: 10,
-                        ),
-                        gColors.Txt(160, "Dernère Facturation", "31/05/2023"),
-                        Container(
-                          width: 10,
-                        ),
-
                         DropdownButtonRglt(),
-
                       ],
                     ),
+
                     Container(
                       height: 5,
                     ),
@@ -579,9 +561,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
 
   void InseeSiret() async {
     String wSiret = textController_Siret.text;
-
     print("InseeSiret $wSiret");
-
     wSiret = wSiret.replaceAll(" ", "");
     print("InseeSiret $wSiret");
     if (wSiret.length != 14) {
@@ -625,7 +605,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       print("iSiret97_2 $iSiret97_2 iCleTva $iCleTva sCleTva $sCleTva");
 
       String NoTVA = "FR$sCleTva$iSiret";
-
       Alert(
         context: context,
         style: confirmStyle,
@@ -636,7 +615,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
           child: Image.asset('assets/images/AppIco.png'),
         ),
         title: "RECHERCHE DU SIRET DANS INSEE",
-        desc: "Êtes-vous sûre de vouloir remplacer les données ?\n${Api_Gouv.siret_Nom}\n${Api_Gouv.siret_Rue}\n${Api_Gouv.siret_Cp} ${Api_Gouv.siret_Ville}\n\nNAF : ${Api_Gouv.siret_NAF}\n\nTVA : $NoTVA",
+        desc: "Êtes-vous sûre de vouloir remplacer les données ?\n${Api_Gouv.siret_Nom}\n${Api_Gouv.siret_Rue}\n${Api_Gouv.siret_Cp} ${Api_Gouv.siret_Ville}\n\nNAF : ${Api_Gouv.siret_NAF}\n\nTVA : $NoTVA\n\nCat. Jur. : ${Api_Gouv.siret_Cat}",
         buttons: [
           DialogButton(
               child: Text(
@@ -881,10 +860,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ]);
   }
 
-
-
-
-
   Widget DropdownButtonRglt() {
     return Row(children: [
       Container(
@@ -926,5 +901,47 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ]);
   }
 
+  Widget DropdownButtonForme() {
+    return Row(children: [
 
+      Container(
+        width: 70,
+        child: Text("Forme : ",
+          style: gColors.bodySaisie_N_G,),
+      ),
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              hint: Text(
+                'Séléctionner une Forme',
+                style: gColors.bodyTitle1_N_Gr,
+              ),
+              items: DbTools.ListParam_ParamForme.map((item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_G,
+                ),
+              )).toList(),
+              value: textController_Civilite.text,
+              onChanged: (value) {
+                setState(() {
+                  textController_Civilite.text = value!;
+                  print("selectedValueForme ${textController_Civilite.text}");
+                  setState(() {});
+                });
+              },
+              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+              buttonHeight: 30,
+              dropdownMaxHeight: 800,
+              itemHeight: 32,
+            )),
+      ),
+    ]);
+  }
+  
+  
+  
+  
+  
 }

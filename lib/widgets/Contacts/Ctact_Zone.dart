@@ -1,4 +1,5 @@
 import 'package:davi/davi.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
@@ -292,11 +293,7 @@ class _Ctact_ZoneState extends State<Ctact_Zone> {
 
                     ],
                   ),
-                  Row(
-                    children: [
-                      gColors.TxtField(80, 40, "Civilité", textController_Contact_Civilite),
-                    ],
-                  ),
+                  DropdownButtonCiv(),
                   Row(
                     children: [
                       gColors.TxtField(80, 40, "Prénom", textController_Contact_Prenom),
@@ -376,5 +373,51 @@ class _Ctact_ZoneState extends State<Ctact_Zone> {
             textStyle: gColors.bodySaisie_N_G,
           ),
         ));
+  }
+
+  Widget DropdownButtonCiv() {
+    return Row(children: [
+      Container(
+        width: 84,
+        child: Text("Civilité",
+          style: gColors.bodySaisie_B_G,),
+      ),
+      Container(
+        width: 12,
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        child: Text(
+          ":",
+          style: gColors.bodySaisie_B_G,
+        ),
+      ),
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              hint: Text(
+                'Séléctionner une civilité',
+                style: gColors.bodyTitle1_N_Gr,
+              ),
+              items: DbTools.ListParam_ParamCiv.map((item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_G,
+                ),
+              )).toList(),
+              value: textController_Contact_Civilite.text,
+              onChanged: (value) {
+                setState(() {
+                  textController_Contact_Civilite.text = value!;
+                  print("textController_Contact_Civilite $textController_Contact_Civilite.text");
+                  setState(() {});
+                });
+              },
+              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+              buttonHeight: 30,
+              dropdownMaxHeight: 800,
+              itemHeight: 32,
+            )),
+      ),
+    ]);
   }
 }

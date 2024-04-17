@@ -52,7 +52,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.82";
+  static var gVersion = "v1.0.87";
   static bool gTED = true;
 
   static var notif = Notif();
@@ -62,10 +62,8 @@ class DbTools {
   static bool gIsRememberLogin = true;
   static int gCurrentIndex = 0;
   static var database;
-
   static String gViewAdr = "";
   static String gViewCtact = "";
-
   static var gUsername = "";
   static var gPassword = "";
   static var gUser_AuthID = "";
@@ -73,12 +71,9 @@ class DbTools {
   static String? gImagePath;
   static Image? gimage;
   static var gUserId = 0;
-
   static String OrgLib = "";
   static String ParamTypeOg = "";
-
   static bool gDemndeReload = false;
-
   static List<String> List_TypeInter = [];
   static List<String> List_TypeInterID = [];
   static List<String> List_ParcTypeInter = [];
@@ -509,6 +504,10 @@ class DbTools {
   static List<Param_Param> ListParam_ParamAll = [];
   static List<Param_Param> ListParam_Param = [];
   static List<Param_Param> ListParam_Param_Abrev = [];
+  static List<Param_Param> ListParam_Param_Civ = [];
+  static List<String> ListParam_ParamCiv = [];
+  static List<String> ListParam_ParamForme = [];
+
   static List<Param_Param> ListParam_Paramsearchresult = [];
   static Param_Param gParam_Param = Param_Param.Param_ParamInit();
 
@@ -1741,21 +1740,7 @@ class DbTools {
     return false;
   }
 
-  static Future<bool> getClient(String Id) async {
-//    String wSlq = "SELECT * FROM Clients Where ClientId = '${Id}'";
-    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' WHERE ClientId = '$Id' ORDER BY Client_Nom;";
 
-    print("getClient wSlq $wSlq");
-    ListClient = await getClient_API_Post("select", wSlq);
-
-    if (ListClient == null) return false;
-    print("getClient ${ListClient.length}");
-    if (ListClient.length > 0) {
-      gClient = ListClient[0];
-      return true;
-    }
-    return false;
-  }
 
   static Future<bool> setClient(Client Client) async {
     String wSlq = "UPDATE Clients SET "
@@ -2167,6 +2152,25 @@ class DbTools {
     return false;
   }
 
+
+
+
+
+  static Future<bool> getSitesClient(int ID) async {
+    String wTmp = "SELECT Sites.* FROM  Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId WHERE Groupes.Groupe_ClientId = $ID ORDER BY Site_Nom";
+
+//    print("wTmp getSitesSite ${wTmp}");
+    ListSite = await getSite_API_Post("select", wTmp);
+
+    if (ListSite == null) return false;
+//    print("getSitesSite ${ListSite.length}");
+    if (ListSite.length > 0) {
+      //    print("getSitesSite return TRUE");
+      return true;
+    }
+    return false;
+  }
+
   static Future getSiteID(int ID) async {
     ListSite.forEach((element) {
       if (element.SiteId == ID) {
@@ -2392,7 +2396,39 @@ class DbTools {
     return false;
   }
 
+  static Future<bool> getInterventionsClient(int ID) async {
+/*
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId WHERE Intervention_ZoneId = 0 ORDER BY 1;
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId WHERE SiteId = 723;
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId WHERE GroupeId = 174;
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId  WHERE ClientId = 79;
+*/
+
+    String wTmp = "SELECT Clients.Client_Nom, Groupes.Groupe_Nom, Sites.Site_Nom, Zones.Zone_Nom,a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId  WHERE ClientId = $ID;";
+    print("wTmp $wTmp");
+
+    ListIntervention = await getIntervention_API_Post_Client("select", wTmp);
+
+    if (ListIntervention == null) return false;
+    //  print("getInterventionsSite ${ListIntervention.length}");
+    if (ListIntervention.length > 0) {
+      //  print("getInterventionsSite return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+
+
   static Future<bool> getInterventionsZone(int ID) async {
+/*
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId WHERE Intervention_ZoneId = 0 ORDER BY 1;
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId WHERE SiteId = 723;
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId WHERE GroupeId = 174;
+    SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId  WHERE ClientId = 79;
+*/
+
     String wTmp = "SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId WHERE Intervention_ZoneId = $ID ORDER BY 1;";
     print("wTmp $wTmp");
 
@@ -2418,6 +2454,7 @@ class DbTools {
     }
     return false;
   }
+
 
   static Future getInterventionID(int ID) async {
     ListIntervention.forEach((element) {
@@ -2499,6 +2536,35 @@ class DbTools {
     }
     return [];
   }
+
+  static Future<List<Intervention>> getIntervention_API_Post_Client(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+//    print("getIntervention_API_Post " + aSQL);
+
+    http.StreamedResponse response = await request.send();
+    //  print("getIntervention_API_Post response ${response.statusCode}" );
+
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      if (items != null) {
+        List<Intervention> InterventionList = await items.map<Intervention>((json) {
+          return Intervention.fromJsonClient(json);
+        }).toList();
+        return InterventionList;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+
 
   //*************************************
   //************   PLANNING   ***********

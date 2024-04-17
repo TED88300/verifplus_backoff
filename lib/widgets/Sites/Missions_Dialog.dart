@@ -223,7 +223,7 @@ class _MissionsState extends State<Missions> {
               Text(
                 "Vérif+ : Intervention / Missions",
                 textAlign: TextAlign.center,
-                style: gColors.bodyTitle1_B_Wr,
+                style: gColors.bodyTitle1_B_W,
               ),
             ],
           )),

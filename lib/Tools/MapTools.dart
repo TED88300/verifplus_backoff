@@ -37,13 +37,13 @@ class MapTools {
     List<Component> components = [];
     var risult = await googleGeocoding.geocoding.get(Adresse, components);
 
-    print("geocoding $Adresse ");
+  //  print("geocoding $Adresse ");
 
     if (risult!.status!.contains("OK")) {
       if (risult.results!.length > 0) {
         var element = risult.results![0];
 
-        print("geocoding ${element.addressComponents }");
+//        print("geocoding ${element.addressComponents }");
 
 
         wLatLng = LatLng(element.geometry!.location!.lat!, element.geometry!.location!.lng!);

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/shared_Cookies.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/2-login.dart';
@@ -25,9 +26,13 @@ class SplashScreenState extends State<SplashScreen>
   late Animation<double> animation;
 
   startTime() async {
-
     print(">>>>>>>>>>>>>>>>>> inseeToken");
-    await Api_Gouv.inseeToken() ;
+    try {
+      await Api_Gouv.inseeToken() ;
+    } catch (e) {
+    }
+
+    print("<<<<<<<<<<<<<<<<<< inseeToken");
 //    await DbTools.getClientAll();
     await DbTools.getParam_ParamAll();
     DbTools.getParam_ParamFam("FamClient");
@@ -37,11 +42,7 @@ class SplashScreenState extends State<SplashScreen>
   }
 
   void navigationPage() async{
-
-
-
     print("splash navigationPage IsRememberLogin  $IsRememberLogin");
-
     //Excel.CrtExcelPat("TK_Debarras_${DbTools.gInventaire.nom}.xlsx");
     await DbTools.getParam_SaisieAll();
     await DbTools.getParam_ParamAll();
@@ -52,6 +53,31 @@ class SplashScreenState extends State<SplashScreen>
         DbTools.ListParam_Param_Abrev.add(element);
       }
     });
+
+    DbTools.ListParam_Param_Civ.clear();
+    DbTools.ListParam_ParamAll.forEach((element) {
+      if (element.Param_Param_Type.compareTo("Civ") == 0) {
+        DbTools.ListParam_Param_Civ.add(element);
+      }
+    });
+
+    DbTools.ListParam_ParamCiv.clear();
+    DbTools.ListParam_ParamCiv.add("");
+    for (int i = 0; i < DbTools.ListParam_Param_Civ.length; i++) {
+      Param_Param wParam_Param = DbTools.ListParam_Param_Civ[i];
+      if (wParam_Param.Param_Param_Text == "C")
+       DbTools.ListParam_ParamCiv.add(wParam_Param.Param_Param_ID);
+    }
+
+    DbTools.ListParam_ParamForme.clear();
+    DbTools.ListParam_ParamForme.add("");
+    for (int i = 0; i < DbTools.ListParam_Param_Civ.length; i++) {
+      Param_Param wParam_Param = DbTools.ListParam_Param_Civ[i];
+      if (wParam_Param.Param_Param_Text != "C")
+        DbTools.ListParam_ParamForme.add(wParam_Param.Param_Param_ID);
+    }
+
+
 
     if (IsRememberLogin)
       {

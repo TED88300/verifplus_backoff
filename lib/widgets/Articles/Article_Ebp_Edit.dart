@@ -86,7 +86,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
       color: Colors.black26,
       children: widgetChildren,
 
-      selectedTextStyle: gColors.bodyTitle20_B_Wr,
+      selectedTextStyle: gColors.bodyTitle1_B_W,
       unselectedTextStyle: gColors.bodyTitle1_B_Gr,
 
 
@@ -181,9 +181,9 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                 ),
                 Spacer(),
                 Text(
-                  "Vérif+ : Edition Utilisateur ",
+                  "Vérif+ : Article EBP",
                   textAlign: TextAlign.center,
-                  style: gColors.bodyTitle1_B_Wr,
+                  style: gColors.bodyTitle1_B_W,
                 ),
                 Spacer(),
                 Container(

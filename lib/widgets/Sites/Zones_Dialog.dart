@@ -26,7 +26,7 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
     print("initState >");
     initLib();
     super.initState();
-    Title = "Verif+ : Zone";
+    Title = "Vérif+ : Zone";
     print("initState <");
   }
 
@@ -67,7 +67,7 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
                       Text(
                         Title,
                         textAlign: TextAlign.center,
-                        style: gColors.bodyTitle1_B_Wr,
+                        style: gColors.bodyTitle1_B_W,
                       ),
                       Spacer(),
                       Container(

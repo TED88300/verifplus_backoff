@@ -55,11 +55,6 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
     DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
 
     await DbTools.getParam_Saisie_Base("Desc");
-
-
-
-
-
     String DescAff = "";
 
     DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);

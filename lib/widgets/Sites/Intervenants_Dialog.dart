@@ -66,7 +66,7 @@ class _IntervenantsState extends State<Intervenants> {
               Text(
                 "Vérif+ : Intervention",
                 textAlign: TextAlign.center,
-                style: gColors.bodyTitle1_B_Wr,
+                style: gColors.bodyTitle1_B_W,
               ),
             ],
           )),

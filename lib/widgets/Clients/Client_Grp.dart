@@ -1,6 +1,9 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -87,6 +90,8 @@ class _Client_GrpState extends State<Client_Grp> {
   Future AlimSaisie() async {
     print("AlimSaisie ${DbTools.gGroupe.Desc()}");
 
+    textController_Adresse_Geo.text = "${DbTools.gGroupe.Groupe_Adr1} ${DbTools.gGroupe.Groupe_CP} ${DbTools.gGroupe.Groupe_Ville}";
+
 
     textController_Groupe_Code.text = DbTools.gGroupe.Groupe_Code;
     textController_Groupe_Nom.text = DbTools.gGroupe.Groupe_Nom;
@@ -108,6 +113,7 @@ class _Client_GrpState extends State<Client_Grp> {
       }
     }
 
+    await DbTools.getSitesGroupe(DbTools.ListGroupe[0].GroupeId);
 
 
     setState(() {});
@@ -139,8 +145,8 @@ class _Client_GrpState extends State<Client_Grp> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(1, 1, 1, 1),
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       color: Colors.white,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -191,6 +197,12 @@ class _Client_GrpState extends State<Client_Grp> {
                     CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.orange, Icons.people_outline_outlined, ToolsBarCtact, tooltip: "Contacts"),
                   ),
 
+                  (DbTools.gGroupe.Groupe_Nom != "???" || DbTools.ListSite.length > 0)
+                      ? Container()
+                      : Container(
+                    padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
+                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
+                  ),
 
                 ],
               ),
@@ -205,7 +217,7 @@ class _Client_GrpState extends State<Client_Grp> {
   Widget ToolsBar(BuildContext context) {
     return Container(
         color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Column(
           children: [
             Row(
@@ -213,48 +225,50 @@ class _Client_GrpState extends State<Client_Grp> {
                 Container(
                   width: 5,
                 ),
+
                 Icon(
                   Icons.search,
                   color: Colors.blue,
-                  size: 30.0,
-                ),
-                Container(
-                  width: 10,
-                ),
-                Expanded(
-                    child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  child: TextFormField(
-                    controller: Search_TextController,
-                    onChanged: (String? value) async {
-                      print("_buildFieldTextSearch search ${Search_TextController.text}");
-                      await Filtre();
-                    },
-                    decoration: InputDecoration(
-                        isDense: true,
-                        border: InputBorder.none,
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.cancel),
-                          onPressed: () async {
-                            Search_TextController.clear();
-                            await Filtre();
-                          },
-                        )),
-                    style: gColors.bodySaisie_B_B,
-                  ),
-                )),
-                Container(
-                  width: 10,
+                  size: 20.0,
                 ),
 
                 Container(
                   width: 10,
                 ),
-              ],
-            ),
-            Container(
-              height: 5,
-              color: gColors.white,
+                Expanded(child:
+                    TextFormField(
+                    controller: Search_TextController,
+
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    ),
+                    onChanged: (String? value) async {
+                      print("_buildFieldTextSearch search ${Search_TextController.text}");
+                      await Filtre();
+                    },
+                    style: gColors.bodySaisie_B_B,
+                ),
+                ),
+                Container(
+                  width: 10,
+                ),
+
+
+                IconButton(
+                  icon: Icon(Icons.cancel,
+                    size: 20.0,
+                  ),
+                  onPressed: () async {
+                    Search_TextController.clear();
+                    await Filtre();
+                  },
+                ),
+                Container(
+                  width: 20,
+                ),
+             ],
             ),
             Container(
               height: 1,
@@ -284,6 +298,7 @@ class _Client_GrpState extends State<Client_Grp> {
   void ToolsBarSave() async {
     print("ToolsBarSave");
 
+
     DbTools.gGroupe.Groupe_Code = textController_Groupe_Code.text;
     DbTools.gGroupe.Groupe_Nom = textController_Groupe_Nom.text;
     DbTools.gGroupe.Groupe_Adr1 = textController_Groupe_Adr1.text;
@@ -312,6 +327,181 @@ class _Client_GrpState extends State<Client_Grp> {
     await DbTools.setGroupe(DbTools.gGroupe);
     await Filtre();
     AlimSaisie();
+  }
+
+  Widget fadeAlertAnimation(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+      ) {
+    return Align(
+      child: FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+    );
+  }
+  var alertStyle = AlertStyle(
+      animationType: AnimationType.fromTop,
+      isCloseButton: false,
+      isOverlayTapDismiss: false,
+      descStyle: TextStyle(fontWeight: FontWeight.bold),
+      animationDuration: Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: gColors.bodyTitle1_B_tks,
+      overlayColor: Color(0x88000000),
+      alertElevation: 20,
+      alertAlignment: Alignment.center);
+
+  void ToolsBarDelete() async {
+    print("ToolsBarDelete");
+    Alert(
+      context: context,
+      style: alertStyle,
+      alertAnimation: fadeAlertAnimation,
+      image: Container(
+        height: 100,
+        width: 100,
+        child: Image.asset('assets/images/AppIco.png'),
+      ),
+      title: "Vérif+ Alerte",
+      desc: "Êtes-vous sûre de vouloir supprimer ce Groupe ?",
+      buttons: [
+        DialogButton(
+            child: Text(
+              "Annuler",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            color: Colors.black12),
+        DialogButton(
+            child: Text(
+              "Suprimer",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () async {
+              await DbTools.delGroupe(DbTools.gGroupe);
+              await Reload();
+              setState(() {});
+              Navigator.of(context).pop();
+            },
+            color: Colors.red)
+      ],
+    ).show();
+  }
+
+
+  TextEditingController textController_Adresse_Geo = TextEditingController();
+
+  Widget AutoAdresse(double lWidth, double wWidth, String wLabel, TextEditingController textEditingController, {int Ligne = 1, String sep = " : "}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        lWidth == -1
+            ? Container(
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          child: Text(
+            wLabel,
+            style: gColors.bodySaisie_N_G,
+          ),
+        )
+            : Container(
+          width: lWidth,
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          child: Text(
+            wLabel,
+            style: gColors.bodySaisie_N_G,
+          ),
+        ),
+        Container(
+          width: 12,
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          child: Text(
+            sep,
+            style: gColors.bodySaisie_B_G,
+          ),
+        ),
+        Container(
+            width: wWidth,
+            child: TypeAheadField(
+              animationStart: 0,
+              animationDuration: Duration.zero,
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: textEditingController,
+                decoration: InputDecoration(
+                  isDense: true,
+                ),
+              ),
+              suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                color: Colors.white,
+              ),
+              suggestionsCallback: (pattern) async {
+                await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
+                List<String> matches = <String>[];
+                Api_Gouv.properties.forEach((propertie) {
+                  matches.add(propertie.label!);
+                });
+                return matches;
+              },
+              itemBuilder: (context, sone) {
+                return Card(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: Text(sone.toString()),
+                    ));
+              },
+              onSuggestionSelected: (suggestion) {
+                Api_Gouv.properties.forEach((propertie) {
+                  if (propertie.label!.compareTo(suggestion) == 0) {
+                    Api_Gouv.gProperties = propertie;
+                  }
+                });
+                textController_Adresse_Geo.text = suggestion;
+              },
+            )),
+        Container(
+          width: 20,
+        ),
+      ],
+    );
+  }
+
+  void ToolsBarCopySearch() async {
+    print("ToolsBarCopySearch_Livr ${Api_Gouv.gProperties.toJson()}");
+    textController_Groupe_Adr1.text = Api_Gouv.gProperties.name!;
+    textController_Groupe_CP.text = Api_Gouv.gProperties.postcode!;
+    textController_Groupe_Ville.text = Api_Gouv.gProperties.city!;
+  }
+
+
+  Widget ToolsBar_Insee(BuildContext context) {
+    return Container(
+        width: 400,
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 320,
+                  child: AutoAdresse(80, 200, "Recherche", textController_Adresse_Geo),
+                ),
+                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.arrow_downward, ToolsBarCopySearch, tooltip: "Copier recherche"),
+              ],
+            ),
+
+          ],
+        ));
   }
 
   Widget ContentGroupeCadre(BuildContext context) {
@@ -357,8 +547,7 @@ class _Client_GrpState extends State<Client_Grp> {
             child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Column(children: [
-
-
+                  ToolsBar_Insee(context),
                   Row(
                     children: [
                       DropdownButtonDepot(),                    ],
@@ -418,7 +607,7 @@ class _Client_GrpState extends State<Client_Grp> {
                   ),
                   Row(
                     children: [
-                      gColors.TxtField(80, 40, "Remarque", textController_Groupe_Rem, Ligne: 10),
+                      gColors.TxtField(80, 40, "Remarque", textController_Groupe_Rem, Ligne: 8),
                     ],
                   ),
                 ]))));
@@ -430,40 +619,58 @@ class _Client_GrpState extends State<Client_Grp> {
       new DaviColumn(name: 'Nom', width: 450, stringValue: (row) => row.Groupe_Nom),
       new DaviColumn(name: 'Adresse', width: 450, stringValue: (row) => "${row.Groupe_Adr1}"),
       new DaviColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Groupe_CP}"),
-      new DaviColumn(name: 'Ville', width: 320, stringValue: (row) => "${row.Groupe_Ville}"),
+      new DaviColumn(name: 'Ville', width: 310, stringValue: (row) => "${row.Groupe_Ville}"),
     ];
-    print("GroupeGridWidget ${DbTools.ListGroupesearchresult.length}");
     DaviModel<Groupe>? _model;
     _model = DaviModel<Groupe>(rows: DbTools.ListGroupesearchresult, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Groupe>(visibleRowsCount: 16, _model,
-            onRowTap: (aGroupe) async {
-          SelGroupe = DbTools.ListGroupesearchresult.indexOf(aGroupe);
-          DbTools.gGroupe = aGroupe;
-          AlimSaisie();
-        }),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
+    return
 
-          row: RowThemeData(color: (rowIndex) {
-            return SelGroupe == rowIndex ? gColors.secondarytxt : Colors.white;
-          }),
+        new DaviTheme(
+            child: new Davi<Groupe>(
+                visibleRowsCount: 16,
+                _model,
+                onRowTap: (aGroupe) async {
+                  SelGroupe = DbTools.ListGroupesearchresult.indexOf(aGroupe);
+                  DbTools.gGroupe = aGroupe;
+                  AlimSaisie();
+                }),
+            data: DaviThemeData(
+              header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
+              headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
 
-          cell: CellThemeData(
-            contentHeight: 28,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
-        ));
+              row: RowThemeData(color: (rowIndex) {
+                return SelGroupe == rowIndex ? gColors.secondarytxt : Colors.white;
+              }),
+
+              cell: CellThemeData(
+                contentHeight: 28,
+                textStyle: gColors.bodySaisie_N_G,
+              ),
+            ),
+      );
+
+
+
   }
 
   Widget DropdownButtonDepot() {
     return Row(children: [
-
       Container(
-        width: 60,
-        child: Text("Agence : ", style: gColors.bodySaisie_B_G,),
+        width: 83,
+        child: Text(
+          "Agence",
+          style: gColors.bodySaisie_N_G,
+        ),
       ),
+      Container(
+        width: 12,
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        child: Text(
+          ":",
+          style: gColors.bodySaisie_N_G,
+        ),
+      ),
+
       Container(
         child: DropdownButtonHideUnderline(
             child: DropdownButton2(
@@ -495,7 +702,7 @@ class _Client_GrpState extends State<Client_Grp> {
                 color: Colors.white,
               ),
               buttonHeight: 30,
-              buttonWidth: 290,
+              buttonWidth: 250,
               dropdownMaxHeight: 250,
               itemHeight: 32,
             )),

@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:verifplus_backoff/Tools/DbTools.dart';
 
 import 'package:verifplus_backoff/Tools/MapTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 
@@ -20,10 +22,8 @@ class Client_Map_Dialog {
 
 
 class Client_Map extends StatefulWidget {
-
   final String aAdresse;
   const Client_Map({Key? key, required this.aAdresse}) : super(key: key, );
-
   @override
   State<Client_Map> createState() => _Client_MapState();
 }
@@ -37,8 +37,6 @@ class _Client_MapState extends State<Client_Map> {
   late GoogleMapController googleMapController;
 
   MapTools_Geocoding wMapTools_Geocoding = MapTools_Geocoding(LatLng(0, 0), "");
-
-
   final double _infoWindowWidth = 250;
   final double _markerOffset = 170;
 
@@ -55,7 +53,6 @@ class _Client_MapState extends State<Client_Map> {
     print("initLib > _center ${_center.longitude}");
 
     String aAdr = widget.aAdresse;
-
     wMapTools_Geocoding = await MapTools.GetLatLngfromAddress(aAdr);
     _center = wMapTools_Geocoding.Geo_LatLng;
     dbSiege = await MapTools.BitmapDescriptorAsset('assets/images/Ico.png');
@@ -90,7 +87,7 @@ class _Client_MapState extends State<Client_Map> {
                 Text(
                   "Vérif+ : Carte",
                   textAlign: TextAlign.center,
-                  style: gColors.bodyTitle1_B_Wr,
+                  style: gColors.bodyTitle1_B_W,
                 ),
                 Spacer(),
                 Container(

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -75,7 +76,6 @@ class _Client_FactState extends State<Client_Fact> {
     wIs_Hierarchie = await DbTools.Count_Hierarchie(DbTools.gClient.ClientId);
     print(">>>>>>>>>>>>>>@@@@@@@@@@>>>>>>>>>> wCount_Hierarchie $wIs_Hierarchie");
 
-
     print("••••• initLib Client_Fact getAdresseClientType");
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
@@ -92,7 +92,6 @@ class _Client_FactState extends State<Client_Fact> {
   void AlimSaisie() {
     textController_Adresse_Geo.text = "${DbTools.gAdresse.Adresse_Adr1} ${DbTools.gAdresse.Adresse_CP} ${DbTools.gAdresse.Adresse_Ville}";
 
-
     textController_Adresse_Adr1.text = DbTools.gAdresse.Adresse_Adr1;
     textController_Adresse_Adr2.text = DbTools.gAdresse.Adresse_Adr2;
     textController_Adresse_Adr3.text = DbTools.gAdresse.Adresse_Adr3;
@@ -102,8 +101,8 @@ class _Client_FactState extends State<Client_Fact> {
     textController_Adresse_Pays.text = DbTools.gAdresse.Adresse_Pays;
     textController_Adresse_Acces.text = DbTools.gAdresse.Adresse_Acces;
     textController_Adresse_Rem.text = DbTools.gAdresse.Adresse_Rem;
-
     textController_Contact_Civilite.text = DbTools.gContact.Contact_Civilite;
+
     textController_Contact_Prenom.text = DbTools.gContact.Contact_Prenom;
     textController_Contact_Nom.text = DbTools.gContact.Contact_Nom;
     textController_Contact_Fonction.text = DbTools.gContact.Contact_Fonction;
@@ -149,8 +148,10 @@ class _Client_FactState extends State<Client_Fact> {
     halfwidth = MediaQuery.of(context).size.width / 2 - 28;
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FACT build");
     return Container(
-      margin: EdgeInsets.fromLTRB(1, 1, 1, 1),
+
+      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
       padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+
       color: Colors.white,
 
       child: Row(
@@ -308,6 +309,8 @@ class _Client_FactState extends State<Client_Fact> {
     await DbTools.setAdresse(DbTools.gAdresseLivr);
 
     DbTools.gContactLivr.Contact_Civilite = textController_Livr_Contact_Civilite.text;
+
+
     DbTools.gContactLivr.Contact_Prenom = textController_Livr_Contact_Prenom.text;
     DbTools.gContactLivr.Contact_Nom = textController_Livr_Contact_Nom.text;
     DbTools.gContactLivr.Contact_Fonction = textController_Livr_Contact_Fonction.text;
@@ -495,7 +498,6 @@ class _Client_FactState extends State<Client_Fact> {
                     Api_Gouv.gProperties = propertie;
                   }
                 });
-
                 textController_Adresse_Geo.text = suggestion;
               },
             )),
@@ -655,11 +657,7 @@ class _Client_FactState extends State<Client_Fact> {
             child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Column(children: [
-                  Row(
-                    children: [
-                      gColors.TxtFieldCalc(wLabel, width, "Civilité", textController_Contact_Civilite),
-                    ],
-                  ),
+                  DropdownButtonCivFact(),
                   Row(
                     children: [
                       gColors.TxtFieldCalc(wLabel, width, "Prénom", textController_Contact_Prenom),
@@ -853,11 +851,8 @@ class _Client_FactState extends State<Client_Fact> {
             child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Column(children: [
-                  Row(
-                    children: [
-                      gColors.TxtFieldCalc(wLabel, width, "Civilité", textController_Livr_Contact_Civilite),
-                    ],
-                  ),
+
+                  DropdownButtonCivLIVR(),
                   Row(
                     children: [
                       gColors.TxtFieldCalc(wLabel, width, "Prénom", textController_Livr_Contact_Prenom),
@@ -1112,4 +1107,99 @@ class _Client_FactState extends State<Client_Fact> {
       ],
     );
   }
+
+  Widget DropdownButtonCivFact() {
+    return Row(children: [
+      Container(
+        width: 74,
+        child: Text("Civilité",
+          style: gColors.bodySaisie_B_G,),
+      ),
+      Container(
+        width: 12,
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        child: Text(
+          ":",
+          style: gColors.bodySaisie_B_G,
+        ),
+      ),
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              hint: Text(
+                'Séléctionner une civilité',
+                style: gColors.bodyTitle1_N_Gr,
+              ),
+              items: DbTools.ListParam_ParamCiv.map((item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_G,
+                ),
+              )).toList(),
+              value: textController_Contact_Civilite.text,
+              onChanged: (value) {
+                setState(() {
+                  textController_Contact_Civilite.text = value!;
+                  print("textController_Contact_Civilite $textController_Contact_Civilite.text");
+                  setState(() {});
+                });
+              },
+              buttonPadding: const EdgeInsets.only(left: 0, right: 5),
+              buttonHeight: 30,
+              dropdownMaxHeight: 800,
+              itemHeight: 32,
+            )),
+      ),
+    ]);
+  }
+
+  Widget DropdownButtonCivLIVR() {
+    return Row(children: [
+      Container(
+        width: 74,
+        child: Text("Civilité",
+          style: gColors.bodySaisie_B_G,),
+      ),
+      Container(
+        width: 12,
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        child: Text(
+          ":",
+          style: gColors.bodySaisie_B_G,
+        ),
+      ),
+
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              hint: Text(
+                'Séléctionner une civilité',
+                style: gColors.bodyTitle1_N_Gr,
+              ),
+              items: DbTools.ListParam_ParamCiv.map((item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_G,
+                ),
+              )).toList(),
+              value: textController_Livr_Contact_Civilite.text,
+              onChanged: (value) {
+                setState(() {
+                  textController_Livr_Contact_Civilite.text = value!;
+                  print("textController_Livr_Contact_Civilite $textController_Livr_Contact_Civilite.text");
+                  setState(() {});
+                });
+              },
+              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+              buttonHeight: 30,
+              dropdownMaxHeight: 800,
+              itemHeight: 32,
+            )),
+      ),
+    ]);
+  }
+
+
 }

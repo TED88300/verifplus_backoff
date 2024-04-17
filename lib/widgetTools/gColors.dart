@@ -316,7 +316,7 @@ class gColors {
 
   static TextStyle get bodyTitle1_B_W => TextStyle(
         color: white,
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: FontWeight.bold,
       );
 
@@ -834,7 +834,7 @@ class gColors {
                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                 child: Text(
                   wLabel,
-                  style: gColors.bodySaisie_B_G,
+                  style: gColors.bodySaisie_N_G,
                 ),
               ),
         Container(
@@ -842,7 +842,7 @@ class gColors {
           padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
           child: Text(
             sep,
-            style: gColors.bodySaisie_B_G,
+            style: gColors.bodySaisie_N_G,
           ),
         ),
         Container(

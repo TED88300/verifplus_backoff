@@ -36,7 +36,7 @@ class Param_Gamme_screen extends StatefulWidget {
 
 class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
   Param_Gamme wParam_Gamme = Param_Gamme.Param_GammeInit();
-  String Title = "Verif+ : Paramètres ";
+  String Title = "Vérif+ : Paramètres ";
 
   static List<String> ListParam_ParamOrgane = [];
   static List<String> ListParam_ParamOrganeID = [];
@@ -306,7 +306,7 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
     super.initState();
     initLib();
 
-    Title = "Verif+ : Paramètres - ${widget.wTitle}";
+    Title = "Vérif+ : Paramètres - ${widget.wTitle}";
   }
 
   @override

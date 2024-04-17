@@ -1,23 +1,21 @@
 import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
-import 'package:verifplus_backoff/widgets/Sites/Intervenants_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Sites/Missions_Dialog.dart';
 
-class Zone_Interv extends StatefulWidget {
-  const Zone_Interv({Key? key}) : super(key: key);
-
+class Client_Interv extends StatefulWidget {
+  final VoidCallback onMaj;
+  const Client_Interv({Key? key, required this.onMaj}) : super(key: key);
   @override
-  State<Zone_Interv> createState() => _Zone_IntervState();
+  State<Client_Interv> createState() => _Client_IntervState();
 }
 
-class _Zone_IntervState extends State<Zone_Interv> {
+class _Client_IntervState extends State<Client_Interv> {
   TextEditingController textController_Intervention_Date = TextEditingController();
   TextEditingController textController_Intervention_Type = TextEditingController();
   TextEditingController textController_Intervention_Remarque = TextEditingController();
@@ -30,48 +28,54 @@ class _Zone_IntervState extends State<Zone_Interv> {
   String selectedStatusInterID = "";
   String selectedFactInter = "";
   String selectedFactInterID = "";
-
   String selectedUserInter = "";
   String selectedUserInterID = "";
-
   String selectedUserInter2 = "";
   String selectedUserInterID2 = "";
 
-
-
   DateTime wDateTime = DateTime.now();
+
+  final Search_TextController = TextEditingController();
+
 
   Future initLib() async {
     await DbTools.initListFam();
-
     selectedTypeInter = DbTools.List_TypeInter[0];
     selectedTypeInterID = DbTools.List_TypeInterID[0];
-
     selectedParcTypeInter = DbTools.List_ParcTypeInter[0];
     selectedParcTypeInterID = DbTools.List_ParcTypeInterID[0];
-
     selectedStatusInter = DbTools.List_StatusInter[0];
     selectedStatusInterID = DbTools.List_StatusInterID[0];
-
     selectedFactInter = DbTools.List_FactInter[0];
     selectedFactInterID = DbTools.List_FactInterID[0];
-
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
-
     selectedUserInter2 = DbTools.List_UserInter[0];
     selectedUserInterID2 = DbTools.List_UserInterID[0];
-
-    await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+    await DbTools.getInterventionsClient(DbTools.gClient.ClientId);
     Filtre();
-
     AlimSaisie();
   }
 
   Future Filtre() async {
     DbTools.ListInterventionsearchresult.clear();
-    DbTools.ListInterventionsearchresult.addAll(DbTools.ListIntervention);
+
+
+    print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
+    if (Search_TextController.text.isEmpty) {
+      DbTools.ListInterventionsearchresult.addAll(DbTools.ListIntervention);
+    } else {
+      print("_buildFieldTextSearch liste ${Search_TextController.text}");
+      DbTools.ListIntervention.forEach((element) {
+        print("_buildFieldTextSearch element ${element.Desc()}");
+        if (element.Desc().toLowerCase().contains(Search_TextController.text.toLowerCase())) {
+          DbTools.ListInterventionsearchresult.add(element);
+        }
+      });
+    }
     DbTools.ListInterventionsearchresult.sort(DbTools.affSortComparisonData);
+
+
 
     if (DbTools.ListInterventionsearchresult.length > 0) {
       DbTools.gIntervention = DbTools.ListInterventionsearchresult[0];
@@ -84,7 +88,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
   void AlimSaisie() async {
 
-    print("AlimSaisie A ${DbTools.gIntervention.Cnt}");
+    print("AlimSaisie A");
     if (DbTools.gIntervention.Intervention_Type!.isNotEmpty) {
       selectedTypeInter = DbTools.gIntervention.Intervention_Type!;
       print("selectedTypeInter ${selectedTypeInter}");
@@ -154,7 +158,9 @@ class _Zone_IntervState extends State<Zone_Interv> {
     return Container(
       margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
       padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
           color: Colors.black26,
@@ -164,7 +170,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-//          ToolsBar(context),
+          ToolsBar(context),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,29 +181,8 @@ class _Zone_IntervState extends State<Zone_Interv> {
                   child: InterventionGridWidget(),
                 ),
               ),
-              Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter Interventions"),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
-                  ),
-
-                  ( DbTools.gIntervention.Cnt! > 0)
-                      ? Container()
-                      : Container(
-                    padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
-                  ),
 
 
-
-                ],
-              ),
-              ContentInterventionCadre(context),
             ],
           ),
         ],
@@ -205,33 +190,63 @@ class _Zone_IntervState extends State<Zone_Interv> {
     );
   }
 
+
+
   Widget ToolsBar(BuildContext context) {
     return Container(
         color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Column(
           children: [
             Row(
               children: [
                 Container(
-                  width: 10,
+                  width: 5,
                 ),
+
                 Icon(
                   Icons.search,
                   color: Colors.blue,
-                  size: 30.0,
+                  size: 20.0,
+                ),
+
+                Container(
+                  width: 10,
+                ),
+                Expanded(child:
+                TextFormField(
+                  controller: Search_TextController,
+
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  ),
+                  onChanged: (String? value) async {
+                    print("_buildFieldTextSearch search ${Search_TextController.text}");
+                    await Filtre();
+                  },
+                  style: gColors.bodySaisie_B_B,
+                ),
                 ),
                 Container(
                   width: 10,
                 ),
+
+
+                IconButton(
+                  icon: Icon(Icons.cancel,
+                    size: 20.0,
+                  ),
+                  onPressed: () async {
+                    Search_TextController.clear();
+                    await Filtre();
+                  },
+                ),
                 Container(
-                  width: 10,
+                  width: 20,
                 ),
               ],
-            ),
-            Container(
-              height: 5,
-              color: gColors.white,
             ),
             Container(
               height: 1,
@@ -241,132 +256,9 @@ class _Zone_IntervState extends State<Zone_Interv> {
         ));
   }
 
-  Widget fadeAlertAnimation(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
-    return Align(
-      child: FadeTransition(
-        opacity: animation,
-        child: child,
-      ),
-    );
-  }
-  var alertStyle = AlertStyle(
-      animationType: AnimationType.fromTop,
-      isCloseButton: false,
-      isOverlayTapDismiss: false,
-      descStyle: TextStyle(fontWeight: FontWeight.bold),
-      animationDuration: Duration(milliseconds: 400),
-      alertBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-        side: BorderSide(
-          color: Colors.grey,
-        ),
-      ),
-      titleStyle: gColors.bodyTitle1_B_tks,
-      overlayColor: Color(0x88000000),
-      alertElevation: 20,
-      alertAlignment: Alignment.center);
-
-  void ToolsBarDelete() async {
-    print("ToolsBarDelete");
-    Alert(
-      context: context,
-      style: alertStyle,
-      alertAnimation: fadeAlertAnimation,
-      image: Container(
-        height: 100,
-        width: 100,
-        child: Image.asset('assets/images/AppIco.png'),
-      ),
-      title: "Vérif+ Alerte",
-      desc: "Êtes-vous sûre de vouloir supprimer cette Intervention ?",
-      buttons: [
-        DialogButton(
-            child: Text(
-              "Annuler",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            color: Colors.black12),
-        DialogButton(
-            child: Text(
-              "Suprimer",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () async {
-              await DbTools.delIntervention(DbTools.gIntervention);
-              await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-              await Filtre();
-              Navigator.of(context).pop();
-            },
-            color: Colors.red)
-      ],
-    ).show();
-  }
 
 
 
-
-  void ToolsBarSave() async {
-    DbTools.gIntervention.Intervention_Date = textController_Intervention_Date.text;
-    DbTools.gIntervention.Intervention_Type = selectedTypeInter;
-    DbTools.gIntervention.Intervention_Status = selectedStatusInter;
-    DbTools.gIntervention.Intervention_Facturation = selectedFactInter;
-    DbTools.gIntervention.Intervention_Responsable = "$selectedUserInterID";
-    DbTools.gIntervention.Intervention_Responsable2 = "$selectedUserInterID2";
-    DbTools.gIntervention.Intervention_Remarque = textController_Intervention_Remarque.text;
-    await DbTools.setIntervention(DbTools.gIntervention);
-    await Filtre();
-  }
-
-  void ToolsBarAdd() async {
-    String wNow = DateFormat('yyyy/MM/dd').format(DateTime.now());
-    await DbTools.addIntervention(DbTools.gZone.ZoneId, wNow, "Vérification");
-    DbTools.getInterventionID(DbTools.gLastID);
-    await initLib();
-  }
-
-  Widget ContentInterventionCadre(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          width: 460,
-          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
-          padding: EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            border: Border.all(color: gColors.primary, width: 1),
-            borderRadius: BorderRadius.circular(5),
-            shape: BoxShape.rectangle,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ContentIntervention(context),
-            ],
-          ),
-        ),
-        Positioned(
-          left: 50,
-          top: 12,
-          child: Container(
-            padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-            color: Colors.white,
-            child: Text(
-              'Intervention ${DbTools.gIntervention.InterventionId}',
-              style: TextStyle(color: Colors.black, fontSize: 12),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   void Intervenants() async {
 //    await Intervenants_Dialog.Intervenants_dialog(context);
@@ -549,8 +441,13 @@ class _Zone_IntervState extends State<Zone_Interv> {
                           ));
                 });
           }),
+
+
+      new DaviColumn(name: 'Groupe', grow: 1, stringValue: (row) => "${row.Groupe_Nom}"),
+      new DaviColumn(name: 'Site_Nom', grow: 1, stringValue: (row) => "${row.Site_Nom}"),
+      new DaviColumn(name: 'Zone_Nom', grow: 1, stringValue: (row) => "${row.Zone_Nom}"),
       new DaviColumn(name: 'Date', width: 100, stringValue: (row) => "${row.Intervention_Date}"),
-      new DaviColumn(name: 'Organes', width: 100, stringValue: (row) => "${DbTools.getParam_Param_Text("Type_Organe", row.Intervention_Parcs_Type!)}"),
+      new DaviColumn(name: 'Organes', width: 150, stringValue: (row) => "${DbTools.getParam_Param_Text("Type_Organe", row.Intervention_Parcs_Type!)}"),
       new DaviColumn(name: 'Type', width: 100, stringValue: (row) => "${row.Intervention_Type}"),
       new DaviColumn(name: 'Status', width: 100, stringValue: (row) => "${row.Intervention_Status}"),
       new DaviColumn(name: 'Facturation', width: 100, stringValue: (row) => "${row.Intervention_Facturation}"),

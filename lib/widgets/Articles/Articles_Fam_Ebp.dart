@@ -14,7 +14,7 @@ class Articles_Fam_Ebp extends StatefulWidget {
 class _Articles_Fam_EbpState extends State<Articles_Fam_Ebp> {
   Article_Fam_Ebp wArticle_Fam_Ebp = Article_Fam_Ebp.Article_Fam_EbpInit();
 
-  String Title = "Verif+ : Paramètres ";
+  String Title = "Vérif+ : Paramètres ";
   bool isSSfam = false;
   bool bReload = true;
   bool bsetSt = true;

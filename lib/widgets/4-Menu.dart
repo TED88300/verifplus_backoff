@@ -136,7 +136,7 @@ class _MenuState extends State<Menu> {
                   Text(
                     "Vérif+ : $wTitre",
                     textAlign: TextAlign.center,
-                    style: gColors.bodyTitle1_B_Wr,
+                    style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
                   InkWell(
@@ -221,6 +221,19 @@ class _MenuState extends State<Menu> {
             },
           ),
           PlutoMenuItem(
+            title: "Civilités",
+            icon: Icons.people,
+            onTap: () {
+              wTitre = "Civilités";
+              setState(() {
+                DbTools.gDemndeReload = true;
+                wAff = Param_Fam_screen(wType: "Civ", wSsFam: false, wTitle: "Civilités");
+              });
+            },
+          ),
+
+
+          PlutoMenuItem(
             title: "Types d'adresses",
             icon: Icons.people,
             onTap: () {
@@ -231,6 +244,8 @@ class _MenuState extends State<Menu> {
               });
             },
           ),
+
+
 
           PlutoMenuItem(
             title: "Agences",

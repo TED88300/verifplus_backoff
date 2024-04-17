@@ -17,10 +17,6 @@ import 'package:image/image.dart' as IMG;
 
 class Upload {
 
-
-
-
-
   static Future<void> UploadFilePicker(String imagepath, VoidCallback onSetState) async {
     print("UploadFilePicker $imagepath");
 
@@ -38,14 +34,10 @@ class Upload {
       FlutterWebFile file = files[0];
       print("file " + file.file.name);
       List<int> stream = file.fileBytes;
-
       Uint8List bytes = Uint8List.fromList(stream);
-
       IMG.Image? img = await IMG.decodeImage(bytes);
       IMG.Image resized = await IMG.copyResize(img!, width: 940, maintainAspect: true);
       List<int> stream2 = await IMG.encodeJpg(resized);
-
-
 
       String wPath = DbTools.SrvUrl;
       var uri = Uri.parse(wPath.toString());
@@ -55,13 +47,7 @@ class Upload {
         'zasq': 'uploadphoto',
         'imagepath': imagepath,
       });
-
-
       print("stream ${stream.length} stream2 ${stream2.length} " );
-
-
-
-
       var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream2, filename: basename("xxx.jpg"));
       request.files.add(multipartFile);
       var response = await request.send();

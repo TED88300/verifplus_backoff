@@ -35,7 +35,7 @@ class Param_Param_Abrev_screen extends StatefulWidget {
 
 class _Param_Param_Abrev_screenState extends State<Param_Param_Abrev_screen> {
   Param_Param wParam_Param = Param_Param.Param_ParamInit();
-  String Title = "Verif+ : Paramètres ";
+  String Title = "Vérif+ : Paramètres ";
 
 //  List<DaviColumn<Param_Param>> wColumns = [];
   bool bReload = true;
@@ -70,7 +70,7 @@ class _Param_Param_Abrev_screenState extends State<Param_Param_Abrev_screen> {
     super.initState();
     initLib();
 
-    Title = "Verif+ : Paramètres - ${widget.wTitle}";
+    Title = "Vérif+ : Paramètres - ${widget.wTitle}";
   }
 
   @override

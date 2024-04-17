@@ -25,14 +25,9 @@ class Articles_screen extends StatefulWidget {
 
 class _Articles_screenState extends State<Articles_screen> {
   Art wArt = Art.ArtInit();
-  String Title = "Verif+ : Paramètres ";
+  String Title = "Vérif+ : Paramètres ";
   bool bReload = true;
-
   final Search_TextController = TextEditingController();
-
-
-
-
   static List<String> ListParam_ParamGroupe = [];
   static List<String> ListParam_ParamGroupeID = [];
   String selectedValueGroupe = "";
@@ -220,7 +215,7 @@ class _Articles_screenState extends State<Articles_screen> {
     super.initState();
     initLib();
 
-    Title = "Verif+ : Articles ";
+    Title = "Vérif+ : Articles ";
   }
 
   @override

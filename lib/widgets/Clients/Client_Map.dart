@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_geocoding/google_geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:verifplus_backoff/Tools/DbTools.dart';
 
 import 'package:verifplus_backoff/Tools/MapTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
-
-
 
 class Client_Map extends StatefulWidget {
   const Client_Map({Key? key}) : super(key: key);
@@ -21,44 +21,71 @@ class _Client_MapState extends State<Client_Map> {
   late BitmapDescriptor dbDepot;
   late BitmapDescriptor dbSiege;
 
-  LatLng _center = LatLng(48.3565074, 5.693670099999999);
+  LatLng _center = LatLng(43.39131322677821, 5.145960122088796);
   Map<MarkerId, Marker> _markers = {};
   late GoogleMapController googleMapController;
   Location coordinates = Location(lat: 0.0, lng: 0);
 
-  final double _infoWindowWidth = 250;
-  final double _markerOffset = 170;
 
   String wTitle = "";
   String wAdresse = "";
-  LatLng wlatLng = LatLng(48.3565074, 5.693670099999999);
+  LatLng wlatLng = LatLng(43.39131322677821, 5.145960122088796);
   ScreenCoordinate wScreenCoordinate = ScreenCoordinate(x:0, y:0,);
   bool wAffInfoWindows = false;
+
+  double minLat = 999;
+  double maxLat = -999;
+  double minLong = 999;
+  double maxLong = -999;
 
   void initLib() async {
     LatLng wLatLng = LatLng(0, 0);
     String wformattedAddress = "";
 
     MapTools_Geocoding wmaptoolsGeocoding = MapTools_Geocoding(wLatLng, wformattedAddress);
-    wmaptoolsGeocoding = await MapTools.GetLatLngfromAddress("10 rue du Colonel Renard 88300 Neufchateau");
-    _center = wmaptoolsGeocoding.Geo_LatLng;
     dbSiege = await MapTools.BitmapDescriptorAsset('assets/images/Ico.png');
 
-    _addMarker(_center, "Siège", wmaptoolsGeocoding.Geo_formattedAddress, dbSiege);
+    await DbTools.getSitesClient(DbTools.gClient.ClientId);
+    for (int i = 0; i < DbTools.ListSite.length; i++) {
+      Site wSite = DbTools.ListSite[i];
+      wmaptoolsGeocoding = await MapTools.GetLatLngfromAddress("${wSite.Site_Adr1} ${wSite.Site_Adr2} ${wSite.Site_Adr3} ${wSite.Site_Adr4} ${wSite.Site_CP} ${wSite.Site_Ville}");
+      wlatLng = wmaptoolsGeocoding.Geo_LatLng;
+      if (wmaptoolsGeocoding.Geo_LatLng.latitude < minLat )  minLat = wmaptoolsGeocoding.Geo_LatLng.latitude;
+      if (wmaptoolsGeocoding.Geo_LatLng.latitude > maxLat )  maxLat = wmaptoolsGeocoding.Geo_LatLng.latitude;
+      if (wmaptoolsGeocoding.Geo_LatLng.longitude < minLong )  minLong = wmaptoolsGeocoding.Geo_LatLng.longitude;
+      if (wmaptoolsGeocoding.Geo_LatLng.longitude > maxLong )  maxLong = wmaptoolsGeocoding.Geo_LatLng.longitude;
+      _addMarker(wlatLng, "Siège", wmaptoolsGeocoding.Geo_formattedAddress, dbSiege);
+    }
+    _center = LatLng(minLat + (maxLat-minLat)/2, minLong + (maxLong-minLong)/2);
+    await googleMapController.animateCamera(CameraUpdate.newLatLng(_center));
+    LatLngBounds bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLong),
+      northeast: LatLng(maxLat, maxLong),
+    );
+    await  googleMapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 0));
+
+    print("•••••••••••••••••••••••• MAP initLib ${_center.latitude} ${_center.longitude}");
+
+
+    setState(() {
+
+    });
   }
 
   void initState() {
-    initLib();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width - 2;
-    double height = MediaQuery.of(context).size.height - 428;
+
+    print("•••••••••••••••••••••• MAP build ${_center.latitude} ${_center.longitude}");
+
+    double width = MediaQuery.of(context).size.width - 30;
+    double height = MediaQuery.of(context).size.height - 450;
 
     return Container(
-        margin: EdgeInsets.fromLTRB(1, 1, 1, 1),
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
         padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
         color: Colors.white,
         child: Stack(
@@ -87,7 +114,7 @@ class _Client_MapState extends State<Client_Map> {
               child: InkWell(
                 child: Container(
                   width: 500,
-                  height: 100,
+                height: 100,
                   color: Colors.white,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -147,10 +174,9 @@ class _Client_MapState extends State<Client_Map> {
         zoom: 18,
       ),
       zoomControlsEnabled: false,
-      minMaxZoomPreference: MinMaxZoomPreference(10, 18),
+      minMaxZoomPreference: MinMaxZoomPreference(1, 50),
       markers: _markers.values.toSet(),
       onMapCreated: _onMapCreated,
-//      onTap: _onMapTap,
       onCameraMove: _onCameraMove,
     );
   }
@@ -169,16 +195,7 @@ class _Client_MapState extends State<Client_Map> {
         markerId: MarkerId('${id.value}_${DateTime.now().millisecondsSinceEpoch}'),
         position: position,
         icon: Bdico,
-
-/*
-        infoWindow: InfoWindow(
-          title: title,
-          snippet: snippet,
-        ),
-*/
-
         onTap: () async {
-
           print("onTap marker $title");
           wTitle = title;
           wAdresse = snippet;
@@ -192,8 +209,11 @@ class _Client_MapState extends State<Client_Map> {
     });
   }
 
-  void _onMapCreated(GoogleMapController controller) {
+  void _onMapCreated(GoogleMapController controller) async {
+
     googleMapController = controller;
+    initLib();
+
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -244,5 +264,16 @@ class _Client_MapState extends State<Client_Map> {
         ));
   }
 
-  void ToolsBarSave() async {}
+  void ToolsBarSave() async {
+
+    await googleMapController.animateCamera(CameraUpdate.newLatLng(_center));
+LatLngBounds bounds = LatLngBounds(
+  southwest: LatLng(minLat, minLong),
+  northeast: LatLng(maxLat, maxLong),
+);
+await  googleMapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 0));
+
+
+
+  }
 }

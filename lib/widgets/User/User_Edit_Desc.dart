@@ -93,14 +93,14 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
                   Text(
                     "Vérif+ : Edition Descilitations / Utilisateur ",
                     textAlign: TextAlign.center,
-                    style: gColors.bodyTitle1_B_Wr,
+                    style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
                   Container(
                     width: 150,
                     child: Text(
                       "Version : ${DbTools.gVersion}",
-                      style: gColors.bodySaisie_N_W,
+                      style: gColors.bodyTitle1_B_W,
                     ),
                   ),
                 ],

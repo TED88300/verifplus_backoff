@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:verifplus_backoff/Tools/Api_Adresse.dart';
@@ -40,6 +41,7 @@ class Api_Gouv {
   static String siret_Ville = "";
   static String siret_SIREN = "";
   static String siret_NAF = "";
+  static String siret_Cat = "";
 
   static Future<bool> inseeToken() async {
     access_token = "";
@@ -49,10 +51,12 @@ class Api_Gouv {
 
     http.StreamedResponse response = await request.send();
 
+
+
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
 
-      print("parsedJson ${parsedJson['data']}");
+      gColors.printWrapped("parsedJson ${parsedJson['data']}");
 
       Map valueMap = json.decode(parsedJson['data']);
 
@@ -80,6 +84,7 @@ class Api_Gouv {
     siret_Ville = "";
     siret_NAF = "";
     siret_SIREN = "";
+    siret_Cat = "";
 
     DbTools.setSrvToken();
     var request = http.MultipartRequest('POST', Uri.parse(DbTools.SrvUrl.toString()));
@@ -109,7 +114,7 @@ class Api_Gouv {
       }
 //      print("wSiret.etablissement ${wSiret.etablissement}");
 
-//      print("wSiret adresseEtablissement ${wSiret.etablissement!.adresseEtablissement!.toJson()}");
+      print("wSiret categorieJuridiqueUniteLegale ${wSiret.etablissement!.uniteLegale!.categorieJuridiqueUniteLegale}");
 
       String wNom = "${wSiret.etablissement!.uniteLegale!.denominationUniteLegale}";
       print("Adresse wNom $wNom");
@@ -126,6 +131,7 @@ class Api_Gouv {
       siret_Ville = wSiret.etablissement!.adresseEtablissement!.libelleCommuneEtablissement!;
       siret_NAF = wSiret.etablissement!.uniteLegale!.activitePrincipaleUniteLegale!;
       siret_SIREN = wSiret.etablissement!.siren!;
+      siret_Cat = wSiret.etablissement!.uniteLegale!.categorieJuridiqueUniteLegale!;
     } else {
       print(response.reasonPhrase);
       return false;

@@ -17,7 +17,7 @@ class Clients_screen extends StatefulWidget {
 
 class _Clients_screenState extends State<Clients_screen> {
   Client wClient = Client.ClientInit();
-  String Title = "Verif+ : Paramètres ";
+  String Title = "Vérif+ : Paramètres ";
   bool bReload = true;
 
   final Search_TextController = TextEditingController();
@@ -26,7 +26,6 @@ class _Clients_screenState extends State<Clients_screen> {
   String FiltreFamID = "";
   List<String> ListParam_FiltreFam = [];
   List<String> ListParam_FiltreFamID = [];
-
   List<String> ListParam_FiltreDepot = [];
   String FiltreDepot = "";
 
@@ -49,9 +48,7 @@ class _Clients_screenState extends State<Clients_screen> {
     Search_TextController.text = "";
     FiltreFam = ListParam_FiltreFam[0];
     FiltreFamID = ListParam_FiltreFam[0];
-
     FiltreDepot = ListParam_FiltreDepot[0];
-
 
     await DbTools.getClientAll();
     bReload = false;
@@ -134,7 +131,7 @@ class _Clients_screenState extends State<Clients_screen> {
 
 
     initLib();
-    Title = "Verif+ : Clients ";
+    Title = "Vérif+ : Clients ";
     super.initState();
   }
 
@@ -187,7 +184,7 @@ class _Clients_screenState extends State<Clients_screen> {
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
           headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           cell: CellThemeData(
-            contentHeight: 24,
+            contentHeight: 29,
             textStyle: gColors.bodySaisie_N_G,
           ),
         ));
