@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:pluto_menu_bar/pluto_menu_bar.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:intl/intl.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
@@ -1368,6 +1369,43 @@ class gColors {
   }
 
 
+  static  Widget fadeAlertAnimation(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+      ) {
+    return Align(
+      child: FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+    );
+  }
+
+  static  var filtreStyle = AlertStyle(
+      animationType: AnimationType.fromTop,
+      isCloseButton: true,
+      isOverlayTapDismiss: false,
+      titleStyle: gColors.bodySaisie_B_G,
+      descStyle: gColors.bodySaisie_N_G,
+      descTextAlign: TextAlign.left,
+      alertPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+
+
+      animationDuration: Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      overlayColor: Color(0x88000000),
+      alertElevation: 10,
+
+
+  );
+
 }
 
 
@@ -1423,6 +1461,7 @@ class DecimalTextInputFormatter extends TextInputFormatter {
 
     return newValue;
   }
+
 
 
 

@@ -45,19 +45,17 @@ enum RdvType { changedOccurrence, normal, occurrence, pattern }
 class Notif with ChangeNotifier {
   Notif();
   void BroadCast() {
-    print("&&&&&&&&&&&&&&&&&&&& Notif BroadCast");
     notifyListeners();
   }
 }
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.87";
+  static var gVersion = "v1.0.94";
   static bool gTED = true;
 
   static var notif = Notif();
   static bool EdtTicket = false;
-
   static bool gIsIntroPass = false;
   static bool gIsRememberLogin = true;
   static int gCurrentIndex = 0;
@@ -1708,19 +1706,17 @@ class DbTools {
   //*****************************
   //*****************************
 
-
-
   static Future<bool> getClientAll() async {
  //   String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' ORDER BY Client_Nom;";
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID ORDER BY Client_Nom;";
 
-    print("getClientAll wSlq $wSlq");
+//    print("getClientAll wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
 
     if (ListClient == null) return false;
-    print("getClientAll ${ListClient.length}");
+  //  print("getClientAll ${ListClient.length}");
     if (ListClient.length > 0) {
-      print("getClientAll return TRUE");
+    //  print("getClientAll return TRUE");
       return true;
     }
     return false;
@@ -1740,7 +1736,17 @@ class DbTools {
     return false;
   }
 
-
+  static Future<bool> getClientMemID(int ID) async {
+    gClient = Client.ClientInit();
+    for (int i = 0; i < ListClient.length; i++) {
+      var element = ListClient[i];
+      if (element.ClientId == ID) {
+        gClient = element;
+        return true;
+      }
+    }
+    return false;
+  }
 
   static Future<bool> setClient(Client Client) async {
     String wSlq = "UPDATE Clients SET "
@@ -2014,7 +2020,10 @@ class DbTools {
   static Groupe gGroupe = Groupe.GroupeInit();
 
   static Future<bool> getGroupeAll() async {
-    ListGroupe = await getGroupe_API_Post("select", "select * from Groupes ORDER BY Groupe_Nom");
+
+    String wTmp = "select * from Groupes ORDER BY Groupe_Nom";
+    print("wTmp getGroupeAll ${wTmp}");
+    ListGroupe = await getGroupe_API_Post("select", wTmp);
 
     if (ListGroupe == null) return false;
     print("getGroupeAll ${ListGroupe.length}");
@@ -2025,10 +2034,30 @@ class DbTools {
     return false;
   }
 
+
+
+  static Future<bool> getGroupe(int ID) async {
+    String wTmp = "select * from Groupes WHERE GroupeId = $ID";
+
+//    print("wTmp getGroupe ${wTmp}");
+    ListGroupe = await getGroupe_API_Post("select", wTmp);
+
+    if (ListGroupe == null) return false;
+//    print("getGroupesClient ${ListGroupe.length}");
+    if (ListGroupe.length > 0) {
+      DbTools.gGroupe = ListGroupe[0];
+  //        print("getGroupe return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+
   static Future<bool> getGroupesClient(int ID) async {
     String wTmp = "select * from Groupes WHERE Groupe_ClientId = $ID ORDER BY Groupe_Nom";
 
-//    print("wTmp getGroupesClient ${wTmp}");
+    print("wTmp getGroupesClient ${wTmp}");
     ListGroupe = await getGroupe_API_Post("select", wTmp);
 
     if (ListGroupe == null) return false;
@@ -2095,13 +2124,13 @@ class DbTools {
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
 
-    print("getGroupe_API_Post " + aSQL);
+//    print("getGroupe_API_Post " + aSQL);
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
-      print("getGroupe_API_Post parsedJson $parsedJson");
+  //    print("getGroupe_API_Post parsedJson $parsedJson");
       final items = parsedJson['data'];
 
       if (items != null) {
@@ -2129,13 +2158,31 @@ class DbTools {
     ListSite = await getSite_API_Post("select", "select * from Sites ORDER BY Site_Nom");
 
     if (ListSite == null) return false;
-    print("getSiteAll ${ListSite.length}");
+    //print("getSiteAll ${ListSite.length}");
     if (ListSite.length > 0) {
-      print("getSiteAll return TRUE");
+    //  print("getSiteAll return TRUE");
       return true;
     }
     return false;
   }
+
+  static Future<bool> getSite(int ID) async {
+    String wTmp = "select * from Sites WHERE SiteId = $ID";
+
+//    print("wTmp getSite ${wTmp}");
+    ListSite = await getSite_API_Post("select", wTmp);
+
+    if (ListSite == null) return false;
+//    print("getSitesSite ${ListSite.length}");
+    if (ListSite.length > 0) {
+      gSite = ListSite[0];
+  //    print("getSite return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
 
   static Future<bool> getSitesGroupe(int ID) async {
     String wTmp = "select * from Sites WHERE Site_GroupeId = $ID ORDER BY Site_Nom";
@@ -2268,6 +2315,24 @@ class DbTools {
     }
     return false;
   }
+
+
+  static Future<bool> getZone(int ID) async {
+    String wTmp = "select * from Zones WHERE ZoneId = $ID ";
+
+    print("wTmp getZone ${wTmp}");
+    ListZone = await getZone_API_Post("select", wTmp);
+
+    if (ListZone == null) return false;
+//    print("getZonesClient ${ListZone.length}");
+    if (ListZone.length > 0) {
+      gZone = ListZone[0];
+          print("getZone return TRUE");
+      return true;
+    }
+    return false;
+  }
+
 
   static Future<bool> getZonesSite(int ID) async {
     String wTmp = "select * from Zones WHERE Zone_SiteId = $ID ORDER BY Zone_Nom";
@@ -2404,8 +2469,8 @@ class DbTools {
     SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId  WHERE ClientId = 79;
 */
 
-    String wTmp = "SELECT Clients.Client_Nom, Groupes.Groupe_Nom, Sites.Site_Nom, Zones.Zone_Nom,a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId  WHERE ClientId = $ID;";
-    print("wTmp $wTmp");
+    String wTmp = "SELECT Clients.ClientId, Clients.Client_Nom, Groupes.GroupeId ,Groupes.Groupe_Nom, Sites.SiteId,Sites.Site_Nom, Zones.ZoneID, Zones.Zone_Nom,a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId  WHERE ClientId = $ID;";
+    print("••••• ••••• ••••• ••••• ••••• ••••• wTmp $wTmp");
 
     ListIntervention = await getIntervention_API_Post_Client("select", wTmp);
 
@@ -2543,14 +2608,15 @@ class DbTools {
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
 
-//    print("getIntervention_API_Post " + aSQL);
+    print("••••• ••••• ••••• ••••• ••••• ••••• getIntervention_API_Post $aSQL");
 
     http.StreamedResponse response = await request.send();
-    //  print("getIntervention_API_Post response ${response.statusCode}" );
+      print("getIntervention_API_Post response ${response.statusCode}" );
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
       final items = parsedJson['data'];
+
 
       if (items != null) {
         List<Intervention> InterventionList = await items.map<Intervention>((json) {

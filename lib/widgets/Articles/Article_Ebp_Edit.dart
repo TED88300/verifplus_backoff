@@ -206,7 +206,10 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     return Column(
       children: [
         Container(
-          child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: [
             Container(
               width: dWidth,
               child: EditArt1(),

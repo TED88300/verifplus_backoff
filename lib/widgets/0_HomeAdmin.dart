@@ -3,6 +3,7 @@ import 'package:verifplus_backoff/widgets/1-splashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
 
 class HomeAdmin extends StatelessWidget {
   Widget loading() {
@@ -13,9 +14,6 @@ class HomeAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return MaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
@@ -40,7 +38,8 @@ class HomeAdmin extends StatelessWidget {
         primarySwatch: MaterialColor(
             gColors.primary.value, gColors.getSwatch(gColors.primary)),
       ),
-      home: SplashScreen(),
+      home:
+      SplashScreen(),
 
     );
 

@@ -167,11 +167,14 @@ class _Client_FactState extends State<Client_Fact> {
               height: 200,
             child:
             Column(children: [
-              CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.copy, ToolsBarCpy ,tooltip : "Copier Facturation sur livraison"),
+              CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Copy", ToolsBarCpy ,tooltip : "Copier Facturation sur livraison"),
+
+
+
               Spacer(),
               wIs_Hierarchie ?
-              CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.blueAccent, Colors.white, Icons.manage_accounts_outlined, ToolsBarCpyTools, isEnable: false,tooltip : "Modèle sans Groupe, sans Zone") :
-              CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.blueAccent, Colors.white, Icons.manage_accounts_outlined, ToolsBarCpyTools,tooltip : "Modèle sans Groupe, sans Zone"),
+              CommonAppBar.SquareRoundPng(context, 30, 8, Colors.blueAccent, Colors.white, "ico_Tools", ToolsBarCpyTools, isEnable: false,tooltip : "Modèle sans Groupe, sans Zone") :
+              CommonAppBar.SquareRoundPng(context, 30, 8, Colors.blueAccent, Colors.white, "ico_Tools", ToolsBarCpyTools,tooltip : "Modèle sans Groupe, sans Zone"),
 
             ],)
 
@@ -198,7 +201,7 @@ class _Client_FactState extends State<Client_Fact> {
                 Container(
                   width: 5,
                 ),
-                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
                 Container(
                   width: 10,
                 ),
@@ -224,7 +227,7 @@ class _Client_FactState extends State<Client_Fact> {
   void MapDialog() async {
     MapTools.gMapTools_Geocoding = MapTools_Geocoding(LatLng(0, 0), "");
 
-    await Client_Map_Dialog.Client_Map_dialog(context, "${textController_Adresse_Adr1.text} ${textController_Adresse_CP.text} ${textController_Adresse_Ville.text}");
+    await Client_Map_Dialog.Client_Map_dialog(context, DbTools.gClient.Client_Nom, "${textController_Adresse_Adr1.text} ${textController_Adresse_CP.text} ${textController_Adresse_Ville.text}", "${textController_Adresse_Adr1.text}", "${textController_Adresse_CP.text}", "${textController_Adresse_Ville.text}" );
 
     if (MapTools.gMapTools_Geocoding.Geo_formattedAddress.isNotEmpty) {
       String address = "";
@@ -535,6 +538,8 @@ class _Client_FactState extends State<Client_Fact> {
                   ),
                   CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.question_mark, CpVillmeSearch, tooltip: "Recherche Adresse"),
                   CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.map_outlined, MapDialog, tooltip: "Carte"),
+
+
                 ],
               ),
               Row(
@@ -900,7 +905,8 @@ class _Client_FactState extends State<Client_Fact> {
                 Container(
                   width: 5,
                 ),
-                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave_Livr, tooltip: "Sauvegarder"),
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
+
                 Container(
                   width: 10,
                 ),
@@ -1008,7 +1014,7 @@ class _Client_FactState extends State<Client_Fact> {
   void MapDialog_Livr() async {
     MapTools.gMapTools_Geocoding = MapTools_Geocoding(LatLng(0, 0), "");
 
-    await Client_Map_Dialog.Client_Map_dialog(context, "${textController_Livr_Adresse_Adr1.text} ${textController_Livr_Adresse_CP.text} ${textController_Livr_Adresse_Ville.text}");
+    await Client_Map_Dialog.Client_Map_dialog(context, "${DbTools.gClient.Client_Nom} Livraison", "${textController_Livr_Adresse_Adr1.text} ${textController_Livr_Adresse_CP.text} ${textController_Livr_Adresse_Ville.text}", "${textController_Livr_Adresse_Adr1.text}", "${textController_Livr_Adresse_CP.text}", "${textController_Livr_Adresse_Ville.text}");
 
     if (MapTools.gMapTools_Geocoding.Geo_formattedAddress.isNotEmpty) {
       String address = "";

@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.87+87
+version: 1.0.90+80
 environment:
   sdk: '>=2.18.2 <3.0.0'
 
@@ -22,6 +22,7 @@ dependencies:
   path_provider: ^2.0.11
   csv: ^5.1.1
   http: ^0.13.5
+  web: ^0.4.0
   jiffy: ^5.0.0
   google_fonts: ^3.0.1
   auto_size_text: ^3.0.0
@@ -49,18 +50,19 @@ dependencies:
   davi: ^3.4.1
   flutter_typeahead: ^4.6.1
   intl: ^0.18.0
+  syncfusion_flutter_core: ^21.2.10
   syncfusion_flutter_datepicker: ^21.2.10
   syncfusion_localizations: ^21.2.10
-  desktop_window: 0.4.0
   syncfusion_flutter_calendar: ^21.2.10
+  syncfusion_flutter_datagrid: ^21.2.10
+  desktop_window: 0.4.0
   tab_container: ^2.0.0
   image: ^4.1.7
   desktop_drop: ^0.4.4
+  aligned_dialog: ^0.0.7
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
     - assets/images/
-
-

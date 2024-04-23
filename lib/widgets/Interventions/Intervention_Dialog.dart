@@ -16,11 +16,7 @@ class Intervention_Dialog extends StatefulWidget {
 
 class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTickerProviderStateMixin {
   String Title = "";
-
-
-
   double screenWidth = 0;
-
 
   Future initLib() async {
     await DbTools.getGroupeID(widget.site.Site_GroupeId);
@@ -28,22 +24,16 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   }
 
   void initState() {
-    print("initState >");
     initLib();
     super.initState();
     Title = "Vérif+ : Intervention";
-    print("initState <");
   }
-
-
 
 
   @override
   Widget build(BuildContext context) {
 
     screenWidth = MediaQuery.of(context).size.width;
-    print("screenWidth $screenWidth");
-
     if (Title.isEmpty) return Container();
 
     return Center(
@@ -107,16 +97,13 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     return Container(
       color: Colors.white,
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-//        ToolsBar(context),
         Expanded(
           child: SingleChildScrollView(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ContentDetailCadre(context),
-//              taBar(context),
               _getChildren1[sel],
-
             ],
           )),
         ),
@@ -124,43 +111,6 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     );
   }
 
-  Widget taBar(BuildContext context) {
-    double wWidth = (screenWidth - 40) / _getChildren1.length;
-    return DefaultTabController(
-      length: _getChildren1.length,
-      child: Column(
-        children: <Widget>[
-          ButtonsTabBar(
-            backgroundColor: gColors.LinearGradient1,
-            unselectedBackgroundColor: Colors.white,
-            unselectedLabelStyle: gColors.bodySaisie_B_B,
-            unselectedBorderColor: Colors.black,
-            borderColor: gColors.LinearGradient1,
-            borderWidth: 1,
-            labelStyle: gColors.bodySaisie_B_W,
-            labelSpacing: 12,
-            btnwidth: wWidth,
-//              center: true,
-            tabs: [
-
-              Tab(
-                text: 'Interventions',
-              ),
-              Tab(
-                text: 'Contacts',
-              ),
-            ],
-
-            onTap: (v) {
-              sel = v;
-              print(v);
-              setState(() {});
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
 
   Widget ContentDetailCadre(BuildContext context) {
@@ -168,7 +118,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       children: <Widget>[
         Container(
           width: double.infinity,
-          margin: EdgeInsets.fromLTRB(20, 20, 20, 10),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           padding: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             border: Border.all(color: gColors.primary, width: 1),
@@ -235,14 +185,18 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
 
   Widget ContentDetail(BuildContext context) {
     return
-
-//      Expanded(child:
         FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
             child: Container(
+
                 padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
                 child:
-                Row(children: [
+                Row(
+
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  children: [
                   Container(width: 500, child:
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,

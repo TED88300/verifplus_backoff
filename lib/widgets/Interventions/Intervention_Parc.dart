@@ -1,12 +1,69 @@
 import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
+import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+
+ DataGridController dataGridController = DataGridController();
+
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
+class Parc_EntInfoDataGridSource extends DataGridSource {
+
+  Parc_EntInfoDataGridSource() {
+    buildDataGridRows();
+  }
+
+  List<DataGridRow> dataGridRows = <DataGridRow>[];
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRows() {
+    dataGridRows = DbTools.ListParc_Ent.map<DataGridRow>((Parc_Ent parc_Ent) {
+      return DataGridRow(cells: <DataGridCell>[
+        DataGridCell<int>(columnName:     'id'      , value: parc_Ent.ParcsId),
+        DataGridCell<String>(columnName:  'desc'  , value: parc_Ent.Parcs_Date_Desc),
+
+      ]);
+    }).toList();
+  }
+
+  @override
+  Future<void> handleRefresh() async {
+    buildDataGridRows();
+    notifyListeners();
+  }
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    double t = 5;
+    double b = 3;
+
+    Color selectedRowTextColor = Colors.white;
+    Color textColor = dataGridController.selectedRows.contains(row)  ? selectedRowTextColor : Colors.black;
+
+    Color backgroundColor = Colors.transparent;
+    return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
+    ]);
+  }
+}
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
 
 class Intervention_Parc extends StatefulWidget {
   const Intervention_Parc({Key? key}) : super(key: key);
@@ -17,8 +74,18 @@ class Intervention_Parc extends StatefulWidget {
 
 class _Intervention_ParcState extends State<Intervention_Parc> {
 
-  List<String?>? Parcs_ColsTitle = [];
+  List<double> dColumnWidth = [
+    80,
+    130,
+  ];
 
+  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
+
+  int wColSel = -1;
+  int Selindex = -1;
+  int countfilterConditions = -1;
+
+  List<String?>? Parcs_ColsTitle = [];
   final Search_TextController = TextEditingController();
 
   List<String> subTitleArray = [
@@ -26,12 +93,26 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
     "Ria",
   ];
   List<String> subLibArray = ["zz"];
-
   List<GrdBtn> lGrdBtn = [];
   List<GrdBtnGrp> lGrdBtnGrp = [];
-
-
   List<Param_Param> ListParam_ParamTypeOg = [];
+
+
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      FiltreTools.SfGridColumn('id'        ,           'ID'      , dColumnWidth[0 ], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('desc'       ,           'Organes'     , double.nan, dColumnWidth[1], Alignment.centerLeft, wColumnWidthMode :ColumnWidthMode.lastColumnFill),
+    ];
+
+  }
+
+  void Resize(ColumnResizeUpdateDetails args)
+  {
+    setState(() {
+      if (args.column.columnName ==      'id'         ) dColumnWidth[0 ] = args.width;
+      else if (args.column.columnName == 'desc'     ) dColumnWidth[1 ] = args.width;
+    });
+  }
 
 
   Future Reload() async {
@@ -197,39 +278,14 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
       }
     });
 
-
-
-
-
-    Filtre();
+    parc_EntInfoDataGridSource.handleRefresh();
+    setState(() {});
 
   }
 
   Future Filtre() async {
-    List<Contact> ListContactsearchresultTmp = [];
-    ListContactsearchresultTmp.clear();
-
-    print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
-
-    if (Search_TextController.text.isEmpty) {
-      ListContactsearchresultTmp.addAll(DbTools.ListContact);
-    } else {
-      print("_buildFieldTextSearch liste ${Search_TextController.text}");
-      DbTools.ListContact.forEach((element) {
-        print("_buildFieldTextSearch element ${element.Desc()}");
-        if (element.Desc().toLowerCase().contains(Search_TextController.text.toLowerCase())) {
-          ListContactsearchresultTmp.add(element);
-        }
-      });
-    }
-
     DbTools.ListContactsearchresult.clear();
-    DbTools.ListContactsearchresult.addAll(ListContactsearchresultTmp);
-
-
-
-
-
+    DbTools.ListContactsearchresult.addAll(DbTools.ListContact);
     setState(() {});
   }
 
@@ -240,14 +296,9 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
   }
 
   void initState() {
-
     lGrdBtnGrp.add(GrdBtnGrp(GrdBtnGrpId: 4, GrdBtnGrp_Color: Colors.black, GrdBtnGrp_ColorSel: Colors.black, GrdBtnGrp_Txt_Color: Colors.white, GrdBtnGrp_Txt_ColorSel: Colors.red, GrdBtnGrpSelId: [0], GrdBtnGrpType: 0));
-
-
     subTitleArray.clear();
     ListParam_ParamTypeOg.clear();
-
-
     subTitleArray.clear();
     ListParam_ParamTypeOg.clear();
 
@@ -272,68 +323,92 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(
-          color: Colors.black26,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
-                  child: ParcGridWidget(),
-                ),
-              ),
-
-
-
-
-
-
-
-            ],
+    return
+      Container(
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4.0),
+          border: Border.all(
+            color: Colors.black26,
           ),
-        ],
-      ),
-    );
+        ),      child: Column(children: [
+        ToolsBar(context),
+
+        SizedBox(
+            height: MediaQuery.of(context).size.height - 422,
+            child: SfDataGridTheme(
+                data: SfDataGridThemeData(
+                  headerColor: gColors.secondary,
+                  selectionColor : gColors.backgroundColor,
+                ),
+                child: SfDataGrid(
+                  //*********************************
+                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                    Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+
+                    Reload();
+                  },
+                  onFilterChanged: (DataGridFilterChangeDetails details) {
+                    countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
+                    print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                    setState(() {});
+                  },
+                  onCellTap: (DataGridCellTapDetails details) {
+                    wColSel = details.rowColumnIndex.columnIndex;
+                  },
+
+                  //*********************************
+
+                  allowSorting: true,
+                  allowFiltering: true,
+                  source: parc_EntInfoDataGridSource,
+                  columns: getColumns(),
+                  headerRowHeight: 35,
+                  rowHeight: 28,
+                  allowColumnsResizing: true,
+                  columnResizeMode: ColumnResizeMode.onResize,
+                  selectionMode: SelectionMode.single,
+                  controller: dataGridController,
+                  onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                    Resize( args);
+                    return true;
+                  },
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  columnWidthMode: ColumnWidthMode.fill,
+                ))),
+        Container(
+          height: 10,
+        ),
+      ]),
+      );
   }
 
-  
-  Widget ParcGridWidget() {
-    List<DaviColumn<Parc_Ent>> wColumns = [
 
-      new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ParcsId}"),
-      new DaviColumn(name: 'Organe', grow: 10, stringValue: (row) => "${row.Parcs_Date_Desc}"),
+  Widget ToolsBar(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
+        child: Column(
+          children: [
+            Row(
+              children: [
 
-
-    ];
-    print("ParcGridWidget ${DbTools.ListParc_Ent.length}");
-    DaviModel<Parc_Ent>? _model;
-    _model = DaviModel<Parc_Ent>(rows: DbTools.ListParc_Ent, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Parc_Ent>(visibleRowsCount: 16, _model, onRowTap: (Contact) async {
-
-        }),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
-          cell: CellThemeData(
-            contentHeight: 24,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+              ],
+            ),
+          ],
         ));
   }
+
+
+  void ToolsBarSupprFilter() async {
+    parc_EntInfoDataGridSource.clearFilters();
+    countfilterConditions = 0;
+    setState(() {});
+  }
+
 
 }

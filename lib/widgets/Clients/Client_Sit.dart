@@ -70,6 +70,7 @@ class _Client_SitState extends State<Client_Sit> {
   Offset? offset;
 
   Future Reload() async {
+    print("••••• initLib Client_Site getGroupesClient");
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
     print("initLib getGroupesClient ${DbTools.ListGroupe.length}");
     print("initLib DbTools.ListGroupe[0].GroupeId ${DbTools.ListGroupe[0].GroupeId}");
@@ -182,7 +183,7 @@ class _Client_SitState extends State<Client_Sit> {
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
 
-    if (DbTools.gSite.Site_ResourceId! > 0) {
+    if (DbTools.gSite.Site_ResourceId > 0) {
       DbTools.getUserid("${DbTools.gSite.Site_ResourceId!}");
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
       print("selectedUserInter $selectedUserInter");
@@ -254,7 +255,7 @@ class _Client_SitState extends State<Client_Sit> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ToolsBar(context),
+          ToolsBarSearch(context),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +315,7 @@ class _Client_SitState extends State<Client_Sit> {
     );
   }
 
-  Widget ToolsBar(BuildContext context) {
+  Widget ToolsBarSearch(BuildContext context) {
     return Container(
         color: Colors.white,
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -674,7 +675,7 @@ class _Client_SitState extends State<Client_Sit> {
     return Stack(
       children: <Widget>[
         Container(
-          width: 360,
+          width: 280,
           margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
           padding: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
@@ -801,11 +802,7 @@ class _Client_SitState extends State<Client_Sit> {
                 await _startFilePicker(onSetState);
               },
             ),
-/*
-            Container(width: 10),
-            (imageisload) ? wImage : Container(),
-            Container(width: 10),
-*/
+
             Container(width: 10),
             DropTarget(
               onDragDone: (detail) async {

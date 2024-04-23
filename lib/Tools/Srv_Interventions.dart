@@ -21,6 +21,11 @@ class Intervention {
   String? Site_Nom = "";
   String? Zone_Nom = "";
 
+  int? ClientId = 0;
+  int? GroupeId = 0;
+  int? SiteId = 0;
+  int? ZoneId = 0;
+
 
   String? Intervention_Remarque = "";
   int? Cnt = 0;
@@ -86,6 +91,12 @@ class Intervention {
     wIntervention.Groupe_Nom = json['Groupe_Nom'];
     wIntervention.Site_Nom = json['Site_Nom'];
     wIntervention.Zone_Nom = json['Zone_Nom'];
+
+    wIntervention.ClientId = int.parse(json['ClientId']);
+    wIntervention.GroupeId = int.parse(json['GroupeId']);
+    wIntervention.SiteId = int.parse(json['SiteId']);
+    wIntervention.ZoneId = int.parse(json['ZoneID']);
+
     return wIntervention;
   }
 

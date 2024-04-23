@@ -95,7 +95,7 @@ class Client {
   }
 
   factory Client.fromJson(Map<String, dynamic> json) {
-    print("json $json");
+//    print("json $json");
 
     if (json['Adresse_Adr1'] == null) json['Adresse_Adr1'] ="";
     if (json['Adresse_CP'] == null) json['Adresse_CP'] ="";

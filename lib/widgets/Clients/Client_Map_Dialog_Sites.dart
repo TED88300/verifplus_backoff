@@ -1,43 +1,41 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:google_geocoding/google_geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/MapTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 
-class Client_Map_Dialog {
-  Client_Map_Dialog();
 
-  static Future<void> Client_Map_dialog(BuildContext context, String aNom, String aAdresse, String aAdr1, String aCp, String aVille) async {
+
+class Client_Map_Sites_Dialog {
+  Client_Map_Sites_Dialog();
+
+  static Future<void> Client_Map_dialog(BuildContext context) async {
     await showDialog(
-
       context: context,
       builder: (BuildContext context) => new Client_Map(
-        aAdresse: aAdresse,
-        aNom: aNom,
-        aAdr1: aAdr1,
-        aCp: aCp,
-        aVille: aVille,
       ),
     );
   }
 }
 
-class Client_Map extends StatefulWidget {
-  final String aAdresse;
-  final String aNom;
 
-  final String aAdr1;
-  final String aCp;
-  final String aVille;
-  const Client_Map({Key? key, required this.aNom, required this.aAdresse, required this.aAdr1, required this.aCp, required this.aVille})
+class Client_Map extends StatefulWidget {
+
+  const Client_Map({Key? key })
       : super(
-          key: key,
-        );
+    key: key,
+  );
   @override
   State<Client_Map> createState() => _Client_MapState();
 }
 
 class _Client_MapState extends State<Client_Map> {
+
   late BitmapDescriptor dbSiege;
 
   LatLng _center = LatLng(0, 0);
@@ -45,15 +43,32 @@ class _Client_MapState extends State<Client_Map> {
   late GoogleMapController googleMapController;
 
   MapTools_Geocoding wMapTools_Geocoding = MapTools_Geocoding(LatLng(0, 0), "");
+  final double _infoWindowWidth = 250;
+  final double _markerOffset = 170;
 
   String wTitle = "";
   String wAdresse = "";
+
+  String wAdr1 = "";
+  String wCP = "";
+  String wVille = "";
+
+
   LatLng wlatLng = LatLng(0, 0);
   ScreenCoordinate wScreenCoordinate = ScreenCoordinate(
     x: 0,
     y: 0,
   );
   bool wAffInfoWindows = false;
+
+  double minLat = 999;
+  double maxLat = -999;
+  double minLong = 999;
+  double maxLong = -999;
+
+  Uint8List pic = Uint8List.fromList([0]);
+  late Image wImage;
+  bool imageisload = false;
 
 
   LatLngBounds wLatLngBounds = LatLngBounds(
@@ -63,20 +78,38 @@ class _Client_MapState extends State<Client_Map> {
 
 
   void initLib() async {
+    LatLng wLatLng = LatLng(0, 0);
     String wformattedAddress = "";
-    print("♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎ initLib ");
 
-    String aAdr = widget.aAdresse;
-    wMapTools_Geocoding = await MapTools.GetLatLngfromAddress(aAdr);
-    _center = wMapTools_Geocoding.Geo_LatLng;
+    MapTools_Geocoding wmaptoolsGeocoding = MapTools_Geocoding(wLatLng, wformattedAddress);
     dbSiege = await MapTools.BitmapDescriptorAsset('assets/images/ico_Marker.png');
-    _addMarker(_center, "${widget.aNom}", wMapTools_Geocoding.Geo_formattedAddress, dbSiege);
 
+    await DbTools.getSitesClient(DbTools.gClient.ClientId);
+    for (int i = 0; i < DbTools.ListSite.length; i++) {
+      Site wSite = DbTools.ListSite[i];
+      wmaptoolsGeocoding = await MapTools.GetLatLngfromAddress("${wSite.Site_Adr1} ${wSite.Site_Adr2} ${wSite.Site_Adr3} ${wSite.Site_Adr4} ${wSite.Site_CP} ${wSite.Site_Ville}");
+      wlatLng = wmaptoolsGeocoding.Geo_LatLng;
+      if (wmaptoolsGeocoding.Geo_LatLng.latitude < minLat) minLat = wmaptoolsGeocoding.Geo_LatLng.latitude;
+      if (wmaptoolsGeocoding.Geo_LatLng.latitude > maxLat) maxLat = wmaptoolsGeocoding.Geo_LatLng.latitude;
+      if (wmaptoolsGeocoding.Geo_LatLng.longitude < minLong) minLong = wmaptoolsGeocoding.Geo_LatLng.longitude;
+      if (wmaptoolsGeocoding.Geo_LatLng.longitude > maxLong) maxLong = wmaptoolsGeocoding.Geo_LatLng.longitude;
+      _addMarker(wlatLng, wSite.SiteId, wSite.Site_Nom, wmaptoolsGeocoding.Geo_formattedAddress, wSite.Site_Adr1, wSite.Site_CP, wSite.Site_Ville, dbSiege);
+    }
+
+
+
+    _center = LatLng(minLat + (maxLat - minLat) / 2, minLong + (maxLong - minLong) / 2);
     await googleMapController.animateCamera(CameraUpdate.newLatLng(_center));
+    LatLngBounds bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLong),
+      northeast: LatLng(maxLat, maxLong),
+    );
+    await googleMapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 0));
 
-     wLatLngBounds = await googleMapController.getVisibleRegion();
-
-
+    double wZoom = await googleMapController.getZoomLevel();
+    
+    await googleMapController.animateCamera(CameraUpdate.zoomTo(wZoom + 0.5));
+    print("•••••••••••••••••••••••• MAP initLib ${_center.latitude} ${_center.longitude}");
 
     setState(() {});
   }
@@ -86,24 +119,21 @@ class _Client_MapState extends State<Client_Map> {
   }
 
   void _onMapCreated(GoogleMapController controller) async {
-    print("♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎ _onMapCreated ");
     googleMapController = controller;
-    print("♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎ _onMapCreated initLib >");
     initLib();
-    print("♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎ _onMapCreated initLib <");
   }
 
   @override
   Widget build(BuildContext context) {
-    String aAdresse = wAdresse.replaceAll(",", "\n");
+
+    print("•••••••••••••••••••••••• build");
 
     double width = MediaQuery.of(context).size.width - 65;
-    double height = MediaQuery.of(context).size.height - 176;
+    double height = MediaQuery.of(context).size.height - 150;
     return AlertDialog(
       titlePadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       insetPadding:EdgeInsets.fromLTRB(20, 20, 20, 20),
-
       title: Container(
           color: gColors.primary,
           child: Row(
@@ -166,63 +196,63 @@ class _Client_MapState extends State<Client_Map> {
               !wAffInfoWindows
                   ? Container()
                   : Positioned(
-                      left: wScreenCoordinate.x.toDouble(),
-                      top: wScreenCoordinate.y.toDouble(),
-                      child: InkWell(
-                        child: Container(
-                          width: 500,
-                          height: 100,
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.LinearGradient1)),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                width: 140,
-                                height: 70,
-                                margin: EdgeInsets.only(left: 10),
-                                child: Image.asset('assets/images/Ico_Vp2.png', fit: BoxFit.cover),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 20),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(
-                                        wTitle,
-                                        style: gColors.bodyTitle1_B_Gr,
-                                      ),
-                                      Container(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        widget.aAdr1,
-                                        style: gColors.bodySaisie_N_G,
-                                      ),
-                                      Text(
-                                        widget.aCp,
-                                        style: gColors.bodySaisie_N_G,
-                                      ),
-                                      Text(
-                                        widget.aVille,
-                                        style: gColors.bodySaisie_N_G,
-                                      ),
-                                    ],
-                                  ),
+                left: wScreenCoordinate.x.toDouble(),
+                top: wScreenCoordinate.y.toDouble(),
+                child: InkWell(
+                  child: Container(
+                    width: 500,
+                    height: 100,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.LinearGradient1)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          width: 140,
+                          height: 70,
+                          margin: EdgeInsets.only(left: 10),
+                          child: Image.asset('assets/images/Ico_Vp2.png', fit: BoxFit.cover),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(left: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  wTitle,
+                                  style: gColors.bodyTitle1_B_Gr,
                                 ),
-                              ),
-                            ],
+                                Container(
+                                  height: 10,
+                                ),
+                                Text(
+                                  wAdr1,
+                                  style: gColors.bodySaisie_N_G,
+                                ),
+                                Text(
+                                  wCP,
+                                  style: gColors.bodySaisie_N_G,
+                                ),
+                                Text(
+                                  wVille,
+                                  style: gColors.bodySaisie_N_G,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        onTap: () {
-                          print("onTap marker $wTitle");
-                          wAffInfoWindows = false;
-                          setState(() {});
-                        },
-                      ),
+                      ],
                     ),
+                  ),
+                  onTap: () {
+                    print("onTap marker $wTitle");
+                    wAffInfoWindows = false;
+                    setState(() {});
+                  },
+                ),
+              ),
             ],
           )),
     );
@@ -234,12 +264,10 @@ class _Client_MapState extends State<Client_Map> {
 
   @override
   Widget buildMap(BuildContext context) {
-    print("♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎♥︎ buildMap ");
-
     return GoogleMap(
       initialCameraPosition: CameraPosition(
         target: _center,
-        zoom: 16,
+        zoom: 19,
       ),
       zoomControlsEnabled: true,
 //      minMaxZoomPreference: MinMaxZoomPreference(10, 18),
@@ -263,7 +291,7 @@ class _Client_MapState extends State<Client_Map> {
     );
   }
 
-  void _addMarker(LatLng position, String title, String snippet, BitmapDescriptor Bdico) {
+  void _addMarker(LatLng position, int aID, String title, String snippet, String aAdr1, String aCP, String aVille, BitmapDescriptor Bdico) {
     setState(() {
       final MarkerId id = MarkerId('${_markers.length}');
       _markers[id] = Marker(
@@ -272,8 +300,27 @@ class _Client_MapState extends State<Client_Map> {
         icon: Bdico,
         onTap: () async {
           print("onTap marker $title");
+          int wID = aID;
+
+          imageisload = false;
+          String wUserImg = "Site_${wID}.jpg";
+          pic = await gColors.getImage(wUserImg);
+          print("pic $wUserImg"); // ${pic}");
+          if (pic.length > 0) {
+            wImage = Image.memory(
+              pic,
+              fit: BoxFit.scaleDown,
+              width: 200,
+              height: 200,
+            );
+            imageisload = true;
+          }
+
           wTitle = title;
           wAdresse = snippet;
+          wAdr1 = aAdr1;
+          wCP = aCP;
+          wVille = aVille;
           wlatLng = position;
           wScreenCoordinate = await googleMapController.getScreenCoordinate(wlatLng);
           wAffInfoWindows = true;
@@ -318,7 +365,7 @@ class _Client_MapState extends State<Client_Map> {
                 Container(
                   width: 10,
                 ),
-                Text("${widget.aNom} - ${wMapTools_Geocoding.Geo_formattedAddress}",
+                Text("${DbTools.gClient.Client_Nom}",
                   style: gColors.bodySaisie_B_G,
                 ),
               ],
@@ -336,10 +383,17 @@ class _Client_MapState extends State<Client_Map> {
   }
 
   void ToolsBarCenter() async {
-    print("ToolsBarCenter _center ${_center.toString()}");
     await googleMapController.animateCamera(CameraUpdate.newLatLng(_center));
-    await  googleMapController.animateCamera(CameraUpdate.newLatLngBounds(wLatLngBounds, 0));
+    LatLngBounds bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLong),
+      northeast: LatLng(maxLat, maxLong),
+    );
+    await googleMapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 0));
+    wAffInfoWindows = false;
+    setState(() {
 
-
+    });
   }
+
+
 }

@@ -1,14 +1,135 @@
 import 'dart:js_interop';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
-import 'package:pluto_menu_bar/pluto_menu_bar.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Dialog.dart';
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
+DataGridController dataGridController = DataGridController();
+
+class ClientInfoDataGridSource extends DataGridSource {
+  List<String> ListParam_FiltreFam = [];
+  List<String> ListParam_FiltreFamID = [];
+
+  ClientInfoDataGridSource() {
+    buildDataGridRows();
+    ListParam_FiltreFam.clear();
+    ListParam_FiltreFam.addAll(DbTools.ListParam_FiltreFam);
+    ListParam_FiltreFamID.clear();
+    ListParam_FiltreFamID.addAll(DbTools.ListParam_FiltreFamID);
+  }
+
+  List<DataGridRow> dataGridRows = <DataGridRow>[];
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+
+  void buildDataGridRows() {
+    dataGridRows = DbTools.ListClientsearchresult.map<DataGridRow>((Client client) {
+      return DataGridRow(cells: <DataGridCell>[
+        DataGridCell<int>(columnName: 'id', value: client.ClientId),
+        DataGridCell<String>(columnName: 'forme', value: client.Client_Civilite),
+        DataGridCell<String>(columnName: 'nom', value: client.Client_Nom),
+        DataGridCell<String>(columnName: 'agence', value: client.Client_Depot),
+        DataGridCell<String>(columnName: 'famille', value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
+        DataGridCell<String>(columnName: 'commercial', value: client.Users_Nom),
+        DataGridCell<String>(columnName: 'cp', value: client.Adresse_CP),
+        DataGridCell<String>(columnName: 'ville', value: client.Adresse_Ville),
+        DataGridCell<String>(columnName: 'pays', value: client.Adresse_Pays),
+      ]);
+    }).toList();
+  }
+
+  @override
+  Future<void> handleRefresh() async {
+    buildDataGridRows();
+    notifyListeners();
+  }
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    double t = 5;
+    double b = 3;
+
+    Color selectedRowTextColor = Colors.white;
+    Color textColor = dataGridController.selectedRows.contains(row)  ? selectedRowTextColor : Colors.black;
+
+
+    Color backgroundColor = Colors.transparent;
+    return DataGridRowAdapter(
+    color: backgroundColor, cells: <Widget>[
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft,textColor ),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 6, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 7, Alignment.centerLeft,textColor),
+      FiltreTools.SfRow(row, 8, Alignment.centerLeft,textColor),
+    ]);
+  }
+
+  static Widget SfRowSel(DataGridRow row, int Col, AlignmentGeometry alignment) {
+    double t = 5;
+    double b = 3;
+
+    return InkWell(
+        onTap: () async {
+          print("onSelectionChanging  row ${row.getCells()[0].value.toString()}  ${row.getCells()[1].value.toString()}");
+
+          bool wRet = await DbTools.getClientMemID(row.getCells()[0].value);
+          if (wRet)
+          {
+//            await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: DbTools.gClient));
+
+          }
+
+
+
+        },
+        child: Container(
+//            padding: EdgeInsets.fromLTRB(0, t, 8, b),
+            alignment: alignment,
+            child: Row(
+              children: [
+                Icon(Icons.play_arrow_sharp, color: Colors.black26, size: 20),
+                Text(
+                  row.getCells()[Col].value.toString(),
+                  style: gColors.bodySaisie_N_G,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            )));
+  }
+}
+/*
+
+ElevatedButton(
+        onPressed: () async {
+          emailController.text = "mm@gmail.com";
+          passwordController.text = "mm13500";
+        },
+        child: Text('Démo Client',
+            style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.bold)),
+      ),
+*/
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
 
 class Clients_screen extends StatefulWidget {
   @override
@@ -16,193 +137,267 @@ class Clients_screen extends StatefulWidget {
 }
 
 class _Clients_screenState extends State<Clients_screen> {
-  Client wClient = Client.ClientInit();
-  String Title = "Vérif+ : Paramètres ";
-  bool bReload = true;
+  List<double> dColumnWidth = [
+    80,
+    115,
+    470,
+    200,
+    250,
+    200,
+    95,
+    300,
+    200,
+  ];
+
+  ClientInfoDataGridSource clientInfoDataGridSource = ClientInfoDataGridSource();
 
   final Search_TextController = TextEditingController();
 
-  String FiltreFam = "Tous";
-  String FiltreFamID = "";
-  List<String> ListParam_FiltreFam = [];
-  List<String> ListParam_FiltreFamID = [];
-  List<String> ListParam_FiltreDepot = [];
-  String FiltreDepot = "";
+  int wColSel = -1;
+  int Selindex = -1;
+  int countfilterConditions = -1;
 
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], 15, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('forme', 'Forme', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Raison Social', double.nan, 160, Alignment.centerLeft, wColumnWidthMode: ColumnWidthMode.lastColumnFill),
+      FiltreTools.SfGridColumn('agence', 'Agencel', dColumnWidth[3], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('famille', 'Famille', dColumnWidth[4], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('commercial', 'Commercial', dColumnWidth[5], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[6], dColumnWidth[6], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[7], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('pays', 'Pays', dColumnWidth[8], 160, Alignment.centerLeft),
+    ];
+  }
+
+  void Resize(ColumnResizeUpdateDetails args) {
+    setState(() {
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'forme')
+        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'nom')
+        dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'agence')
+        dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'famille')
+        dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'commercial')
+        dColumnWidth[5] = args.width;
+      else if (args.column.columnName == 'cp')
+        dColumnWidth[6] = args.width;
+      else if (args.column.columnName == 'ville')
+        dColumnWidth[7] = args.width;
+      else if (args.column.columnName == 'pays') dColumnWidth[8] = args.width;
+    });
+  }
 
   Future Reload() async {
     await DbTools.getParam_ParamFam("FamClient");
-
-    ListParam_FiltreFam.clear();
-    ListParam_FiltreFam.addAll(DbTools.ListParam_FiltreFam);
-    ListParam_FiltreFamID.clear();
-    ListParam_FiltreFamID.addAll(DbTools.ListParam_FiltreFamID);
-
-    await DbTools.getAdresseType( "AGENCE");
-    ListParam_FiltreDepot.clear();
-    ListParam_FiltreDepot.add("Tous");
-    DbTools.ListAdresse.forEach((wAdresse) {
-      ListParam_FiltreDepot.add(wAdresse.Adresse_Nom);
-    });
-
-    Search_TextController.text = "";
-    FiltreFam = ListParam_FiltreFam[0];
-    FiltreFamID = ListParam_FiltreFam[0];
-    FiltreDepot = ListParam_FiltreDepot[0];
-
     await DbTools.getClientAll();
-    bReload = false;
     print("Reload getClientAll ${DbTools.ListClient.length}");
     await Filtre();
   }
 
   Future Filtre() async {
-    List<Client> ListClientsearchresultTmp = [];
-    ListClientsearchresultTmp.clear();
-
-    List<Client> ListClientsearchresultTmp2 = [];
-    ListClientsearchresultTmp2.clear();
+    DbTools.ListClientsearchresult.clear();
 
     print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
 
     if (Search_TextController.text.isEmpty) {
-      ListClientsearchresultTmp.addAll(DbTools.ListClient);
+      DbTools.ListClientsearchresult.addAll(DbTools.ListClient);
     } else {
       print("_buildFieldTextSearch liste ${Search_TextController.text}");
       DbTools.ListClient.forEach((element) {
         print("_buildFieldTextSearch element ${element.Desc()}");
         if (element.Desc().toLowerCase().contains(Search_TextController.text.toLowerCase())) {
-          ListClientsearchresultTmp.add(element);
+          DbTools.ListClientsearchresult.add(element);
         }
       });
     }
 
-    ListClientsearchresultTmp2.clear();
-
-    if (FiltreDepot.compareTo("Tous") == 0) {
-      ListClientsearchresultTmp2.addAll(ListClientsearchresultTmp);
-    } else {
-      ListClientsearchresultTmp.forEach((element) {
-        print("FiltreDepot  $FiltreDepot ${element.Client_Depot}");
-
-        if (FiltreDepot.compareTo(element.Client_Depot) == 0) {
-          print("ADD  $FiltreDepot ${element.Client_Depot}");
-          ListClientsearchresultTmp2.add(element);
-        }
-      });
-    }
-
-    DbTools.ListClientsearchresult.clear();
-    FiltreFamID = ListParam_FiltreFamID[ListParam_FiltreFam.indexOf(FiltreFam)];
-
-    if (FiltreFam.compareTo("Tous") == 0) {
-      DbTools.ListClientsearchresult.addAll(ListClientsearchresultTmp2);
-    } else {
-      ListClientsearchresultTmp2.forEach((element) {
-        if (FiltreFamID.compareTo(element.Client_Famille) == 0) DbTools.ListClientsearchresult.add(element);
-      });
-    }
-
+    clientInfoDataGridSource.handleRefresh();
     setState(() {});
   }
 
-  void initLib() async {
-    await DbTools.getParam_ParamAll();
-    await Reload();
-  }
-
-  List<PlutoMenuItem> HoverMenus = [];
-  late Widget wPlutoMenuBar;
-
+  @override
   void initState() {
-    HoverMenus = gColors.makeMenus(context);
-    print("initState ${HoverMenus.length}");
-
-    wPlutoMenuBar = new PlutoMenuBar(
-      mode: PlutoMenuBarMode.tap,
-      backgroundColor: gColors.primary,
-      activatedColor: Colors.white,
-      indicatorColor: Colors.deepOrange,
-      textStyle: gColors.bodyTitle1_N_Wr,
-      menuIconColor: Colors.white,
-      moreIconColor: Colors.white,
-      menus: HoverMenus,
-    );
-
-
-    initLib();
-    Title = "Vérif+ : Clients ";
     super.initState();
+    Reload();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("build");
-
     return Container(
-      padding: const EdgeInsets.all(0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ToolsBar(context),
-          Container(
-            height: 10,
-          ),
-          ClientGridWidget(),
-        ],
-      ),
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+      color: Colors.white,
+      child: Column(children: [
+        ToolsBar(context),
+        Container(
+          height: 10,
+        ),
+        SizedBox(
+            height: MediaQuery.of(context).size.height - 190,
+            child: SfDataGridTheme(
+                data: SfDataGridThemeData(
+                    headerColor: gColors.secondary,
+                    selectionColor : gColors.backgroundColor,
+                ),
+                child: SfDataGrid(
+                  //*********************************
+                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                    if (addedRows.length > 0 && wColSel ==0)
+                    {
+                      Selindex = clientInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+                      Client wClient = DbTools.ListClientsearchresult[Selindex];
+                      print("onSelectionChanging Col ${wColSel} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                          await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
+                        Reload();
+                    }
+
+                    if (removedRows.length > 0 && wColSel ==0)
+                      {
+                      Selindex = clientInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
+                      Client wClient = DbTools.ListClientsearchresult[Selindex];
+                      print("onSelectionChanging Col ${wColSel} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                      await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
+                      Reload();
+                      }
+                    },
+
+
+                  onFilterChanged: (DataGridFilterChangeDetails details) {
+                    countfilterConditions = clientInfoDataGridSource.filterConditions.length;
+                    print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                    print("onFilterChanged  clientInfoDataGridSource.rows.length ${clientInfoDataGridSource.rows.length}");
+                    print("onFilterChanged  clientInfoDataGridSource.dataGridRows.length ${clientInfoDataGridSource.dataGridRows.length}");
+                    setState(() {});
+                  },
+                    onCellTap: (DataGridCellTapDetails details) {
+                      wColSel = details.rowColumnIndex.columnIndex;
+                      print("onCellTap wColSel ${wColSel}");
+                    },
+
+                  //*********************************
+                  selectionMode: SelectionMode.multiple,
+                  navigationMode: GridNavigationMode.row,
+                  allowSorting: true,
+                  allowFiltering: true,
+                  source: clientInfoDataGridSource,
+                  columns: getColumns(),
+                  headerRowHeight: 35,
+                  rowHeight: 28,
+                  allowColumnsResizing: true,
+                  columnResizeMode: ColumnResizeMode.onResize,
+                  controller: dataGridController,
+                  onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                    Resize(args);
+                    return true;
+                  },
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  columnWidthMode: ColumnWidthMode.fill,
+                ))),
+        Container(
+          height: 10,
+        ),
+      ]),
     );
   }
 
-  Widget ClientGridWidget() {
-    List<DaviColumn<Client>> wColumns = [
-      new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ClientId}"),
-      new DaviColumn(name: 'Forme', width: 100, stringValue: (row) => "${row.Client_Civilite}"),
-      new DaviColumn(name: 'Raison Social', width: 500, stringValue: (row) => "${row.Client_Nom}"),
-      new DaviColumn(name: 'Agence', width: 250, stringValue: (row) => "${row.Client_Depot}"),
-      new DaviColumn(name: 'Famille', width: 150, stringValue: (row) => "${(row.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(row.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(row.Client_Famille)]}"),
-      new DaviColumn(name: 'Commercial', width: 300, stringValue: (row) => row.Users_Nom),
-      new DaviColumn(name: 'CP', width: 100, stringValue: (row) => row.Adresse_CP),
-      new DaviColumn(name: 'Ville', width: 400, stringValue: (row) => row.Adresse_Ville),
-      new DaviColumn(name: 'Pays', width: 250, stringValue: (row) => row.Adresse_Pays),
-    ];
-
-    print("ClientGridWidget");
-    DaviModel<Client>? _model;
-    _model = DaviModel<Client>(rows: DbTools.ListClientsearchresult, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Client>(_model, visibleRowsCount: 24, onRowTap: (Client) async {
-          await showDialog(
-            context: context,
-            builder: (BuildContext context) => new Client_Dialog(client: Client),
-          );
-          print("APRES Client_Dialog");
-          await Reload();
-        }),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
-          cell: CellThemeData(
-            contentHeight: 29,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
+  Widget ToolsBar(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter un client"),
+                Container(
+                  width: 10,
+                ),
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+                Container(
+                  width: 10,
+                ),
+                ToolsBarSearch(context),
+              ],
+            ),
+          ],
         ));
   }
 
-//**********************************
-//**********************************
-//**********************************
+  Widget ToolsBarSearch(BuildContext context) {
+    return Expanded(
+        child: Container(
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: Row(
+        children: [
+          Container(
+            width: 5,
+          ),
+          Icon(
+            Icons.search,
+            color: Colors.blue,
+            size: 20.0,
+          ),
+          Container(
+            width: 10,
+          ),
+          Expanded(
+            child: TextFormField(
+              controller: Search_TextController,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              ),
+              onChanged: (String? value) async {
+                print("_buildFieldTextSearch search ${Search_TextController.text}");
+                await Filtre();
+              },
+              style: gColors.bodySaisie_B_B,
+            ),
+          ),
+          Container(
+            width: 10,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.cancel,
+              size: 20.0,
+            ),
+            onPressed: () async {
+              Search_TextController.clear();
+              await Filtre();
+            },
+          ),
+          Container(
+            width: 20,
+          ),
+        ],
+      ),
+    ));
+  }
+
+  void ToolsBarSupprFilter() async {
+    clientInfoDataGridSource.clearFilters();
+    countfilterConditions = 0;
+    Search_TextController.clear();
+    await Filtre();
+    setState(() {});
+  }
 
   void ToolsBarAdd() async {
     print("ToolsBarAdd");
-
     Client wClient = await Client.ClientInit();
     await DbTools.addClient(wClient);
     wClient.ClientId = DbTools.gLastID;
     await DbTools.getAdresseClientType(wClient.ClientId, "FACT");
     await DbTools.getAdresseClientType(wClient.ClientId, "LIVR");
-
     wClient.Client_Nom = "???";
     await showDialog(
       context: context,
@@ -210,159 +405,4 @@ class _Clients_screenState extends State<Clients_screen> {
     );
     await Reload();
   }
-
-  Widget ToolsBar(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: Row(
-          children: [
-            CommonAppBar.SquareRoundIcon(context, 40, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip :"Ajouter un client"),
-            Container(
-              width: 10,
-            ),
-            Icon(
-              Icons.search,
-              color: Colors.blue,
-              size: 40.0,
-            ),
-            Container(
-              width: 10,
-            ),
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              child: TextFormField(
-                controller: Search_TextController,
-                onChanged: (String? value) async {
-                  print("_buildFieldTextSearch search ${Search_TextController.text}");
-                  await Filtre();
-                },
-                decoration: InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.cancel),
-                      onPressed: () async {
-                        Search_TextController.clear();
-                        await Filtre();
-                      },
-                    )),
-                style: gColors.bodySaisie_B_B,
-              ),
-            )),
-            Container(
-              width: 10,
-            ),
-            DropdownFiltreFam(),
-            Container(
-              width: 10,
-            ),
-            DropdownFiltreDepot(),
-            Container(
-              width: 10,
-            ),
-          ],
-        ));
-  }
-
-  Widget DropdownFiltreFam() {
-    print(">>>>>>>>>>>> DropdownFiltreFam ${FiltreFam.length}");
-    if (ListParam_FiltreFam.length == 0) return Container();
-    return Row(children: [
-      Container(
-        width: 5,
-      ),
-      Container(
-        child: Text("Fam : "),
-      ),
-      Container(
-        child: DropdownButtonHideUnderline(
-            child: DropdownButton2(
-          hint: Text(
-            'Séléctionner une Famille',
-            style: gColors.bodyTitle1_N_Gr,
-          ),
-          items: ListParam_FiltreFam.map((item) => DropdownMenuItem<String>(
-                value: item,
-                child: Text(
-                  "  $item",
-                  style: gColors.bodyTitle1_N_Gr,
-                ),
-              )).toList(),
-          value: FiltreFam,
-          onChanged: (value) {
-            setState(() {
-              FiltreFamID = ListParam_FiltreFamID[ListParam_FiltreFam.indexOf(value!)];
-              FiltreFam = value;
-              print(">>>>>>>>>>>>>>>>> FiltreFam $FiltreFamID $FiltreFam");
-              Filtre();
-            });
-          },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 330,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
-      ),
-    ]);
-  }
-
-  Widget DropdownFiltreDepot() {
-    print(">>>>>>>>>>>> DropdownFiltreDepot ${FiltreDepot.length}");
-    if (ListParam_FiltreDepot.length == 0) return Container();
-    return Row(children: [
-      Container(
-        width: 5,
-      ),
-      Container(
-        child: Text("Dépot : "),
-      ),
-      Container(
-        child: DropdownButtonHideUnderline(
-            child: DropdownButton2(
-          hint: Text(
-            'Séléctionner une Depot',
-            style: gColors.bodyTitle1_N_Gr,
-          ),
-          items: ListParam_FiltreDepot.map((item) => DropdownMenuItem<String>(
-                value: item,
-                child: Text(
-                  "  $item",
-                  style: gColors.bodyTitle1_N_Gr,
-                ),
-              )).toList(),
-          value: FiltreDepot,
-          onChanged: (value) {
-            setState(() {
-              FiltreDepot = value!;
-              print(">>>>>>>>>>>>>>>>> FiltreDepot  $FiltreDepot");
-              Filtre();
-            });
-          },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 330,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
-      ),
-    ]);
-  }
 }
-
-

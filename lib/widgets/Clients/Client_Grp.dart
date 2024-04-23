@@ -3,11 +3,71 @@ import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
+import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+
+DataGridController dataGridController = DataGridController();
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
+class Parc_EntInfoDataGridSource extends DataGridSource {
+  Parc_EntInfoDataGridSource() {
+    buildDataGridRows();
+  }
+
+  List<DataGridRow> dataGridRows = <DataGridRow>[];
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRows() {
+    dataGridRows = DbTools.ListGroupesearchresult.map<DataGridRow>((Groupe groupe) {
+      return DataGridRow(cells: <DataGridCell>[
+        DataGridCell<int>(columnName: 'id', value: groupe.GroupeId),
+        DataGridCell<String>(columnName: 'nom', value: groupe.Groupe_Nom),
+        DataGridCell<String>(columnName: 'adresse', value: groupe.Groupe_Adr1),
+        DataGridCell<String>(columnName: 'cp', value: groupe.Groupe_CP),
+        DataGridCell<String>(columnName: 'ville', value: groupe.Groupe_Ville),
+      ]);
+    }).toList();
+  }
+
+  @override
+  Future<void> handleRefresh() async {
+    buildDataGridRows();
+    notifyListeners();
+  }
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    double t = 5;
+    double b = 3;
+
+    Color selectedRowTextColor = Colors.white;
+    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+
+    Color backgroundColor = Colors.transparent;
+    return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
+      FiltreTools.SfRow(row, 0, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+    ]);
+  }
+}
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
 
 class Client_Grp extends StatefulWidget {
   final VoidCallback onMaj;
@@ -19,6 +79,58 @@ class Client_Grp extends StatefulWidget {
 }
 
 class _Client_GrpState extends State<Client_Grp> {
+  List<double> dColumnWidth = [
+    80,
+    450,
+    450,
+    120,
+    310,
+  ];
+
+  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
+
+  int wColSel = -1;
+  int wRowSel = -1;
+  int Selindex = -1;
+  int countfilterConditions = -1;
+
+  List<String?>? Parcs_ColsTitle = [];
+
+  List<String> subTitleArray = [
+    "Ext",
+    "Ria",
+  ];
+  List<String> subLibArray = ["zz"];
+  List<GrdBtn> lGrdBtn = [];
+  List<GrdBtnGrp> lGrdBtnGrp = [];
+  List<Param_Param> ListParam_ParamTypeOg = [];
+
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Nom', double.nan, 160, Alignment.centerLeft, wColumnWidthMode: ColumnWidthMode.lastColumnFill),
+      FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
+    ];
+  }
+
+  void Resize(ColumnResizeUpdateDetails args) {
+    setState(() {
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'nom')
+        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'adresse')
+        dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'cp')
+        dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'ville') dColumnWidth[4] = args.width;
+    });
+  }
+
+  //*********
+
   TextEditingController textController_Groupe_Code = TextEditingController();
   TextEditingController textController_Groupe_Type = TextEditingController();
   TextEditingController textController_Groupe_Nom = TextEditingController();
@@ -41,57 +153,42 @@ class _Client_GrpState extends State<Client_Grp> {
 
   int SelGroupe = 0;
 
-  final Search_TextController = TextEditingController();
+  late DataGridRow selectedRow;
+
   Future Reload() async {
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-    print("initLib getGroupesClient ${DbTools.ListGroupe.length}");
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
+    await parc_EntInfoDataGridSource.handleRefresh();
+
     await Filtre();
+    AlimSaisie();
+  }
+
+  Future Filtre() async {
+    DbTools.ListGroupesearchresult.clear();
+    DbTools.ListGroupesearchresult.addAll(DbTools.ListGroupe);
+
+    setState(() {});
+    print(" SelGroupe ${SelGroupe}");
   }
 
   void initLib() async {
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Client_Grp");
-
-    await DbTools.getAdresseType( "AGENCE");
+    await DbTools.getAdresseType("AGENCE");
     ListParam_ParamDepot.clear();
     DbTools.ListAdresse.forEach((wAdresse) {
       ListParam_ParamDepot.add(wAdresse.Adresse_Nom);
     });
-
-
     DbTools.gGroupe = Groupe.GroupeInit();
     await Reload();
     await AlimSaisie();
-  }
-
-  Future Filtre() async {
-    List<Groupe> ListGroupesearchresultTmp = [];
-    ListGroupesearchresultTmp.clear();
-
-    print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
-
-    if (Search_TextController.text.isEmpty) {
-      ListGroupesearchresultTmp.addAll(DbTools.ListGroupe);
-    } else {
-      print("_buildFieldTextSearch liste ${Search_TextController.text}");
-      DbTools.ListGroupe.forEach((element) {
-        print("_buildFieldTextSearch element ${element.Desc()}");
-        if (element.Desc().toLowerCase().contains(Search_TextController.text.toLowerCase())) {
-          ListGroupesearchresultTmp.add(element);
-        }
-      });
-    }
-    DbTools.ListGroupesearchresult.clear();
-    DbTools.ListGroupesearchresult.addAll(ListGroupesearchresultTmp);
-    setState(() {});
+    selectedRow = parc_EntInfoDataGridSource.dataGridRows[0];
   }
 
   Future AlimSaisie() async {
     print("AlimSaisie ${DbTools.gGroupe.Desc()}");
 
     textController_Adresse_Geo.text = "${DbTools.gGroupe.Groupe_Adr1} ${DbTools.gGroupe.Groupe_CP} ${DbTools.gGroupe.Groupe_Ville}";
-
 
     textController_Groupe_Code.text = DbTools.gGroupe.Groupe_Code;
     textController_Groupe_Nom.text = DbTools.gGroupe.Groupe_Nom;
@@ -115,27 +212,23 @@ class _Client_GrpState extends State<Client_Grp> {
 
     await DbTools.getSitesGroupe(DbTools.ListGroupe[0].GroupeId);
 
-
     setState(() {});
-
-
   }
 
   void ToolsBarCpy() async {
     print("ToolsBarCpy");
 
-    textController_Groupe_Adr1.text =   DbTools.gAdresseLivr.Adresse_Adr1 ;
-    textController_Groupe_Adr2.text =   DbTools.gAdresseLivr.Adresse_Adr2 ;
-    textController_Groupe_Adr3.text =   DbTools.gAdresseLivr.Adresse_Adr3 ;
-    textController_Groupe_Adr4.text =   DbTools.gAdresseLivr.Adresse_Adr4 ;
-    textController_Groupe_CP.text =     DbTools.gAdresseLivr.Adresse_CP   ;
-    textController_Groupe_Ville.text =  DbTools.gAdresseLivr.Adresse_Ville;
-    textController_Groupe_Pays.text =   DbTools.gAdresseLivr.Adresse_Pays ;
-    textController_Groupe_Acces.text =   DbTools.gAdresseLivr.Adresse_Acces ;
-    textController_Groupe_Rem.text =    DbTools.gAdresseLivr.Adresse_Rem  ;
+    textController_Groupe_Adr1.text = DbTools.gAdresseLivr.Adresse_Adr1;
+    textController_Groupe_Adr2.text = DbTools.gAdresseLivr.Adresse_Adr2;
+    textController_Groupe_Adr3.text = DbTools.gAdresseLivr.Adresse_Adr3;
+    textController_Groupe_Adr4.text = DbTools.gAdresseLivr.Adresse_Adr4;
+    textController_Groupe_CP.text = DbTools.gAdresseLivr.Adresse_CP;
+    textController_Groupe_Ville.text = DbTools.gAdresseLivr.Adresse_Ville;
+    textController_Groupe_Pays.text = DbTools.gAdresseLivr.Adresse_Pays;
+    textController_Groupe_Acces.text = DbTools.gAdresseLivr.Adresse_Acces;
+    textController_Groupe_Rem.text = DbTools.gAdresseLivr.Adresse_Rem;
     setState(() {});
   }
-
 
   void initState() {
     initLib();
@@ -144,6 +237,8 @@ class _Client_GrpState extends State<Client_Grp> {
 
   @override
   Widget build(BuildContext context) {
+    print(" build ${SelGroupe}");
+
     return Container(
       margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -152,34 +247,29 @@ class _Client_GrpState extends State<Client_Grp> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ToolsBar(context),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                   child: GroupeGridWidget(),
                 ),
               ),
               Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter groupe"),
                   ),
-
                   Padding(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.copy, ToolsBarCpy , tooltip: "Copier adresse Livraison"),
+                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.copy, ToolsBarCpy, tooltip: "Copier adresse Livraison"),
                   ),
-
-
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child:
-                    CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
+                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
 /*
                   Container(
@@ -190,20 +280,18 @@ class _Client_GrpState extends State<Client_Grp> {
 
 */
 
-                  DbTools.gGroupe.Groupe_Nom.isEmpty ? Container() :
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child:
-                    CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.orange, Icons.people_outline_outlined, ToolsBarCtact, tooltip: "Contacts"),
-                  ),
-
+                  DbTools.gGroupe.Groupe_Nom.isEmpty
+                      ? Container()
+                      : Container(
+                          padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.orange, Icons.people_outline_outlined, ToolsBarCtact, tooltip: "Contacts"),
+                        ),
                   (DbTools.gGroupe.Groupe_Nom != "???" || DbTools.ListSite.length > 0)
                       ? Container()
                       : Container(
-                    padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
-                  ),
-
+                          padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
+                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
+                        ),
                 ],
               ),
               ContentGroupeCadre(context),
@@ -214,77 +302,12 @@ class _Client_GrpState extends State<Client_Grp> {
     );
   }
 
-  Widget ToolsBar(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 5,
-                ),
-
-                Icon(
-                  Icons.search,
-                  color: Colors.blue,
-                  size: 20.0,
-                ),
-
-                Container(
-                  width: 10,
-                ),
-                Expanded(child:
-                    TextFormField(
-                    controller: Search_TextController,
-
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    ),
-                    onChanged: (String? value) async {
-                      print("_buildFieldTextSearch search ${Search_TextController.text}");
-                      await Filtre();
-                    },
-                    style: gColors.bodySaisie_B_B,
-                ),
-                ),
-                Container(
-                  width: 10,
-                ),
-
-
-                IconButton(
-                  icon: Icon(Icons.cancel,
-                    size: 20.0,
-                  ),
-                  onPressed: () async {
-                    Search_TextController.clear();
-                    await Filtre();
-                  },
-                ),
-                Container(
-                  width: 20,
-                ),
-             ],
-            ),
-            Container(
-              height: 1,
-              color: gColors.primary,
-            )
-          ],
-        ));
-  }
-
   void ToolsBarAdr() async {
     print("ToolsBarAdr");
     DbTools.gViewAdr = "Groupe";
     DbTools.gViewCtact = "";
     widget.onMaj();
   }
-
 
   void ToolsBarCtact() async {
     print("ToolsBarCtact");
@@ -293,11 +316,8 @@ class _Client_GrpState extends State<Client_Grp> {
     widget.onMaj();
   }
 
-
-
   void ToolsBarSave() async {
     print("ToolsBarSave");
-
 
     DbTools.gGroupe.Groupe_Code = textController_Groupe_Code.text;
     DbTools.gGroupe.Groupe_Nom = textController_Groupe_Nom.text;
@@ -311,12 +331,12 @@ class _Client_GrpState extends State<Client_Grp> {
     DbTools.gGroupe.Groupe_Acces = textController_Groupe_Acces.text;
     DbTools.gGroupe.Groupe_Rem = textController_Groupe_Rem.text;
     DbTools.gGroupe.Groupe_Depot = selectedValueDepot;
-
     await DbTools.setGroupe(DbTools.gGroupe);
 
-    await Reload();
+    SelGroupe = dataGridController.selectedIndex;
+    selectedRow = dataGridController.selectedRow!;
 
-    setState(() {});
+    await Reload();
   }
 
   void ToolsBarAdd() async {
@@ -330,11 +350,11 @@ class _Client_GrpState extends State<Client_Grp> {
   }
 
   Widget fadeAlertAnimation(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return Align(
       child: FadeTransition(
         opacity: animation,
@@ -342,6 +362,7 @@ class _Client_GrpState extends State<Client_Grp> {
       ),
     );
   }
+
   var alertStyle = AlertStyle(
       animationType: AnimationType.fromTop,
       isCloseButton: false,
@@ -398,7 +419,6 @@ class _Client_GrpState extends State<Client_Grp> {
     ).show();
   }
 
-
   TextEditingController textController_Adresse_Geo = TextEditingController();
 
   Widget AutoAdresse(double lWidth, double wWidth, String wLabel, TextEditingController textEditingController, {int Ligne = 1, String sep = " : "}) {
@@ -408,20 +428,20 @@ class _Client_GrpState extends State<Client_Grp> {
       children: [
         lWidth == -1
             ? Container(
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-          child: Text(
-            wLabel,
-            style: gColors.bodySaisie_N_G,
-          ),
-        )
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: Text(
+                  wLabel,
+                  style: gColors.bodySaisie_N_G,
+                ),
+              )
             : Container(
-          width: lWidth,
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-          child: Text(
-            wLabel,
-            style: gColors.bodySaisie_N_G,
-          ),
-        ),
+                width: lWidth,
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: Text(
+                  wLabel,
+                  style: gColors.bodySaisie_N_G,
+                ),
+              ),
         Container(
           width: 12,
           padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -455,9 +475,9 @@ class _Client_GrpState extends State<Client_Grp> {
               itemBuilder: (context, sone) {
                 return Card(
                     child: Container(
-                      padding: EdgeInsets.all(5),
-                      child: Text(sone.toString()),
-                    ));
+                  padding: EdgeInsets.all(5),
+                  child: Text(sone.toString()),
+                ));
               },
               onSuggestionSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
@@ -482,7 +502,6 @@ class _Client_GrpState extends State<Client_Grp> {
     textController_Groupe_Ville.text = Api_Gouv.gProperties.city!;
   }
 
-
   Widget ToolsBar_Insee(BuildContext context) {
     return Container(
         width: 400,
@@ -499,7 +518,6 @@ class _Client_GrpState extends State<Client_Grp> {
                 CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.arrow_downward, ToolsBarCopySearch, tooltip: "Copier recherche"),
               ],
             ),
-
           ],
         ));
   }
@@ -509,7 +527,7 @@ class _Client_GrpState extends State<Client_Grp> {
       children: <Widget>[
         Container(
           width: 380,
-          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
           padding: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             border: Border.all(color: gColors.primary, width: 1),
@@ -526,12 +544,12 @@ class _Client_GrpState extends State<Client_Grp> {
         ),
         Positioned(
           left: 50,
-          top: 12,
+          top: 5,
           child: Container(
             padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
             color: Colors.white,
             child: Text(
-              'Groupe',
+              'Groupe ${DbTools.gGroupe.GroupeId}',
               style: TextStyle(color: Colors.black, fontSize: 12),
             ),
           ),
@@ -550,7 +568,8 @@ class _Client_GrpState extends State<Client_Grp> {
                   ToolsBar_Insee(context),
                   Row(
                     children: [
-                      DropdownButtonDepot(),                    ],
+                      DropdownButtonDepot(),
+                    ],
                   ),
                   Row(
                     children: [
@@ -614,43 +633,83 @@ class _Client_GrpState extends State<Client_Grp> {
   }
 
   Widget GroupeGridWidget() {
-    List<DaviColumn<Groupe>> wColumns = [
-      new DaviColumn(name: 'Code', width: 100, stringValue: (row) => row.Groupe_Code),
-      new DaviColumn(name: 'Nom', width: 450, stringValue: (row) => row.Groupe_Nom),
-      new DaviColumn(name: 'Adresse', width: 450, stringValue: (row) => "${row.Groupe_Adr1}"),
-      new DaviColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Groupe_CP}"),
-      new DaviColumn(name: 'Ville', width: 310, stringValue: (row) => "${row.Groupe_Ville}"),
-    ];
-    DaviModel<Groupe>? _model;
-    _model = DaviModel<Groupe>(rows: DbTools.ListGroupesearchresult, columns: wColumns);
-    return
+    return Container(
+      child: Column(children: [
+        ToolsBargrid(context),
+        SizedBox(
+            height: MediaQuery.of(context).size.height - 422,
+            child: SfDataGridTheme(
+                data: SfDataGridThemeData(
+                  headerColor: gColors.secondary,
+                  selectionColor: gColors.backgroundColor,
+                ),
+                child: SfDataGrid(
+                  //*********************************
+                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                    if (addedRows.length > 0) {
+                      Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+                      SelGroupe = dataGridController.selectedIndex;
+                      print(" onSelectionChanged  SelGroupe ${SelGroupe}");
+                      DbTools.gGroupe = DbTools.ListGroupesearchresult[Selindex];
+                        AlimSaisie();
+                    }
+                  },
+                  onFilterChanged: (DataGridFilterChangeDetails details) {
+                    countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
+                    print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                    setState(() {});
+                  },
+                  onCellTap: (DataGridCellTapDetails details) {
+                    wColSel = details.rowColumnIndex.columnIndex;
+                    wRowSel = details.rowColumnIndex.rowIndex;
+                  },
 
-        new DaviTheme(
-            child: new Davi<Groupe>(
-                visibleRowsCount: 16,
-                _model,
-                onRowTap: (aGroupe) async {
-                  SelGroupe = DbTools.ListGroupesearchresult.indexOf(aGroupe);
-                  DbTools.gGroupe = aGroupe;
-                  AlimSaisie();
-                }),
-            data: DaviThemeData(
-              header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-              headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
+                  //*********************************
 
-              row: RowThemeData(color: (rowIndex) {
-                return SelGroupe == rowIndex ? gColors.secondarytxt : Colors.white;
-              }),
+                  allowSorting: true,
+                  allowFiltering: true,
+                  source: parc_EntInfoDataGridSource,
+                  columns: getColumns(),
+                  headerRowHeight: 35,
+                  rowHeight: 28,
+                  allowColumnsResizing: true,
+                  columnResizeMode: ColumnResizeMode.onResize,
+                  selectionMode: SelectionMode.single,
+                  controller: dataGridController,
+                  onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                    Resize(args);
+                    return true;
+                  },
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  columnWidthMode: ColumnWidthMode.fill,
+                ))),
+        Container(
+          height: 10,
+        ),
+      ]),
+    );
+  }
 
-              cell: CellThemeData(
-                contentHeight: 28,
-                textStyle: gColors.bodySaisie_N_G,
-              ),
+  Widget ToolsBargrid(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 5),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+              ],
             ),
-      );
+          ],
+        ));
+  }
 
-
-
+  void ToolsBarSupprFilter() async {
+    parc_EntInfoDataGridSource.clearFilters();
+    countfilterConditions = 0;
+    setState(() {});
   }
 
   Widget DropdownButtonDepot() {
@@ -670,47 +729,42 @@ class _Client_GrpState extends State<Client_Grp> {
           style: gColors.bodySaisie_N_G,
         ),
       ),
-
       Container(
         child: DropdownButtonHideUnderline(
             child: DropdownButton2(
-              hint: Text(
-                'Séléctionner une agence',
-                style: gColors.bodyTitle1_N_Gr,
-              ),
-              items: ListParam_ParamDepot.map((item) => DropdownMenuItem<String>(
+          hint: Text(
+            'Séléctionner une agence',
+            style: gColors.bodyTitle1_N_Gr,
+          ),
+          items: ListParam_ParamDepot.map((item) => DropdownMenuItem<String>(
                 value: item,
                 child: Text(
                   "  $item",
                   style: gColors.bodyTitle1_N_Gr,
                 ),
               )).toList(),
-              value: selectedValueDepot,
-              onChanged: (value) {
-                setState(() {
-                  selectedValueDepot = value!;
-                  print("selectedValueDepot  $selectedValueDepot");
-                  setState(() {});
-                });
-              },
-              buttonPadding: const EdgeInsets.only(left: 4, right: 4),
-              buttonDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.black26,
-                ),
-                color: Colors.white,
-              ),
-              buttonHeight: 30,
-              buttonWidth: 250,
-              dropdownMaxHeight: 250,
-              itemHeight: 32,
-            )),
+          value: selectedValueDepot,
+          onChanged: (value) {
+            setState(() {
+              selectedValueDepot = value!;
+              print("selectedValueDepot  $selectedValueDepot");
+              setState(() {});
+            });
+          },
+          buttonPadding: const EdgeInsets.only(left: 4, right: 4),
+          buttonDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Colors.black26,
+            ),
+            color: Colors.white,
+          ),
+          buttonHeight: 30,
+          buttonWidth: 250,
+          dropdownMaxHeight: 250,
+          itemHeight: 32,
+        )),
       ),
-
-
     ]);
   }
-
-
 }

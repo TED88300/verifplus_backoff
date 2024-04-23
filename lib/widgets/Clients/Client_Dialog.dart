@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +11,6 @@ import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Fact.dart';
-import 'package:verifplus_backoff/widgets/Agences/Agences.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Grp.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Interv.dart';
 import 'package:verifplus_backoff/widgets/Clients/Client_Map.dart';
@@ -82,7 +79,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   List<String> ListParam_ParamDepot = [];
   String selectedValueDepot = "";
 
-
   List<String> ListParam_ParamRglt = [];
   List<String> ListParam_ParamRgltID = [];
   String selectedValueRglt = "";
@@ -90,8 +86,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   String selectedValueForme = "";
   String selectedUserInter = "";
   String selectedUserInterID = "";
-
-
 
   String wRep = "";
   Future initLib() async {
@@ -179,6 +173,8 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
 
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "FACT");
     await DbTools.getContactClientAdrType(DbTools.gClient.ClientId, DbTools.gAdresse.AdresseId, "FACT");
+
+
     isClient_CL_Pr = wClient.Client_CL_Pr;
     isCt = wClient.Client_Contrat;
 
@@ -195,10 +191,16 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
 
     selectedValueFam = ListParam_ParamFam[0];
     selectedValueFamID = ListParam_ParamFamID[0];
+
     if (wClient.Client_Famille.isNotEmpty) {
-      selectedValueFamID = wClient.Client_Famille;
-      selectedValueFam = ListParam_ParamFam[ListParam_ParamFamID.indexOf(selectedValueFamID)];
+      int idx = ListParam_ParamFamID.indexOf(selectedValueFamID);
+      if (idx >= 0)
+        {
+          selectedValueFamID = wClient.Client_Famille;
+          selectedValueFam = ListParam_ParamFam[ListParam_ParamFamID.indexOf(selectedValueFamID)];
+        }
     }
+
     print("selected ${wClient.Client_Famille} FAMILLE  $selectedValueFamID $selectedValueFam");
     Title = "Vérif+ : Fiche client";
     print("initLib <<<<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -290,7 +292,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       wScreen("Notes"),
       Client_Map(),
     ];
-
 
     return Container(
       color: Colors.white,
@@ -820,6 +821,9 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   }
 
   Widget DropdownButtonDepot() {
+    print("DropdownButtonDepot");
+
+
     return Row(children: [
       Container(
         width: 5,
@@ -861,6 +865,8 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   }
 
   Widget DropdownButtonRglt() {
+    print("DropdownButtonRglt");
+
     return Row(children: [
       Container(
         width: 5,
@@ -902,6 +908,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   }
 
   Widget DropdownButtonForme() {
+    print("DropdownButtonForme");
     return Row(children: [
 
       Container(

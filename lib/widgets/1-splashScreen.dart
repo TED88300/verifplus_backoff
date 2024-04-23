@@ -9,6 +9,7 @@ import 'package:verifplus_backoff/Tools/shared_Cookies.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/2-login.dart';
 import 'package:verifplus_backoff/widgets/4-Menu.dart';
+import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -82,7 +83,7 @@ class SplashScreenState extends State<SplashScreen>
     if (IsRememberLogin)
       {
           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Menu()));
-//      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Planning()));
+//      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>       Clients_screen()));
       }
     else
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));

@@ -35,17 +35,10 @@ class MapTools {
 
     var googleGeocoding = GoogleGeocoding(apiKeyMap);
     List<Component> components = [];
-    var risult = await googleGeocoding.geocoding.get(Adresse, components);
-
-  //  print("geocoding $Adresse ");
-
-    if (risult!.status!.contains("OK")) {
-      if (risult.results!.length > 0) {
-        var element = risult.results![0];
-
-//        print("geocoding ${element.addressComponents }");
-
-
+    var result = await googleGeocoding.geocoding.get(Adresse, components);
+    if (result!.status!.contains("OK")) {
+      if (result.results!.length > 0) {
+        var element = result.results![0];
         wLatLng = LatLng(element.geometry!.location!.lat!, element.geometry!.location!.lng!);
         wmaptoolsGeocoding.Geo_LatLng = wLatLng;
         wmaptoolsGeocoding.Geo_formattedAddress = element.formattedAddress!;
@@ -66,9 +59,9 @@ class MapTools {
 
     var googleGeocoding = GoogleGeocoding(apiKeyMap);
     List<Component> components = [];
-    var risult = await googleGeocoding.geocoding.getReverse(wLatLon);
-    if (risult!.status!.contains("OK")) {
-      GeocodingResult element = risult.results![0];
+    var result = await googleGeocoding.geocoding.getReverse(wLatLon);
+    if (result!.status!.contains("OK")) {
+      GeocodingResult element = result.results![0];
 
 
 
