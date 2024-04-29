@@ -38,7 +38,7 @@ class Param_Fam_screen extends StatefulWidget {
 
 class _Param_Fam_screenState extends State<Param_Fam_screen> {
   Param_Param wParam_Param = Param_Param.Param_ParamInit();
-  String Title = "Vérif+ : Paramètres ";
+  String Title = "Paramètres ";
   bool bReload = true;
 
   Future Reload() async {
@@ -66,7 +66,7 @@ class _Param_Fam_screenState extends State<Param_Fam_screen> {
     print("Param_Fam_screen initState ${widget.wType} - ${widget.wTitle}");
     initLib();
 
-    Title = "Vérif+ : Paramètres - ${widget.wTitle}";
+    Title = "Paramètres - ${widget.wTitle}";
   }
 
   @override

@@ -221,7 +221,7 @@ class _MissionsState extends State<Missions> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Vérif+ : Intervention / Missions",
+                "Intervention / Missions",
                 textAlign: TextAlign.center,
                 style: gColors.bodyTitle1_B_W,
               ),

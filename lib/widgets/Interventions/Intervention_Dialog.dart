@@ -26,7 +26,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   void initState() {
     initLib();
     super.initState();
-    Title = "Vérif+ : Intervention";
+    Title = "Intervention";
   }
 
 

@@ -3,13 +3,82 @@ import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Dialog.dart';
+
+
+
+DataGridController dataGridController = DataGridController();
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
+class ZoneDataGridSource extends DataGridSource {
+  ZoneDataGridSource() {
+    buildDataGridRows();
+  }
+
+  List<DataGridRow> dataGridRows = <DataGridRow>[];
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRows() {
+    dataGridRows = DbTools.ListZonesearchresult.map<DataGridRow>((Zone zone) {
+      return DataGridRow(cells: <DataGridCell>[
+        DataGridCell<int>(columnName: 'id', value: zone.ZoneId),
+        DataGridCell<String>(columnName: 'nom', value: zone.Zone_Nom),
+        DataGridCell<String>(columnName: 'adresse', value: zone.Zone_Adr1),
+        DataGridCell<String>(columnName: 'cp', value: zone.Zone_CP),
+        DataGridCell<String>(columnName: 'ville', value: zone.Zone_Ville),
+        DataGridCell<String>(columnName: 'agence', value: zone.Zone_Depot),
+      ]);
+    }).toList();
+  }
+
+  @override
+  Future<void> handleRefresh() async {
+    buildDataGridRows();
+    notifyListeners();
+  }
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    double t = 5;
+    double b = 3;
+
+    Color selectedRowTextColor = Colors.white;
+    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+
+    Color backgroundColor = Colors.transparent;
+    return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
+    ]);
+  }
+
+  @override
+  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
+    return Container(alignment: Alignment.center, child: Text(summaryValue));
+  }
+}
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
 
 class Zones_Zone extends StatefulWidget {
   final VoidCallback onMaj;
@@ -38,6 +107,16 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   List<String> ListParam_ParamDepot = [];
   String selectedValueDepot = "";
   final Search_TextController = TextEditingController();
+
+
+  int wColSel = -1;
+  int wRowSel = -1;
+  int Selindex = -1;
+  int countfilterConditions = -1;
+
+  ZoneDataGridSource zoneDataGridSource = ZoneDataGridSource();
+
+
   Future Reload() async {
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
     print("initLib getZonesClient ${DbTools.ListZone.length}");
@@ -75,6 +154,12 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     }
     DbTools.ListZonesearchresult.clear();
     DbTools.ListZonesearchresult.addAll(ListZonesearchresultTmp);
+
+
+    await zoneDataGridSource.handleRefresh();
+
+    AlimSaisie();
+
     setState(() {});
   }
 
@@ -236,27 +321,27 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter zone"),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.copy, ToolsBarCpy, tooltip: "Copier adresse Livraison"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter zone"),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Copy", ToolsBarCpy, tooltip: "Copier adresse Livraison"),
                   ),
                   DbTools.gZone.Zone_Nom.isEmpty
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.orange, Icons.people_outline_outlined, ToolsBarCtact, tooltip: "Contacts"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.orange, "ico_Contact", ToolsBarCtact, tooltip: "Contacts"),
                         ),
                   (DbTools.gZone.Zone_Nom != "???" || DbTools.ListIntervention.length > 0)
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.red, "ico_Del", ToolsBarDelete, tooltip: "Suppression"),
                         ),
                 ],
               ),
@@ -580,7 +665,142 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 ]))));
   }
 
+  List<double> dColumnWidth = [
+    80,
+    450,
+    350,
+    120,
+    160,
+    160,
+  ];
+  void Resize(ColumnResizeUpdateDetails args) {
+    setState(() {
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'nom')
+        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'adresse')
+        dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'cp')
+        dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'ville') dColumnWidth[4] = args.width;
+    });
+  }
+
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Nom', double.nan, 160, Alignment.centerLeft, wColumnWidthMode: ColumnWidthMode.lastColumnFill),
+      FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
+    ];
+  }
+
+  List<GridTableSummaryRow> getGridTableSummaryRow() {
+    return [
+      GridTableSummaryRow(
+          showSummaryInRow: false,
+          title: 'Cpt: {Count}',
+          titleColumnSpan: 1,
+          columns: [
+            GridSummaryColumn(name: 'Count', columnName: 'id', summaryType: GridSummaryType.count),
+          ],
+          position: GridTableSummaryRowPosition.bottom),
+    ];
+  }
+
   Widget ZoneGridWidget() {
+    return Container(
+      child: Column(children: [
+//        ToolsBargrid(context),
+        Container(
+            decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
+            height: MediaQuery.of(context).size.height - 280,
+            child: SfDataGridTheme(
+                data: SfDataGridThemeData(
+                  headerColor: gColors.secondary,
+                  selectionColor: gColors.backgroundColor,
+                ),
+                child: SfDataGrid(
+                  //*********************************
+                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                    if (addedRows.length > 0 ) {
+                      Selindex = zoneDataGridSource.dataGridRows.indexOf(addedRows.last);
+                      SelZone = dataGridController.selectedIndex;
+                      print(" onSelectionChanged  SelZone ${SelZone}");
+                      DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
+                      AlimSaisie();
+
+                      if (wColSel == 0)
+                      {
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) => new Zone_Dialog());
+                      }
+                    }
+                    else if (removedRows.length > 0 )
+                    {
+                      Selindex = zoneDataGridSource.dataGridRows.indexOf(removedRows.last);
+                      SelZone = dataGridController.selectedIndex;
+                      print(" onSelectionChanged  SelZone ${SelZone}");
+                      DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
+                      AlimSaisie();
+                      if (wColSel == 0)
+                      {
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) => new Zone_Dialog());
+                      }
+                    }
+                  },
+                  onFilterChanged: (DataGridFilterChangeDetails details) {
+                    countfilterConditions = zoneDataGridSource.filterConditions.length;
+                    print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                    setState(() {});
+                  },
+                  onCellTap: (DataGridCellTapDetails details) {
+                    wColSel = details.rowColumnIndex.columnIndex;
+                    wRowSel = details.rowColumnIndex.rowIndex;
+                  },
+
+                  //*********************************
+
+                  allowSorting: true,
+                  allowFiltering: true,
+                  source: zoneDataGridSource,
+                  columns: getColumns(),
+                  tableSummaryRows: getGridTableSummaryRow(),
+
+                  headerRowHeight: 35,
+                  rowHeight: 28,
+                  allowColumnsResizing: true,
+                  columnResizeMode: ColumnResizeMode.onResize,
+                  selectionMode: SelectionMode.multiple,
+                  navigationMode: GridNavigationMode.row,
+
+                  controller: dataGridController,
+                  onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                    Resize(args);
+                    return true;
+                  },
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  columnWidthMode: ColumnWidthMode.fill,
+                  isScrollbarAlwaysShown : true,
+                ))),
+        Container(
+          height: 10,
+        ),
+      ]),
+    );
+  }
+
+
+
+
+  Widget ZoneGridWidgetVP() {
     List<DaviColumn<Zone>> wColumns = [
       DaviColumn(
           pinStatus: PinStatus.left,

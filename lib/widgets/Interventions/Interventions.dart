@@ -33,6 +33,7 @@ class IntervInfoDataGridSource extends DataGridSource {
     dataGridRows = DbTools.ListInterventionsearchresult.map<DataGridRow>((Intervention Interv) {
       return DataGridRow(cells: <DataGridCell>[
         DataGridCell<int>(columnName: 'id', value: Interv.InterventionId),
+        DataGridCell<String>(columnName: 'client', value: Interv.Client_Nom),
         DataGridCell<String>(columnName: 'groupe', value: Interv.Groupe_Nom),
         DataGridCell<String>(columnName: 'site', value: Interv.Site_Nom),
         DataGridCell<String>(columnName: 'zone', value: Interv.Zone_Nom),
@@ -66,18 +67,19 @@ class IntervInfoDataGridSource extends DataGridSource {
     Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
       FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
-      FiltreTools.SfRowDate(row, 4, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 7, Alignment.center, textColor),
-      FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      1, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRowDate(row,  5, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      6, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      7, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      8, Alignment.center, textColor),
+      FiltreTools.SfRow(row,      9, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row,      10, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 13, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -94,17 +96,15 @@ class IntervInfoDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-class Client_Interv extends StatefulWidget {
-  final VoidCallback onMaj;
-  const Client_Interv({Key? key, required this.onMaj}) : super(key: key);
-
+class Interventions extends StatefulWidget {
   @override
-  _Client_IntervState createState() => _Client_IntervState();
+  _InterventionsState createState() => _InterventionsState();
 }
 
-class _Client_IntervState extends State<Client_Interv> {
+class _InterventionsState extends State<Interventions> {
   List<double> dColumnWidth = [
     80,
+    200,
     130,
     200,
     170,
@@ -138,22 +138,22 @@ class _Client_IntervState extends State<Client_Interv> {
 
   List<GridColumn> getColumns() {
     return <GridColumn>[
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('groupe', 'Groupe', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('site', 'Site', dColumnWidth[2], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('zone', 'Zone', dColumnWidth[3], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('date', 'Date', dColumnWidth[4], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('org', 'Organes', dColumnWidth[5], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('type', 'Type', dColumnWidth[6], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('organes', 'Cpt', dColumnWidth[7], dColumnWidth[1], Alignment.center),
-      FiltreTools.SfGridColumn('status', 'Status', dColumnWidth[8], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('factu', 'Fact', dColumnWidth[9], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespCom', 'RespCom', dColumnWidth[10], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespTech', 'RespTech', dColumnWidth[11], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[12], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'ID',          dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('groupe', 'Client',  dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('groupe', 'Groupe',  dColumnWidth[2], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('site', 'Site',      dColumnWidth[3], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('zone', 'Zone',      dColumnWidth[4], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('date', 'Date',      dColumnWidth[5], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('org', 'Organes',    dColumnWidth[6], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('type', 'Type',      dColumnWidth[7], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('organes', 'Cpt',    dColumnWidth[8], dColumnWidth[1], Alignment.center),
+      FiltreTools.SfGridColumn('status', 'Status',  dColumnWidth[9], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('factu', 'Fact',     dColumnWidth[10], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RespCom', 'RespCom',dColumnWidth[11], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RespTech', 'RespTech',dColumnWidth[12], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[13], dColumnWidth[1], Alignment.centerLeft),
     ];
   }
-
 
   List<GridTableSummaryRow> getGridTableSummaryRow()
   {
@@ -171,7 +171,6 @@ class _Client_IntervState extends State<Client_Interv> {
           position: GridTableSummaryRowPosition.bottom),
       ];
   }
-
 
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
@@ -205,12 +204,15 @@ class _Client_IntervState extends State<Client_Interv> {
 
   Future Reload() async {
     await DbTools.initListFam();
-    await DbTools.getInterventionsClient(DbTools.gClient.ClientId);
+    await DbTools.getInterventionAll();
 
     Ct_Debut = DateTime.now();
     Ct_Fin   = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
+
+      print("element ${element.Client_Nom} ${element.Groupe_Nom}");
+
       DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
 
       if(wDT.difference(Ct_Debut).inHours < 0)
@@ -275,6 +277,10 @@ class _Client_IntervState extends State<Client_Interv> {
     }
 
     intervInfoDataGridSource.handleRefresh();
+
+    intervInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'date', sortDirection: DataGridSortDirection.ascending));
+    intervInfoDataGridSource.sort();
+
     setState(() {});
   }
 
@@ -316,7 +322,7 @@ class _Client_IntervState extends State<Client_Interv> {
   Widget InterventionGridWidget()
   {
     return   SizedBox(
-        height: MediaQuery.of(context).size.height - 430,
+        height: MediaQuery.of(context).size.height - 200,
         child: SfDataGridTheme(
             data: SfDataGridThemeData(
               headerColor: gColors.secondary,

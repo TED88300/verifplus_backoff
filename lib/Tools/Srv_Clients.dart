@@ -15,7 +15,9 @@ class Client {
   String Client_Commercial = "";
   String Client_Createur = "";
   bool Client_Contrat = false;
+
   String Client_TypeContrat = "";
+  String Client_Statut = "";
   String Client_Ct_Debut = "";
   String Client_Ct_Fin = "";
   String Client_Organes = "";
@@ -33,7 +35,7 @@ class Client {
 
 
   static ClientInit() {
-    return Client(0, "", false, "", "","", false, false, "", "", "", "", "", "", "", false, "","", "", "", "", "", "", "", "");
+    return Client(0, "", false, "", "","", false, false, "", "", "", "", "", "", "", false, "","", "", "", "", "", "", "", "","");
   }
 
   Client(
@@ -52,9 +54,9 @@ class Client {
     String Client_TVA,
     String Client_Commercial,
       String Client_Createur,
-
     bool   Client_Contrat      ,
     String Client_TypeContrat  ,
+      String Client_Statut  ,
     String Client_Ct_Debut        ,
       String Client_Ct_Fin        ,
     String Client_Organes      ,
@@ -82,6 +84,7 @@ class Client {
     this.Client_Createur = Client_Createur;
     this.Client_Contrat     = Client_Contrat    ;
     this.Client_TypeContrat = Client_TypeContrat;
+    this.Client_Statut = Client_Statut;
     this.Client_Ct_Debut       = Client_Ct_Debut      ;
     this.Client_Ct_Fin       = Client_Ct_Fin      ;
     this.Client_Organes     = Client_Organes    ;
@@ -95,12 +98,19 @@ class Client {
   }
 
   factory Client.fromJson(Map<String, dynamic> json) {
-//    print("json $json");
+    print("json $json");
 
     if (json['Adresse_Adr1'] == null) json['Adresse_Adr1'] ="";
     if (json['Adresse_CP'] == null) json['Adresse_CP'] ="";
     if (json['Adresse_Ville'] == null) json['Adresse_Ville'] ="";
     if (json['Adresse_Pays'] == null) json['Adresse_Pays'] ="";
+
+    if (json['Client_Organes'] == null) json['Client_Organes'] ="";
+    if (json['Client_Contrat'] == null) json['Client_Contrat'] ="0";
+    if (json['Client_PersPhys'] == null) json['Client_PersPhys'] ="0";
+    if (json['Client_OK_DataPerso'] == null) json['Client_OK_DataPerso'] ="1";
+    if (json['Client_CL_Pr'] == null) json['Client_CL_Pr'] ="0";
+
 
     Client wTmp = Client(
       int.parse(json['ClientId']),
@@ -120,6 +130,7 @@ class Client {
       json['Client_Createur'],
       int.parse(json['Client_Contrat']) == 1,
       json['Client_TypeContrat'],
+      json['Client_Statut'],
       json['Client_Ct_Debut'],
       json['Client_Ct_Fin'],
       json['Client_Organes'],
@@ -154,6 +165,7 @@ class Client {
       json['Client_Createur'],
       int.parse(json['Client_Contrat']) == 1,
       json['Client_TypeContrat'],
+        json['Client_Statut'],
       json['Client_Ct_Debut'],
       json['Client_Ct_Fin'],
       json['Client_Organes'],
@@ -185,9 +197,9 @@ class Client {
         '$Client_TVA	'
         '$Client_Commercial '
         '$Client_Createur '
-
         '$Client_Contrat '
         '$Client_TypeContrat '
+        '$Client_Statut '
         '$Client_Ct_Debut '
         '$Client_Ct_Fin '
         '$Client_Organes '

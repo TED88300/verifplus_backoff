@@ -76,16 +76,29 @@ class Intervention {
 
 
   factory Intervention.fromJsonClient(Map<String, dynamic> json) {
-//    print("json $json");
+    print("json $json");
 
     String wCnt = "0";
     if (json['Cnt'] != null) wCnt = json['Cnt'];
 
     Intervention wIntervention = Intervention(
-        int.parse(json['InterventionId']), int.parse(json['Intervention_ZoneId']), json['Intervention_Date'], json['Intervention_Type'], json['Intervention_Parcs_Type'], json['Intervention_Status'], json['Intervention_Histo_Status'], json['Intervention_Facturation'], json['Intervention_Histo_Facturation'],
+        int.parse(json['InterventionId']),
+        int.parse(json['Intervention_ZoneId']),
+        json['Intervention_Date'],
+        json['Intervention_Type'],
+        json['Intervention_Parcs_Type'],
+        json['Intervention_Status'],
+        json['Intervention_Histo_Status'],
+        json['Intervention_Facturation'],
+        json['Intervention_Histo_Facturation'],
         json['Intervention_Responsable'],
         json['Intervention_Responsable2'],
-        json['Intervention_Intervenants'], json['Intervention_Reglementation'], json['Intervention_Signataire_Client'], json['Intervention_Signataire_Tech'], json['Intervention_Signataire_Date'], json['Intervention_Remarque'], int.parse(wCnt));
+        json['Intervention_Intervenants'],
+        json['Intervention_Reglementation'],
+        json['Intervention_Signataire_Client'],
+        json['Intervention_Signataire_Tech'],
+        json['Intervention_Signataire_Date'],
+        json['Intervention_Remarque'], int.parse(wCnt));
 
     wIntervention.Client_Nom = json['Client_Nom'];
     wIntervention.Groupe_Nom = json['Groupe_Nom'];

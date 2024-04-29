@@ -2,13 +2,93 @@ import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Sites/Intervenants_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Sites/Missions_Dialog.dart';
+
+DataGridController dataGridController = DataGridController();
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
+class IntervInfoDataGridSource extends DataGridSource {
+  IntervInfoDataGridSource() {
+    buildDataGridRows();
+  }
+  var inputFormat2 = DateFormat('dd/MM/yyyy');
+
+  List<DataGridRow> dataGridRows = <DataGridRow>[];
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRows() {
+    dataGridRows = DbTools.ListInterventionsearchresult.map<DataGridRow>((Intervention Interv) {
+      return DataGridRow(cells: <DataGridCell>[
+        DataGridCell<int>(columnName: 'id', value: Interv.InterventionId),
+        DataGridCell<DateTime>(columnName: 'date', value: inputFormat2.parse(Interv.Intervention_Date!)),
+        DataGridCell<String>(columnName: 'org', value: DbTools.getParam_Param_Text("Type_Organe", Interv.Intervention_Parcs_Type!)),
+        DataGridCell<String>(columnName: 'type', value: Interv.Intervention_Type),
+        DataGridCell<int>(columnName: 'organes', value: Interv.Cnt),
+        DataGridCell<String>(columnName: 'status', value: Interv.Intervention_Status),
+        DataGridCell<String>(columnName: 'factu', value: Interv.Intervention_Facturation),
+        DataGridCell<String>(columnName: 'RespCom', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable!)),
+        DataGridCell<String>(columnName: 'RespTech', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable2!)),
+        DataGridCell<String>(columnName: 'Rem', value: Interv.Intervention_Remarque!.replaceAll("\n", " - ")),
+
+      ]);
+    }).toList();
+  }
+
+  @override
+  Future<void> handleRefresh() async {
+    buildDataGridRows();
+    notifyListeners();
+  }
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    double t = 5;
+    double b = 3;
+
+    Color selectedRowTextColor = Colors.white;
+    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+
+    Color backgroundColor = Colors.transparent;
+    return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
+      FiltreTools.SfRowDate(row, 1, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 4, Alignment.center, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 7, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
+    ]);
+  }
+
+  @override
+  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
+    return Container(alignment: Alignment.center, child: Text(summaryValue));
+  }
+
+
+
+}
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
 
 class Zone_Interv extends StatefulWidget {
   const Zone_Interv({Key? key}) : super(key: key);
@@ -18,6 +98,98 @@ class Zone_Interv extends StatefulWidget {
 }
 
 class _Zone_IntervState extends State<Zone_Interv> {
+
+  List<double> dColumnWidth = [
+    80,
+    110,
+    130,
+    110,
+    110,
+    120,
+    110,
+    190,
+    190,
+    193,
+  ];
+
+  IntervInfoDataGridSource intervInfoDataGridSource = IntervInfoDataGridSource();
+
+
+  final Search_TextController = TextEditingController();
+  TextEditingController textController_Ct_Debut = TextEditingController();
+  TextEditingController textController_Ct_Fin = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+
+  int wColSel = -1;
+  int Selindex = -1;
+  int countfilterConditions = -1;
+
+
+  var inputFormat = DateFormat('yyyy-MM-dd');
+  var inputFormat2 = DateFormat('dd/MM/yyyy');
+  DateTime Ct_Debut = DateTime.now();
+  DateTime Ct_Fin = DateTime.now();
+
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      FiltreTools.SfGridColumn('id', 'ID',              dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('date', 'Date',          dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('org', 'Organes',        dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('type', 'Type',          dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('organes', 'Cpt',        dColumnWidth[4], dColumnWidth[4], Alignment.center),
+      FiltreTools.SfGridColumn('status', 'Status',      dColumnWidth[5], dColumnWidth[5], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('factu', 'Fact',         dColumnWidth[6], dColumnWidth[6], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RespCom', 'RespCom',    dColumnWidth[7], dColumnWidth[7], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RespTech', 'RespTech',  dColumnWidth[8], dColumnWidth[8], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('Rem', 'Remarques',      dColumnWidth[9], dColumnWidth[9], Alignment.centerLeft),
+    ];
+  }
+
+
+  List<GridTableSummaryRow> getGridTableSummaryRow()
+  {
+    return
+      [      GridTableSummaryRow(
+          showSummaryInRow: false,
+          title: 'Cpt: {Count}',
+          titleColumnSpan: 1,
+          columns: [
+            GridSummaryColumn(
+                name: 'Count',
+                columnName: 'id',
+                summaryType: GridSummaryType.count),
+          ],
+          position: GridTableSummaryRowPosition.bottom),
+      ];
+  }
+
+
+  void Resize(ColumnResizeUpdateDetails args) {
+    setState(() {
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'date')
+        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'org')
+        dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'type')
+        dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'organes')
+        dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'status')
+        dColumnWidth[5] = args.width;
+      else if (args.column.columnName == 'factu')
+        dColumnWidth[6] = args.width;
+      else if (args.column.columnName == 'RespCom')
+        dColumnWidth[7] = args.width;
+      else if (args.column.columnName == 'RespTech')
+        dColumnWidth[8] = args.width;
+      else if (args.column.columnName == 'Rem')
+        dColumnWidth[9] = args.width;
+    });
+  }
+
+
   TextEditingController textController_Intervention_Date = TextEditingController();
   TextEditingController textController_Intervention_Type = TextEditingController();
   TextEditingController textController_Intervention_Remarque = TextEditingController();
@@ -41,7 +213,42 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
   DateTime wDateTime = DateTime.now();
 
-  Future initLib() async {
+  Future Reload() async {
+
+    await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+
+    Ct_Debut = DateTime.now();
+    Ct_Fin   = DateTime(1980);
+    for (int i = 0; i < DbTools.ListIntervention.length; i++) {
+      var element = DbTools.ListIntervention[i];
+      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+
+      if(wDT.difference(Ct_Debut).inHours < 0)
+      {
+        Ct_Debut = wDT;
+      }
+      if(wDT.difference(Ct_Fin).inHours > 0)
+      {
+        Ct_Fin = wDT;
+      }
+    }
+
+    print(">>>>>> Ct_Debut ${Ct_Debut.toString()} Ct_Fin ${Ct_Fin.toString()}");
+
+    textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
+    textController_Ct_Fin.text = inputFormat2.format(Ct_Fin);
+
+    print(" Ct_Debut ${textController_Ct_Debut.text} Ct_Fin ${textController_Ct_Fin.text}");
+
+
+
+
+    Filtre();
+
+    AlimSaisie();
+  }
+
+    Future initLib() async {
     await DbTools.initListFam();
 
     selectedTypeInter = DbTools.List_TypeInter[0];
@@ -61,24 +268,62 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
     selectedUserInter2 = DbTools.List_UserInter[0];
     selectedUserInterID2 = DbTools.List_UserInterID[0];
-
-    await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-    Filtre();
-
-    AlimSaisie();
+    Reload();
   }
 
   Future Filtre() async {
+
+
+    List<Intervention> ListInterventionsearchresultDate = [];
     DbTools.ListInterventionsearchresult.clear();
-    DbTools.ListInterventionsearchresult.addAll(DbTools.ListIntervention);
+
+    if (textController_Ct_Debut.text.isNotEmpty) {
+      Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
+    }
+
+    if (textController_Ct_Fin.text.isNotEmpty) {
+      Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
+    }
+
+
+    for (int i = 0; i < DbTools.ListIntervention.length; i++) {
+      var element = DbTools.ListIntervention[i];
+      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+
+      if(wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0)
+      {
+        ListInterventionsearchresultDate.add(element);
+      }
+
+    }
+    if (Search_TextController.text.isEmpty) {
+      DbTools.ListInterventionsearchresult.addAll(ListInterventionsearchresultDate);
+    } else {
+      ListInterventionsearchresultDate.forEach((element) {
+        bool wAdd = false;
+        if (element.Desc().toLowerCase().contains(Search_TextController.text.toLowerCase())) {
+          wAdd = true;
+        }
+
+        if (wAdd) {
+          DbTools.ListInterventionsearchresult.add(element);
+        }
+      });
+    }
+
     DbTools.ListInterventionsearchresult.sort(DbTools.affSortComparisonData);
+
 
     if (DbTools.ListInterventionsearchresult.length > 0) {
       DbTools.gIntervention = DbTools.ListInterventionsearchresult[0];
     }
+
+
+
     await DbTools.getInterMissionsIntervention(DbTools.gIntervention.InterventionId!);
     print("Filtre ListInterMission LENGHT ${DbTools.ListInterMission.length}");
 
+    intervInfoDataGridSource.handleRefresh();
     setState(() {});
   }
 
@@ -179,18 +424,18 @@ class _Zone_IntervState extends State<Zone_Interv> {
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter Interventions"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter Interventions"),
                   ),
 
                   ( DbTools.gIntervention.Cnt! > 0)
                       ? Container()
                       : Container(
                     padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.red, "ico_Del", ToolsBarDelete, tooltip: "Suppression"),
                   ),
 
 
@@ -205,41 +450,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
     );
   }
 
-  Widget ToolsBar(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 10,
-                ),
-                Icon(
-                  Icons.search,
-                  color: Colors.blue,
-                  size: 30.0,
-                ),
-                Container(
-                  width: 10,
-                ),
-                Container(
-                  width: 10,
-                ),
-              ],
-            ),
-            Container(
-              height: 5,
-              color: gColors.white,
-            ),
-            Container(
-              height: 1,
-              color: gColors.primary,
-            )
-          ],
-        ));
-  }
+
 
   Widget fadeAlertAnimation(
       BuildContext context,
@@ -531,50 +742,248 @@ class _Zone_IntervState extends State<Zone_Interv> {
                 ]))));
   }
 
-  Widget InterventionGridWidget() {
-    List<DaviColumn<Intervention>> wColumns = [
-      DaviColumn(
-          pinStatus: PinStatus.left,
-          width: 30,
-          cellBuilder: (BuildContext context, DaviRow<Intervention> aIntervention) {
-            return InkWell(
-                child: const Icon(Icons.edit, size: 16),
-                onTap: () async {
-                  DbTools.gIntervention = aIntervention.data;
-                  print("DbTools.gIntervention.InterventionId ${DbTools.gIntervention.InterventionId}");
-                  await showDialog(
-                      context: context,
-                      builder: (BuildContext context) => new Intervention_Dialog(
-                            site: DbTools.gSite,
-                          ));
-                });
-          }),
-      new DaviColumn(name: 'Date', width: 100, stringValue: (row) => "${row.Intervention_Date}"),
-      new DaviColumn(name: 'Organes', width: 100, stringValue: (row) => "${DbTools.getParam_Param_Text("Type_Organe", row.Intervention_Parcs_Type!)}"),
-      new DaviColumn(name: 'Type', width: 100, stringValue: (row) => "${row.Intervention_Type}"),
-      new DaviColumn(name: 'Status', width: 100, stringValue: (row) => "${row.Intervention_Status}"),
-      new DaviColumn(name: 'Facturation', width: 100, stringValue: (row) => "${row.Intervention_Facturation}"),
-      new DaviColumn(name: 'Resp. Comm', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable!)}"),
-      new DaviColumn(name: 'Resp. Tech', width: 190, stringValue: (row) => "${DbTools.getUserid_Nom(row.Intervention_Responsable2!)}"),
-      new DaviColumn(name: 'Remarque', width: 480, stringValue: (row) => "${row.Intervention_Remarque!.replaceAll("\n", " - ")}"),
-      new DaviColumn(name: 'Organes', width: 80, stringValue: (row) => "${row.Cnt}", cellAlignment: Alignment.center),
-    ];
-    print("InterventionGridWidget ${DbTools.ListInterventionsearchresult.length}");
-    DaviModel<Intervention>? _model;
-    _model = DaviModel<Intervention>(rows: DbTools.ListInterventionsearchresult, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Intervention>(visibleRowsCount: 16, _model, onRowTap: (Intervention) async {
-          DbTools.gIntervention = Intervention;
+  Widget InterventionGridWidget()
+  {
+    return
 
-          AlimSaisie();
-        }),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
-          cell: CellThemeData(
-            contentHeight: 24,
-            textStyle: gColors.bodySaisie_N_G,
+      Column(children: [
+        ToolsBar(context),
+
+      Container(
+        decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
+        height: MediaQuery.of(context).size.height - 280,
+        child: SfDataGridTheme(
+            data: SfDataGridThemeData(
+              headerColor: gColors.secondary,
+              selectionColor: gColors.backgroundColor,
+            ),
+            child: SfDataGrid(
+              //*********************************
+              onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                if (addedRows.length > 0 ) {
+
+                  print ("");
+
+                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+                  DbTools.gIntervention = DbTools.ListInterventionsearchresult[Selindex];
+                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
+                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
+                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
+                  AlimSaisie();
+                  if (wColSel == 0)
+                  {
+                    await showDialog(
+                        context: context,
+                        builder: (BuildContext context) => new Intervention_Dialog(
+                          site: DbTools.gSite,
+                        ));
+                    Reload();
+
+                  }
+                }
+                else if (removedRows.length > 0 )
+                {
+                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
+                  DbTools.gIntervention = DbTools.ListIntervention[Selindex];
+                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
+                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
+                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
+                  AlimSaisie();
+                  if (wColSel == 0)
+                  {
+                    await showDialog(
+                        context: context,
+                        builder: (BuildContext context) => new Intervention_Dialog(
+                          site: DbTools.gSite,
+                        ));
+                    Reload();
+
+                  }
+                }
+              },
+
+              onFilterChanged: (DataGridFilterChangeDetails details) {
+                countfilterConditions = intervInfoDataGridSource.filterConditions.length;
+                setState(() {});
+              },
+              onCellTap: (DataGridCellTapDetails details) {
+                wColSel = details.rowColumnIndex.columnIndex;
+              },
+
+              //*********************************
+
+              allowSorting: true,
+              allowFiltering: true,
+              source: intervInfoDataGridSource,
+              columns: getColumns(),
+              tableSummaryRows: getGridTableSummaryRow(),
+
+              headerRowHeight: 35,
+              rowHeight: 28,
+              allowColumnsResizing: true,
+              columnResizeMode: ColumnResizeMode.onResize,
+              selectionMode: SelectionMode.multiple,
+              controller: dataGridController,
+              onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                Resize(args);
+                return true;
+              },
+              gridLinesVisibility: GridLinesVisibility.both,
+              headerGridLinesVisibility: GridLinesVisibility.both,
+              columnWidthMode: ColumnWidthMode.fill,
+              isScrollbarAlwaysShown: true,
+            )))
+
+      ]);
+  }
+
+  Widget ToolsBar(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+                ToolsBarSearch(context),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  void ToolsBarSupprFilter() async {
+    intervInfoDataGridSource.clearFilters();
+    countfilterConditions = 0;
+    Reload();
+    setState(() {});
+  }
+
+  Widget ToolsBarSearch(BuildContext context) {
+    return Expanded(
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: Row(
+            children: [
+              Container(
+                width: 20,
+              ),
+              InkWell(
+                child: Row(
+                  children: [
+                    Text(
+                      "Début :  ",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                    Text(
+                      "${textController_Ct_Debut.text.isEmpty ? "--/--/--" : textController_Ct_Debut.text}",
+                      style: gColors.bodyText_B_G,
+                    ),
+                  ],
+                ),
+                onTap: () async {
+                  if (textController_Ct_Debut.text.isEmpty)
+                    selectedDate = DateTime.now();
+                  else
+                    selectedDate =  inputFormat2.parse(textController_Ct_Debut.text);
+                  await _selectDate(context, DateTime(1980) , DateTime.now());
+
+
+                  if(selectedDate.difference(DateTime.now()).inHours >= 0) return;
+                  if(selectedDate.difference(Ct_Fin).inHours >= 0) return;
+                  countfilterConditions = 999;
+                  textController_Ct_Debut.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+
+                  await Filtre();
+                },
+              ),
+              Container(
+                width: 20,
+              ),
+              InkWell(
+                child: Row(
+                  children: [
+                    Text(
+                      "Fin :  ",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                    Text(
+                      "${textController_Ct_Fin.text.isEmpty ? "--/--/--" : textController_Ct_Fin.text}",
+                      style: gColors.bodyText_B_G,
+                    ),
+                  ],
+                ),
+                onTap: () async {
+                  if (textController_Ct_Fin.text.isEmpty)
+                    selectedDate = DateTime.now();
+                  else
+                    selectedDate =  inputFormat2.parse(textController_Ct_Fin.text);
+                  await _selectDate(context, Ct_Debut , DateTime.now());
+
+                  if(selectedDate.difference(DateTime.now()).inHours >= 0) return;
+                  if(selectedDate.difference(Ct_Debut).inHours < 0) return;
+
+                  countfilterConditions = 999;
+                  textController_Ct_Fin.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+
+                  await Filtre();
+                },
+              ),
+              Container(
+                width: 20,
+              ),
+              Icon(
+                Icons.search,
+                color: Colors.blue,
+                size: 20.0,
+              ),
+              Container(
+                width: 10,
+              ),
+              Expanded(
+                child: TextFormField(
+                  controller: Search_TextController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  ),
+                  onChanged: (String? value) async {
+                    print("_buildFieldTextSearch search ${Search_TextController.text}");
+                    await Filtre();
+                  },
+                  style: gColors.bodySaisie_B_B,
+                ),
+              ),
+              Container(
+                width: 10,
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.cancel,
+                  size: 20.0,
+                ),
+                onPressed: () async {
+                  Search_TextController.clear();
+                  await Filtre();
+                },
+              ),
+              Container(
+                width: 20,
+              ),
+            ],
           ),
         ));
+  }
+
+  Future<void> _selectDate(BuildContext context,DateTime firstDate, DateTime lastDate ) async {
+    final DateTime? picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: firstDate, lastDate: lastDate);
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
   }
 }

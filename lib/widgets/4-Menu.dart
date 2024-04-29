@@ -12,6 +12,7 @@ import 'package:verifplus_backoff/widgets/Agences/Agences.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Fam_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
+import 'package:verifplus_backoff/widgets/Interventions/Interventions.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Ctrl.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Ctrl2.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Gammes.dart';
@@ -45,13 +46,7 @@ class _MenuState extends State<Menu> {
 
   String wTitre = "Back-Office";
 
-  Widget wAff = Center(
-    child: new Image.asset(
-      'assets/images/AppIcot.png',
-      color: gColors.trspWhite,
-      height: 300,
-    ),
-  );
+  Widget wAff = Clients_screen();
 
   Future initLib() async {
     var googleGeocoding = GoogleGeocoding(MapTools.apiKeyMap);
@@ -134,11 +129,19 @@ class _MenuState extends State<Menu> {
                   ),
                   Spacer(),
                   Text(
-                    "Vérif+ : $wTitre",
+                    "$wTitre",
                     textAlign: TextAlign.center,
                     style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
+                  InkWell(
+                    child: Container(margin: EdgeInsets.fromLTRB(0, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
+                    onTap: () {
+                      gColors.AffUser(context);
+
+
+                    },
+                  ),
                   InkWell(
                     child: Container(
                       width: 150,
@@ -196,6 +199,18 @@ class _MenuState extends State<Menu> {
         },
       ),
       PlutoMenuItem(
+        title: 'Interventions',
+        icon: Icons.apps_outlined,
+        onTap: () {
+          wTitre = "Interventions";
+          setState(() {
+//        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Planning()));
+
+            wAff = Interventions();
+          });
+        },
+      ),
+      PlutoMenuItem(
         title: 'Clients',
         icon: Icons.apps_outlined,
         children: [
@@ -231,8 +246,6 @@ class _MenuState extends State<Menu> {
               });
             },
           ),
-
-
           PlutoMenuItem(
             title: "Types d'adresses",
             icon: Icons.people,
@@ -244,9 +257,17 @@ class _MenuState extends State<Menu> {
               });
             },
           ),
-
-
-
+          PlutoMenuItem(
+            title: "Statut",
+            icon: Icons.people,
+            onTap: () {
+              wTitre = "Statut";
+              setState(() {
+                DbTools.gDemndeReload = true;
+                wAff = Param_Fam_screen(wType: "Statut", wSsFam: false, wTitle: "Statut");
+              });
+            },
+          ),
           PlutoMenuItem(
             title: "Agences",
             icon: Icons.people,
@@ -568,8 +589,7 @@ class _MenuState extends State<Menu> {
             });
           },
         ),
-
-        PlutoMenuItem.divider(height: 10, color : Colors.white),
+        PlutoMenuItem.divider(height: 10, color: Colors.white),
         PlutoMenuItem(
           title: "Gammes",
           icon: Icons.app_registration,

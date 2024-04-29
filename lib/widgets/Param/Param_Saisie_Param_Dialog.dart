@@ -18,7 +18,7 @@ class Param_Saisie_Param_screen extends StatefulWidget {
 
 class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
   Param_Saisie_Param wParam_Saisie_Param = Param_Saisie_Param.Param_Saisie_ParamInit();
-  String Title = "Vérif+ : Paramètres ";
+  String Title = "Paramètres ";
 
   static List<String> ListParam_ParamColor = [];
   static List<String> ListParam_ParamColorID = [];
@@ -93,7 +93,7 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
 
     super.initState();
     initLib();
-    Title = "Vérif+ : Paramètres - ${widget.wType}";
+    Title = "Paramètres - ${widget.wType}";
   }
 
   @override

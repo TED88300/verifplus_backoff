@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
@@ -13,7 +12,6 @@ import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning_Interv.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -1231,6 +1229,7 @@ class _PlanningState extends State<Planning> {
       viewHeaderStyle: ViewHeaderStyle(backgroundColor: Colors.white, dayTextStyle: TextStyle(color: gColors.grey, fontSize: 14, fontWeight: FontWeight.bold), dateTextStyle: TextStyle(color: gColors.grey, fontSize: 14, fontWeight: FontWeight.bold)),
       todayTextStyle: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
       controller: _calendarController,
+
       view: CalendarView.timelineWorkWeek,
       dataSource: wCalendarDataSource,
       allowedViews: _allowedViews,
@@ -1272,9 +1271,6 @@ class _PlanningState extends State<Planning> {
           final Appointment appointment = calendarAppointmentDetails.appointments.first;
 //          DbTools.getPlanning_Interv_ID(int.parse(appointment.recurrenceId.toString()));
 
-
-
-
           late Planning_Srv wplanningSrv;
           for (int p = 0; p < DbTools.ListPlanning.length; p++) {
             wplanningSrv = DbTools.ListPlanning[p];
@@ -1293,16 +1289,6 @@ class _PlanningState extends State<Planning> {
 
           int wDuration = appointment.endTime.difference(appointment.startTime).inHours;
 
-//          if (IntevId == -1) print("wAppointment AFFFFFFFFF $IntevId ${int.parse(appointment.recurrenceId.toString())}  ${appointment.subject} ${appointment.startTime} ${appointment.endTime} ${appointment.recurrenceId} ${appointment.resourceIds}  ${appointment.color}");
-
-/*
-          double widthCall = MediaQuery.of(context).size.width - 200;
-          int wNbCol = 7;
-          if (this._currentView == CalendarView.workWeek) wNbCol = 5;
-          double widthCol = (widthCall / wNbCol);
-          double widthbounds = calendarAppointmentDetails.bounds.width;
-          int nbCol = widthCol ~/ widthbounds;
-*/
 
           Color wcolor = appointment.color;
           Color wcolorb = appointment.color;
@@ -1315,14 +1301,18 @@ class _PlanningState extends State<Planning> {
 
           if (DbTools.gIntervention.InterventionId != -1 && DbTools.gIntervention.InterventionId != DbTools.gPlanning_Interv.Planning_Interv_InterventionId) {
             {
-              wcolor = Colors.black12;
+              wcolor = Colors.black12; // Autre
             }
           }
 
           if (IntevId < 0) {
-            wcolor = Color(0xFFf3a9dd);
-            Color wcolorb = appointment.color;
+            wcolor = Color(0xFFf3a9dd); //Libre
           }
+
+          print("••••• wAppointment  $IntevId ${appointment.subject} ${appointment.startTime} ${appointment.endTime} ${appointment.recurrenceId} ${appointment.resourceIds}  ${appointment.color}");
+
+          print("••••• appointmentBuilder $IntevId ${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom} ${wcolor}");
+
 
 
           return _currentView == CalendarView.timelineMonth

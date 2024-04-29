@@ -64,7 +64,7 @@ class _IntervenantsState extends State<Intervenants> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Vérif+ : Intervention",
+                "Intervention",
                 textAlign: TextAlign.center,
                 style: gColors.bodyTitle1_B_W,
               ),

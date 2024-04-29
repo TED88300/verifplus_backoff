@@ -91,7 +91,64 @@ class _LoginState extends State<Login> {
       ),
     );
 
-    final DemoButton = Container(
+    final DemoButtonTED = Container(
+      width: MediaQuery.of(context).size.width / 10,
+      child: ElevatedButton(
+        onPressed: () async {
+          emailController.text = "daudiert2@wanadoo.fr";
+          passwordController.text = "Zzt88300";
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: gColors.secondarytxt,
+          padding: const EdgeInsets.all(12.0),),
+        child: Text('Démo Ted',
+            style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.bold)),
+      ),
+    );
+
+
+
+    final DemoButtonGuillaume = Container(
+      width: MediaQuery.of(context).size.width / 10,
+      child: ElevatedButton(
+        onPressed: () async {
+          emailController.text = "g.deveza@mondialfeu.fr";
+          passwordController.text = "";
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: gColors.secondarytxt,
+          padding: const EdgeInsets.all(12.0),),
+        child: Text('Démo Guillaume',
+            style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.bold)),
+      ),
+    );
+
+    final DemoButtonUser = Container(
+      width: MediaQuery.of(context).size.width / 10,
+      child: ElevatedButton(
+        onPressed: () async {
+          emailController.text = "Asaf@gmail.com";
+          passwordController.text = "Asaf";
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: gColors.secondarytxt,
+          padding: const EdgeInsets.all(12.0),),
+        child: Text('Démo User',
+            style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.bold)),
+      ),
+    );
+
+
+    final DemoButtonClient = Container(
       width: MediaQuery.of(context).size.width / 10,
       child: ElevatedButton(
         onPressed: () async {
@@ -108,6 +165,8 @@ class _LoginState extends State<Login> {
                 fontWeight: FontWeight.bold)),
       ),
     );
+
+
 
 
 
@@ -163,7 +222,13 @@ class _LoginState extends State<Login> {
             ),
             SizedBox(height: 8.0),
 
-            DbTools.gTED ? DemoButton : Container(),
+            DbTools.gTED ? DemoButtonTED : Container(),
+            SizedBox(height: 8.0),
+            DbTools.gTED ? DemoButtonGuillaume : Container(),
+            SizedBox(height: 8.0),
+            DbTools.gTED ? DemoButtonUser : Container(),
+            SizedBox(height: 8.0),
+            DbTools.gTED ? DemoButtonClient : Container(),
             Spacer(),
             Text(DbTools.gVersion,
                 style: TextStyle(

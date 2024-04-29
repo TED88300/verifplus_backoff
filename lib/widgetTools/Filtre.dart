@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
@@ -43,6 +44,43 @@ class FiltreTools {
         ));
   }
 
+  static Widget SfRowBool(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
+    double t = 5;
+    double b = 3;
+    return Container(
+        padding: EdgeInsets.fromLTRB(0, t, 8, b),
+        alignment: alignment,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            (row.getCells()[Col].value.toString() == "true") ?
+            Icon(Icons.check, color: Colors.blueAccent, size: 20)
+            : Container(),
+          ],
+        ));
+  }
+
+  static Widget SfRowBoolint(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
+    double t = 5;
+    double b = 3;
+    return Container(
+        padding: EdgeInsets.fromLTRB(0, t, 8, b),
+        alignment: alignment,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+
+          children: [
+            (row.getCells()[Col].value == 1) ?
+            Icon(Icons.check, color: Colors.blueAccent, size: 20)
+                : Container(),
+          ],
+        ));
+  }
+
+
   static Widget SfRow(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
     double t = 5;
     double b = 3;
@@ -57,6 +95,23 @@ class FiltreTools {
       ),
     );
   }
+
+
+  static Widget SfRowDate(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
+    double t = 5;
+    double b = 3;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(8, t, 8, b),
+      alignment: alignment,
+      child: Text(
+        DateFormat('dd/MM/yyyy').format(row.getCells()[Col].value),
+        style: gColors.bodySaisie_N_G.copyWith(color: txtColor),
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
 
   static Widget TitreFiltre(String wTitre) {
     return Container(

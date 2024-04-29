@@ -118,7 +118,7 @@ class _ParamSiteState extends State<ParamSite> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Vérif+ : Paramètres Site",
+                "Paramètres Site",
                 textAlign: TextAlign.center,
                 style: gColors.bodyTitle1_B_W,
               ),

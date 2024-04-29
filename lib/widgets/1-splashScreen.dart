@@ -35,7 +35,6 @@ class SplashScreenState extends State<SplashScreen>
 
     print("<<<<<<<<<<<<<<<<<< inseeToken");
 //    await DbTools.getClientAll();
-    await DbTools.getParam_ParamAll();
     DbTools.getParam_ParamFam("FamClient");
 
     var _duration = new Duration(milliseconds: milliseconds); //SetUp duration here
@@ -46,7 +45,7 @@ class SplashScreenState extends State<SplashScreen>
     print("splash navigationPage IsRememberLogin  $IsRememberLogin");
     //Excel.CrtExcelPat("TK_Debarras_${DbTools.gInventaire.nom}.xlsx");
     await DbTools.getParam_SaisieAll();
-    await DbTools.getParam_ParamAll();
+
 
     DbTools.ListParam_Param_Abrev.clear();
     DbTools.ListParam_ParamAll.forEach((element) {
@@ -90,6 +89,7 @@ class SplashScreenState extends State<SplashScreen>
   }
 
   void initLib() async {
+    await DbTools.getParam_ParamAll();
 
     print("SplashScreen initLib");
     CookieManager cm = CookieManager.getInstance();

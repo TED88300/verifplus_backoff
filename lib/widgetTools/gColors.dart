@@ -695,11 +695,12 @@ class gColors {
   }
 
   static AffUser(BuildContext context) {
+
     return showDialog(
         context: context,
         builder: (_) => new AlertDialog(
               title: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                gColors.wWidgetImage,
+                DbTools.wBoxDecoration(context),
                 SizedBox(height: 8.0),
                 Container(color: Colors.grey, height: 1.0),
                 SizedBox(height: 8.0),
@@ -731,11 +732,19 @@ class gColors {
                         Text(DbTools.gUserLogin.User_Prenom),
                       ],
                     ),
+
                     Row(
                       children: [
                         Text('Nom : '),
                         Spacer(),
                         Text(DbTools.gUserLogin.User_Nom),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Type : '),
+                        Spacer(),
+                        Text(DbTools.gUserLoginTypeUser),
                       ],
                     ),
                   ],

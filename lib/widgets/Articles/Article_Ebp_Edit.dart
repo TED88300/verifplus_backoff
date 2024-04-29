@@ -181,7 +181,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                 ),
                 Spacer(),
                 Text(
-                  "Vérif+ : Article EBP",
+                  "Article EBP",
                   textAlign: TextAlign.center,
                   style: gColors.bodyTitle1_B_W,
                 ),

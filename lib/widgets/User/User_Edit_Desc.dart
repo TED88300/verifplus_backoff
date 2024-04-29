@@ -91,7 +91,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
                   ),
                   Spacer(),
                   Text(
-                    "Vérif+ : Edition Descilitations / Utilisateur ",
+                    "Edition Descilitations / Utilisateur ",
                     textAlign: TextAlign.center,
                     style: gColors.bodyTitle1_B_W,
                   ),

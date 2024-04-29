@@ -93,7 +93,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
                   ),
                   Spacer(),
                   Text(
-                    "Vérif+ : Edition Habilitations / Utilisateur ",
+                    "Edition Habilitations / Utilisateur ",
                     textAlign: TextAlign.center,
                     style: gColors.bodyTitle1_B_W,
                   ),

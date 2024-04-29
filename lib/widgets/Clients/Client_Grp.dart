@@ -19,8 +19,8 @@ DataGridController dataGridController = DataGridController();
 //*********************************************************************
 //*********************************************************************
 
-class Parc_EntInfoDataGridSource extends DataGridSource {
-  Parc_EntInfoDataGridSource() {
+class GroupeDataGridSource extends DataGridSource {
+  GroupeDataGridSource() {
     buildDataGridRows();
   }
 
@@ -36,6 +36,7 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
         DataGridCell<String>(columnName: 'adresse', value: groupe.Groupe_Adr1),
         DataGridCell<String>(columnName: 'cp', value: groupe.Groupe_CP),
         DataGridCell<String>(columnName: 'ville', value: groupe.Groupe_Ville),
+        DataGridCell<String>(columnName: 'agence', value: groupe.Groupe_Depot),
       ]);
     }).toList();
   }
@@ -61,8 +62,17 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
     ]);
   }
+
+  @override
+  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
+    return Container(alignment: Alignment.center, child: Text(summaryValue));
+  }
+
+
+
 }
 
 //*********************************************************************
@@ -82,12 +92,13 @@ class _Client_GrpState extends State<Client_Grp> {
   List<double> dColumnWidth = [
     80,
     450,
-    450,
+    350,
     120,
-    310,
+    210,
+    210,
   ];
 
-  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
+  GroupeDataGridSource groupeDataGridSource = GroupeDataGridSource();
 
   int wColSel = -1;
   int wRowSel = -1;
@@ -112,8 +123,28 @@ class _Client_GrpState extends State<Client_Grp> {
       FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
     ];
   }
+
+  List<GridTableSummaryRow> getGridTableSummaryRow()
+  {
+    return
+      [      GridTableSummaryRow(
+          showSummaryInRow: false,
+          title: 'Cpt: {Count}',
+          titleColumnSpan: 1,
+          columns: [
+            GridSummaryColumn(
+                name: 'Count',
+                columnName: 'id',
+                summaryType: GridSummaryType.count),
+          ],
+          position: GridTableSummaryRowPosition.bottom),
+      ];
+  }
+
+
 
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
@@ -159,7 +190,6 @@ class _Client_GrpState extends State<Client_Grp> {
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
-    await parc_EntInfoDataGridSource.handleRefresh();
 
     await Filtre();
     AlimSaisie();
@@ -168,6 +198,7 @@ class _Client_GrpState extends State<Client_Grp> {
   Future Filtre() async {
     DbTools.ListGroupesearchresult.clear();
     DbTools.ListGroupesearchresult.addAll(DbTools.ListGroupe);
+    await groupeDataGridSource.handleRefresh();
 
     setState(() {});
     print(" SelGroupe ${SelGroupe}");
@@ -182,7 +213,7 @@ class _Client_GrpState extends State<Client_Grp> {
     DbTools.gGroupe = Groupe.GroupeInit();
     await Reload();
     await AlimSaisie();
-    selectedRow = parc_EntInfoDataGridSource.dataGridRows[0];
+    selectedRow = groupeDataGridSource.dataGridRows[0];
   }
 
   Future AlimSaisie() async {
@@ -260,37 +291,29 @@ class _Client_GrpState extends State<Client_Grp> {
               Column(
                 children: [
                   Container(
+                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'ico_Save', ToolsBarSave, tooltip: "Sauvegarder"),
+                  ),
+                  Container(
                     padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter groupe"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, 'ico_Add', ToolsBarAdd, tooltip: "Ajouter groupe"),
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.copy, ToolsBarCpy, tooltip: "Copier adresse Livraison"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, 'ico_Copy', ToolsBarCpy, tooltip: "Copier adresse Livraison"),
                   ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
-                  ),
-/*
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child:
-                    CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.purple, Icons.maps_home_work_outlined, ToolsBarAdr),
-                  ),
-
-*/
 
                   DbTools.gGroupe.Groupe_Nom.isEmpty
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.orange, Icons.people_outline_outlined, ToolsBarCtact, tooltip: "Contacts"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.orange, "ico_Contact", ToolsBarCtact, tooltip: "Contacts"),
                         ),
                   (DbTools.gGroupe.Groupe_Nom != "???" || DbTools.ListSite.length > 0)
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.red, "ico_Del", ToolsBarDelete, tooltip: "Suppression"),
                         ),
                 ],
               ),
@@ -647,7 +670,7 @@ class _Client_GrpState extends State<Client_Grp> {
                   //*********************************
                   onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
                     if (addedRows.length > 0) {
-                      Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+                      Selindex = groupeDataGridSource.dataGridRows.indexOf(addedRows.last);
                       SelGroupe = dataGridController.selectedIndex;
                       print(" onSelectionChanged  SelGroupe ${SelGroupe}");
                       DbTools.gGroupe = DbTools.ListGroupesearchresult[Selindex];
@@ -655,7 +678,7 @@ class _Client_GrpState extends State<Client_Grp> {
                     }
                   },
                   onFilterChanged: (DataGridFilterChangeDetails details) {
-                    countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
+                    countfilterConditions = groupeDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                     setState(() {});
                   },
@@ -668,8 +691,10 @@ class _Client_GrpState extends State<Client_Grp> {
 
                   allowSorting: true,
                   allowFiltering: true,
-                  source: parc_EntInfoDataGridSource,
+                  source: groupeDataGridSource,
                   columns: getColumns(),
+                  tableSummaryRows: getGridTableSummaryRow(),
+
                   headerRowHeight: 35,
                   rowHeight: 28,
                   allowColumnsResizing: true,
@@ -691,6 +716,11 @@ class _Client_GrpState extends State<Client_Grp> {
     );
   }
 
+  
+  
+  
+  
+  
   Widget ToolsBargrid(BuildContext context) {
     return Container(
         color: Colors.white,
@@ -707,7 +737,7 @@ class _Client_GrpState extends State<Client_Grp> {
   }
 
   void ToolsBarSupprFilter() async {
-    parc_EntInfoDataGridSource.clearFilters();
+    groupeDataGridSource.clearFilters();
     countfilterConditions = 0;
     setState(() {});
   }

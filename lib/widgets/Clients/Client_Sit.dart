@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cross_file/cross_file.dart';
 
@@ -9,18 +10,83 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:davi/davi.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/Tools/Upload.dart';
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamSite_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zones_Dialog.dart';
 import 'package:image/image.dart' as IMG;
 import 'package:http/http.dart' as http;
-//import 'package:path/path.dart';
+
+DataGridController dataGridController = DataGridController();
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
+
+class SiteDataGridSource extends DataGridSource {
+  SiteDataGridSource() {
+    buildDataGridRows();
+  }
+
+  List<DataGridRow> dataGridRows = <DataGridRow>[];
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  void buildDataGridRows() {
+    dataGridRows = DbTools.ListSitesearchresult.map<DataGridRow>((Site groupe) {
+      return DataGridRow(cells: <DataGridCell>[
+        DataGridCell<int>(columnName: 'id', value: groupe.SiteId),
+        DataGridCell<String>(columnName: 'nom', value: groupe.Site_Nom),
+        DataGridCell<String>(columnName: 'adresse', value: groupe.Site_Adr1),
+        DataGridCell<String>(columnName: 'cp', value: groupe.Site_CP),
+        DataGridCell<String>(columnName: 'ville', value: groupe.Site_Ville),
+        DataGridCell<String>(columnName: 'agence', value: groupe.Site_Depot),
+      ]);
+    }).toList();
+  }
+
+  @override
+  Future<void> handleRefresh() async {
+    buildDataGridRows();
+    notifyListeners();
+  }
+
+  @override
+  DataGridRowAdapter buildRow(DataGridRow row) {
+    double t = 5;
+    double b = 3;
+
+    Color selectedRowTextColor = Colors.white;
+    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+
+    Color backgroundColor = Colors.transparent;
+    return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
+    ]);
+  }
+
+  @override
+  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
+    return Container(alignment: Alignment.center, child: Text(summaryValue));
+  }
+}
+
+//*********************************************************************
+//*********************************************************************
+//*********************************************************************
 
 class Client_Sit extends StatefulWidget {
   final VoidCallback onMaj;
@@ -55,7 +121,6 @@ class _Client_SitState extends State<Client_Sit> {
   bool imageisload = false;
 
   final Search_TextController = TextEditingController();
-  int SelGroupe = 0;
   int SelSite = 0;
   Groupe wGroupe = Groupe.GroupeInit();
   List<Groupe> List_Grp = [];
@@ -68,6 +133,13 @@ class _Client_SitState extends State<Client_Sit> {
   bool _dragging = false;
 
   Offset? offset;
+
+  SiteDataGridSource siteDataGridSource = SiteDataGridSource();
+
+  int wColSel = -1;
+  int wRowSel = -1;
+  int Selindex = -1;
+  int countfilterConditions = -1;
 
   Future Reload() async {
     print("••••• initLib Client_Site getGroupesClient");
@@ -139,6 +211,9 @@ class _Client_SitState extends State<Client_Sit> {
 
     SelSite = 0;
     DbTools.gSite = DbTools.ListSitesearchresult[0];
+
+    await siteDataGridSource.handleRefresh();
+
     AlimSaisie();
 
     setState(() {});
@@ -273,31 +348,31 @@ class _Client_SitState extends State<Client_Sit> {
               ),
               Column(
                 children: [
-                  SelGroupe == 0
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
+                  ),
+                  SelSite == 0
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter site"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter site"),
                         ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.copy, ToolsBarCpy, tooltip: "Copier adresse Livraison"),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Copy", ToolsBarCpy, tooltip: "Copier adresse Livraison"),
                   ),
                   DbTools.gSite.Site_Nom.isEmpty
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.orange, Icons.people_outline_outlined, ToolsBarCtact, tooltip: "Contacts"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.orange, "ico_Contact", ToolsBarCtact, tooltip: "Contacts"),
                         ),
                   (DbTools.gSite.Site_Nom != "???" || DbTools.ListZone.length > 0)
                       ? Container()
                       : Container(
                           padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
-                          child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip: "Suppression"),
+                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.red, "ico_Del", ToolsBarDelete, tooltip: "Suppression"),
                         ),
                 ],
               ),
@@ -315,14 +390,36 @@ class _Client_SitState extends State<Client_Sit> {
     );
   }
 
-  Widget ToolsBarSearch(BuildContext context) {
+  Widget ToolsBargrid(BuildContext context) {
     return Container(
         color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 5),
         child: Column(
           children: [
             Row(
               children: [
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  void ToolsBarSupprFilter() async {
+    siteDataGridSource.clearFilters();
+    countfilterConditions = 0;
+    setState(() {});
+  }
+
+  Widget ToolsBarSearch(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
                 Container(
                   width: 5,
                 ),
@@ -473,9 +570,9 @@ class _Client_SitState extends State<Client_Sit> {
     await DbTools.setSite(DbTools.gSite);
 
     await DbTools.getSitesGroupe(DbTools.gSite.Site_GroupeId);
-    SelGroupe = List_Grp.indexWhere((element) => element.GroupeId == DbTools.gSite.Site_GroupeId);
+    SelSite = List_Grp.indexWhere((element) => element.GroupeId == DbTools.gSite.Site_GroupeId);
 
-    print("initLib getSitesClient ${DbTools.ListSite.length}  ${DbTools.gSite.Site_GroupeId} ${SelGroupe}");
+    print("initLib getSitesClient ${DbTools.ListSite.length}  ${DbTools.gSite.Site_GroupeId} ${SelSite}");
     await Filtre();
 
     setState(() {});
@@ -764,22 +861,20 @@ class _Client_SitState extends State<Client_Sit> {
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
             padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-            child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.settings_applications, Tools, tooltip: "Réglementation"),
+            child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Regl", Tools, tooltip: "Réglementation"),
           ),
           Container(
             width: 280,
             height: 175,
             padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-
-              child: Text(
-                wMes,
-                style: gColors.bodySaisie_N_G,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                softWrap: true,
-              ),
+            child: Text(
+              wMes,
+              style: gColors.bodySaisie_N_G,
+              maxLines: 10,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
             ),
-
+          ),
         ]))));
   }
 
@@ -792,17 +887,22 @@ class _Client_SitState extends State<Client_Sit> {
     String wImgPath = "${DbTools.SrvImg}Site_${DbTools.gSite.SiteId}.jpg";
 //    print("wImgPath $wImgPath");
     return Container(
-        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
         child: Row(
           children: [
-            IconButton(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              icon: Image.asset("assets/images/Photo.png"),
-              onPressed: () async {
-                await _startFilePicker(onSetState);
-              },
-            ),
-
+            Tooltip(
+                textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+                decoration: BoxDecoration(color: Colors.orange),
+                message: "Selection fichier photo",
+                child: InkWell(
+                  child: Container(
+                    width: 30,
+                    child: Image.asset("assets/images/ico_Photo.png"),
+                  ),
+                  onTap: () async {
+                    await _startFilePicker(onSetState);
+                  },
+                )),
             Container(width: 10),
             DropTarget(
               onDragDone: (detail) async {
@@ -969,12 +1069,14 @@ class _Client_SitState extends State<Client_Sit> {
 
     DaviModel<Groupe>? _model;
     _model = DaviModel<Groupe>(rows: List_Grp, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Groupe>(
-            visibleRowsCount: 17,
-            _model, onRowTap: (aGroupe) async {
+    return  Container(
+        decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
+    height: MediaQuery.of(context).size.height - 450,
+    child:
+      DaviTheme(
+        child: new Davi<Groupe>(visibleRowsCount: 17, _model, onRowTap: (aGroupe) async {
           DbTools.gGroupe = aGroupe;
-          SelGroupe = List_Grp.indexOf(aGroupe);
+          SelSite = List_Grp.indexOf(aGroupe);
 
           if (DbTools.gGroupe.Groupe_Nom == "Tous")
             await DbTools.getSitesClient(DbTools.gClient.ClientId);
@@ -990,58 +1092,6 @@ class _Client_SitState extends State<Client_Sit> {
         }),
         data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(
-              height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
-          row: RowThemeData(color: (rowIndex) {
-            return SelGroupe == rowIndex ? gColors.secondarytxt : Colors.white;
-          }),
-          cell: CellThemeData(
-            contentHeight: 26,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
-        ));
-  }
-
-  Widget SiteGridWidget() {
-    List<DaviColumn<Site>> wColumns = [
-      DaviColumn(
-          pinStatus: PinStatus.left,
-          width: 30,
-          cellBuilder: (BuildContext context, DaviRow<Site> aSite) {
-            return InkWell(
-                child: const Icon(Icons.edit, size: 16),
-                onTap: () async {
-                  DbTools.gSite = aSite.data;
-                  DbTools.gViewAdr = "";
-                  DbTools.gViewCtact = "";
-                  await showDialog(
-                      context: context,
-                      builder: (BuildContext context) => new Zones_Dialog(
-                            site: DbTools.gSite,
-                          ));
-                });
-          }),
-      new DaviColumn(name: 'Code', width: 50, stringValue: (row) => row.Site_Code),
-      new DaviColumn(name: 'Nom', width: 340, stringValue: (row) => row.Site_Nom),
-      new DaviColumn(name: 'Adresse', width: 240, stringValue: (row) => "${row.Site_Adr1}"),
-      new DaviColumn(name: 'Cp', width: 80, stringValue: (row) => "${row.Site_CP}"),
-      new DaviColumn(name: 'Ville', width: 180, stringValue: (row) => "${row.Site_Ville}"),
-      new DaviColumn(name: 'Grp', width: 180, stringValue: (row) => "${row.Site_GroupeId}"),
-    ];
-    DaviModel<Site>? _model;
-    _model = DaviModel<Site>(rows: DbTools.ListSitesearchresult, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Site>(
-          visibleRowsCount: 17,
-          _model,
-          onRowTap: (aSite) async {
-            SelSite = DbTools.ListSitesearchresult.indexOf(aSite);
-            DbTools.gSite = aSite;
-            AlimSaisie();
-          },
-        ),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
           headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
           row: RowThemeData(color: (rowIndex) {
             return SelSite == rowIndex ? gColors.secondarytxt : Colors.white;
@@ -1050,7 +1100,142 @@ class _Client_SitState extends State<Client_Sit> {
             contentHeight: 26,
             textStyle: gColors.bodySaisie_N_G,
           ),
-        ));
+        )));
+  }
+
+  List<double> dColumnWidth = [
+    80,
+    450,
+    350,
+    120,
+    160,
+    160,
+  ];
+  void Resize(ColumnResizeUpdateDetails args) {
+    setState(() {
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'nom')
+        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'adresse')
+        dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'cp')
+        dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'ville') dColumnWidth[4] = args.width;
+    });
+  }
+
+  List<GridColumn> getColumns() {
+    return <GridColumn>[
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Nom', double.nan, 160, Alignment.centerLeft, wColumnWidthMode: ColumnWidthMode.lastColumnFill),
+      FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
+    ];
+  }
+
+  List<GridTableSummaryRow> getGridTableSummaryRow() {
+    return [
+      GridTableSummaryRow(
+          showSummaryInRow: false,
+          title: 'Cpt: {Count}',
+          titleColumnSpan: 1,
+          columns: [
+            GridSummaryColumn(name: 'Count', columnName: 'id', summaryType: GridSummaryType.count),
+          ],
+          position: GridTableSummaryRowPosition.bottom),
+    ];
+  }
+
+  Widget SiteGridWidget() {
+    return Container(
+      child: Column(children: [
+//        ToolsBargrid(context),
+        Container(
+            decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
+            height: MediaQuery.of(context).size.height - 450,
+            child: SfDataGridTheme(
+                data: SfDataGridThemeData(
+                  headerColor: gColors.secondary,
+                  selectionColor: gColors.backgroundColor,
+                ),
+                child: SfDataGrid(
+                  //*********************************
+                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                    if (addedRows.length > 0 ) {
+                      Selindex = siteDataGridSource.dataGridRows.indexOf(addedRows.last);
+                      SelSite = dataGridController.selectedIndex;
+                      print(" onSelectionChanged  SelSite ${SelSite}");
+                      DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
+                      AlimSaisie();
+                      if (wColSel == 0)
+                      {
+                        await showDialog(
+                        context: context,
+                        builder: (BuildContext context) => new Zones_Dialog(
+                          site: DbTools.gSite,
+                        ));
+                      }
+                    }
+                    else if (removedRows.length > 0 )
+                      {
+                        Selindex = siteDataGridSource.dataGridRows.indexOf(removedRows.last);
+                        SelSite = dataGridController.selectedIndex;
+                        print(" onSelectionChanged  SelSite ${SelSite}");
+                        DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
+                        AlimSaisie();
+                        if (wColSel == 0)
+                        {
+                          await showDialog(
+                              context: context,
+                              builder: (BuildContext context) => new Zones_Dialog(
+                                site: DbTools.gSite,
+                              ));
+                        }
+                      }
+                  },
+                  onFilterChanged: (DataGridFilterChangeDetails details) {
+                    countfilterConditions = siteDataGridSource.filterConditions.length;
+                    print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                    setState(() {});
+                  },
+                  onCellTap: (DataGridCellTapDetails details) {
+                    wColSel = details.rowColumnIndex.columnIndex;
+                    wRowSel = details.rowColumnIndex.rowIndex;
+                  },
+
+                  //*********************************
+
+                  allowSorting: true,
+                  allowFiltering: true,
+                  source: siteDataGridSource,
+                  columns: getColumns(),
+                  tableSummaryRows: getGridTableSummaryRow(),
+
+                  headerRowHeight: 35,
+                  rowHeight: 28,
+                  allowColumnsResizing: true,
+                  columnResizeMode: ColumnResizeMode.onResize,
+                  selectionMode: SelectionMode.multiple,
+                  navigationMode: GridNavigationMode.row,
+
+                  controller: dataGridController,
+                  onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                    Resize(args);
+                    return true;
+                  },
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                  columnWidthMode: ColumnWidthMode.fill,
+                    isScrollbarAlwaysShown : true,
+                ))),
+        Container(
+          height: 10,
+        ),
+      ]),
+    );
   }
 
   Widget DropdownButtonDepot() {

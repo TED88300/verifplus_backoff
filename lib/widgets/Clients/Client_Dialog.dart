@@ -62,6 +62,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   String selectedType = "";
   List<Param_Saisie_Param> ListParam_Saisie_ParamType = [];
 
+  String selectedStatus = "";
   String selectedValueFam = "";
   String selectedValueFamID = "";
 
@@ -83,6 +84,15 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   List<String> ListParam_ParamRgltID = [];
   String selectedValueRglt = "";
   String selectedValueRgltID = "";
+
+  List<String> ListParam_ParamStatut = [];
+  List<String> ListParam_ParamStatutID = [];
+  String selectedValueStatut = "";
+  String selectedValueStatutID = "";
+
+
+
+
   String selectedValueForme = "";
   String selectedUserInter = "";
   String selectedUserInterID = "";
@@ -91,6 +101,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   Future initLib() async {
 
     await DbTools.initListFam();
+    wClient = widget.client;
 
     HoverMenus = gColors.makeMenus(context);
     print("initState ${HoverMenus.length}");
@@ -119,10 +130,28 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       }
     }
 
+
+    await DbTools.getParam_ParamFam("Statut");
+    ListParam_ParamStatut.clear();
+    ListParam_ParamStatut.addAll(DbTools.ListParam_ParamFam);
+    ListParam_ParamStatutID.clear();
+    ListParam_ParamStatutID.addAll(DbTools.ListParam_ParamFamID);
+
+
+
+
+    selectedValueStatut = ListParam_ParamStatut[0];
+    for (int i = 0; i < ListParam_ParamStatut.length; i++) {
+      String element = ListParam_ParamStatut[i];
+      if (element.compareTo("${wClient.Client_Statut}") == 0) {
+        selectedValueStatut = element;
+      }
+    }
+
     selectedValueForme = DbTools.ListParam_ParamForme[0];
     for (int i = 0; i < DbTools.ListParam_ParamForme.length; i++) {
       String wForme = DbTools.ListParam_ParamForme[i];
-      print("element [$wForme]");
+
       if (wForme.compareTo("${wClient.Client_Civilite}") == 0) {
         selectedValueForme = wForme;
       }
@@ -141,7 +170,11 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ListParam_ParamFamID.clear();
     ListParam_ParamFamID.addAll(DbTools.ListParam_ParamFamID);
 
-    wClient = widget.client;
+
+
+
+
+
     DbTools.gClient = wClient;
 
     selectedUserInter = DbTools.List_UserInter[0];
@@ -201,8 +234,21 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
         }
     }
 
+
+
+
+    for (int i = 0; i < ListParam_Saisie_ParamType.length; i++) {
+      String element = ListParam_Saisie_ParamType[i].Param_Saisie_Param_Label;
+      if (element.compareTo("${wClient.Client_TypeContrat}") == 0) {
+        selectedType = element;
+      }
+    }
+
+
+
+
     print("selected ${wClient.Client_Famille} FAMILLE  $selectedValueFamID $selectedValueFam");
-    Title = "Vérif+ : Fiche client";
+    Title = "Fiche client";
     print("initLib <<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
     setState(() {});
@@ -379,10 +425,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   }
 
   Widget ContentDetail(BuildContext context) {
-    return
-
-//      Expanded(child:
-        FocusTraversalGroup(
+    return       FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
             child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
@@ -398,15 +441,19 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                           width: 30,
                         ),
                         gColors.TxtField(-1, 64, "Nom", textController_Nom),
-                        gColors.CheckBoxField(80, 8, "Prospect", isClient_CL_Pr, (sts) => setState(() => isClient_CL_Pr = sts!)),
+                        gColors.CheckBoxField(70, 8, "Prospect", isClient_CL_Pr, (sts) => setState(() => isClient_CL_Pr = sts!)),
+                        Container(
+                          width: 10,
+                        ),
+                        gColors.CheckBoxField(50, 8, "Client", !isClient_CL_Pr, (sts) => setState(() => isClient_CL_Pr = sts!)),
                         Container(
                           width: 30,
                         ),
-                        gColors.CheckBoxField(150, 8, "Personne physique", isClient_PersPhys, (sts) => setState(() => isClient_PersPhys = sts!)),
+                        gColors.CheckBoxField(140, 8, "Personne physique", isClient_PersPhys, (sts) => setState(() => isClient_PersPhys = sts!)),
                         Container(
                           width: 30,
                         ),
-                        gColors.CheckBoxField(80, 8, "Data Client", isClient_OK_DataPerso, (sts) => setState(() => isClient_OK_DataPerso = sts!)),
+                        gColors.CheckBoxField(180, 8, "Réutilisation données client", isClient_OK_DataPerso, (sts) => setState(() => isClient_OK_DataPerso = sts!)),
                       ],
                     ),
                     Row(
@@ -426,7 +473,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                         ),
                         gColors.TxtField(-1, 32, "TVA", textController_TVA),
                         gColors.TxtField(-1, 16, "NAF", textController_NAF),
-                        gColors.TxtField(-1, 60, "Créateur client", textController_Createur),
+                        gColors.TxtField(-1, 60, "Créateur", textController_Createur),
                       ],
                     ),
                     Row(
@@ -447,6 +494,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                     ),
                     Row(
                       children: [
+                        DropdownButtonStatut(),
                         gColors.CheckBoxField(150, 8, "Engagement / Contrat", isCt, (sts) => setState(() => isCt = sts!)),
                         Container(
                           width: 40,
@@ -541,11 +589,11 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                 Container(
                   width: 5,
                 ),
-                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave , tooltip : "Sauvegarder"),
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave , tooltip : "Sauvegarder"),
                 Container(
                   width: 5,
                 ),
-                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.delete, ToolsBarDelete, tooltip : "Supprimer"),
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.red, "ico_Del", ToolsBarDelete, tooltip : "Supprimer"),
               ],
             ),
             Container(
@@ -688,6 +736,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     print("ToolsBarSave");
     wClient.Client_Famille = selectedValueFamID;
 
+    wClient.Client_Statut = selectedValueStatut;
     wClient.Client_Rglt = selectedValueRglt;
     wClient.Client_Depot = selectedValueDepot;
 
@@ -701,7 +750,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     wClient.Client_TVA = textController_TVA.text;
     wClient.Client_Commercial = selectedUserInterID;
     wClient.Client_Createur = textController_Createur.text;
-
     wClient.Client_Contrat = isCt;
     wClient.Client_TypeContrat = selectedType;
     wClient.Client_Ct_Debut = textController_Ct_Debut.text;
@@ -906,6 +954,49 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       ),
     ]);
   }
+
+
+  Widget DropdownButtonStatut() {
+    print("DropdownButtonStatut");
+
+    return Row(children: [
+      Container(
+        width: 5,
+      ),
+      Container(
+        width: 90,
+        child: Text("Règlement : ",
+          style: gColors.bodySaisie_N_G,),
+      ),
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+              items: ListParam_ParamStatut.map((item) => DropdownMenuItem<String>(
+                value: item,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_G,
+                ),
+              )).toList(),
+              value: selectedValueStatut,
+              onChanged: (value) {
+                setState(() {
+                  selectedValueStatut = value!;
+                  print("selectedValueStatut $selectedValueStatut");
+                  setState(() {});
+                });
+              },
+              dropdownWidth : 90,
+              buttonWidth: 120,
+              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+              buttonHeight: 30,
+              dropdownMaxHeight: 800,
+              itemHeight: 32,
+            )),
+      ),
+    ]);
+  }
+
 
   Widget DropdownButtonForme() {
     print("DropdownButtonForme");

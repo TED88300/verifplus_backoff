@@ -51,7 +51,7 @@ class _PdfViewState extends State<PdfView> {
                 ),
                 Spacer(),
                 Text(
-                  "Vérif+ : Documents",
+                  "Documents",
                   textAlign: TextAlign.center,
                   style: gColors.bodyTitle1_B_W,
                 ),

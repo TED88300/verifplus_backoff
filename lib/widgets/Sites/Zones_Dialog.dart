@@ -26,7 +26,7 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
     print("initState >");
     initLib();
     super.initState();
-    Title = "Vérif+ : Zone";
+    Title = "Zone";
     print("initState <");
   }
 

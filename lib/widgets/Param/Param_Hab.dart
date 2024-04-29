@@ -15,7 +15,7 @@ class Param_Hab_screen extends StatefulWidget {
 
 class _Param_Hab_screenState extends State<Param_Hab_screen> {
   Param_Hab wParam_Hab = Param_Hab.Param_HabInit();
-  String Title = "Vérif+ : Paramètres Habilitation ";
+  String Title = "Paramètres Habilitation ";
 
   static List<String> ListParam_GrpHab = [];
   static List<String> ListParam_GrpHabID = [];

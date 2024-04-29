@@ -35,7 +35,7 @@ class Param_Param_screen extends StatefulWidget {
 
 class _Param_Param_screenState extends State<Param_Param_screen> {
   Param_Param wParam_Param = Param_Param.Param_ParamInit();
-  String Title = "Vérif+ : Paramètres ";
+  String Title = "Paramètres ";
 
 //  List<DaviColumn<Param_Param>> wColumns = [];
   bool bReload = true;
@@ -66,7 +66,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
     super.initState();
     initLib();
 
-    Title = "Vérif+ : Paramètres - ${widget.wTitle}";
+    Title = "Paramètres - ${widget.wTitle}";
   }
 
   @override

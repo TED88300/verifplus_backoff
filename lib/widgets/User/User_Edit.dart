@@ -73,23 +73,8 @@ class User_EditState extends State<User_Edit> {
     Reload();
   }
 
-  Future<Uint8List> _getBytes(String wImgPath) async {
-    try {
-      final Uint8List documentBytes = await http.readBytes(Uri.parse(wImgPath));
-      print("documentBytes length ${documentBytes.length}");
-      final PdfDocument document = PdfDocument(inputBytes: documentBytes);
-      document.form.flattenAllFields();
-      return Uint8List.fromList(await document.save());
-    } catch (e) {
-      print("_getBytes Error $e");
-      return new Uint8List(0);
-    }
-  }
-
   Future Reload() async {
-
     await DbTools.getClient_User_CSIP(widget.user.UserID);
-
 
     await DbTools.getParam_ParamAll();
     print("ListParam_ParamAll ${DbTools.ListParam_Param.length}");
@@ -339,7 +324,7 @@ class User_EditState extends State<User_Edit> {
                   ),
                   Spacer(),
                   Text(
-                    "Vérif+ : Edition Utilisateur ",
+                    "Edition Utilisateur ",
                     textAlign: TextAlign.center,
                     style: gColors.bodyTitle1_B_W,
                   ),
@@ -387,14 +372,13 @@ class User_EditState extends State<User_Edit> {
                             style: gColors.bodySaisie_B_B,
                           ),
                         ),
-                        Spacer(),
+                        Container(
+                          width: 10,
+                        ),
                         Container(
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                           width: 30,
                           child: Text("Actif"),
-                        ),
-                        Container(
-                          width: 10,
                         ),
                         Checkbox(
                           checkColor: Colors.white,
@@ -409,9 +393,7 @@ class User_EditState extends State<User_Edit> {
                             setState(() {});
                           },
                         ),
-                        Container(
-                          width: 25,
-                        ),
+                        Spacer(),
                         InkWell(
                           child: Icon(
                             Icons.check,
@@ -495,7 +477,7 @@ class User_EditState extends State<User_Edit> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         DropdownButtonUser_TypeUser(),
-                        Container(
+                        /*Container(
                           width: 15,
                         ),
                         DropdownButtonUser_NivHab(),
@@ -527,7 +509,9 @@ class User_EditState extends State<User_Edit> {
                             await Reload();
                           },
                         ),
-                        Spacer(),
+                        Container(
+                          width: 10,
+                        ),
                         Container(
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                           child: Text("Droits isolés"),
@@ -549,7 +533,7 @@ class User_EditState extends State<User_Edit> {
                         ),
                         Container(
                           width: 15,
-                        ),
+                        ),*/
                       ],
                     ),
                   ),
@@ -560,16 +544,16 @@ class User_EditState extends State<User_Edit> {
                           child: Column(
                             children: [
                               EditUser(),
-
                               Container(
-                                child: Text("LISTING CLIENT",style: gColors.bodyText_B_B,),
+                                child: Text(
+                                  "LISTING CLIENT",
+                                  style: gColors.bodyText_B_B,
+                                ),
                               ),
-
-
-                          Container(
-                            padding: const EdgeInsets.all(20.0),
-                            child:
-                            ClientGridWidget(),),
+                              Container(
+                                padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                child: ClientGridWidget(),
+                              ),
                             ],
                           )),
                       Container(
@@ -853,13 +837,13 @@ class User_EditState extends State<User_Edit> {
           itemHeight: 32,
         )),
       ),
-      IconButton(
+ /*     IconButton(
         icon: Icon(Icons.settings),
         onPressed: () async {
           await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "TypeUser", wTitle: "Paramètres Types")));
           await Reload();
         },
-      ),
+      ),*/
     ]);
   }
 
@@ -980,7 +964,7 @@ class User_EditState extends State<User_Edit> {
 
   Widget EditUser() {
     return Container(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
         child: Container(
           height: 380,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -1131,21 +1115,23 @@ class User_EditState extends State<User_Edit> {
     print("UploadFilePicker <<");
   }
 
-
   Widget ClientGridWidget() {
     List<DaviColumn<Client>> wColumns = [
       new DaviColumn(name: 'Id', width: 60, stringValue: (row) => "${row.ClientId}"),
-      new DaviColumn(name: 'Forme', width: 100, stringValue: (row) => "${row.Client_Civilite}"),
-      new DaviColumn(name: 'Raison Social', width: 500, stringValue: (row) => "${row.Client_Nom}"),
-      new DaviColumn(name: 'Agence', width: 250, stringValue: (row) => "${row.Client_Depot}"),
-      new DaviColumn(name: 'Origine', width: 100, stringValue: (row) => row.Adresse_Adr1),
+      new DaviColumn(name: 'Forme', width: 80, stringValue: (row) => "${row.Client_Civilite}"),
+      new DaviColumn(name: 'Raison Social', width: 450, stringValue: (row) => "${row.Client_Nom}"),
+      new DaviColumn(name: 'Agence', width: 200, stringValue: (row) => "${row.Client_Depot}"),
+      new DaviColumn(name: 'Origine', width: 100, stringValue: (row) => row.Client_Origine_CSIP),
     ];
 
     print("ClientGridWidget");
     DaviModel<Client>? _model;
-    _model = DaviModel<Client>(rows: DbTools.ListClient_CSIP_Total, columns: wColumns);
+    _model = DaviModel<Client>(rows: DbTools.ListClient, columns: wColumns);
     return new DaviTheme(
-        child: new Davi<Client>(_model, visibleRowsCount: 22,),
+        child: new Davi<Client>(
+          _model,
+          visibleRowsCount: 11,
+        ),
         data: DaviThemeData(
           header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
           headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
@@ -1155,7 +1141,4 @@ class User_EditState extends State<User_Edit> {
           ),
         ));
   }
-
-
-
 }
