@@ -18,8 +18,36 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   String Title = "";
   double screenWidth = 0;
 
+  String selectedUserInter = "";
+  String selectedUserInterID = "";
+
+  String selectedUserInter2 = "";
+  String selectedUserInterID2 = "";
+
   Future initLib() async {
     await DbTools.getGroupeID(widget.site.Site_GroupeId);
+
+    selectedUserInter = DbTools.List_UserInter[0];
+    selectedUserInterID = DbTools.List_UserInterID[0];
+
+    selectedUserInter2 = DbTools.List_UserInter[0];
+    selectedUserInterID2 = DbTools.List_UserInterID[0];
+
+    if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
+      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
+      selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter $selectedUserInter");
+      selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+    }
+
+    if (DbTools.gIntervention.Intervention_Responsable2!.isNotEmpty) {
+      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable2!);
+      selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter2 $selectedUserInter2");
+      selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
+    }
+
+
     setState(() {});
   }
 
@@ -69,6 +97,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                         style: gColors.bodyTitle1_B_W,
                       ),
                       Spacer(),
+                      gColors.BtnAffUser(context),
                       Container(
                         width: 150,
                         child: Text(
@@ -141,7 +170,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                 children: [
                   Container(
                     width: 400,
-                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 100),
+                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 50),
                     padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
                     color: gColors.LinearGradient1,
                     child: Text(
@@ -149,11 +178,9 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                       style: gColors.bodyTitle1_B_Wr,
                     ),
                   ),
-
-
                   Container(
                     width: 400,
-                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 100),
+                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 50),
                     padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
                     color: gColors.LinearGradient1,
                     child: Text(
@@ -161,20 +188,26 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                       style: gColors.bodyTitle1_B_Wr,
                     ),
                   ),
-
-
                   Container(
-                    width: 600,
-                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 100),
+                    width: 400,
+                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 50),
                     padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
                     color: gColors.LinearGradient1,
                     child: Text(
-                      'Site #${widget.site.SiteId} ${widget.site.Site_Nom}',
+                      'Site #${DbTools.gSite.SiteId} ${DbTools.gSite.Site_Nom}',
                       style: gColors.bodyTitle1_B_Wr,
                     ),
                   ),
-
-
+                  Container(
+                    width: 400,
+                    margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 50),
+                    padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 10),
+                    color: gColors.LinearGradient1,
+                    child: Text(
+                      'Zone #${DbTools.gZone.ZoneId} ${DbTools.gZone.Zone_Nom}',
+                      style: gColors.bodyTitle1_B_Wr,
+                    ),
+                  ),
 
                 ],
               )),
@@ -222,7 +255,6 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                     ],
                   ),),
                 Container(width: 500, child:
-
                 Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,20 +267,70 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                       Container(height: 10),
                       Row(
                         children: [
+                          gColors.Txt(80, "Organes", "${DbTools.gIntervention.Intervention_Parcs_Type}"),
+                        ],
+                      ),
+                      Container(height: 10),
+                      Row(
+                        children: [
                           gColors.Txt(80, "Type", "${DbTools.gIntervention.Intervention_Type}"),
                         ],
                       ),
                       Container(height: 10),
                       Row(
                         children: [
-                          gColors.Txt(80, "Remarque", "${DbTools.gIntervention.Intervention_Remarque}"),
+                          gColors.Txt(80, "Remarques", "${DbTools.gIntervention.Intervention_Remarque}"),
                         ],
                       ),
                     ],
                   )),
-                ],)
 
-                ));
+                    Container(width: 500, child:
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            gColors.Txt(80, "Status", "${DbTools.gIntervention.Intervention_Status}"),
+                          ],
+                        ),
+                        Container(height: 10),
+                        Row(
+                          children: [
+                            gColors.Txt(80, "Facturation", "${DbTools.gIntervention.Intervention_Facturation}"),
+                          ],
+                        ),
+                        Container(height: 10),
+                        Row(
+                          children: [
+                            gColors.Txt(180, "Responsable Commercial", "${selectedUserInter}"),
+                          ],
+                        ),
+
+                        Container(height: 10),
+                        Row(
+                          children: [
+                            gColors.Txt(180, "Responsable Technique", "${selectedUserInter2}"),
+                          ],
+                        ),
+
+
+
+
+                      ],
+                    )),
+
+
+
+
+                ],)
+                )
+
+
+
+
+        );
   }
 
 

@@ -15,8 +15,8 @@ import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
+import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning_Edit.dart';
-
 
 class Planning extends StatefulWidget {
   @override
@@ -35,6 +35,9 @@ class _PlanningState extends State<Planning> {
   String _client = '';
 
   int selUserID = -1;
+
+  bool isLegendVisible = false;
+  Widget wLegend = Container();
 
   String clientNom = '';
   String groupeNom = '';
@@ -79,7 +82,6 @@ class _PlanningState extends State<Planning> {
   }
 
   Future Reload() async {
-
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload A");
     await DbTools.getParam_Saisie_Param("Status");
 
@@ -93,24 +95,57 @@ class _PlanningState extends State<Planning> {
   }
 
   void initLib() async {
-
     await DbTools.initListFam();
-    await DbTools.getAdresseType( "AGENCE");
+    await DbTools.getAdresseType("AGENCE");
     ListDepot.clear();
     DbTools.ListAdresse.forEach((wAdresse) {
       ListDepot.add(wAdresse.Adresse_Nom);
     });
 
 
+    if (DbTools.gClient.ClientId > 0) {
+      clientNom = DbTools.gClient.Client_Nom;
+      await DbTools.getGroupesClient(DbTools.gClient.ClientId);
+    } else {
+      DbTools.gClient = Client.ClientInit();
+      DbTools.gClient.ClientId = -1;
+    }
 
-    DbTools.gClient = Client.ClientInit();
-    DbTools.gClient.ClientId = -1;
-    DbTools.gGroupe = Groupe.GroupeInit();
-    DbTools.gGroupe.GroupeId = -1;
-    DbTools.gSite = Site.SiteInit();
-    DbTools.gSite.SiteId = -1;
-    DbTools.gZone = Zone.ZoneInit();
-    DbTools.gZone.ZoneId = -1;
+    print(" DbTools.gClient.ClientId ${DbTools.gClient.ClientId} ${clientNom}");
+
+
+
+    if (DbTools.gGroupe.GroupeId > 0) {
+      groupeNom = DbTools.gGroupe.Groupe_Nom!;
+      await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
+    } else {
+      DbTools.gGroupe = Groupe.GroupeInit();
+      DbTools.gGroupe.GroupeId = -1;
+    }
+
+    if (DbTools.gSite.SiteId > 0) {
+      siteNom = DbTools.gSite.Site_Nom!;
+      await DbTools.getZonesSite(DbTools.gSite.SiteId);
+    } else {
+      DbTools.gSite = Site.SiteInit();
+      DbTools.gSite.SiteId = -1;
+    }
+
+    if (DbTools.gZone.ZoneId > 0) {
+      zoneNom = DbTools.gZone.Zone_Nom!;
+      await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+    } else {
+      DbTools.gZone = Zone.ZoneInit();
+      DbTools.gZone.ZoneId = -1;
+    }
+
+    if (DbTools.gIntervention.InterventionId! > 0) {
+      interventionNom = "${DbTools.gIntervention.Intervention_Type!} ${DbTools.gIntervention.Intervention_Parcs_Type!} ${DbTools.gIntervention.Intervention_Status!}";
+      await DbTools.getInterventionID(DbTools.gPlanning_Interv.Planning_Interv_InterventionId!);
+    } else {
+      DbTools.gIntervention = Intervention.InterventionInit();
+      DbTools.gIntervention.InterventionId = -1;
+    }
 
     _colorCollection = <Color>[];
     _colorCollection.add(const Color(0xFF3D4FB5));
@@ -129,15 +164,67 @@ class _PlanningState extends State<Planning> {
 
     await DbTools.getClientAll();
 
-
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>> addUser");
     await addUser();
-    print("<<<<<<<<<<<<<<<<<<<<<<<<<< addUser");
 
     _addSpecialRegions();
 
     await Reload();
     isload = true;
+
+    List<Container> wDets = [];
+
+    for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
+      Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
+      print("wparamSaisieParam ${wparamSaisieParam.Desc()} >>>>>>>> ${wparamSaisieParam.Param_Saisie_Param_Color}");
+
+      Color wColor = gColors.getColor(wparamSaisieParam.Param_Saisie_Param_Color);
+      Container wDet = Container(
+          margin: EdgeInsets.fromLTRB(0, 0, 25, 0),
+          child: Row(
+            children: [
+              Container(
+                width: 20,
+                height: 30,
+                margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+                color: wColor,
+              ),
+              Text(
+                wparamSaisieParam.Param_Saisie_Param_Label,
+                style: gColors.bodyTitle1_N_Gr,
+              )
+            ],
+          ));
+
+      wDets.add(wDet);
+    }
+
+    Container wDet = Container(
+        margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+        child: Row(
+          children: [
+            Container(
+              width: 20,
+              height: 30,
+              margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
+              color: Color(0xFFf3a9dd),
+            ),
+            Text(
+              "Libre",
+              style: gColors.bodyTitle1_N_Gr,
+            )
+          ],
+        ));
+
+    wDets.add(wDet);
+
+    print("•••••••••••• wparamSaisieParam ${wDets.length}");
+
+    wLegend = Container(
+      padding: EdgeInsets.fromLTRB(25, 5, 5, 5),
+      color: Colors.white,
+      child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: wDets),
+    );
+
     setState(() {});
   }
 
@@ -153,25 +240,24 @@ class _PlanningState extends State<Planning> {
     Color wColor = gColors.GrdBtn_Colors3sel;
     int wHours = 0;
 
-    if (DbTools.gIntervention.InterventionId! > 0)
-      {
-        for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
-          Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
-          if (wparamSaisieParam.Param_Saisie_Param_Label.compareTo(DbTools.gIntervention.Intervention_Status!) == 0) {
-            wColor = gColors.getColor(wparamSaisieParam.Param_Saisie_Param_Color);
-            break;
-          }
-        }
-
-        late Planning_Srv wplanningSrv;
-        for (int p = 0; p < DbTools.ListPlanning.length; p++) {
-          wplanningSrv = DbTools.ListPlanning[p];
-          if (wplanningSrv.Planning_InterventionId == DbTools.gIntervention.InterventionId) {
-            wHours += wplanningSrv.Planning_InterventionendTime.difference(wplanningSrv.Planning_InterventionstartTime).inHours;
-//              print("wPlanning_Srv ${wPlanning_Srv.Planning_InterventionstartTime} ${wPlanning_Srv.Planning_InterventionendTime} $wHours");
-          }
+    if (DbTools.gIntervention.InterventionId! > 0) {
+      for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
+        Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
+        if (wparamSaisieParam.Param_Saisie_Param_Label.compareTo(DbTools.gIntervention.Intervention_Status!) == 0) {
+          wColor = gColors.getColor(wparamSaisieParam.Param_Saisie_Param_Color);
+          break;
         }
       }
+
+      late Planning_Srv wplanningSrv;
+      for (int p = 0; p < DbTools.ListPlanning.length; p++) {
+        wplanningSrv = DbTools.ListPlanning[p];
+        if (wplanningSrv.Planning_InterventionId == DbTools.gIntervention.InterventionId) {
+          wHours += wplanningSrv.Planning_InterventionendTime.difference(wplanningSrv.Planning_InterventionstartTime).inHours;
+//              print("wPlanning_Srv ${wPlanning_Srv.Planning_InterventionstartTime} ${wPlanning_Srv.Planning_InterventionendTime} $wHours");
+        }
+      }
+    }
 
     print("build isload $isload");
     return Material(
@@ -183,8 +269,12 @@ class _PlanningState extends State<Planning> {
                       Row(
                         children: [
                           Container(
+                            width: 5,
+                          ),
+                          CommonAppBar.SquareRoundPng(context, 25, 8, Colors.green, Colors.white, "ico_Legend", ToolsBarLegend, tooltip: "Afficher Légende"),
+                          Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 385,
+                            width: 377,
                             child: Aff_Depot(),
                           ),
                           Container(
@@ -231,11 +321,24 @@ class _PlanningState extends State<Planning> {
                               ),
                             ),
                       Container(
-                        height: screenHeight,
+                        height: screenHeight - (!isLegendVisible ? 153 : 183),
                         child: _getDragAndDropCalendar(_calendarController, _events, _onViewChanged, onTap, onLongPress),
                       ),
+                      !isLegendVisible
+                          ? Container()
+                          : Container(
+                              height: 30,
+                              child: wLegend,
+                            ),
                     ],
                   )));
+  }
+
+  void ToolsBarLegend() async {
+    print("ToolsBarLegend");
+    isLegendVisible = !isLegendVisible;
+    print("ToolsBarLegend ${isLegendVisible}");
+    setState(() {});
   }
 
   Future addUser() async {
@@ -243,7 +346,6 @@ class _PlanningState extends State<Planning> {
     await DbTools.getUserAll();
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> getUserAll");
-
 
     Uint8List pic = Uint8List.fromList([0]);
     _employeeCollection.clear();
@@ -254,23 +356,14 @@ class _PlanningState extends State<Planning> {
       String wUserImg = "User_${user.UserID}.jpg";
       pic = await gColors.getImage(wUserImg);
       late ImageProvider wImage;
-       if (pic.length > 0) {
+      if (pic.length > 0) {
         wImage = MemoryImage(pic);
-        }
+      }
 
-
-    _employeeCollection.add(CalendarResource(
-        displayName: "$wInitP${user.User_Nom}",
-        id: "${user.UserID}",
-        color: _colorCollection[0],
-        image: (pic.length > 0) ? wImage : null));
-
-
-
+      _employeeCollection.add(CalendarResource(displayName: "$wInitP${user.User_Nom}", id: "${user.UserID}", color: _colorCollection[0], image: (pic.length > 0) ? wImage : null));
     }
 
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> getUserAll FIN");
-
   }
 
   Future<List<Appointment>> genAppointmentsSrv() async {
@@ -306,16 +399,23 @@ class _PlanningState extends State<Planning> {
         }
       }
 
-      Color wColor = gColors.GrdBtn_Colors3sel;
+      Color wColor = Colors.deepPurple;
+      ;
 
       for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
         Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
+
         if (wparamSaisieParam.Param_Saisie_Param_Label.compareTo(planningInterv.Planning_Interv_Intervention_Status!) == 0) {
           wColor = gColors.getColor(wparamSaisieParam.Param_Saisie_Param_Color);
           break;
         }
       }
 
+      if (wColor == gColors.GrdBtn_Colors3sel) {
+        print("");
+        print("planningInterv.Planning_Interv_Intervention_Status! ${planningInterv.Planning_Interv_Intervention_Status!}");
+        print("");
+      }
 
       final List<Object> employeeIds = <Object>[calendarResource.id];
 
@@ -333,7 +433,7 @@ class _PlanningState extends State<Planning> {
 
   Widget Aff_Depot() {
     return ListTile(
-      contentPadding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+      contentPadding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
       title: Row(children: [
         Text(
           'Depots :  ',
@@ -788,6 +888,30 @@ class _PlanningState extends State<Planning> {
     setState(() {});
   }
 
+  Future getClient() async {
+    clientNom = DbTools.gPlanning_Interv.Planning_Interv_Client_Nom!;
+    DbTools.gClient.ClientId = DbTools.gPlanning_Interv.Planning_Interv_ClientId!;
+    await DbTools.getGroupesClient(DbTools.gClient.ClientId);
+
+    groupeNom = DbTools.gPlanning_Interv.Planning_Interv_Groupe_Nom!;
+    DbTools.gGroupe.GroupeId = DbTools.gPlanning_Interv.Planning_Interv_GroupeId!;
+    await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
+
+    siteNom = DbTools.gPlanning_Interv.Planning_Interv_Site_Nom!;
+    DbTools.gSite.SiteId = DbTools.gPlanning_Interv.Planning_Interv_SiteId!;
+    await DbTools.getZonesSite(DbTools.gSite.SiteId);
+
+    zoneNom = DbTools.gPlanning_Interv.Planning_Interv_Zone_Nom!;
+    DbTools.gZone.ZoneId = DbTools.gPlanning_Interv.Planning_Interv_ZoneId!;
+    await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+
+    interventionNom = "${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Type!} ${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Parcs_Type!} ${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Status!}";
+    DbTools.gIntervention.InterventionId = DbTools.gPlanning_Interv.Planning_Interv_InterventionId;
+    await DbTools.getInterventionID(DbTools.gPlanning_Interv.Planning_Interv_InterventionId!);
+
+    setState(() {});
+  }
+
   void onLongPress(CalendarLongPressDetails calendarLongPressDetails) async {
     print("_onCalendarLongPressed");
     print("calendarLongPressDetails ${calendarLongPressDetails.appointments!.length}");
@@ -802,39 +926,17 @@ class _PlanningState extends State<Planning> {
           break;
         }
       }
-      if(IntevId <= 0 )
-        {
-          print("_onCalendarLongPressed Cancel");
+      if (IntevId <= 0) {
+        print("_onCalendarLongPressed Cancel");
 
-          return;
-        }
+        return;
+      }
 
       print("calendarLongPressDetails IntevId $IntevId");
 
-
       DbTools.getPlanning_Interv_ID(IntevId);
 
-      clientNom = DbTools.gPlanning_Interv.Planning_Interv_Client_Nom!;
-      DbTools.gClient.ClientId = DbTools.gPlanning_Interv.Planning_Interv_ClientId!;
-      await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-
-      groupeNom = DbTools.gPlanning_Interv.Planning_Interv_Groupe_Nom!;
-      DbTools.gGroupe.GroupeId = DbTools.gPlanning_Interv.Planning_Interv_GroupeId!;
-      await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
-
-      siteNom = DbTools.gPlanning_Interv.Planning_Interv_Site_Nom!;
-      DbTools.gSite.SiteId = DbTools.gPlanning_Interv.Planning_Interv_SiteId!;
-      await DbTools.getZonesSite(DbTools.gSite.SiteId);
-
-      zoneNom = DbTools.gPlanning_Interv.Planning_Interv_Zone_Nom!;
-      DbTools.gZone.ZoneId = DbTools.gPlanning_Interv.Planning_Interv_ZoneId!;
-      await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-
-      interventionNom = "${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Type!} ${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Parcs_Type!} ${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Status!}";
-      DbTools.gIntervention.InterventionId = DbTools.gPlanning_Interv.Planning_Interv_InterventionId;
-      await DbTools.getInterventionID(DbTools.gPlanning_Interv.Planning_Interv_InterventionId!);
-
-      setState(() {});
+      await getClient();
     }
   }
 
@@ -899,8 +1001,7 @@ class _PlanningState extends State<Planning> {
                               margin: EdgeInsets.zero,
                               color: Colors.white,
                               shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
-                              child:
-                                  Planning_Edit(_selectedAppointment, onMaj),
+                              child: Planning_Edit(_selectedAppointment, onMaj),
                             )))),
               );
             });
@@ -916,7 +1017,7 @@ class _PlanningState extends State<Planning> {
       bool isInOther = false;
 
 //      print("Add App $wStart");
-  //    print("Add App $wEnd");
+      //    print("Add App $wEnd");
 
       for (int p = 0; p < DbTools.ListPlanning.length; p++) {
         Planning_Srv wplanningSrv = DbTools.ListPlanning[p];
@@ -931,12 +1032,12 @@ class _PlanningState extends State<Planning> {
 
             if (sa && sb) {
               isInOther = true;
-  //            print("add appointment ${wplanningSrv.PlanningId} ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
+              //            print("add appointment ${wplanningSrv.PlanningId} ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
               break;
             }
             if (ea && eb) {
               isInOther = true;
-    //          print("add appointment ${wplanningSrv.PlanningId}  ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
+              //          print("add appointment ${wplanningSrv.PlanningId}  ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
               break;
             }
           }
@@ -1175,44 +1276,30 @@ class _PlanningState extends State<Planning> {
     dynamic calendarTapCallback,
     dynamic calendarLongPressCallback,
   ]) {
-
     CalendarDataSource wCalendarDataSource = _ShiftDataSource(<Appointment>[], <CalendarResource>[]);
     wCalendarDataSource.appointments!.addAll(calendarDataSource!.appointments!);
 
-    if(Depot.isNotEmpty && Depot!="Tous")
-      {
-        for (int p = 0; p < calendarDataSource.resources!.length; p++) {
-          CalendarResource wCalendarResource = calendarDataSource.resources![p];
-          User user = DbTools.ListUser.firstWhere((element) => element.UserID == int.parse(wCalendarResource.id.toString()));
-          if (user.User_Depot.compareTo(Depot) == 0)
-            {
-              Color wColor = Color(0xFF3D4FB5);
-              wCalendarDataSource.resources!.add(CalendarResource(
-                  displayName: "${wCalendarResource.displayName}",
-                  id: "${wCalendarResource.id}",
-                  color: wColor,
-                  image: wCalendarResource.image));
-            }
+    if (Depot.isNotEmpty && Depot != "Tous") {
+      for (int p = 0; p < calendarDataSource.resources!.length; p++) {
+        CalendarResource wCalendarResource = calendarDataSource.resources![p];
+        User user = DbTools.ListUser.firstWhere((element) => element.UserID == int.parse(wCalendarResource.id.toString()));
+        if (user.User_Depot.compareTo(Depot) == 0) {
+          Color wColor = Color(0xFF3D4FB5);
+          wCalendarDataSource.resources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
         }
+      }
 
-        for (int p = 0; p < calendarDataSource.resources!.length; p++) {
-          CalendarResource wCalendarResource = calendarDataSource.resources![p];
-          User user = DbTools.ListUser.firstWhere((element) => element.UserID == int.parse(wCalendarResource.id.toString()));
-          if (user.User_Depot.compareTo(Depot) != 0)
-          {
-            Color wColor = Color(0xFFB5B5B5);
-            wCalendarDataSource.resources!.add(CalendarResource(
-                displayName: "${wCalendarResource.displayName}",
-                id: "${wCalendarResource.id}",
-                color: wColor,
-                image: wCalendarResource.image));
-          }
+      for (int p = 0; p < calendarDataSource.resources!.length; p++) {
+        CalendarResource wCalendarResource = calendarDataSource.resources![p];
+        User user = DbTools.ListUser.firstWhere((element) => element.UserID == int.parse(wCalendarResource.id.toString()));
+        if (user.User_Depot.compareTo(Depot) != 0) {
+          Color wColor = Color(0xFFB5B5B5);
+          wCalendarDataSource.resources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
         }
       }
-    else
-      {
-        wCalendarDataSource.resources!.addAll(calendarDataSource.resources!);
-      }
+    } else {
+      wCalendarDataSource.resources!.addAll(calendarDataSource.resources!);
+    }
 
     print(">>>>>>>>>>> Aappointments ${wCalendarDataSource.appointments!.length}");
     print(">>>>>>>>>>> resources ${wCalendarDataSource.resources!.length}");
@@ -1229,7 +1316,6 @@ class _PlanningState extends State<Planning> {
       viewHeaderStyle: ViewHeaderStyle(backgroundColor: Colors.white, dayTextStyle: TextStyle(color: gColors.grey, fontSize: 14, fontWeight: FontWeight.bold), dateTextStyle: TextStyle(color: gColors.grey, fontSize: 14, fontWeight: FontWeight.bold)),
       todayTextStyle: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
       controller: _calendarController,
-
       view: CalendarView.timelineWorkWeek,
       dataSource: wCalendarDataSource,
       allowedViews: _allowedViews,
@@ -1267,7 +1353,6 @@ class _PlanningState extends State<Planning> {
       ),
       appointmentBuilder: (BuildContext context, CalendarAppointmentDetails calendarAppointmentDetails) {
         {
-
           final Appointment appointment = calendarAppointmentDetails.appointments.first;
 //          DbTools.getPlanning_Interv_ID(int.parse(appointment.recurrenceId.toString()));
 
@@ -1289,14 +1374,13 @@ class _PlanningState extends State<Planning> {
 
           int wDuration = appointment.endTime.difference(appointment.startTime).inHours;
 
-
           Color wcolor = appointment.color;
           Color wcolorb = appointment.color;
           double borderSize = 0;
 
           if (IntevId == -1) {
 //            print("wAppointment 22222222 $IntevId ${appointment.subject} ${appointment.startTime} ${appointment.endTime} ${appointment.recurrenceId} ${appointment.resourceIds}  ${appointment.color}");
-  //          print("Planning_Interv_Client_Nom $IntevId ${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom}");
+            //          print("Planning_Interv_Client_Nom $IntevId ${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom}");
           }
 
           if (DbTools.gIntervention.InterventionId != -1 && DbTools.gIntervention.InterventionId != DbTools.gPlanning_Interv.Planning_Interv_InterventionId) {
@@ -1312,8 +1396,6 @@ class _PlanningState extends State<Planning> {
           print("••••• wAppointment  $IntevId ${appointment.subject} ${appointment.startTime} ${appointment.endTime} ${appointment.recurrenceId} ${appointment.resourceIds}  ${appointment.color}");
 
           print("••••• appointmentBuilder $IntevId ${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom} ${wcolor}");
-
-
 
           return _currentView == CalendarView.timelineMonth
               ? Container(

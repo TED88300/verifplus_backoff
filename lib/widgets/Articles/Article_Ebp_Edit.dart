@@ -186,6 +186,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                   style: gColors.bodyTitle1_B_W,
                 ),
                 Spacer(),
+                gColors.BtnAffUser(context),
                 Container(
                   width: 150,
                   child: Text(

@@ -131,6 +131,7 @@ class _Client_GrpState extends State<Client_Grp> {
   {
     return
       [      GridTableSummaryRow(
+          color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,

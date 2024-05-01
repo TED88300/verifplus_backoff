@@ -147,6 +147,7 @@ class User_ListeState extends State<User_Liste> {
   {
     return
       [      GridTableSummaryRow(
+          color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,

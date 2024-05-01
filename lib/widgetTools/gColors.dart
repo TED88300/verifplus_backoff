@@ -693,8 +693,18 @@ class gColors {
       ),
     );
   }
+  static Widget BtnAffUser(BuildContext context) {
+    return InkWell(
+      child: Container(margin: EdgeInsets.fromLTRB(0, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
+      onTap: () {
 
-  static AffUser(BuildContext context) {
+        AffUser(context);
+
+      },
+    );
+
+  }
+    static AffUser(BuildContext context) {
 
     return showDialog(
         context: context,
@@ -1372,6 +1382,9 @@ class gColors {
         break;
       case "RougeF":
         wColor = Color(0xFFC00000);
+        break;
+      case "Noir":
+        wColor = Colors.black;
         break;
     }
     return wColor;

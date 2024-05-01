@@ -275,6 +275,7 @@ class _Param_Fam_screenState extends State<Param_Fam_screen> {
                   style: gColors.bodyTitle1_B_Wr,
                 ),
                 Spacer(),
+                gColors.BtnAffUser(context),
                 Container(
                   width: 150,
                   child: Text(

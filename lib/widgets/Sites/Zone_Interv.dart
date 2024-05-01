@@ -150,6 +150,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
   {
     return
       [      GridTableSummaryRow(
+          color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,
@@ -158,6 +159,10 @@ class _Zone_IntervState extends State<Zone_Interv> {
                 name: 'Count',
                 columnName: 'id',
                 summaryType: GridSummaryType.count),
+            GridSummaryColumn(
+                name: 'Sum',
+                columnName: 'organes',
+                summaryType: GridSummaryType.sum),
           ],
           position: GridTableSummaryRowPosition.bottom),
       ];

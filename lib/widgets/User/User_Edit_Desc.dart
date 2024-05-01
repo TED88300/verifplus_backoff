@@ -96,6 +96,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
                     style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
+                  gColors.BtnAffUser(context),
                   Container(
                     width: 150,
                     child: Text(

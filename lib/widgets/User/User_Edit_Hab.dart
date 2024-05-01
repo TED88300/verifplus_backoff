@@ -98,6 +98,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
                     style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
+                  gColors.BtnAffUser(context),
                   Container(
                     width: 150,
                     child: Text(

@@ -46,7 +46,7 @@ class _MenuState extends State<Menu> {
 
   String wTitre = "Back-Office";
 
-  Widget wAff = Clients_screen();
+  Widget wAff = Interventions();
 
   Future initLib() async {
     var googleGeocoding = GoogleGeocoding(MapTools.apiKeyMap);
@@ -134,14 +134,7 @@ class _MenuState extends State<Menu> {
                     style: gColors.bodyTitle1_B_W,
                   ),
                   Spacer(),
-                  InkWell(
-                    child: Container(margin: EdgeInsets.fromLTRB(0, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
-                    onTap: () {
-                      gColors.AffUser(context);
-
-
-                    },
-                  ),
+                  gColors.BtnAffUser(context),
                   InkWell(
                     child: Container(
                       width: 150,
@@ -200,7 +193,7 @@ class _MenuState extends State<Menu> {
       ),
       PlutoMenuItem(
         title: 'Interventions',
-        icon: Icons.apps_outlined,
+        icon: Icons.list_outlined,
         onTap: () {
           wTitre = "Interventions";
           setState(() {
@@ -212,11 +205,11 @@ class _MenuState extends State<Menu> {
       ),
       PlutoMenuItem(
         title: 'Clients',
-        icon: Icons.apps_outlined,
+        icon: Icons.hive,
         children: [
           PlutoMenuItem(
             title: 'Clients',
-            icon: Icons.people,
+            icon: Icons.hive,
             onTap: () {
               wTitre = "Clients";
               setState(() {
@@ -226,7 +219,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: 'Familles Clients',
-            icon: Icons.people,
+            icon: Icons.hive,
             onTap: () {
               wTitre = "Familles Client";
               setState(() {
@@ -237,7 +230,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: "Civilités",
-            icon: Icons.people,
+            icon: Icons.hive,
             onTap: () {
               wTitre = "Civilités";
               setState(() {
@@ -248,7 +241,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: "Types d'adresses",
-            icon: Icons.people,
+            icon: Icons.hive,
             onTap: () {
               wTitre = "Types d'adresses";
               setState(() {
@@ -259,7 +252,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: "Statut",
-            icon: Icons.people,
+            icon: Icons.hive,
             onTap: () {
               wTitre = "Statut";
               setState(() {
@@ -270,9 +263,9 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: "Agences",
-            icon: Icons.people,
+            icon: Icons.hive,
             onTap: () {
-              wTitre = "Agences";
+              wTitre = "hive";
               setState(() {
                 DbTools.gDemndeReload = true;
                 wAff = Agences();
@@ -283,11 +276,11 @@ class _MenuState extends State<Menu> {
       ),
       PlutoMenuItem(
         title: 'Articles',
-        icon: Icons.apps_outlined,
+        icon: Icons.widgets,
         children: [
           PlutoMenuItem(
             title: 'Articles EBP',
-            icon: Icons.people,
+            icon: Icons.widgets,
             onTap: () {
               wTitre = "Articles EBP";
               setState(() {
@@ -297,7 +290,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: 'Familles / Sous Familles EBP',
-            icon: Icons.people,
+            icon: Icons.widgets,
             onTap: () {
               wTitre = "Familles / Sous Familles Ebp";
               setState(() {
@@ -332,10 +325,10 @@ class _MenuState extends State<Menu> {
      */
         ],
       ),
-      PlutoMenuItem(title: 'Utilisateurs', icon: Icons.apps_outlined, children: [
+      PlutoMenuItem(title: 'Utilisateurs', icon: Icons.account_circle, children: [
         PlutoMenuItem(
           title: 'Utilisateurs',
-          icon: Icons.people,
+          icon: Icons.account_circle,
           onTap: () {
             wTitre = "Utilisateurs";
             setState(() {
@@ -369,7 +362,7 @@ class _MenuState extends State<Menu> {
           children: [
             PlutoMenuItem(
               title: "Groupes Habilitations",
-              icon: Icons.list,
+              icon: Icons.badge,
               onTap: () {
                 wTitre = "Groupes Habilitations";
                 setState(() {
@@ -380,7 +373,7 @@ class _MenuState extends State<Menu> {
             ),
             PlutoMenuItem(
               title: "Niveaux Habilitations",
-              icon: Icons.list,
+              icon: Icons.badge,
               onTap: () {
                 wTitre = "Niveaux Habilitations";
                 setState(() {
@@ -392,7 +385,7 @@ class _MenuState extends State<Menu> {
             ),
             PlutoMenuItem(
               title: "Types Utilisateur",
-              icon: Icons.list,
+              icon: Icons.badge,
               onTap: () {
                 wTitre = "Types Utilisateur";
                 setState(() {
@@ -407,14 +400,14 @@ class _MenuState extends State<Menu> {
       ]),
       PlutoMenuItem(
         title: 'Paramètres',
-        icon: Icons.apps_outlined,
+        icon: Icons.settings,
         children: [
           PlutoMenuItem(
             title: 'Elements de base',
             children: [
               PlutoMenuItem(
                 title: "Paramètres divers",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Paramètres divers";
                   setState(() {
@@ -425,7 +418,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Types d'organe",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Types d'organe";
                   setState(() {
@@ -436,7 +429,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Types de saisie",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Types de saisie";
                   setState(() {
@@ -447,7 +440,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Types d'intervention",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Types d'intervention";
                   setState(() {
@@ -458,7 +451,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Missions",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Missions";
                   setState(() {
@@ -468,19 +461,19 @@ class _MenuState extends State<Menu> {
                 },
               ),
               PlutoMenuItem(
-                title: "Status des interventions",
-                icon: Icons.list,
+                title: "Statuts des interventions",
+                icon: Icons.settings,
                 onTap: () {
-                  wTitre = "Status des interventions";
+                  wTitre = "Statuts des interventions";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Status_Interv", wTitle: "Status des interventions");
+                    wAff = Param_Param_screen(wType: "Status_Interv", wTitle: "Statuts des interventions");
                   });
                 },
               ),
               PlutoMenuItem(
                 title: "Type de Facturation",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Type de Facturation";
                   setState(() {
@@ -491,7 +484,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Contrôles de saisie",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Contrôles de saisie";
                   setState(() {
@@ -502,7 +495,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Mode Affichage Liste",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Mode Affichage Liste";
                   setState(() {
@@ -513,7 +506,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Couleurs",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Couleurs";
                   setState(() {
@@ -524,7 +517,7 @@ class _MenuState extends State<Menu> {
               ),
               PlutoMenuItem(
                 title: "Abréviations",
-                icon: Icons.list,
+                icon: Icons.settings,
                 onTap: () {
                   wTitre = "Abréviations";
                   setState(() {
@@ -537,7 +530,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: 'Paramètres de saisie',
-            icon: Icons.list_alt,
+            icon: Icons.settings,
             onTap: () {
               wTitre = "Paramètres de saisie";
               setState(() {
@@ -548,7 +541,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: 'Gammes',
-            icon: Icons.list_alt,
+            icon: Icons.settings,
             onTap: () {
               wTitre = "Gammes";
               setState(() {
@@ -558,7 +551,7 @@ class _MenuState extends State<Menu> {
           ),
           PlutoMenuItem(
             title: "Habilitations",
-            icon: Icons.list,
+            icon: Icons.settings,
             onTap: () {
               wTitre = "Habilitations";
               setState(() {
@@ -568,10 +561,10 @@ class _MenuState extends State<Menu> {
           ),
         ],
       ),
-      PlutoMenuItem(title: 'NF074', icon: Icons.apps, children: [
+      PlutoMenuItem(title: 'NF074', icon: Icons.logo_dev, children: [
         PlutoMenuItem(
           title: "Contrôles Articles",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Contrôles Base de données NF074 : ARTICLES";
             setState(() {
@@ -581,7 +574,7 @@ class _MenuState extends State<Menu> {
         ),
         PlutoMenuItem(
           title: "Contrôles Gammes",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Contrôles Base de données NF074 : Gammes";
             setState(() {
@@ -592,7 +585,7 @@ class _MenuState extends State<Menu> {
         PlutoMenuItem.divider(height: 10, color: Colors.white),
         PlutoMenuItem(
           title: "Gammes",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Gammes";
             setState(() {
@@ -602,7 +595,7 @@ class _MenuState extends State<Menu> {
         ),
         PlutoMenuItem(
           title: "Historique Norme",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Historique Norme";
             setState(() {
@@ -612,7 +605,7 @@ class _MenuState extends State<Menu> {
         ),
         PlutoMenuItem(
           title: "Produits Actions",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Produits Actions";
             setState(() {
@@ -622,7 +615,7 @@ class _MenuState extends State<Menu> {
         ),
         PlutoMenuItem(
           title: "Pièces détachées",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Pièces détachées";
             setState(() {
@@ -632,7 +625,7 @@ class _MenuState extends State<Menu> {
         ),
         PlutoMenuItem(
           title: "Pièces dét. Inconnus",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Pièces détachées Inconnus";
             setState(() {
@@ -642,7 +635,7 @@ class _MenuState extends State<Menu> {
         ),
         PlutoMenuItem(
           title: "Mixte Produit",
-          icon: Icons.app_registration,
+          icon: Icons.logo_dev,
           onTap: () {
             wTitre = "Mixte Produit";
             setState(() {

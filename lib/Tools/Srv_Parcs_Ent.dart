@@ -61,6 +61,25 @@ Parcs_Date_Desc
   String? Parcs_Audit_Note = "";
   String? Parcs_Verif_Note = "";
   int?    Parcs_Intervention_Timer = 0;
+
+  String? Parcs_UUID          = "";
+  String? Parcs_UUID_Parent   = "";
+  String? Parcs_CodeArticle   = "";
+  String? Parcs_CODF          = "";
+  String? Parcs_NCERT         = "";
+  String? Livr                = "";
+  String? Devis               = "";
+  String? Action              = "";
+
+
+
+
+
+
+
+
+
+
   bool?   Parcs_MaintPrev = true;
   bool?   Parcs_Install = true;
   bool?   Parcs_MaintCorrect = true;
@@ -91,10 +110,25 @@ Parcs_Date_Desc
     this.Parcs_Audit_Note,
     this.Parcs_Verif_Note,
     this.Parcs_Intervention_Timer,
+
+      this.Parcs_UUID,
+      this.Parcs_UUID_Parent,
+      this.Parcs_CodeArticle,
+      this.Parcs_CODF,
+      this.Parcs_NCERT,
+      this.Livr,
+      this.Devis,
+      this.Action,
+
+
     this.Parcs_MaintPrev,
     this.Parcs_Install,
     this.Parcs_MaintCorrect,
     this.Parcs_Date_Desc,
+
+
+
+
   )
   {
     this.ParcsId  = ParcsId ;
@@ -119,8 +153,20 @@ Parcs_Date_Desc
     this.Parcs_SERIE_Label  = Parcs_SERIE_Label ;
     this.Parcs_Audit_Note  = Parcs_Audit_Note ;
     this.Parcs_Verif_Note  = Parcs_Verif_Note ;
-
     this.Parcs_Intervention_Timer  = Parcs_Intervention_Timer ;
+
+    this.Parcs_UUID  = Parcs_UUID;
+    this.Parcs_UUID_Parent  = Parcs_UUID_Parent;
+    this.Parcs_CodeArticle  = Parcs_CodeArticle;
+    this.Parcs_CODF  = Parcs_CODF;
+    this.Parcs_NCERT  = Parcs_NCERT;
+    this.Livr  = Livr;
+    this.Devis  = Devis;
+    this.Action  = Action;
+
+
+
+
     this.Parcs_MaintPrev  = Parcs_MaintPrev ;
     this.Parcs_Install  = Parcs_Install ;
     this.Parcs_MaintCorrect  = Parcs_MaintCorrect ;
@@ -153,6 +199,16 @@ Parcs_Date_Desc
     wparcEnt.Parcs_Audit_Note = "";
     wparcEnt.Parcs_Verif_Note = "";
     wparcEnt.Parcs_Intervention_Timer = 0;
+
+    wparcEnt.Parcs_UUID = "";
+    wparcEnt.Parcs_UUID_Parent = "";
+    wparcEnt.Parcs_CodeArticle = "";
+    wparcEnt.Parcs_CODF = "";
+    wparcEnt.Parcs_NCERT = "";
+    wparcEnt.Livr = "";
+    wparcEnt.Devis = "";
+    wparcEnt.Action = "";
+
 
     wparcEnt.Parcs_Date_Desc = "";
     wparcEnt.Parcs_Install = false;
@@ -191,6 +247,17 @@ Parcs_Date_Desc
       'Parcs_Audit_Note':     Parcs_Audit_Note,
       'Parcs_Verif_Note':     Parcs_Verif_Note,
       'Parcs_Intervention_Timer': 0,
+
+      'Parcs_UUID': Parcs_UUID,
+      'Parcs_UUID_Parent': Parcs_UUID_Parent,
+      'Parcs_CodeArticle': Parcs_CodeArticle,
+      'Parcs_CODF': Parcs_CODF,
+      'Parcs_NCERT': Parcs_NCERT,
+      'Livr': Livr,
+      'Devis': Devis,
+      'Action': Action,
+
+
       'Parcs_Date_Desc':     "",
       'Parcs_Install':     true,
      'Parcs_MaintCorrect':     true,
@@ -226,6 +293,18 @@ Parcs_Date_Desc
         json['Parcs_Audit_Note'],
         json['Parcs_Verif_Note'],
         0,
+
+        json['Parcs_UUID'],
+        json['Parcs_UUID_Parent'],
+        json['Parcs_CodeArticle'],
+        json['Parcs_CODF'],
+        json['Parcs_NCERT'],
+        json['Livr'],
+        json['Devis'],
+        json['Action'],
+
+
+
         false,
         false,
         false,
@@ -251,6 +330,17 @@ Parcs_Date_Desc
         'Parcs_SERIE_Label $Parcs_SERIE_Label, '
         'Parcs_Audit_Note $Parcs_Audit_Note, '
         'Parcs_Verif_Note $Parcs_Verif_Note, '
+
+        'Parcs_UUID $Parcs_UUID, '
+        'Parcs_UUID_Parent $Parcs_UUID_Parent, '
+        'Parcs_CodeArticle $Parcs_CodeArticle, '
+        'Parcs_CODF $Parcs_CODF, '
+        'Parcs_NCERT $Parcs_NCERT, '
+        'Livr $Livr, '
+        'Devis $Devis, '
+        'Action $Action, '
+
+
         'Parcs_Intervention_Timer $Parcs_Intervention_Timer, '
         '> Parcs_MaintPrev $Parcs_MaintPrev, '
         '> Parcs_Install $Parcs_Install, '

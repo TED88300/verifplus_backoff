@@ -307,6 +307,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                         style: gColors.bodyTitle1_B_W,
                       ),
                       Spacer(),
+                      gColors.BtnAffUser(context),
                       Container(
                         width: 150,
                         child: Text(

@@ -34,9 +34,6 @@ class _Client_MapState extends State<Client_Map> {
   String wCP = "";
   String wVille = "";
 
-
-
-
   LatLng wlatLng = LatLng(43.39131322677821, 5.145960122088796);
   ScreenCoordinate wScreenCoordinate = ScreenCoordinate(
     x: 0,
@@ -50,7 +47,9 @@ class _Client_MapState extends State<Client_Map> {
   double maxLong = -999;
 
   Uint8List pic = Uint8List.fromList([0]);
-  late Image wImage;
+
+  late ImageProvider wImage;
+
   bool imageisload = false;
 
   void initLib() async {
@@ -132,12 +131,14 @@ class _Client_MapState extends State<Client_Map> {
                 : Positioned(
                     left: wScreenCoordinate.x.toDouble(),
                     top: wScreenCoordinate.y.toDouble(),
-                    child: InkWell(
+                    child:
+
+                    InkWell(
                       child: Expanded(
                         child: Container(
 //                  width: imageisload ? 700 :500,
                           height: 100,
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.LinearGradient1)),
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.primary)),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -181,7 +182,25 @@ class _Client_MapState extends State<Client_Map> {
                                   ),
                                 ],
                               ),
-                              imageisload ? Padding(padding: const EdgeInsets.fromLTRB(0, 5, 0, 5), child: wImage) : Container(),
+                              imageisload ?
+                              Container(
+                                margin: EdgeInsets.fromLTRB(0, 5, 5, 5),
+                                width: 150,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(2)),
+                                  border: Border.all(
+                                    color: gColors.primary,
+                                  ),
+                                  image: DecorationImage(image: wImage, fit: BoxFit.fill),
+                                  color: Colors.white,
+
+                                ),
+                              )
+                                  : Container(),
+
+
+
                             ],
                           ),
                         ),
@@ -223,7 +242,7 @@ class _Client_MapState extends State<Client_Map> {
     );
   }
 
-  void _addMarker(LatLng position, int aID, String title, String snippet, String aAdr1, String aCP, String aVille, BitmapDescriptor Bdico) {
+  void _addMarker(LatLng position, int aID, String title, String snippet, String aAdr1, String aCP, String aVille, BitmapDescriptor Bdico) async {
     setState(() {
       final MarkerId id = MarkerId('${_markers.length}');
       _markers[id] = Marker(
@@ -237,16 +256,15 @@ class _Client_MapState extends State<Client_Map> {
           imageisload = false;
           String wUserImg = "Site_${wID}.jpg";
           pic = await gColors.getImage(wUserImg);
-          print("pic $wUserImg"); // ${pic}");
           if (pic.length > 0) {
-            wImage = Image.memory(
+            wImage = MemoryImage(
               pic,
-              fit: BoxFit.scaleDown,
-              width: 200,
-              height: 200,
             );
             imageisload = true;
           }
+
+
+
 
           wTitle = title;
           wAdresse = snippet;

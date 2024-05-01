@@ -701,6 +701,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   List<GridTableSummaryRow> getGridTableSummaryRow() {
     return [
       GridTableSummaryRow(
+          color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,

@@ -76,7 +76,7 @@ class Intervention {
 
 
   factory Intervention.fromJsonClient(Map<String, dynamic> json) {
-    print("json $json");
+//    print("json $json");
 
     String wCnt = "0";
     if (json['Cnt'] != null) wCnt = json['Cnt'];

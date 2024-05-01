@@ -101,11 +101,17 @@ class FiltreTools {
     double t = 5;
     double b = 3;
 
+    String wTmp = "";
+    try {
+       wTmp = DateFormat('dd/MM/yyyy').format(row.getCells()[Col].value);
+    } catch (e) {
+    }
+
+
     return Container(
       padding: EdgeInsets.fromLTRB(8, t, 8, b),
       alignment: alignment,
-      child: Text(
-        DateFormat('dd/MM/yyyy').format(row.getCells()[Col].value),
+      child: Text(wTmp,
         style: gColors.bodySaisie_N_G.copyWith(color: txtColor),
         overflow: TextOverflow.ellipsis,
       ),

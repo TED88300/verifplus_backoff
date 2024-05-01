@@ -23,6 +23,8 @@ class IntervInfoDataGridSource extends DataGridSource {
   IntervInfoDataGridSource() {
     buildDataGridRows();
   }
+
+//  DATE 2024-04-12T17:26:40.987656
   var inputFormat2 = DateFormat('dd/MM/yyyy');
 
   List<DataGridRow> dataGridRows = <DataGridRow>[];
@@ -159,6 +161,7 @@ class _InterventionsState extends State<Interventions> {
   {
     return
       [      GridTableSummaryRow(
+          color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,
@@ -167,6 +170,10 @@ class _InterventionsState extends State<Interventions> {
                 name: 'Count',
                 columnName: 'id',
                 summaryType: GridSummaryType.count),
+          GridSummaryColumn(
+              name: 'Sum',
+              columnName: 'organes',
+              summaryType: GridSummaryType.sum),
           ],
           position: GridTableSummaryRowPosition.bottom),
       ];
@@ -211,7 +218,7 @@ class _InterventionsState extends State<Interventions> {
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
 
-      print("element ${element.Client_Nom} ${element.Groupe_Nom}");
+
 
       DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
 
@@ -225,12 +232,8 @@ class _InterventionsState extends State<Interventions> {
         }
     }
 
-    print(">>>>>> Ct_Debut ${Ct_Debut.toString()} Ct_Fin ${Ct_Fin.toString()}");
-
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
     textController_Ct_Fin.text = inputFormat2.format(Ct_Fin);
-
-    print(" Ct_Debut ${textController_Ct_Debut.text} Ct_Fin ${textController_Ct_Fin.text}");
 
 
 
@@ -278,7 +281,7 @@ class _InterventionsState extends State<Interventions> {
 
     intervInfoDataGridSource.handleRefresh();
 
-    intervInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'date', sortDirection: DataGridSortDirection.ascending));
+    intervInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'organes', sortDirection: DataGridSortDirection.descending));
     intervInfoDataGridSource.sort();
 
     setState(() {});
@@ -334,17 +337,22 @@ class _InterventionsState extends State<Interventions> {
                 if (addedRows.length > 0 ) {
                   Selindex = intervInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
                   DbTools.gIntervention = DbTools.ListIntervention[Selindex];
+                  await DbTools.getClient(DbTools.gIntervention.ClientId!);
+                  print("•••••••••• DbTools.gClient.ClientId ${DbTools.gClient.ClientId} / ${DbTools.gIntervention.ClientId!} ");
+
                   await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
                   await DbTools.getSite(DbTools.gIntervention.SiteId!);
                   await DbTools.getZone(DbTools.gIntervention.ZoneId!);
                   if (wColSel == 0)
                   {
+
                     await showDialog(
                         context: context,
                         builder: (BuildContext context) => new Intervention_Dialog(
                           site: DbTools.gSite,
                         ));
                     Reload();
+
 
                   }
                 }
@@ -515,7 +523,6 @@ class _InterventionsState extends State<Interventions> {
                 contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
               ),
               onChanged: (String? value) async {
-                print("_buildFieldTextSearch search ${Search_TextController.text}");
                 await Filtre();
               },
               style: gColors.bodySaisie_B_B,

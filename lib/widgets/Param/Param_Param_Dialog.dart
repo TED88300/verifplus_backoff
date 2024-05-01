@@ -169,14 +169,14 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                     width: 8,
                   ),
                   Container(
-                    width: 70,
+                    width: 90,
                     child: _buildFieldID(context, wParam_Param),
                   ),
                   Container(
                     width: 8,
                   ),
                   Container(
-                    width: 280,
+                    width: 580,
                     child: _buildFieldText(context, wParam_Param),
                   ),
                   Container(

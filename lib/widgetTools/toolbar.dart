@@ -187,7 +187,6 @@ class CommonAppBar {
         decoration: BoxDecoration(color: Colors.orange),
         message: tooltip,
         child: InkWell(
-
           child:
           isEnable ?
           Container(

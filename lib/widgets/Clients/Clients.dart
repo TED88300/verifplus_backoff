@@ -138,7 +138,8 @@ class Clients_screenState extends State<Clients_screen> {
   {
     return
       [      GridTableSummaryRow(
-        showSummaryInRow: false,
+          color: gColors.secondary,
+          showSummaryInRow: false,
         title: 'Cpt: {Count}',
         titleColumnSpan: 1,
         columns: [

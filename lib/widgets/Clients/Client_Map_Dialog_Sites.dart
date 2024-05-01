@@ -9,8 +9,6 @@ import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 
-
-
 class Client_Map_Sites_Dialog {
   Client_Map_Sites_Dialog();
 
@@ -67,8 +65,8 @@ class _Client_MapState extends State<Client_Map> {
   double maxLong = -999;
 
   Uint8List pic = Uint8List.fromList([0]);
-  late Image wImage;
   bool imageisload = false;
+  late ImageProvider wImage;
 
 
   LatLngBounds wLatLngBounds = LatLngBounds(
@@ -198,52 +196,78 @@ class _Client_MapState extends State<Client_Map> {
                   : Positioned(
                 left: wScreenCoordinate.x.toDouble(),
                 top: wScreenCoordinate.y.toDouble(),
-                child: InkWell(
-                  child: Container(
-                    width: 500,
-                    height: 100,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.LinearGradient1)),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          width: 140,
-                          height: 70,
-                          margin: EdgeInsets.only(left: 10),
-                          child: Image.asset('assets/images/Ico_Vp2.png', fit: BoxFit.cover),
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: EdgeInsets.only(left: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  wTitle,
-                                  style: gColors.bodyTitle1_B_Gr,
-                                ),
-                                Container(
-                                  height: 10,
-                                ),
-                                Text(
-                                  wAdr1,
-                                  style: gColors.bodySaisie_N_G,
-                                ),
-                                Text(
-                                  wCP,
-                                  style: gColors.bodySaisie_N_G,
-                                ),
-                                Text(
-                                  wVille,
-                                  style: gColors.bodySaisie_N_G,
-                                ),
-                              ],
-                            ),
+                child:
+
+                InkWell(
+                  child: Expanded(
+                    child: Container(
+//                  width: imageisload ? 700 :500,
+                      height: 100,
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.primary)),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            width: 116,
+                            height: 70,
+                            margin: EdgeInsets.only(left: 10),
+                            child: Image.asset('assets/images/Ico_Vp2.png', fit: BoxFit.cover),
                           ),
-                        ),
-                      ],
+                          Flex(
+                            direction: Axis.horizontal,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(left: 10, right: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      wTitle,
+                                      style: gColors.bodyTitle1_B_Gr,
+                                    ),
+                                    Container(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      wAdr1,
+                                      style: gColors.bodySaisie_N_G,
+                                    ),
+                                    Text(
+                                      wCP,
+                                      style: gColors.bodySaisie_N_G,
+                                    ),
+                                    Text(
+                                      wVille,
+                                      style: gColors.bodySaisie_N_G,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          imageisload ?
+                          Container(
+                            margin: EdgeInsets.fromLTRB(0, 5, 5, 5),
+                            width: 150,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(2)),
+                              border: Border.all(
+                                color: gColors.primary,
+                              ),
+                              image: DecorationImage(image: wImage, fit: BoxFit.fill),
+                              color: Colors.white,
+
+                            ),
+                          )
+                              : Container(),
+
+
+
+                        ],
+                      ),
                     ),
                   ),
                   onTap: () {
@@ -305,16 +329,13 @@ class _Client_MapState extends State<Client_Map> {
           imageisload = false;
           String wUserImg = "Site_${wID}.jpg";
           pic = await gColors.getImage(wUserImg);
-          print("pic $wUserImg"); // ${pic}");
           if (pic.length > 0) {
-            wImage = Image.memory(
+            wImage = MemoryImage(
               pic,
-              fit: BoxFit.scaleDown,
-              width: 200,
-              height: 200,
             );
             imageisload = true;
           }
+
 
           wTitle = title;
           wAdresse = snippet;

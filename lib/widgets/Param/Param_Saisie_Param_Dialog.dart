@@ -130,6 +130,7 @@ class _Param_Saisie_Param_screenState extends State<Param_Saisie_Param_screen> {
                   style: gColors.bodyTitle1_B_Wr,
                 ),
                 Spacer(),
+                gColors.BtnAffUser(context),
                 Container(
                   width: 150,
                   child: Text(

@@ -52,7 +52,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.96";
+  static var gVersion = "v1.0.98";
   static bool gTED = true;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -120,6 +120,15 @@ class DbTools {
   static String Token_FBM = "";
   static String wImgPathAvatar = "";
   static String simCountryCode = "";
+
+  static List<String> lColParams = [];
+  static List<String> lColParamsdata = [];
+  static List<String> lColParamswidth = [];
+
+  static List<String> subTitleArray = [
+    "Ext",
+    "Ria",
+  ];
 
   static Future<String?> networkImageToBase64(String imageUrl) async {
     http.Response response = await http.get(Uri.parse(imageUrl));
@@ -212,7 +221,7 @@ class DbTools {
       width: 200,
       height: 200,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(13)),
+        borderRadius: BorderRadius.all(Radius.circular(100)),
         image: DecorationImage(image: wImage, fit: BoxFit.fill),
         color: Colors.white,
 //        shape: BoxShape.circle,
@@ -1822,6 +1831,21 @@ class DbTools {
     return false;
   }
 
+  static Future<bool> getClient(int ID ) async {
+    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID  WHERE Clients.ClientId = $ID ORDER BY Client_Nom;";
+    print("getClient wSlq $wSlq");
+    ListClient = await getClient_API_Post("select", wSlq);
+    if (ListClient == null) return false;
+    if (ListClient.length > 0) {
+      DbTools.gClient = ListClient[0];
+
+      return true;
+    }
+    return false;
+  }
+
+
+
   static Future<bool> getClientDepot() async {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT'  WHERE Clients.Client_Depot = '$gDepot'  ORDER BY Client_Nom;";
     print("getClientDepot wSlq $wSlq");
@@ -2689,16 +2713,15 @@ class DbTools {
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
 
-    print("••••• ••••• ••••• ••••• ••••• ••••• getIntervention_API_Post $aSQL");
+
 
     http.StreamedResponse response = await request.send();
-      print(" getIntervention_API_Post response ${response.statusCode}" );
+
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
       final items = parsedJson['data'];
 
-      print(" getIntervention_API_Post items ${items.length}" );
 
       if (items != null) {
         List<Intervention> InterventionList = await items.map<Intervention>((json) {

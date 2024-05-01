@@ -70,6 +70,7 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
                         style: gColors.bodyTitle1_B_W,
                       ),
                       Spacer(),
+                      gColors.BtnAffUser(context),
                       Container(
                         width: 150,
                         child: Text(

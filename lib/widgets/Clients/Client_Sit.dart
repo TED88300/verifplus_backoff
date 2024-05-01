@@ -1139,6 +1139,7 @@ class _Client_SitState extends State<Client_Sit> {
   List<GridTableSummaryRow> getGridTableSummaryRow() {
     return [
       GridTableSummaryRow(
+          color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,

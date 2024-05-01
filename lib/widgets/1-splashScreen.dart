@@ -91,6 +91,31 @@ class SplashScreenState extends State<SplashScreen>
   void initLib() async {
     await DbTools.getParam_ParamAll();
 
+
+    String ColParams = "";
+    DbTools.getParam_ParamMemDet("Param_Div", "Ext_Col");
+    if (DbTools.ListParam_Param.length > 0) ColParams = DbTools.ListParam_Param[0].Param_Param_Text;
+
+    DbTools.lColParams.clear();
+    DbTools.lColParamsdata.clear();
+
+    DbTools.lColParams = ColParams.split(",");
+    DbTools.lColParamsdata = List.filled(DbTools.lColParams.length, "");
+
+    String ColParamsW = "";
+    DbTools.getParam_ParamMemDet("Param_Div", "Ext_Col_Width");
+    if (DbTools.ListParam_Param.length > 0) ColParamsW = DbTools.ListParam_Param[0].Param_Param_Text;
+    DbTools.lColParamswidth = ColParamsW.split(",");
+
+
+    print(" ColParams $ColParams");
+    print(" DbTools.lColParams ${DbTools.lColParams.length}");
+    print(" DbTools.lColParamsdata ${DbTools.lColParams.length}");
+    print(" DbTools.lColParamswidth ${DbTools.lColParamswidth.length} ${DbTools.lColParamswidth.toString()}");
+
+
+
+
     print("SplashScreen initLib");
     CookieManager cm = CookieManager.getInstance();
     String IsRememberLogins = cm.getCookie("IsRememberLogin");
