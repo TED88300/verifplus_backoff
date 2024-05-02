@@ -141,6 +141,9 @@ class _Client_SitState extends State<Client_Sit> {
   int Selindex = -1;
   int countfilterConditions = -1;
 
+  DataGridRow memDataGridRow = DataGridRow(cells: []);
+
+
   Future Reload() async {
     print("••••• initLib Client_Site getGroupesClient");
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
@@ -213,6 +216,12 @@ class _Client_SitState extends State<Client_Sit> {
     DbTools.gSite = DbTools.ListSitesearchresult[0];
 
     await siteDataGridSource.handleRefresh();
+
+
+    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
+    dataGridController.selectedRows.clear();
+    dataGridController.selectedRows.add(memDataGridRow);
+
 
     AlimSaisie();
 
@@ -1173,11 +1182,14 @@ class _Client_SitState extends State<Client_Sit> {
                       AlimSaisie();
                       if (wColSel == 0)
                       {
+                        memDataGridRow = addedRows.last;
                         await showDialog(
                         context: context,
                         builder: (BuildContext context) => new Zones_Dialog(
                           site: DbTools.gSite,
                         ));
+                        Reload();
+
                       }
                     }
                     else if (removedRows.length > 0 )
@@ -1189,11 +1201,14 @@ class _Client_SitState extends State<Client_Sit> {
                         AlimSaisie();
                         if (wColSel == 0)
                         {
+                          memDataGridRow = removedRows.last;
                           await showDialog(
                               context: context,
                               builder: (BuildContext context) => new Zones_Dialog(
                                 site: DbTools.gSite,
                               ));
+                          Reload();
+
                         }
                       }
                   },

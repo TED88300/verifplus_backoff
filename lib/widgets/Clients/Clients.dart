@@ -15,28 +15,28 @@ class ClientDataSource extends DataGridSource {
   List<String> ListParam_FiltreFam = [];
   List<String> ListParam_FiltreFamID = [];
 
-  ClientDataSource(List<Client> clients) {
+  ClientDataSource() {
     ListParam_FiltreFam.clear();
     ListParam_FiltreFam.addAll(DbTools.ListParam_FiltreFam);
     ListParam_FiltreFamID.clear();
     ListParam_FiltreFamID.addAll(DbTools.ListParam_FiltreFamID);
-    buildDataGridRow(clients);
+    buildDataGridRow();
   }
 
-  void buildDataGridRow(List<Client> clientData) {
-    dataGridRow = clientData.map<DataGridRow>((client) {
+  void buildDataGridRow() {
+    dataGridRow = DbTools.ListClientsearchresult.map<DataGridRow>((client) {
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'id', value: client.ClientId),
-        DataGridCell<bool>(columnName: 'contrat', value: client.Client_Contrat),
-        DataGridCell<String>(columnName: 'statut', value: client.Client_Statut),
-        DataGridCell<String>(columnName: 'forme', value: client.Client_Civilite),
-        DataGridCell<String>(columnName: 'nom', value: client.Client_Nom),
-        DataGridCell<String>(columnName: 'agence', value: client.Client_Depot),
-        DataGridCell<String>(columnName: 'famille', value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
-        DataGridCell<String>(columnName: 'commercial', value: client.Users_Nom),
-        DataGridCell<String>(columnName: 'cp', value: client.Adresse_CP),
-        DataGridCell<String>(columnName: 'ville', value: client.Adresse_Ville),
-        DataGridCell<String>(columnName: 'pays', value: client.Adresse_Pays),
+        DataGridCell<int>(columnName: 'id',             value: client.ClientId),
+        DataGridCell<bool>(columnName: 'contrat',       value: client.Client_Contrat),
+        DataGridCell<String>(columnName: 'statut',      value: client.Client_Statut),
+        DataGridCell<String>(columnName: 'forme',       value: client.Client_Civilite),
+        DataGridCell<String>(columnName: 'nom',         value: client.Client_Nom),
+        DataGridCell<String>(columnName: 'agence',      value: client.Client_Depot),
+        DataGridCell<String>(columnName: 'famille',     value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
+        DataGridCell<String>(columnName: 'commercial',  value: client.Users_Nom),
+        DataGridCell<String>(columnName: 'cp',          value: client.Adresse_CP),
+        DataGridCell<String>(columnName: 'ville',       value: client.Adresse_Ville),
+        DataGridCell<String>(columnName: 'pays',        value: client.Adresse_Pays),
       ]);
     }).toList();
   }
@@ -77,6 +77,7 @@ class ClientDataSource extends DataGridSource {
 
   @override
   Future<void> handleRefresh() async {
+    buildDataGridRow();
     notifyListeners();
   }
 }
@@ -94,7 +95,7 @@ class Clients_screen extends StatefulWidget {
 }
 
 class Clients_screenState extends State<Clients_screen> {
-  late ClientDataSource clientInfoDataGridSource;
+  ClientDataSource clientInfoDataGridSource = ClientDataSource();
 
   List<double> dColumnWidth = [
     80,
@@ -117,6 +118,9 @@ class Clients_screenState extends State<Clients_screen> {
   int Selindex = -1;
   int countfilterConditions = -1;
   bool isLoad = false;
+
+  DataGridRow memDataGridRow = DataGridRow(cells: []);
+
 
   List<GridColumn> getColumns() {
     return <GridColumn>[
@@ -189,7 +193,9 @@ class Clients_screenState extends State<Clients_screen> {
        await DbTools.getClient_User_CSIP(DbTools.gUserLogin.UserID);
 
     await Filtre();
-    clientInfoDataGridSource = ClientDataSource(DbTools.ListClientsearchresult);
+
+
+
   }
 
   Future Filtre() async {
@@ -209,9 +215,14 @@ class Clients_screenState extends State<Clients_screen> {
       });
     }
 
-    clientInfoDataGridSource = ClientDataSource(DbTools.ListClientsearchresult);
+
     clientInfoDataGridSource.handleRefresh();
     isLoad = true;
+
+    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
+    dataGridController.selectedRows.clear();
+    dataGridController.selectedRows.add(memDataGridRow);
+
     setState(() {});
   }
 
@@ -235,11 +246,11 @@ class Clients_screenState extends State<Clients_screen> {
         Container(
           height: 10,
         ),
-
         !isLoad ? Container() :
         SizedBox(
           height: MediaQuery.of(context).size.height - 190,
-          child: SfDataGridTheme(
+          child:
+          SfDataGridTheme(
             data: SfDataGridThemeData(
               headerColor: gColors.secondary,
               selectionColor: gColors.backgroundColor,
@@ -259,6 +270,7 @@ class Clients_screenState extends State<Clients_screen> {
                   Selindex = clientInfoDataGridSource.dataGridRow.indexOf(addedRows.last);
                   Client wClient = DbTools.ListClientsearchresult[Selindex];
                   print(" ADD onSelectionChanging Add ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                  memDataGridRow = addedRows.last;
                   await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
                   Reload();
                 }
@@ -267,6 +279,7 @@ class Clients_screenState extends State<Clients_screen> {
                   Selindex = clientInfoDataGridSource.dataGridRow.indexOf(removedRows.last);
                   Client wClient = DbTools.ListClientsearchresult[Selindex];
                   print(" REM onSelectionChanging Rem ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                  memDataGridRow = removedRows.last;
                   await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
                   Reload();
                 }
@@ -301,6 +314,7 @@ class Clients_screenState extends State<Clients_screen> {
 
             ),
           ),
+
         ),
         Container(
           height: 10,

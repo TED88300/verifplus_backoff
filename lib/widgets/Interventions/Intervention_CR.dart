@@ -1,4 +1,3 @@
-import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -11,6 +10,7 @@ import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Dialog.dart';
 
 DataGridController dataGridController = DataGridController();
 
@@ -107,14 +107,14 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-class Intervention_Parc extends StatefulWidget {
-  const Intervention_Parc({Key? key}) : super(key: key);
+class Intervention_CR extends StatefulWidget {
+  const Intervention_CR({Key? key}) : super(key: key);
 
   @override
-  State<Intervention_Parc> createState() => _Intervention_ParcState();
+  State<Intervention_CR> createState() => _Intervention_CRState();
 }
 
-class _Intervention_ParcState extends State<Intervention_Parc> {
+class _Intervention_CRState extends State<Intervention_CR> {
   String DescAffnewParam = "";
 
   List<double> dColumnWidth = [
@@ -135,8 +135,11 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
 
   List<String> subLibArray = [""];
   List<GrdBtn> lGrdBtn = [];
-  List<GrdBtnGrp> lGrdBtnGrp = [];
+
   List<Param_Param> ListParam_ParamTypeOg = [];
+
+  DataGridRow memDataGridRow = DataGridRow(cells: []);
+
 
   List<GridColumn> getColumns() {
     List<GridColumn> wGridColumn = [
@@ -176,7 +179,6 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
       if (args.column.columnName == 'id')
         dColumnWidth[0] = args.width;
       else if (args.column.columnName == 'ordre') dColumnWidth[1] = args.width;
-
       else
         {
           for (int i = 0; i < DbTools.lColParams.length; i++) {
@@ -187,11 +189,7 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
                 dColumnWidth[i+2] = args.width;
               }
           }
-
-
         }
-
-
     });
   }
 
@@ -199,11 +197,8 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
     DbTools.gContact = Contact.ContactInit();
     Search_TextController.text = "";
     await DbTools.getContactSite(DbTools.gSite.SiteId);
-
     await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
-
     await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
-
     await DbTools.getParam_Saisie_Base("Audit");
     DbTools.ListParam_Audit_Base.clear();
     DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
@@ -361,9 +356,6 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
       DbTools.ListParc_Ent[p].Parcs_Cols!.addAll(DbTools.lColParamsdata);
 
 
-
-
-
       String parcsdescTypeDesc = "";
       String parcsdescTypePdt = "";
       Parc_Desc parcDescDesc = Parc_Desc(0, 0, "", "", "");
@@ -414,6 +406,9 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
     parc_EntInfoDataGridSource.handleRefresh();
     parc_EntInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'ordre', sortDirection: DataGridSortDirection.ascending));
     parc_EntInfoDataGridSource.sort();
+    dataGridController.selectedRows.clear();
+    dataGridController.selectedRows.add(memDataGridRow);
+
     setState(() {});
   }
 
@@ -431,7 +426,7 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
     }
 
 
-    lGrdBtnGrp.add(GrdBtnGrp(GrdBtnGrpId: 4, GrdBtnGrp_Color: Colors.black, GrdBtnGrp_ColorSel: Colors.black, GrdBtnGrp_Txt_Color: Colors.white, GrdBtnGrp_Txt_ColorSel: Colors.red, GrdBtnGrpSelId: [0], GrdBtnGrpType: 0));
+
     DbTools.subTitleArray.clear();
     ListParam_ParamTypeOg.clear();
 
@@ -481,14 +476,36 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
                 ),
                 child: SfDataGrid(
                   //*********************************
+
                   onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+                    if (addedRows.length > 0 ) {
+                      Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
+                      DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
+                      if (wColSel == 0)
+                      {
+                        memDataGridRow = addedRows.last;
 
-
-
-
-                    Reload();
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) => new Organe_Dialog());
+                        Reload();
+                      }
+                    }
+                    else if (removedRows.length > 0 )
+                    {
+                      Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
+                      DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
+                      if (wColSel == 0)
+                      {
+                        memDataGridRow = removedRows.last;
+                        await showDialog(
+                            context: context,
+                            builder: (BuildContext context) => new Organe_Dialog());
+                        Reload();
+                      }
+                    }
                   },
+
                   onFilterChanged: (DataGridFilterChangeDetails details) {
                     countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
@@ -510,7 +527,7 @@ class _Intervention_ParcState extends State<Intervention_Parc> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.single,
+                  selectionMode: SelectionMode.multiple,
                   controller: dataGridController,
                   onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                     Resize(args);

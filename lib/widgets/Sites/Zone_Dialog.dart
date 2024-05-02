@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Interv.dart';
 
@@ -81,15 +82,11 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
     );
   }
 
-  List<Widget> _getChildren1 = [];
+
   int sel = 0;
 
   Widget Content(BuildContext context) {
-    _getChildren1 = [
-      Zone_Interv(),
-      Zone_Interv(),
-  //    Zone_Ctact(),
-    ];
+
     return Container(
       color: Colors.white,
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -100,7 +97,7 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ContentDetailCadre(context),
-              _getChildren1[sel],
+              Zone_Interv(),
             ],
           )),
         ),

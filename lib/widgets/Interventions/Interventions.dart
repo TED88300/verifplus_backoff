@@ -50,6 +50,9 @@ class IntervInfoDataGridSource extends DataGridSource {
         DataGridCell<String>(columnName: 'Rem', value: Interv.Intervention_Remarque!.replaceAll("\n", " - ")),
       ]);
     }).toList();
+    sortedColumns.add(SortColumnDetails(name: 'organes', sortDirection: DataGridSortDirection.descending));
+    sort();
+
   }
 
   @override
@@ -138,6 +141,9 @@ class _InterventionsState extends State<Interventions> {
   DateTime Ct_Debut = DateTime.now();
   DateTime Ct_Fin = DateTime.now();
 
+  DataGridRow memDataGridRow = DataGridRow(cells: []);
+
+
   List<GridColumn> getColumns() {
     return <GridColumn>[
       FiltreTools.SfGridColumn('id', 'ID',          dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
@@ -217,11 +223,7 @@ class _InterventionsState extends State<Interventions> {
     Ct_Fin   = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-
-
-
       DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
-
       if(wDT.difference(Ct_Debut).inHours < 0)
         {
           Ct_Debut = wDT;
@@ -234,9 +236,6 @@ class _InterventionsState extends State<Interventions> {
 
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
     textController_Ct_Fin.text = inputFormat2.format(Ct_Fin);
-
-
-
     Filtre();
   }
 
@@ -279,10 +278,15 @@ class _InterventionsState extends State<Interventions> {
       });
     }
 
-    intervInfoDataGridSource.handleRefresh();
 
-    intervInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'organes', sortDirection: DataGridSortDirection.descending));
-    intervInfoDataGridSource.sort();
+    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
+    intervInfoDataGridSource.handleRefresh();
+    dataGridController.selectedRows.clear();
+    dataGridController.selectedRows.add(memDataGridRow);
+
+
+
+
 
     setState(() {});
   }
@@ -330,6 +334,9 @@ class _InterventionsState extends State<Interventions> {
             data: SfDataGridThemeData(
               headerColor: gColors.secondary,
               selectionColor: gColors.backgroundColor,
+              //rowHoverColor: gColors.white,
+              //rowHoverTextStyle : TextStyle(color: gColors.tks),
+
             ),
             child: SfDataGrid(
               //*********************************
@@ -345,6 +352,7 @@ class _InterventionsState extends State<Interventions> {
                   await DbTools.getZone(DbTools.gIntervention.ZoneId!);
                   if (wColSel == 0)
                   {
+                     memDataGridRow = addedRows.last;
 
                     await showDialog(
                         context: context,
@@ -365,12 +373,15 @@ class _InterventionsState extends State<Interventions> {
                   await DbTools.getZone(DbTools.gIntervention.ZoneId!);
                   if (wColSel == 0)
                   {
+                     memDataGridRow = removedRows.last;
+
                     await showDialog(
                         context: context,
                         builder: (BuildContext context) => new Intervention_Dialog(
                           site: DbTools.gSite,
                         ));
                     Reload();
+
 
                   }
                 }

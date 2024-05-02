@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:tab_container/tab_container.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/buttons_tabbar.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-import 'package:verifplus_backoff/widgets/Interventions/Intervention_Parc.dart';
+import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+import 'package:verifplus_backoff/widgets/Interventions/Intervention_CR.dart';
+import 'package:verifplus_backoff/widgets/Interventions/Interventions.dart';
+import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
 
 
 class Intervention_Dialog extends StatefulWidget {
@@ -16,13 +20,17 @@ class Intervention_Dialog extends StatefulWidget {
 
 class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTickerProviderStateMixin {
   String Title = "";
-  double screenWidth = 0;
+
 
   String selectedUserInter = "";
   String selectedUserInterID = "";
 
   String selectedUserInter2 = "";
   String selectedUserInterID2 = "";
+
+  double screenWidth = 0;
+  double screenHeight = 0;
+
 
   Future initLib() async {
     await DbTools.getGroupeID(widget.site.Site_GroupeId);
@@ -62,6 +70,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   Widget build(BuildContext context) {
 
     screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     if (Title.isEmpty) return Container();
 
     return Center(
@@ -114,13 +123,19 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     );
   }
 
-  List<Widget> _getChildren1 = [];
+  List<Widget> widgetChildren = [];
   int sel = 0;
 
 
+
+
   Widget Content(BuildContext context) {
-    _getChildren1 = [
-      Intervention_Parc( ),
+    widgetChildren = [
+      Intervention_CR( ),
+      wScreen("BL"),
+      wScreen("BC"),
+      wScreen("Devis"),
+      wScreen("Signature"),
 
     ];
     return Container(
@@ -132,14 +147,35 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ContentDetailCadre(context),
-              _getChildren1[sel],
-            ],
+              Container(
+                width: screenWidth,
+                height: screenHeight - 300,
+//                color: Colors.red,
+                child: taBarContainer(),
+              ),            ],
           )),
         ),
       ]),
     );
   }
 
+  Widget taBarContainer() {
+    return TabContainer(
+      tabDuration : Duration(milliseconds: 600),
+      color: gColors.primary,
+      children: widgetChildren,
+      selectedTextStyle: gColors.bodyTitle1_B_Wr,
+      unselectedTextStyle: gColors.bodyTitle1_B_Gr,
+      tabExtent: 40,
+      tabs: [
+        'Compte Rendu',
+        'Bon de Livraison',
+        'Bon de Commande',
+        'Devis',
+        'Signature',
+      ],
+    );
+  }
 
 
   Widget ContentDetailCadre(BuildContext context) {
@@ -147,7 +183,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       children: <Widget>[
         Container(
           width: double.infinity,
-          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
           padding: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             border: Border.all(color: gColors.primary, width: 1),
@@ -230,7 +266,10 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-                  Container(width: 500, child:
+                  Container(
+                    width: 500,
+                    height: 162,
+                    child:
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,11 +286,8 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                         ],
                       ),
                       Container(height: 10),
-                      Row(
-                        children: [
-                          gColors.Txt(80, "", ""),
-                        ],
-                      ),
+                      CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Planning", ToolsPlanning , tooltip : "Planning"),
+
                     ],
                   ),),
                 Container(width: 500, child:
@@ -334,8 +370,34 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   }
 
 
+  void ToolsPlanning() async {
+    print("ToolsPlanning");
+    await showDialog(context: context, builder: (BuildContext context) => new Planning(bAppBar : true));
+    setState(() {});
+  }
 
+  Widget wScreen(String wTxt) {
+    return Container(
 
-
+      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4.0),
+        border: Border.all(
+          color: Colors.black12,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("$wTxt"),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
 }

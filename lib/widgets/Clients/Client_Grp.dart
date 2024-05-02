@@ -700,7 +700,7 @@ class _Client_GrpState extends State<Client_Grp> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.single,
+                  selectionMode: SelectionMode.multiple,
                   controller: dataGridController,
                   onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                     Resize(args);

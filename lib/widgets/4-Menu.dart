@@ -100,7 +100,7 @@ class _MenuState extends State<Menu> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60.0), // here the desired height
+        preferredSize: Size.fromHeight(60.0),
         child: AppBar(
           backgroundColor: gColors.primary,
           title: Container(
@@ -187,7 +187,7 @@ class _MenuState extends State<Menu> {
           setState(() {
 //        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Planning()));
 
-            wAff = Planning();
+            wAff = Planning(bAppBar : false);
           });
         },
       ),

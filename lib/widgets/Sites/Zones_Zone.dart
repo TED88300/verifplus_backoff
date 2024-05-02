@@ -7,14 +7,13 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
+import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Dialog.dart';
-
-
 
 DataGridController dataGridController = DataGridController();
 
@@ -79,7 +78,6 @@ class ZoneDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-
 class Zones_Zone extends StatefulWidget {
   final VoidCallback onMaj;
   const Zones_Zone({Key? key, required this.onMaj}) : super(key: key);
@@ -108,7 +106,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   String selectedValueDepot = "";
   final Search_TextController = TextEditingController();
 
-
   int wColSel = -1;
   int wRowSel = -1;
   int Selindex = -1;
@@ -116,6 +113,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
 
   ZoneDataGridSource zoneDataGridSource = ZoneDataGridSource();
 
+  DataGridRow memDataGridRow = DataGridRow(cells: []);
 
   Future Reload() async {
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
@@ -155,8 +153,10 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     DbTools.ListZonesearchresult.clear();
     DbTools.ListZonesearchresult.addAll(ListZonesearchresultTmp);
 
-
     await zoneDataGridSource.handleRefresh();
+    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
+    dataGridController.selectedRows.clear();
+    dataGridController.selectedRows.add(memDataGridRow);
 
     AlimSaisie();
 
@@ -167,7 +167,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     print("AlimSaisie ${DbTools.gZone.Desc()}");
 
     textController_Adresse_Geo.text = "${DbTools.gZone.Zone_Adr1} ${DbTools.gZone.Zone_CP} ${DbTools.gZone.Zone_Ville}";
-
 
     textController_Zone_Code.text = DbTools.gZone.Zone_Code;
     textController_Zone_Nom.text = DbTools.gZone.Zone_Nom;
@@ -199,11 +198,11 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   }
 
   Widget fadeAlertAnimation(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return Align(
       child: FadeTransition(
         opacity: animation,
@@ -211,6 +210,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       ),
     );
   }
+
   var alertStyle = AlertStyle(
       animationType: AnimationType.fromTop,
       isCloseButton: false,
@@ -266,9 +266,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       ],
     ).show();
   }
-
-
-
 
   void ToolsBarCtact() async {
     print("ToolsBarCtact");
@@ -364,39 +361,35 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 Container(
                   width: 5,
                 ),
-
                 Icon(
                   Icons.search,
                   color: Colors.blue,
                   size: 20.0,
                 ),
-
                 Container(
                   width: 10,
                 ),
-                Expanded(child:
-                TextFormField(
-                  controller: Search_TextController,
-
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                Expanded(
+                  child: TextFormField(
+                    controller: Search_TextController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    ),
+                    onChanged: (String? value) async {
+                      print("_buildFieldTextSearch search ${Search_TextController.text}");
+                      await Filtre();
+                    },
+                    style: gColors.bodySaisie_B_B,
                   ),
-                  onChanged: (String? value) async {
-                    print("_buildFieldTextSearch search ${Search_TextController.text}");
-                    await Filtre();
-                  },
-                  style: gColors.bodySaisie_B_B,
-                ),
                 ),
                 Container(
                   width: 10,
                 ),
-
-
                 IconButton(
-                  icon: Icon(Icons.cancel,
+                  icon: Icon(
+                    Icons.cancel,
                     size: 20.0,
                   ),
                   onPressed: () async {
@@ -439,7 +432,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     setState(() {});
   }
 
-
   TextEditingController textController_Adresse_Geo = TextEditingController();
 
   Widget AutoAdresse(double lWidth, double wWidth, String wLabel, TextEditingController textEditingController, {int Ligne = 1, String sep = " : "}) {
@@ -449,20 +441,20 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       children: [
         lWidth == -1
             ? Container(
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-          child: Text(
-            wLabel,
-            style: gColors.bodySaisie_N_G,
-          ),
-        )
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: Text(
+                  wLabel,
+                  style: gColors.bodySaisie_N_G,
+                ),
+              )
             : Container(
-          width: lWidth,
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-          child: Text(
-            wLabel,
-            style: gColors.bodySaisie_N_G,
-          ),
-        ),
+                width: lWidth,
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: Text(
+                  wLabel,
+                  style: gColors.bodySaisie_N_G,
+                ),
+              ),
         Container(
           width: 12,
           padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
@@ -496,9 +488,9 @@ class _Zones_ZoneState extends State<Zones_Zone> {
               itemBuilder: (context, sone) {
                 return Card(
                     child: Container(
-                      padding: EdgeInsets.all(5),
-                      child: Text(sone.toString()),
-                    ));
+                  padding: EdgeInsets.all(5),
+                  child: Text(sone.toString()),
+                ));
               },
               onSuggestionSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
@@ -516,7 +508,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     );
   }
 
-
   void ToolsBarAdd() async {
     await DbTools.addZone(DbTools.gSite.SiteId);
     await Reload();
@@ -527,14 +518,12 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     AlimSaisie();
   }
 
-
   void ToolsBarCopySearch() async {
     print("ToolsBarCopySearch_Livr ${Api_Gouv.gProperties.toJson()}");
     textController_Zone_Adr1.text = Api_Gouv.gProperties.name!;
     textController_Zone_CP.text = Api_Gouv.gProperties.postcode!;
     textController_Zone_Ville.text = Api_Gouv.gProperties.city!;
   }
-
 
   Widget ToolsBar_Insee(BuildContext context) {
     return Container(
@@ -552,13 +541,9 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.arrow_downward, ToolsBarCopySearch, tooltip: "Copier recherche"),
               ],
             ),
-
           ],
         ));
   }
-
-
-
 
   Widget ContentZoneCadre(BuildContext context) {
     return Stack(
@@ -717,7 +702,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       child: Column(children: [
 //        ToolsBargrid(context),
         Container(
-            decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
+            decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
             height: MediaQuery.of(context).size.height - 280,
             child: SfDataGridTheme(
                 data: SfDataGridThemeData(
@@ -727,32 +712,31 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 child: SfDataGrid(
                   //*********************************
                   onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    if (addedRows.length > 0 ) {
+                    if (addedRows.length > 0) {
                       Selindex = zoneDataGridSource.dataGridRows.indexOf(addedRows.last);
                       SelZone = dataGridController.selectedIndex;
                       print(" onSelectionChanged  SelZone ${SelZone}");
-                      DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
+                      DbTools.gZone = DbTools.ListZonesearchresult[Selindex];
                       AlimSaisie();
 
-                      if (wColSel == 0)
-                      {
-                        await showDialog(
-                            context: context,
-                            builder: (BuildContext context) => new Zone_Dialog());
+                      if (wColSel == 0) {
+                        memDataGridRow = addedRows.last;
+                        DbTools.gIntervention = Intervention.InterventionInit();
+                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+                        Reload();
+
                       }
-                    }
-                    else if (removedRows.length > 0 )
-                    {
+                    } else if (removedRows.length > 0) {
                       Selindex = zoneDataGridSource.dataGridRows.indexOf(removedRows.last);
                       SelZone = dataGridController.selectedIndex;
                       print(" onSelectionChanged  SelZone ${SelZone}");
-                      DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
+                      DbTools.gZone = DbTools.ListZonesearchresult[Selindex];
                       AlimSaisie();
-                      if (wColSel == 0)
-                      {
-                        await showDialog(
-                            context: context,
-                            builder: (BuildContext context) => new Zone_Dialog());
+                      if (wColSel == 0) {
+                        memDataGridRow = removedRows.last;
+                        DbTools.gIntervention = Intervention.InterventionInit();
+                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+                        Reload();
                       }
                     }
                   },
@@ -789,7 +773,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                   gridLinesVisibility: GridLinesVisibility.both,
                   headerGridLinesVisibility: GridLinesVisibility.both,
                   columnWidthMode: ColumnWidthMode.fill,
-                  isScrollbarAlwaysShown : true,
+                  isScrollbarAlwaysShown: true,
                 ))),
         Container(
           height: 10,
@@ -797,9 +781,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       ]),
     );
   }
-
-
-
 
   Widget ZoneGridWidgetVP() {
     List<DaviColumn<Zone>> wColumns = [

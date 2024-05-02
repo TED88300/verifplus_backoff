@@ -52,7 +52,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.98";
+  static var gVersion = "v1.0.100";
   static bool gTED = true;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -467,10 +467,11 @@ class DbTools {
     if (ListParam_Saisie_Base == null) return false;
     if (ListParam_Saisie_Base.length > 0) {
       int i = 1;
-      ListParam_Saisie_Base.forEach((element) {
+      for (int i = 0; i < ListParam_Saisie_Base.length; i++) {
+        Param_Saisie element = ListParam_Saisie_Base[i];
         element.Param_Saisie_Ordre = i++;
-        setParam_Saisie(element);
-      });
+        await setParam_Saisie(element);
+      };
       return true;
     }
     return false;
@@ -521,9 +522,9 @@ class DbTools {
         "Param_Saisie_Affichage_L2_Ordre = ${paramSaisie.Param_Saisie_Affichage_L2_Ordre.toString()}" +
         " WHERE Param_SaisieId = " +
         paramSaisie.Param_SaisieId.toString();
-    print("setParam_Saisie " + wSlq);
+//    print("setParam_Saisie " + wSlq);
     bool ret = await add_API_Post("upddel", wSlq);
-    print("setParam_Saisie ret " + ret.toString());
+//    print("setParam_Saisie ret " + ret.toString());
     return ret;
   }
 

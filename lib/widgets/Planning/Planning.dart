@@ -19,6 +19,11 @@ import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning_Edit.dart';
 
 class Planning extends StatefulWidget {
+
+  final bool bAppBar;
+  const Planning({Key? key, required this.bAppBar}) : super(key: key);
+
+
   @override
   State<Planning> createState() => _PlanningState();
 }
@@ -233,6 +238,49 @@ class _PlanningState extends State<Planning> {
     super.initState();
   }
 
+  Widget AppBar()
+  {
+    return
+      !widget.bAppBar ? Container() :
+      Container(
+        height: 60,
+        color: gColors.primary,
+        child: Row(
+          children: [
+            Container(
+              width: 5,
+            ),
+            InkWell(
+              child: SizedBox(
+                  height: 100.0,
+                  width: 100.0, // fixed width and height
+                  child: new Image.asset(
+                    'assets/images/AppIcow.png',
+                  )),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            Spacer(),
+            Text(
+              "Planning",
+              textAlign: TextAlign.center,
+              style: gColors.bodyTitle1_B_W,
+            ),
+            Spacer(),
+            gColors.BtnAffUser(context),
+            Container(
+              width: 150,
+              child: Text(
+                "Version : ${DbTools.gVersion}",
+                style: gColors.bodySaisie_N_W,
+              ),
+            ),
+          ],
+        ));
+  }
+
+
   @override
   Widget build(BuildContext context) {
     gColors.wTheme = Theme.of(context);
@@ -266,6 +314,7 @@ class _PlanningState extends State<Planning> {
                 ? Container()
                 : Column(
                     children: [
+                      AppBar(),
                       Row(
                         children: [
                           Container(
