@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:tab_container/tab_container.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
-import 'package:verifplus_backoff/Tools/Srv_Parcs_Desc.dart';
+import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
-import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-import 'package:verifplus_backoff/widgetTools/toolbar.dart';
-import 'package:verifplus_backoff/widgets/Interventions/Intervention_CR.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Audit.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Equip.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Mixte.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Pieces.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Serv.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Synth.dart';
+import 'package:verifplus_backoff/widgets/Organes/Organe_Verif.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
 
 class Organe_Dialog extends StatefulWidget {
@@ -20,10 +23,8 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
   String Title = "";
   double screenWidth = 0;
   double screenHeight = 0;
-
   String selectedUserInter = "";
   String selectedUserInterID = "";
-
   String selectedUserInter2 = "";
   String selectedUserInterID2 = "";
   String DescAff = "";
@@ -33,25 +34,24 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     await DbTools.getContactSite(DbTools.gSite.SiteId);
     await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
     await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
+
     await DbTools.getParam_Saisie_Base("Audit");
-
-
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
     print(" initLib 0");
-
-
     DbTools.ListParam_Audit_Base.clear();
     DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
 
     print(" initLib A");
     await DbTools.getParam_Saisie_Base("Verif");
+    DbTools.ListParam_Verif_Base.sort(DbTools.affSort2Comparison);
     DbTools.ListParam_Verif_Base.clear();
     DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
 
     print(" initLib B");
     await DbTools.getParam_Saisie_Base("Desc");
-     DescAff = "";
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
+    DescAff = "";
 
-    DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
     print(" initLib C");
 
     int countCol = 0;
@@ -63,64 +63,57 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     List<Param_Saisie> listparamSaisieTmp = [];
     listparamSaisieTmp.addAll(DbTools.ListParam_Saisie);
     listparamSaisieTmp.addAll(DbTools.ListParam_Saisie_Base);
-
-    print(" Nbre Ligne ${DbTools.ListParc_Ent.length}");
-
     Parc_Ent elementEnt = DbTools.gParc_Ent;
 
+    print(" elementEnt ${elementEnt.toString()}");
 
     DescAff = DescAffnewParam;
     List<String?>? parcsCols = [];
-    listparamSaisieTmp.forEach((element) async {
-//        print(" element.Param_Saisie_ID ${element.Param_Saisie_ID} ${elementEnt.Action}");
+
+    for (int i = 0; i < listparamSaisieTmp.length; i++) {
+      Param_Saisie element = listparamSaisieTmp[i];
+      listparamSaisieTmp[i].Param_Saisie_Value = "";
+
+//      print(" listparamSaisieTmp ${element.Desc()}");
 
       if (element.Param_Saisie_ID.compareTo("FREQ") == 0) {
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_FREQ_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_FREQ_Label!;
       } else if (element.Param_Saisie_ID.compareTo("ANN") == 0) {
-        print(">>>>>>>>> ANN ${elementEnt.Parcs_ANN_Id!} ---> ${elementEnt.Parcs_ANN_Label!}");
-
-
-
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_ANN_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_ANN_Label!;
       } else if (element.Param_Saisie_ID.compareTo("NIV") == 0) {
-
-
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_NIV_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_NIV_Label!;
       } else if (element.Param_Saisie_ID.compareTo("ZNE") == 0) {
-
-
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_ZNE_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_ZNE_Label!;
       } else if (element.Param_Saisie_ID.compareTo("EMP") == 0) {
-
-
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_EMP_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_EMP_Label!;
       } else if (element.Param_Saisie_ID.compareTo("LOT") == 0) {
-
-
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_LOT_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_LOT_Label!;
       } else if (element.Param_Saisie_ID.compareTo("SERIE") == 0) {
-
-
         DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_SERIE_Label!, element.Param_Saisie_ID)}");
+        listparamSaisieTmp[i].Param_Saisie_Value = elementEnt.Parcs_SERIE_Label!;
       } else {
         bool trv = false;
 
-        int iColParam = 0;
+
         DbTools.ListParc_Desc.forEach((element2) {
-//              print(" ZONE A TRAITER ELEMENT2 ${element2.ParcsDesc_Type} ${elementEnt.ParcsId}");
+//              print(" DESC EQUIP ${element2.ParcsDesc_Type} ${elementEnt.ParcsId} ${element2.ParcsDesc_Lib!}");
           if (elementEnt.ParcsId == element2.ParcsDesc_ParcsId && element.Param_Saisie_ID == element2.ParcsDesc_Type) {
             DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(element2.ParcsDesc_Lib!, element.Param_Saisie_ID)}");
-
-
+            listparamSaisieTmp[i].Param_Saisie_Value = element2.ParcsDesc_Lib!;
             trv = true;
           }
         });
-
         if (!trv) {
           DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "");
         }
       }
-    });
+    };
 
     if (DescAff.compareTo(DescAffnewParam) == 0) DescAff = "";
     String wTmp = DescAff;
@@ -131,6 +124,86 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     elementEnt.Parcs_Date_Desc = DescAff;
 
     print("🁢🁢🁢🁢🁢🁢🁢  DescAff ${DescAff}");
+
+    DbTools.listparamSaisieEquip.clear();
+    for (int i = 0; i < listparamSaisieTmp.length; i++) {
+      Param_Saisie element = listparamSaisieTmp[i];
+
+
+      if (element.Param_Saisie_Controle != "Group" && element.Param_Saisie_Organe == "Base" )
+          {
+            DbTools.listparamSaisieEquip.add(element);
+          }
+      }
+
+    for (int i = 0; i < listparamSaisieTmp.length; i++) {
+      Param_Saisie element = listparamSaisieTmp[i];
+      if (element.Param_Saisie_Controle != "Group" && element.Param_Saisie_Organe == "Ext" )
+      {
+        DbTools.listparamSaisieEquip.add(element);
+      }
+    }
+
+    for (int i = 0; i < DbTools.listparamSaisieEquip.length; i++) {
+      Param_Saisie element = DbTools.listparamSaisieEquip[i];
+      print(" listparamSaisieTmp ${element.DescSimpl()}");
+    }
+
+
+
+    for (int i = 0; i < DbTools.ListParam_Audit_Base.length; i++) {
+      Param_Saisie element = DbTools.ListParam_Audit_Base[i];
+      print(" Param_Saisie AUDIT ${element.Desc()}");
+
+      DbTools.ListParc_Desc.forEach((element2) {
+        if (elementEnt.ParcsId == element2.ParcsDesc_ParcsId && element.Param_Saisie_ID == element2.ParcsDesc_Type) {
+          DbTools.ListParam_Audit_Base[i].Param_Saisie_Value = element2.ParcsDesc_Lib!;
+        }
+      });
+    }
+    for (int i = 0; i < DbTools.ListParam_Verif_Base.length; i++) {
+      Param_Saisie element = DbTools.ListParam_Verif_Base[i];
+
+      DbTools.ListParc_Desc.forEach((element2) {
+//        print(" DESC AUDIT ${element2.ParcsDesc_Type} ${elementEnt.ParcsId} ${element2.ParcsDesc_Lib!}");
+        if (elementEnt.ParcsId == element2.ParcsDesc_ParcsId && element.Param_Saisie_ID == element2.ParcsDesc_Type) {
+          DbTools.ListParam_Verif_Base[i].Param_Saisie_Value = element2.ParcsDesc_Lib!;
+        }
+      });
+    }
+
+
+    await DbTools.getParc_Art(elementEnt.ParcsId!);
+    print(" getParc_Art ${DbTools.ListParc_Art.length}");
+
+    DbTools.ListParc_Art_P.clear();
+    for (int i = 0; i < DbTools.ListParc_Art.length; i++) {
+      Parc_Art parc_Art = DbTools.ListParc_Art[i];
+      if(parc_Art.ParcsArt_Type == "P" || parc_Art.ParcsArt_Type == "V" )
+        {
+          DbTools.ListParc_Art_P.add(parc_Art);
+        }
+    }
+
+    DbTools.ListParc_Art_M.clear();
+    for (int i = 0; i < DbTools.ListParc_Art.length; i++) {
+      Parc_Art parc_Art = DbTools.ListParc_Art[i];
+      if(parc_Art.ParcsArt_Type == "M" )
+      {
+        DbTools.ListParc_Art_M.add(parc_Art);
+      }
+    }
+
+
+    DbTools.ListParc_Art_S.clear();
+    for (int i = 0; i < DbTools.ListParc_Art.length; i++) {
+      Parc_Art parc_Art = DbTools.ListParc_Art[i];
+      if(parc_Art.ParcsArt_Type == "Mo" || parc_Art.ParcsArt_Type == "Dn" )
+      {
+        DbTools.ListParc_Art_S.add(parc_Art);
+      }
+    }
+
 
 
     setState(() {});
@@ -208,24 +281,12 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
   Widget taBarContainer() {
     widgetChildren = [
       Organe_EquipDialog(),
-      wScreen(
-        'Audit',
-      ),
-      wScreen(
-        'Vérification',
-      ),
-      wScreen(
-        'Pièces',
-      ),
-      wScreen(
-        'Mixte',
-      ),
-      wScreen(
-        'Services',
-      ),
-      wScreen(
-        'Synthèse',
-      ),
+      Organe_AuditDialog(),
+      Organe_VerifDialog(),
+      Organe_PiecesDialog(),
+      Organe_MixteDialog(),
+      Organe_ServDialog(),
+      Organe_SynthDialog(),
     ];
 
     return TabContainer(
@@ -259,7 +320,7 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
               ContentDetailCadre(context),
               Container(
                 width: screenWidth,
-                height: screenHeight - 300,
+                height: screenHeight - 331,
 //                color: Colors.red,
                 child: taBarContainer(),
               ),

@@ -284,10 +284,6 @@ class _InterventionsState extends State<Interventions> {
     dataGridController.selectedRows.clear();
     dataGridController.selectedRows.add(memDataGridRow);
 
-
-
-
-
     setState(() {});
   }
 

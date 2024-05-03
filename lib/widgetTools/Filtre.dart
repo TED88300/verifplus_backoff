@@ -5,8 +5,15 @@ import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
 class FiltreTools {
 
-
   static GridColumn SfGridColumn(String columnName, String columnTitle, double wWidth, double wWidthMin, AlignmentGeometry alignment, {wColumnWidthMode = ColumnWidthMode.none }) {
+
+    TextAlign wTextAlign = TextAlign.left;
+    if (alignment == Alignment.center)
+      wTextAlign = TextAlign.center;
+    else if (alignment == Alignment.centerRight)
+      wTextAlign = TextAlign.right;
+
+    wTextAlign = TextAlign.right;
     return GridColumn(
         columnName: columnName,
         width: wWidth,
@@ -19,6 +26,7 @@ class FiltreTools {
             columnTitle,
             style: gColors.bodySaisie_B_G,
             overflow: TextOverflow.ellipsis,
+            textAlign: wTextAlign,
           ),
         ));
 
@@ -81,21 +89,54 @@ class FiltreTools {
   }
 
 
-  static Widget SfRow(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
+  static Widget SfRow(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
+  {
     double t = 5;
     double b = 3;
 
+    TextStyle wTextStyle = gColors.bodySaisie_N_G;
+    if (fBold)
+      wTextStyle = gColors.bodySaisie_B_G;
     return Container(
       padding: EdgeInsets.fromLTRB(8, t, 8, b),
       alignment: alignment,
       child: Text(
         row.getCells()[Col].value.toString(),
-        style: gColors.bodySaisie_N_G.copyWith(color: txtColor),
+        style: wTextStyle.copyWith(color: txtColor),
         overflow: TextOverflow.ellipsis,
       ),
     );
   }
 
+  static Widget SfRowIcon(String wTxt ,String wIco , AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
+  {
+    double t = 5;
+    double b = 3;
+
+
+    TextStyle wTextStyle = gColors.bodySaisie_N_G;
+    if (fBold)
+      wTextStyle = gColors.bodySaisie_B_G;
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(8, t, 8, b),
+      alignment: alignment,
+      child:
+      Row(children: [
+        wIco.isEmpty ? Container() :
+        Container(
+          child: Image.asset("assets/images/${wIco}.png", fit: BoxFit.cover),
+        ),
+        SizedBox(width: 19,),
+        Text(
+          wTxt,
+          style: wTextStyle.copyWith(color: txtColor),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],)
+
+    );
+  }
 
   static Widget SfRowDate(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
     double t = 5;

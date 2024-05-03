@@ -3,14 +3,15 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
+import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
 DataGridController dataGridController = DataGridController();
 int Subindex = 0;
 
-class Param_SaisieDataGridSource extends DataGridSource {
-  Param_SaisieDataGridSource() {
+class ArticleDataGridSource extends DataGridSource {
+  ArticleDataGridSource() {
     buildDataGridRows();
   }
 
@@ -20,11 +21,14 @@ class Param_SaisieDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     int i = 0;
-    dataGridRows = DbTools.listparamSaisieEquip.map<DataGridRow>((Param_Saisie param_Saisie) {
+    dataGridRows = DbTools.ListParc_Art_P.map<DataGridRow>((Parc_Art parc_Art) {
 
       List<DataGridCell> DataGridCells = [
-        DataGridCell<int>(columnName: 'label', value: i),
-        DataGridCell<String>(columnName: 'value', value: param_Saisie.Param_Saisie_Value),
+        DataGridCell<String>(columnName:  'id'    , value: parc_Art.ParcsArt_Id),
+        DataGridCell<String>(columnName:  'lib'   , value: parc_Art.ParcsArt_Lib),
+        DataGridCell<int>(columnName:     'qte'   , value: parc_Art.ParcsArt_Qte),
+        DataGridCell<String>(columnName:  'livr'  , value: parc_Art.ParcsArt_Livr),
+        DataGridCell<String>(columnName:  'fact'  , value: parc_Art.ParcsArt_Fact),
       ];
       i++;
       return DataGridRow(cells: DataGridCells);
@@ -43,14 +47,14 @@ class Param_SaisieDataGridSource extends DataGridSource {
     Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
     Color backgroundColor = Colors.transparent;
 
-    int i =  row.getCells()[0].value;
-    String wIco = DbTools.listparamSaisieEquip[i].Param_Saisie_Icon;
-    String wTxt = DbTools.listparamSaisieEquip[i].Param_Saisie_Label;
 
     List<Widget> DataGridCells = [
-      FiltreTools.SfRowIcon(wTxt, wIco, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 0, Alignment.centerLeft, textColor, fBold: true),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor, fBold: true),
-//      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor, fBold: true),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor, fBold: true),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor, fBold: true),
+
     ];
     return DataGridRowAdapter(color: backgroundColor, cells: DataGridCells);
   }
@@ -65,21 +69,24 @@ class Param_SaisieDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-class Organe_EquipDialog extends StatefulWidget {
+class Organe_PiecesDialog extends StatefulWidget {
   @override
-  State<Organe_EquipDialog> createState() => _Organe_EquipDialogState();
+  State<Organe_PiecesDialog> createState() => _Organe_PiecesDialogState();
 }
 
-class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTickerProviderStateMixin {
+class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTickerProviderStateMixin {
   String Title = "";
   double screenWidth = 0;
   double screenHeight = 0;
 
-  Param_SaisieDataGridSource param_SaisieDataGridSource = Param_SaisieDataGridSource();
+  ArticleDataGridSource articleDataGridSource = ArticleDataGridSource();
 
   List<double> dColumnWidth = [
-    200,
-    380,
+    100,
+    430,
+    100,
+    130,
+    160,
   ];
 
   Future initLib() async {
@@ -94,23 +101,53 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
 
   List<GridColumn> getColumns() {
     List<GridColumn> wGridColumn = [
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id'  ,  'Ref'   ,       dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('lib' ,  'Libellé'  ,    dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('qte' ,  'Qte'  ,        dColumnWidth[2], dColumnWidth[2], Alignment.centerRight),
+      FiltreTools.SfGridColumn('livr',  'Livaison' ,    dColumnWidth[3], dColumnWidth[3], Alignment.center),
+      FiltreTools.SfGridColumn('fact',  'Facturation' , dColumnWidth[4], dColumnWidth[4], Alignment.center),
     ];
 
     return wGridColumn;
   }
 
+  List<GridTableSummaryRow> getGridTableSummaryRow()
+  {
+    return
+      [      GridTableSummaryRow(
+          color: gColors.secondary,
+          showSummaryInRow: false,
+          title: 'Cpt: {Count}',
+          titleColumnSpan: 1,
+          columns: [
+            GridSummaryColumn(
+                name: 'Count',
+                columnName: 'id',
+                summaryType: GridSummaryType.count),
+            GridSummaryColumn(
+                name: 'Sum',
+                columnName: 'qte',
+                summaryType: GridSummaryType.sum),
+          ],
+          position: GridTableSummaryRowPosition.bottom),
+      ];
+  }
+
+
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
-      if (args.column.columnName == 'id') dColumnWidth[0] = args.width;
-      else if (args.column.columnName == 'ordre') dColumnWidth[1] = args.width;
+      if (args.column.columnName ==       'id'   ) dColumnWidth[0] = args.width;
+      else if (args.column.columnName ==  'lib'  ) dColumnWidth[1] = args.width;
+      else if (args.column.columnName ==  'qte'  ) dColumnWidth[1] = args.width;
+      else if (args.column.columnName ==  'livr' ) dColumnWidth[1] = args.width;
+      else if (args.column.columnName ==  'fact' ) dColumnWidth[1] = args.width;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    param_SaisieDataGridSource.handleRefresh();
+    articleDataGridSource.handleRefresh();
+    print(" EQUIP build ${DbTools.ListParc_Art_P}");
     screenWidth = MediaQuery.of(context).size.width;
     if (Title.isEmpty) return Container();
     return Center(
@@ -149,8 +186,8 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                      width: 575,
-                      height: 460,
+                      width: 924,
+                      height: 560,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(
@@ -164,23 +201,32 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                           ),
                           child: SfDataGrid(
                             //*********************************
+                            source: articleDataGridSource,
                             allowSorting: true,
                             allowFiltering: true,
-                            source: param_SaisieDataGridSource,
                             columns: getColumns(),
-                            headerRowHeight: 0,
-                            headerGridLinesVisibility: GridLinesVisibility.both,
+                            tableSummaryRows: getGridTableSummaryRow(),
+
+                            headerRowHeight: 35,
                             rowHeight: 28,
                             allowColumnsResizing: true,
                             columnResizeMode: ColumnResizeMode.onResize,
-                            selectionMode: SelectionMode.none,
+                            selectionMode: SelectionMode.multiple,
                             controller: dataGridController,
                             onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                               Resize(args);
                               return true;
                             },
                             gridLinesVisibility: GridLinesVisibility.both,
+                            headerGridLinesVisibility: GridLinesVisibility.both,
                             columnWidthMode: ColumnWidthMode.fill,
+
+
+
+
+
+
+
                           ))),
                 ],
               )),

@@ -72,14 +72,6 @@ Parcs_Date_Desc
   String? Action              = "";
 
 
-
-
-
-
-
-
-
-
   bool?   Parcs_MaintPrev = true;
   bool?   Parcs_Install = true;
   bool?   Parcs_MaintCorrect = true;

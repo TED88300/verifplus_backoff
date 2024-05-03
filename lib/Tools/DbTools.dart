@@ -28,6 +28,7 @@ import 'package:verifplus_backoff/Tools/Srv_Param_Hab.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
+import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning.dart';
@@ -52,7 +53,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.100";
+  static var gVersion = "v1.0.101";
   static bool gTED = true;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -173,16 +174,11 @@ class DbTools {
   static late ImageProvider wImage;
   static Uint8List pic = Uint8List.fromList([0]);
   static Future<bool> getUserLogin(String aMail, String aPW) async {
-
     print(" getUserLogin ");
-
-
     List<User> ListUser = await getUser_API_Post("select", "select * from Users where User_Mail = '$aMail' AND User_PassWord = '$aPW'");
     if (ListUser == null) return false;
-
     if (ListUser.length == 1) {
       print(" getUserLogin ${ListUser[0].User_TypeUserID}");
-
       if (ListUser[0].User_TypeUserID <156 || ListUser[0].User_TypeUserID > 159)
           return false;
       if (!ListUser[0].User_Actif)
@@ -364,6 +360,12 @@ class DbTools {
   //*****************************
   //*****************************
   //*****************************
+
+
+  static List<Param_Saisie> listparamSaisieEquip = [];
+  static List<Param_Saisie> listparamSaisieAudit = [];
+  static List<Param_Saisie> listparamSaisieVerrif = [];
+
 
   static List<Param_Saisie> ListParam_Saisie = [];
   static List<Param_Saisie> ListParam_Saisiesearchresult = [];
@@ -3281,6 +3283,76 @@ class DbTools {
       if (items != null) {
         List<Parc_Desc> parcDesclist = await items.map<Parc_Desc>((json) {
           return Parc_Desc.fromJson(json);
+        }).toList();
+        return parcDesclist;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+  //******************************************
+  //************   Parc_Arts   ***************
+  //******************************************
+
+  static List<Parc_Art> ListParc_Art = [];
+
+  static List<Parc_Art> ListParc_Art_P = [];
+  static List<Parc_Art> ListParc_Art_M = [];
+  static List<Parc_Art> ListParc_Art_S = [];
+
+
+  static List<Parc_Art> ListParc_Artsearchresult = [];
+  static Parc_Art gParc_Art = Parc_Art.Parc_ArtInit(0, "");
+
+  static Future<bool> getParc_ArtAll() async {
+    ListParc_Art = await getParc_Art_API_Post("select", "select * from Parc_Art ORDER BY ParcsDescId");
+
+    if (ListParc_Art == null) return false;
+    print("getParc_ArtAll ${ListParc_Art.length}");
+    if (ListParc_Art.length > 0) {
+      print("getParc_ArtAll return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+
+  static Future<bool> getParc_Art(int ID) async {
+
+
+
+    String wTmp = "select * from Parcs_Art WHERE  ParcsArt_ParcsId = $ID ORDER BY ParcsArt_Id";
+    print("getParc_Art ${wTmp}");
+    ListParc_Art = await getParc_Art_API_Post("select",wTmp );
+    if (ListParc_Art == null) return false;
+    print("getParc_Art ${ListParc_Art.length}");
+    if (ListParc_Art.length > 0) {
+      print("getParc_Art return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+
+
+
+  static Future<List<Parc_Art>> getParc_Art_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      if (items != null) {
+        List<Parc_Art> parcDesclist = await items.map<Parc_Art>((json) {
+          return Parc_Art.fromJson(json);
         }).toList();
         return parcDesclist;
       }

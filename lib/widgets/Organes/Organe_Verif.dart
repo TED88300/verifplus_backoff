@@ -20,7 +20,7 @@ class Param_SaisieDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     int i = 0;
-    dataGridRows = DbTools.listparamSaisieEquip.map<DataGridRow>((Param_Saisie param_Saisie) {
+    dataGridRows = DbTools.ListParam_Verif_Base.map<DataGridRow>((Param_Saisie param_Saisie) {
 
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'label', value: i),
@@ -44,8 +44,8 @@ class Param_SaisieDataGridSource extends DataGridSource {
     Color backgroundColor = Colors.transparent;
 
     int i =  row.getCells()[0].value;
-    String wIco = DbTools.listparamSaisieEquip[i].Param_Saisie_Icon;
-    String wTxt = DbTools.listparamSaisieEquip[i].Param_Saisie_Label;
+    String wIco = DbTools.ListParam_Verif_Base[i].Param_Saisie_Icon;
+    String wTxt = DbTools.ListParam_Verif_Base[i].Param_Saisie_Label;
 
     List<Widget> DataGridCells = [
       FiltreTools.SfRowIcon(wTxt, wIco, Alignment.centerLeft, textColor),
@@ -65,12 +65,12 @@ class Param_SaisieDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-class Organe_EquipDialog extends StatefulWidget {
+class Organe_VerifDialog extends StatefulWidget {
   @override
-  State<Organe_EquipDialog> createState() => _Organe_EquipDialogState();
+  State<Organe_VerifDialog> createState() => _Organe_VerifDialogState();
 }
 
-class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTickerProviderStateMixin {
+class _Organe_VerifDialogState extends State<Organe_VerifDialog> with SingleTickerProviderStateMixin {
   String Title = "";
   double screenWidth = 0;
   double screenHeight = 0;
@@ -78,8 +78,8 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
   Param_SaisieDataGridSource param_SaisieDataGridSource = Param_SaisieDataGridSource();
 
   List<double> dColumnWidth = [
-    200,
-    380,
+    330,
+    250,
   ];
 
   Future initLib() async {
@@ -103,7 +103,8 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
 
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
-      if (args.column.columnName == 'id') dColumnWidth[0] = args.width;
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
       else if (args.column.columnName == 'ordre') dColumnWidth[1] = args.width;
     });
   }

@@ -33,17 +33,12 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'id', value: parc_Ent.ParcsId),
         DataGridCell<int>(columnName: 'ordre', value: parc_Ent.Parcs_order),
-//      DataGridCell<String>(columnName:  'desc'  , value: parc_Ent.Parcs_Date_Desc),
       ];
 
       print("parc_Ent.Parcs_Cols ${parc_Ent.Parcs_Cols}");
-
-
       for (int i = 0; i < DbTools.lColParams.length; i++) {
         String ColParam = DbTools.lColParams[i];
         String ColParamsdata = parc_Ent.Parcs_Cols![i]!;
-
-
         if (ColParam == "DATE" && ColParamsdata.isNotEmpty)
           {
             DataGridCells.add(DataGridCell<DateTime>(columnName: 'date', value: DateTime.parse(ColParamsdata)));
@@ -200,23 +195,24 @@ class _Intervention_CRState extends State<Intervention_CR> {
     await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
     await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
     await DbTools.getParam_Saisie_Base("Audit");
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
     DbTools.ListParam_Audit_Base.clear();
     DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
 
     await DbTools.getParam_Saisie_Base("Verif");
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
     DbTools.ListParam_Verif_Base.clear();
     DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
 
     await DbTools.getParam_Saisie_Base("Desc");
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
+    DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
     String DescAff = "";
 
-    DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
-
-    int countCol = 0;
     Parcs_ColsTitle!.clear();
     DbTools.ListParam_Saisie.forEach((element) async {
       if (element.Param_Saisie_Affichage.compareTo("COL") == 0) {
-        countCol++;
+
         Parcs_ColsTitle!.add(element.Param_Saisie_Affichage_Titre);
       }
     });
@@ -240,6 +236,8 @@ class _Intervention_CRState extends State<Intervention_CR> {
       DescAff = DescAffnewParam;
       List<String?>? parcsCols = [];
       listparamSaisieTmp.forEach((element) async {
+          element.Param_Saisie_Value = "";
+
 //        print(" element.Param_Saisie_ID ${element.Param_Saisie_ID} ${elementEnt.Action}");
 
         if (element.Param_Saisie_ID.compareTo("FREQ") == 0) {
@@ -460,7 +458,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
       padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(4.0),
+        borderRadius: BorderRadius.circular(0.0),
         border: Border.all(
           color: Colors.black26,
         ),
@@ -516,10 +514,10 @@ class _Intervention_CRState extends State<Intervention_CR> {
                   },
 
                   //*********************************
+                  source: parc_EntInfoDataGridSource,
 
                   allowSorting: true,
                   allowFiltering: true,
-                  source: parc_EntInfoDataGridSource,
                   columns: getColumns(),
                   tableSummaryRows: getGridTableSummaryRow(),
 
@@ -537,6 +535,9 @@ class _Intervention_CRState extends State<Intervention_CR> {
                   headerGridLinesVisibility: GridLinesVisibility.both,
                   columnWidthMode: ColumnWidthMode.fill,
                 ))),
+
+
+
         Container(
           height: 10,
         ),

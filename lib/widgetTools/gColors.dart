@@ -405,7 +405,7 @@ class gColors {
         fontWeight: FontWeight.bold,
       );
 
-  static TextStyle get bodySaisie_N_G => TextStyle(
+  static  TextStyle get bodySaisie_N_G => TextStyle(
         color: grey,
         fontSize: wNorm,
         fontWeight: FontWeight.normal,

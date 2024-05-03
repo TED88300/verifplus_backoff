@@ -17,19 +17,34 @@ class Param_Saisie {
   String Param_Saisie_Icon = "";
   String Param_Saisie_Triger = "";
 
+  String Param_Saisie_Value = "";
+
 
   static Param_SaisieInit() {
     return Param_Saisie(0, "", "", "", "", "", "", 0, "", 0, "", false, 0, false, 0, "","");
   }
 
+
+  String DescSimpl() {
+    return 'id $Param_SaisieId '
+        'ORDRE $Param_Saisie_Ordre  / $Param_Saisie_Affichage '
+        'BASE $Param_Saisie_Organe '
+        'CTRL $Param_Saisie_Controle '
+        'ID $Param_Saisie_ID '
+        'LABEL $Param_Saisie_Label '
+        'ICON $Param_Saisie_Icon '
+        'VALUE $Param_Saisie_Value ';
+  }
+
+
   String Desc() {
-    return '$Param_SaisieId '
-        '$Param_Saisie_Organe '
+    return 'id $Param_SaisieId '
+        'Org $Param_Saisie_Organe '
         '$Param_Saisie_Type '
-        '$Param_Saisie_ID '
-        '$Param_Saisie_Label '
-        '$Param_Saisie_Aide '
-        '$Param_Saisie_Controle '
+        'ID $Param_Saisie_ID '
+        'LABEL $Param_Saisie_Label '
+        'aide $Param_Saisie_Aide '
+        'Ctrl $Param_Saisie_Controle '
         '$Param_Saisie_Ordre '
         '$Param_Saisie_Affichage '
         '$Param_Saisie_Ordre_Affichage '
@@ -38,10 +53,9 @@ class Param_Saisie {
         '$Param_Saisie_Affichage_L1_Ordre '
         '$Param_Saisie_Affichage_L2 '
         '$Param_Saisie_Affichage_L2_Ordre '
-        '$Param_Saisie_Icon '
+        'ICON $Param_Saisie_Icon '
         '$Param_Saisie_Triger '
-
-    ;
+        'VALUE $Param_Saisie_Value ';
   }
 
   Param_Saisie(
