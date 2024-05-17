@@ -1,4 +1,5 @@
 import 'package:davi/davi.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
@@ -37,6 +38,11 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
   Param_Param wParam_Param = Param_Param.Param_ParamInit();
   String Title = "Paramètres ";
 
+  static List<String> ListParam_ParamColor = [];
+  static List<String> ListParam_ParamColorID = [];
+  String selectedValueColor = "";
+  String selectedValueColorID = "";
+
 //  List<DaviColumn<Param_Param>> wColumns = [];
   bool bReload = true;
 
@@ -59,6 +65,22 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
   }
 
   void initLib() async {
+    ListParam_ParamColor.clear();
+    ListParam_ParamColorID.clear();
+    DbTools.ListParam_ParamAll.forEach((element) {
+      if (element.Param_Param_Type.compareTo("Color") == 0) {
+        ListParam_ParamColor.add(element.Param_Param_Text);
+        ListParam_ParamColorID.add(element.Param_Param_ID);
+      }
+    });
+
+    print("ListParam_ParamColor ${ListParam_ParamColor.length}");
+
+    selectedValueColor = ListParam_ParamColor[0];
+    selectedValueColorID = ListParam_ParamColorID[0];
+
+    print("selectedValueColor $selectedValueColorID $selectedValueColor");
+
     Reload();
   }
 
@@ -180,6 +202,13 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                     child: _buildFieldText(context, wParam_Param),
                   ),
                   Container(
+                    width: 8,
+                  ),
+                  Container(
+                    width: 10,
+                  ),
+                  DropdownButtonColor(),
+                  Container(
                     width: 1,
                   ),
                   InkWell(
@@ -191,6 +220,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                     onTap: () async {
                       if (wParam_Param.Param_Param_ID.isNotEmpty) {
                         wParam_Param.Param_Param_Text = Param_Param_TextController.text;
+                        wParam_Param.Param_Param_Color = selectedValueColor;
                         wParam_Param.Param_Param_ID = Param_Param_IDController.text;
                         await DbTools.setParam_Param(wParam_Param);
                         await Reload();
@@ -259,6 +289,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
           stringValue: (row) => "${row.Param_Param_ID} ${row.Param_Param_Ordre}"
               ""),
       new DaviColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Param_Param_Text),
+      new DaviColumn(name: 'Couleur', grow: 2, stringValue: (row) => row.Param_Param_Color),
     ];
 
     print("Param_ParamGridWidget");
@@ -288,8 +319,19 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
     setState(() {
       wParam_Param = paramParam;
       print("_onRowTap ${wParam_Param.Param_Param_ID}");
+
+      ListParam_ParamColorID.forEach((element) {
+        if (element.compareTo(wParam_Param.Param_Param_Color) == 0) {
+          selectedValueColorID = element;
+          selectedValueColor = ListParam_ParamColor[ListParam_ParamColorID.indexOf(element)];
+        }
+      });
+
+
+
     });
   }
+
 
   final Param_Param_TextController = TextEditingController();
 
@@ -304,6 +346,8 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
       style: gColors.bodySaisie_B_B,
     );
   }
+
+
 
   final Param_Param_IDController = TextEditingController();
   Widget _buildFieldID(BuildContext context, Param_Param paramParam) {
@@ -330,4 +374,35 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
       },
     );
   }
+
+  Widget DropdownButtonColor() {
+    return DropdownButtonHideUnderline(
+        child: DropdownButton2(
+          hint: Text(
+            'Couleur',
+            style: gColors.bodySaisie_N_G,
+          ),
+          items: ListParam_ParamColor.map((item) => DropdownMenuItem<String>(
+            value: item,
+            child: Text(
+              "  $item",
+              style: gColors.bodySaisie_N_G,
+            ),
+          )).toList(),
+          value: selectedValueColor,
+          onChanged: (value) {
+            setState(() {
+              selectedValueColorID = ListParam_ParamColorID[ListParam_ParamColor.indexOf(value!)];
+              selectedValueColor = value;
+              print("selectedValueColor $selectedValueColorID $selectedValueColor");
+            });
+          },
+          buttonHeight: 50,
+          buttonWidth: 150,
+          dropdownMaxHeight: 250,
+          itemHeight: 32,
+        ));
+  }
+
+
 }

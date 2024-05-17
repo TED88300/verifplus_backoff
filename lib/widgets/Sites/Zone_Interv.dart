@@ -1,6 +1,9 @@
-import 'package:davi/davi.dart';
+import 'dart:convert';
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -11,7 +14,6 @@ import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
-import 'package:verifplus_backoff/widgets/Sites/Intervenants_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Sites/Missions_Dialog.dart';
 
 DataGridController dataGridController = DataGridController();
@@ -107,6 +109,9 @@ class _Zone_IntervState extends State<Zone_Interv> {
     193,
   ];
 
+  final MultiSelectController _controllerPartage = MultiSelectController();
+  final MultiSelectController _controllerContrib = MultiSelectController();
+
   IntervInfoDataGridSource intervInfoDataGridSource = IntervInfoDataGridSource();
 
   final Search_TextController = TextEditingController();
@@ -198,35 +203,49 @@ class _Zone_IntervState extends State<Zone_Interv> {
   String selectedUserInter2 = "";
   String selectedUserInterID2 = "";
 
+  String selectedUserInter3 = "";
+  String selectedUserInterID3 = "";
+
+  String selectedUserInter4 = "";
+  String selectedUserInterID4 = "";
+
+
+
   DateTime wDateTime = DateTime.now();
 
   Future Reload() async {
     await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
 
+
+
     Ct_Debut = DateTime.now();
     Ct_Fin = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
 
-      if (wDT.difference(Ct_Debut).inHours < 0) {
-        Ct_Debut = wDT;
+      try {
+        DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+        if (wDT.difference(Ct_Debut).inHours < 0) {
+          Ct_Debut = wDT;
+        }
+        if (wDT.difference(Ct_Fin).inHours > 0) {
+          Ct_Fin = wDT;
+        }
+      } catch (e) {
       }
-      if (wDT.difference(Ct_Fin).inHours > 0) {
-        Ct_Fin = wDT;
-      }
+
     }
 
-    print(">>>>>> Ct_Debut ${Ct_Debut.toString()} Ct_Fin ${Ct_Fin.toString()}");
+
+
 
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
     textController_Ct_Fin.text = inputFormat2.format(Ct_Fin);
 
-    print(" Ct_Debut ${textController_Ct_Debut.text} Ct_Fin ${textController_Ct_Fin.text}");
     await Filtre();
     AlimSaisie();
 
-    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
+
 
     dataGridController.selectedRows.clear();
     dataGridController.selectedRows.add(memDataGridRow);
@@ -253,6 +272,14 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
     selectedUserInter2 = DbTools.List_UserInter[0];
     selectedUserInterID2 = DbTools.List_UserInterID[0];
+    
+    selectedUserInter3 = DbTools.List_UserInter[0];
+    selectedUserInterID3 = DbTools.List_UserInterID[0];
+
+    selectedUserInter4 = DbTools.List_UserInter[0];
+    selectedUserInterID4 = DbTools.List_UserInterID[0];
+
+
     Reload();
   }
 
@@ -260,20 +287,26 @@ class _Zone_IntervState extends State<Zone_Interv> {
     List<Intervention> ListInterventionsearchresultDate = [];
     DbTools.ListInterventionsearchresult.clear();
 
-    if (textController_Ct_Debut.text.isNotEmpty) {
-      Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
-    }
+    try {
+      if (textController_Ct_Debut.text.isNotEmpty) {
+        Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
+      }
 
-    if (textController_Ct_Fin.text.isNotEmpty) {
-      Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
+      if (textController_Ct_Fin.text.isNotEmpty) {
+        Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
+      }
+    } catch (e) {
     }
 
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
 
-      if (wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0) {
-        ListInterventionsearchresultDate.add(element);
+      try {
+        DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+        if (wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0) {
+          ListInterventionsearchresultDate.add(element);
+        }
+      } catch (e) {
       }
     }
     if (Search_TextController.text.isEmpty) {
@@ -315,11 +348,38 @@ class _Zone_IntervState extends State<Zone_Interv> {
     if (DbTools.gIntervention.Intervention_Type!.isNotEmpty) {
       selectedTypeInter = DbTools.gIntervention.Intervention_Type!;
       print("selectedTypeInter ${selectedTypeInter}");
-
-      print("selectedTypeInter ${selectedTypeInter}");
       print("selectedTypeInter ${DbTools.List_TypeInter.indexOf(selectedTypeInter)}");
 
       selectedTypeInterID = DbTools.List_TypeInterID[DbTools.List_TypeInter.indexOf(selectedTypeInter)];
+
+      _controllerPartage.clearAllSelection();
+    if(DbTools.gIntervention.Intervention_Partages!.isNotEmpty)
+        {
+          print(" DbTools.gIntervention.Intervention_Partages ${DbTools.gIntervention.Intervention_Partages}");
+
+          List<dynamic> list = json.decode(DbTools.gIntervention.Intervention_Partages!);
+          print(" list ${list.toString()}");
+          List<ValueItem> valueItems = await list.map<ValueItem>((json) {
+            print(" json ${json.toString()}");
+            return ValueItem.fromMap(json);
+          }).toList();
+
+          _controllerPartage.setSelectedOptions(valueItems);
+        }
+      _controllerContrib.clearAllSelection();
+      if(DbTools.gIntervention.Intervention_Contributeurs!.isNotEmpty)
+        {
+          print("DbTools.gIntervention.Intervention_Contributeurs ${DbTools.gIntervention.Intervention_Contributeurs}");
+
+          List<dynamic> list = json.decode(DbTools.gIntervention.Intervention_Contributeurs!);
+          print(" list ${list.toString()}");
+          List<ValueItem> valueItems = await list.map<ValueItem>((json) {
+            print(" json ${json.toString()}");
+            return ValueItem.fromMap(json);
+          }).toList();
+          _controllerContrib.setSelectedOptions(valueItems);
+        }
+
     }
 
     print("AlimSaisie B");
@@ -345,6 +405,14 @@ class _Zone_IntervState extends State<Zone_Interv> {
     selectedUserInter2 = DbTools.List_UserInter[0];
     selectedUserInterID2 = DbTools.List_UserInterID[0];
 
+    selectedUserInter3 = DbTools.List_UserInter[0];
+    selectedUserInterID3 = DbTools.List_UserInterID[0];
+
+    selectedUserInter4 = DbTools.List_UserInter[0];
+    selectedUserInterID4 = DbTools.List_UserInterID[0];
+
+
+
     if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
       DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
@@ -359,6 +427,25 @@ class _Zone_IntervState extends State<Zone_Interv> {
       selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
     }
 
+
+    if (DbTools.gIntervention.Intervention_Responsable3!.isNotEmpty) {
+      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable3!);
+      selectedUserInter3 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter3 $selectedUserInter3");
+      selectedUserInterID3 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter3)];
+    }
+
+
+    if (DbTools.gIntervention.Intervention_Responsable4!.isNotEmpty) {
+      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable4!);
+      selectedUserInter4 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter4 $selectedUserInter4");
+      selectedUserInterID4 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter4)];
+    }
+    
+    
+    
+    
     textController_Intervention_Date.text = DbTools.gIntervention.Intervention_Date!;
     textController_Intervention_Type.text = DbTools.gIntervention.Intervention_Type!;
     textController_Intervention_Remarque.text = "${DbTools.gIntervention.Intervention_Remarque!}";
@@ -500,6 +587,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
     ).show();
   }
 
+
   void ToolsBarSave() async {
     DbTools.gIntervention.Intervention_Date = textController_Intervention_Date.text;
     DbTools.gIntervention.Intervention_Type = selectedTypeInter;
@@ -507,7 +595,31 @@ class _Zone_IntervState extends State<Zone_Interv> {
     DbTools.gIntervention.Intervention_Facturation = selectedFactInter;
     DbTools.gIntervention.Intervention_Responsable = "$selectedUserInterID";
     DbTools.gIntervention.Intervention_Responsable2 = "$selectedUserInterID2";
+    DbTools.gIntervention.Intervention_Responsable3 = "$selectedUserInterID3";
+    DbTools.gIntervention.Intervention_Responsable4 = "$selectedUserInterID4";
+
+    print("_controllerPartage.selectedOptions ${_controllerPartage.selectedOptions}");
+    List<String> selectedOptions = [];
+      _controllerPartage.selectedOptions.forEach((element) {
+      selectedOptions.add(element.toMaps());
+    });
+    print("selectedOptions ${selectedOptions})");
+    DbTools.gIntervention.Intervention_Partages = "$selectedOptions";
+
+    selectedOptions.clear();
+    _controllerContrib.selectedOptions.forEach((element) {
+      selectedOptions.add(element.toMaps());
+    });
+    print("selectedOptions ${selectedOptions})");
+    DbTools.gIntervention.Intervention_Contributeurs = "$selectedOptions";
+
+
+
+
+
     DbTools.gIntervention.Intervention_Remarque = textController_Intervention_Remarque.text;
+
+
     await DbTools.setIntervention(DbTools.gIntervention);
     await Filtre();
   }
@@ -572,6 +684,10 @@ class _Zone_IntervState extends State<Zone_Interv> {
     setState(() {});
   }
 
+
+
+
+
   Widget ContentIntervention(BuildContext context) {
 
     String wIntervenants = "";
@@ -593,7 +709,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
         child: Expanded(
             child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: Column(children: [
+                child: Column(
+
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+
+                    children: [
                   Container(
                       padding: EdgeInsets.all(15),
                       child: Center(
@@ -662,7 +783,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
                             print("onCHANGE selectedFactInterID $selectedFactInterID");
                           });
                         }, DbTools.List_FactInter, DbTools.List_FactInterID),
-                  gColors.DropdownButtonTypeInter(180, 8, "Responsable Commercial", selectedUserInter, (sts) {
+                  gColors.DropdownButtonTypeInterC(180, 8, "Commercial intervention", selectedUserInter, (sts) {
                     setState(() {
                       selectedUserInter = sts!;
                       selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
@@ -670,7 +791,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
                       print("onCHANGE selectedUserInterID $selectedUserInterID");
                     });
                   }, DbTools.List_UserInter, DbTools.List_UserInterID),
-                  gColors.DropdownButtonTypeInter(180, 8, "Responsable Technique", selectedUserInter2, (sts) {
+                  gColors.DropdownButtonTypeInterC(180, 8, "Manager Commercial", selectedUserInter2, (sts) {
                     setState(() {
                       selectedUserInter2 = sts!;
                       selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
@@ -678,11 +799,78 @@ class _Zone_IntervState extends State<Zone_Interv> {
                       print("onCHANGE selectedUserInterID2 $selectedUserInterID2");
                     });
                   }, DbTools.List_UserInter, DbTools.List_UserInterID),
+
+                      gColors.DropdownButtonTypeInterC(180, 8, "Manager Technique Intervention", selectedUserInter3, (sts) {
+                        setState(() {
+                          selectedUserInter3 = sts!;
+                          selectedUserInterID3 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter3)];
+                          print("onCHANGE selectedUserInter3 $selectedUserInter3");
+                          print("onCHANGE selectedUserInterID3 $selectedUserInterID3");
+                        });
+                      }, DbTools.List_UserInter, DbTools.List_UserInterID),
+
+
+                      gColors.DropdownButtonTypeInterC(180, 8, "Référent Technique", selectedUserInter4, (sts) {
+                        setState(() {
+                          selectedUserInter4 = sts!;
+                          selectedUserInterID4 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter4)];
+                          print("onCHANGE selectedUserInter4 $selectedUserInter4");
+                          print("onCHANGE selectedUserInterID4 $selectedUserInterID4");
+                        });
+                      }, DbTools.List_UserInter, DbTools.List_UserInterID),
+
+
+
+
+                      Container(
+                    padding: EdgeInsets.fromLTRB(0, 6, 0, 10),
+                    child: Text(
+                      "Partage de l'évenènement/Intervention avec :",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                  ),
+
+                  MultiSelectDropDown(
+                    controller: _controllerPartage,
+
+                    onOptionSelected: (List<ValueItem> selectedOptions) {},
+                    options: DbTools.List_ValueItem_User,
+                    selectionType: SelectionType.multi,
+                    chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                    dropdownHeight: 300,
+                    optionTextStyle: gColors.bodySaisie_B_B,
+                    selectedOptionIcon: const Icon(Icons.check_circle),
+                  ),
+
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 6, 0, 10),
+                    child: Text(
+                      "Contributeurs de l'évenènement/Intervention :",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                  ),
+
+                  MultiSelectDropDown(
+                    controller: _controllerContrib,
+
+                    onOptionSelected: (List<ValueItem> selectedOptions) {
+
+                    },
+                    options: DbTools.List_ValueItem_User,
+                    selectionType: SelectionType.multi,
+                    chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                    dropdownHeight: 300,
+                    optionTextStyle: const TextStyle(fontSize: 16),
+                    selectedOptionIcon: const Icon(Icons.check_circle),
+                  ),
+
+
+
                   Row(
                     children: [
                       Container(
                         padding: EdgeInsets.fromLTRB(10, 20, 20, 20),
-                        child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.people, Intervenants, tooltip: "Intervenants"),
+                        child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.people, Intervenants, tooltip: "Équipe d'intevention (Techniciens, TC, ...)"),
                       ),
                       Container(
                         width: 290,
@@ -800,7 +988,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
                 rowHeight: 28,
                 allowColumnsResizing: true,
                 columnResizeMode: ColumnResizeMode.onResize,
-                selectionMode: SelectionMode.multiple,
+                selectionMode: SelectionMode.single,
                 controller: getDataGridController(),
                 onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                   Resize(args);
@@ -913,7 +1101,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
           Icon(
             Icons.search,
             color: Colors.blue,
-            size: 20.0,
+            size: 30.0,
           ),
           Container(
             width: 10,
@@ -921,11 +1109,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
           Expanded(
             child: TextFormField(
               controller: Search_TextController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              ),
+              decoration: gColors.wRechInputDecoration,
               onChanged: (String? value) async {
                 print("_buildFieldTextSearch search ${Search_TextController.text}");
                 await Filtre();

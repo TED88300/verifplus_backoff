@@ -12,9 +12,9 @@ import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Dialog.dart';
 
-DataGridController dataGridController = DataGridController();
-
+DataGridController dataGridController_CR = DataGridController();
 int Subindex = 0;
+
 //*********************************************************************
 //*********************************************************************
 //*********************************************************************
@@ -22,20 +22,21 @@ int Subindex = 0;
 class Parc_EntInfoDataGridSource extends DataGridSource {
   Parc_EntInfoDataGridSource() {
     buildDataGridRows();
+    print (" AAAAAA buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+
   }
 
-  List<DataGridRow> dataGridRows = <DataGridRow>[];
+
   @override
-  List<DataGridRow> get rows => dataGridRows;
+  List<DataGridRow> get rows => FiltreTools.dataGridRows_CR_Filtre;
 
   void buildDataGridRows() {
-    dataGridRows = DbTools.ListParc_Ent.map<DataGridRow>((Parc_Ent parc_Ent) {
+    FiltreTools.dataGridRows_CR = DbTools.ListParc_Ent.map<DataGridRow>((Parc_Ent parc_Ent) {
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'id', value: parc_Ent.ParcsId),
         DataGridCell<int>(columnName: 'ordre', value: parc_Ent.Parcs_order),
       ];
 
-      print("parc_Ent.Parcs_Cols ${parc_Ent.Parcs_Cols}");
       for (int i = 0; i < DbTools.lColParams.length; i++) {
         String ColParam = DbTools.lColParams[i];
         String ColParamsdata = parc_Ent.Parcs_Cols![i]!;
@@ -50,18 +51,22 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 
       return DataGridRow(cells: DataGridCells);
     }).toList();
+
+
+
   }
 
   @override
   Future<void> handleRefresh() async {
     buildDataGridRows();
+    print (" handleRefresh buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
     notifyListeners();
   }
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    Color textColor = dataGridController_CR.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
     Color backgroundColor = Colors.transparent;
 
     List<Widget> DataGridCells = [
@@ -112,12 +117,10 @@ class Intervention_CR extends StatefulWidget {
 class _Intervention_CRState extends State<Intervention_CR> {
   String DescAffnewParam = "";
 
-  List<double> dColumnWidth = [
+  List<double> dColumnWidth_CR = [
     80,
     60,
   ];
-
-
 
   Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
 
@@ -136,10 +139,10 @@ class _Intervention_CRState extends State<Intervention_CR> {
   DataGridRow memDataGridRow = DataGridRow(cells: []);
 
 
-  List<GridColumn> getColumns() {
+  List<GridColumn> getColumns_CR() {
     List<GridColumn> wGridColumn = [
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth_CR[0], dColumnWidth_CR[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth_CR[1], dColumnWidth_CR[1], Alignment.centerLeft),
 //      FiltreTools.SfGridColumn('desc'      ,           'Organes'     , double.nan, dColumnWidth[2], Alignment.centerLeft, wColumnWidthMode :ColumnWidthMode.lastColumnFill),
     ];
 
@@ -147,15 +150,15 @@ class _Intervention_CRState extends State<Intervention_CR> {
     for (int i = 0; i < DbTools.lColParams.length; i++) {
       String ColParam = DbTools.lColParams[i];
       if (ColParam == "ACTION")
-        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth[i+2], dColumnWidth[1], Alignment.center));
+        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth_CR[i+2], dColumnWidth_CR[1], Alignment.center));
       else
-        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth[i+2], dColumnWidth[1], Alignment.centerLeft));
+        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth_CR[i+2], dColumnWidth_CR[1], Alignment.centerLeft));
     }
 
     return wGridColumn;
   }
 
-  List<GridTableSummaryRow> getGridTableSummaryRow() {
+  List<GridTableSummaryRow> getGridTableSummaryRow_CR() {
     return [
       GridTableSummaryRow(
           color: gColors.secondary,
@@ -169,11 +172,11 @@ class _Intervention_CRState extends State<Intervention_CR> {
     ];
   }
 
-  void Resize(ColumnResizeUpdateDetails args) {
+  void Resize_CR(ColumnResizeUpdateDetails args) {
     setState(() {
       if (args.column.columnName == 'id')
-        dColumnWidth[0] = args.width;
-      else if (args.column.columnName == 'ordre') dColumnWidth[1] = args.width;
+        dColumnWidth_CR[0] = args.width;
+      else if (args.column.columnName == 'ordre') dColumnWidth_CR[1] = args.width;
       else
         {
           for (int i = 0; i < DbTools.lColParams.length; i++) {
@@ -181,7 +184,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
             if (args.column.columnName == ColParam)
               {
                 print("🁢🁢🁢🁢🁢🁢🁢  Resize ${args.width}");
-                dColumnWidth[i+2] = args.width;
+                dColumnWidth_CR[i+2] = args.width;
               }
           }
         }
@@ -243,8 +246,6 @@ class _Intervention_CRState extends State<Intervention_CR> {
         if (element.Param_Saisie_ID.compareTo("FREQ") == 0) {
           DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_FREQ_Label!, element.Param_Saisie_ID)}");
         } else if (element.Param_Saisie_ID.compareTo("ANN") == 0) {
-          print(">>>>>>>>> ANN ${elementEnt.Parcs_ANN_Id!} ---> ${elementEnt.Parcs_ANN_Label!}");
-
           for (int i = 0; i < DbTools.lColParams.length; i++) {
             String lColParam = DbTools.lColParams[i];
             if (lColParam == element.Param_Saisie_ID) {
@@ -340,8 +341,6 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
       }
 
-
-
       if (DescAff.compareTo(DescAffnewParam) == 0) DescAff = "";
       String wTmp = DescAff;
       wTmp = wTmp.replaceAll("---", "");
@@ -392,7 +391,8 @@ class _Intervention_CRState extends State<Intervention_CR> {
       }
     }
 
-    print("🁢🁢🁢🁢🁢🁢🁢  parc_EntInfoDataGridSource.dataGridRows.length ${parc_EntInfoDataGridSource.dataGridRows.length}");
+
+    print (" Reload buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
 
     Filtre();
   }
@@ -400,12 +400,43 @@ class _Intervention_CRState extends State<Intervention_CR> {
   Future Filtre() async {
     DbTools.ListContactsearchresult.clear();
     DbTools.ListContactsearchresult.addAll(DbTools.ListContact);
-
     parc_EntInfoDataGridSource.handleRefresh();
+
+    print (" FILTRE dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+
+
+    FiltreTools.dataGridRows_CR_Filtre.clear();
+    if (Search_TextController.text.isEmpty)
+      FiltreTools.dataGridRows_CR_Filtre.addAll(FiltreTools.dataGridRows_CR);
+    else
+    {
+      print (" dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+      for (int i = 0; i < FiltreTools.dataGridRows_CR.length; i++) {
+        bool isTrv = false;
+        DataGridRow dataGridRows_CR = FiltreTools.dataGridRows_CR[i];
+        for (int j = 0; j < dataGridRows_CR.getCells().length; j++) {
+          DataGridCell dataGridCell = dataGridRows_CR.getCells()[j];
+
+          print (" dataGridCell ${dataGridCell.value}");
+
+          if (dataGridCell.value.toString().toLowerCase().contains(Search_TextController.text.toLowerCase()))
+          {
+            isTrv = true;
+          }
+        }
+        if (isTrv)
+        {
+          print (" ADD");
+          FiltreTools.dataGridRows_CR_Filtre.add(dataGridRows_CR);
+        }
+      }
+
+    }
+
     parc_EntInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'ordre', sortDirection: DataGridSortDirection.ascending));
     parc_EntInfoDataGridSource.sort();
-    dataGridController.selectedRows.clear();
-    dataGridController.selectedRows.add(memDataGridRow);
+    dataGridController_CR.selectedRows.clear();
+    dataGridController_CR.selectedRows.add(memDataGridRow);
 
     setState(() {});
   }
@@ -420,14 +451,11 @@ class _Intervention_CRState extends State<Intervention_CR> {
     for (int i = 0; i < DbTools.lColParamswidth.length; i++) {
       String ColParamswidth = DbTools.lColParamswidth[i];
       double iColParamswidth = double.tryParse(ColParamswidth) ?? 0;
-      dColumnWidth.add(iColParamswidth);
+      dColumnWidth_CR.add(iColParamswidth);
     }
-
-
 
     DbTools.subTitleArray.clear();
     ListParam_ParamTypeOg.clear();
-
     int i = 0;
     DbTools.ListParam_ParamAll.forEach((element) {
       if (element.Param_Param_Type.compareTo("Type_Organe") == 0) {
@@ -453,9 +481,11 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
   @override
   Widget build(BuildContext context) {
+    print (" build dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+
     return Container(
       margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+//      padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(0.0),
@@ -463,101 +493,155 @@ class _Intervention_CRState extends State<Intervention_CR> {
           color: Colors.black26,
         ),
       ),
-      child: Column(children: [
-        ToolsBar(context),
-        SizedBox(
-            height: MediaQuery.of(context).size.height - 422,
-            child: SfDataGridTheme(
-                data: SfDataGridThemeData(
-                  headerColor: gColors.secondary,
-                  selectionColor: gColors.backgroundColor,
-                ),
-                child: SfDataGrid(
-                  //*********************************
-
-                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    if (addedRows.length > 0 ) {
-                      Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
-                      DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
-                      if (wColSel == 0)
-                      {
-                        memDataGridRow = addedRows.last;
-
-                        await showDialog(
-                            context: context,
-                            builder: (BuildContext context) => new Organe_Dialog());
-                        Reload();
-                      }
-                    }
-                    else if (removedRows.length > 0 )
-                    {
-                      Selindex = parc_EntInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
-                      DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
-                      if (wColSel == 0)
-                      {
-                        memDataGridRow = removedRows.last;
-                        await showDialog(
-                            context: context,
-                            builder: (BuildContext context) => new Organe_Dialog());
-                        Reload();
-                      }
-                    }
-                  },
-
-                  onFilterChanged: (DataGridFilterChangeDetails details) {
-                    countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
-                    print("onFilterChanged  countfilterConditions ${countfilterConditions}");
-                    setState(() {});
-                  },
-                  onCellTap: (DataGridCellTapDetails details) {
-                    wColSel = details.rowColumnIndex.columnIndex;
-                  },
-
-                  //*********************************
-                  source: parc_EntInfoDataGridSource,
-
-                  allowSorting: true,
-                  allowFiltering: true,
-                  columns: getColumns(),
-                  tableSummaryRows: getGridTableSummaryRow(),
-
-                  headerRowHeight: 35,
-                  rowHeight: 28,
-                  allowColumnsResizing: true,
-                  columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.multiple,
-                  controller: dataGridController,
-                  onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
-                    Resize(args);
-                    return true;
-                  },
-                  gridLinesVisibility: GridLinesVisibility.both,
-                  headerGridLinesVisibility: GridLinesVisibility.both,
-                  columnWidthMode: ColumnWidthMode.fill,
-                ))),
-
-
-
-        Container(
-          height: 10,
-        ),
-      ]),
+      child: ListOrganes( context),
     );
   }
 
+  Widget ListOrganes(BuildContext context) {
+    return Column(children: [
+      ToolsBar(context),
+      SizedBox(
+          height: MediaQuery.of(context).size.height - 590, // HAUTEUR LISTE
+          child: SfDataGridTheme(
+              data: SfDataGridThemeData(
+                headerColor: gColors.secondary,
+                selectionColor: gColors.backgroundColor,
+              ),
+              child: SfDataGrid(
+                //*********************************
+
+                onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                  if (addedRows.length > 0 ) {
+                    Selindex = FiltreTools.dataGridRows_CR.indexOf(addedRows.last);
+                    DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
+                    if (wColSel == 0)
+                    {
+                      memDataGridRow = addedRows.last;
+
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) => new Organe_Dialog());
+                      Reload();
+                    }
+                  }
+                  else if (removedRows.length > 0 )
+                  {
+                    Selindex = FiltreTools.dataGridRows_CR.indexOf(removedRows.last);
+                    DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
+                    if (wColSel == 0)
+                    {
+                      memDataGridRow = removedRows.last;
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) => new Organe_Dialog());
+                      Reload();
+                    }
+                  }
+                },
+
+                onFilterChanged: (DataGridFilterChangeDetails details) {
+                  countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
+                  print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                  setState(() {});
+                },
+                onCellTap: (DataGridCellTapDetails details) {
+                  wColSel = details.rowColumnIndex.columnIndex;
+                },
+
+                //*********************************
+                source: parc_EntInfoDataGridSource,
+
+                allowSorting: true,
+                allowFiltering: true,
+                columns: getColumns_CR(),
+                tableSummaryRows: getGridTableSummaryRow_CR(),
+
+                headerRowHeight: 35,
+                rowHeight: 28,
+                allowColumnsResizing: true,
+                columnResizeMode: ColumnResizeMode.onResize,
+                selectionMode: SelectionMode.single,
+                controller: dataGridController_CR,
+                onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                  Resize_CR(args);
+                  return true;
+                },
+                gridLinesVisibility: GridLinesVisibility.both,
+                headerGridLinesVisibility: GridLinesVisibility.both,
+                columnWidthMode: ColumnWidthMode.fill,
+              ))),
+
+
+
+      Container(
+        height: 10,
+      ),
+    ]);
+
+  }
+
+
   Widget ToolsBar(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
-              ],
-            ),
-          ],
-        ));
+    return
+
+
+      Container(
+          color: Colors.white,
+          padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+
+                  Container(
+                    width: 20,
+                  ),
+                  Icon(
+                    Icons.search,
+                    color: Colors.blue,
+                    size: 30.0,
+                  ),
+                  Container(
+                    width: 10,
+                  ),
+                  Container(
+                    width :MediaQuery.of(context).size.width - 800,
+
+                    child: TextFormField(
+                      controller: Search_TextController,
+                      decoration: gColors.wRechInputDecoration,
+                      onChanged: (String? value) async {
+                        await Filtre();
+                      },
+                      style: gColors.bodySaisie_B_B,
+                    ),
+                  ),
+                  Container(
+                    width: 10,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.cancel,
+                      size: 20.0,
+                    ),
+                    onPressed: () async {
+                      Search_TextController.clear();
+                      await Filtre();
+                    },
+                  ),
+                  Container(
+                    width: 20,
+                  ),
+
+
+                ],
+
+
+
+              ),
+            ],
+          ));
   }
 
   void ToolsBarSupprFilter() async {

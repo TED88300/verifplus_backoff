@@ -100,16 +100,20 @@ class Client {
   factory Client.fromJson(Map<String, dynamic> json) {
     print("json $json");
 
+    if (json['Client_Civilite'] == null) json['Client_Civilite'] ="";
     if (json['Adresse_Adr1'] == null) json['Adresse_Adr1'] ="";
     if (json['Adresse_CP'] == null) json['Adresse_CP'] ="";
     if (json['Adresse_Ville'] == null) json['Adresse_Ville'] ="";
     if (json['Adresse_Pays'] == null) json['Adresse_Pays'] ="";
-
-    if (json['Client_Organes'] == null) json['Client_Organes'] ="";
+    if (json['Client_Organes'] == null)         json['Client_Organes'] ="";
     if (json['Client_Contrat'] == null) json['Client_Contrat'] ="0";
     if (json['Client_PersPhys'] == null) json['Client_PersPhys'] ="0";
     if (json['Client_OK_DataPerso'] == null) json['Client_OK_DataPerso'] ="1";
     if (json['Client_CL_Pr'] == null) json['Client_CL_Pr'] ="0";
+    if (json['Livr'] == null) json['Livr'] ="";
+
+
+    if (json['Users_Nom'] == null) json['Users_Nom'] ="";
 
 
     Client wTmp = Client(

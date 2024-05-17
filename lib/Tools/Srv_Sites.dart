@@ -14,11 +14,12 @@ class Site {
   String Site_Acces = "";
   String? Site_RT = "";
   String? Site_APSAD = "";
+  bool? Site_DecConf = false;
   String Site_Rem = "";
   int Site_ResourceId = -1;
 
   static SiteInit() {
-    return Site(0, 0, "", "", "", "", "", "", "", "", "", "", "", "", "","", 0);
+    return Site(0, 0, "", "", "", "", "", "", "", "", "", "", "", "", "",false ,"", 0);
   }
 
   Site(
@@ -37,6 +38,7 @@ class Site {
     String Site_Acces,
       String Site_RT,
       String Site_APSAD,
+      bool Site_DecConf,
     String Site_Rem,
     int Site_ResourceId,
 
@@ -56,12 +58,18 @@ class Site {
     this.Site_Acces = Site_Acces;
     this.Site_RT = Site_RT;
     this.Site_APSAD = Site_APSAD;
+    this.Site_DecConf = Site_DecConf;
     this.Site_Rem = Site_Rem;
     this.Site_ResourceId = Site_ResourceId;
   }
 
   factory Site.fromJson(Map<String, dynamic> json) {
 //    print("json $json");
+
+
+    if (json['Site_DecConf'] == null) json['Site_DecConf'] ="0";
+
+
     Site wUser = Site(int.parse(json['SiteId']),
         int.parse(json['Site_GroupeId']),
         json['Site_Code'],
@@ -77,6 +85,7 @@ class Site {
         json['Site_Acces'],
         json['Site_RT'],
         json['Site_APSAD'],
+        int.parse(json['Site_DecConf']) == 1,
         json['Site_Rem'],
         int.parse(json['Site_ResourceId']));
     return wUser;
@@ -98,6 +107,7 @@ class Site {
         '$Site_Acces     '
         '$Site_RT     '
         '$Site_APSAD     '
+        '$Site_DecConf     '
         '$Site_ResourceId     '
         '$Site_Rem      ';
   }

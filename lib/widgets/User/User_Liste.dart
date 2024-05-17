@@ -326,7 +326,7 @@ class User_ListeState extends State<User_Liste> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.multiple,
+                  selectionMode: SelectionMode.single,
                   navigationMode: GridNavigationMode.row,
                   controller: dataGridController,
                   onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {

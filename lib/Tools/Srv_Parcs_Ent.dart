@@ -248,11 +248,9 @@ Parcs_Date_Desc
       'Livr': Livr,
       'Devis': Devis,
       'Action': Action,
-
-
       'Parcs_Date_Desc':     "",
       'Parcs_Install':     true,
-     'Parcs_MaintCorrect':     true,
+      'Parcs_MaintCorrect':     true,
       'Parcs_MaintPrev':     true,
 
     };
@@ -260,6 +258,9 @@ Parcs_Date_Desc
 
   factory Parc_Ent.fromJson(Map<String, dynamic> json) {
 //    print("json $json");
+
+    if (json['Parcs_Intervention_Timer'] == null) json['Parcs_Intervention_Timer'] ="0";
+
 
     Parc_Ent wTmp = Parc_Ent(
         int.parse(json['ParcsId']),
@@ -284,8 +285,7 @@ Parcs_Date_Desc
         json['Parcs_SERIE_Label'],
         json['Parcs_Audit_Note'],
         json['Parcs_Verif_Note'],
-        0,
-
+        int.parse(json['Parcs_Intervention_Timer']),
         json['Parcs_UUID'],
         json['Parcs_UUID_Parent'],
         json['Parcs_CodeArticle'],

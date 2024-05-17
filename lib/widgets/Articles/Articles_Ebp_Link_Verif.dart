@@ -224,7 +224,7 @@ class Articles_Ebp_Link_VerifState extends State<Articles_Ebp_Link_Verif> {
             Icon(
               Icons.search,
               color: Colors.blue,
-              size: 40.0,
+              size: 30.0,
             ),
             Container(
               width: 10,
@@ -237,20 +237,23 @@ class Articles_Ebp_Link_VerifState extends State<Articles_Ebp_Link_Verif> {
                     onChanged: (String? value) async {
                       await Filtre();
                     },
-                    decoration: InputDecoration(
-                        isDense: true,
-                        border: InputBorder.none,
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.cancel),
-                          onPressed: () async {
-                            Search_TextController.clear();
-                            await Filtre();
-                          },
-                        )),
+                    decoration: gColors.wRechInputDecoration,
                     style: gColors.bodySaisie_B_B,
                   ),
                 )),
             Container(
+              width: 10,
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.cancel,
+                size: 20.0,
+              ),
+              onPressed: () async {
+                Search_TextController.clear();
+                await Filtre();
+              },
+            ),Container(
               width: 10,
             ),
             DropdownFiltreType(),

@@ -364,7 +364,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 Icon(
                   Icons.search,
                   color: Colors.blue,
-                  size: 20.0,
+                  size: 30.0,
                 ),
                 Container(
                   width: 10,
@@ -372,11 +372,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 Expanded(
                   child: TextFormField(
                     controller: Search_TextController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    ),
+                    decoration: gColors.wRechInputDecoration,
                     onChanged: (String? value) async {
                       print("_buildFieldTextSearch search ${Search_TextController.text}");
                       await Filtre();
@@ -762,7 +758,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.multiple,
+                  selectionMode: SelectionMode.single,
                   navigationMode: GridNavigationMode.row,
 
                   controller: dataGridController,

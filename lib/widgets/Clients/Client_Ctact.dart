@@ -233,20 +233,24 @@ class _Client_CtactState extends State<Client_Ctact> {
                       print("_buildFieldTextSearch search ${Search_TextController.text}");
                       await Filtre();
                     },
-                    decoration: InputDecoration(
-                        isDense: true,
-                        border: InputBorder.none,
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.cancel),
-                          onPressed: () async {
-                            Search_TextController.clear();
-                            await Filtre();
-                          },
-                        )),
+                    decoration:
+                    gColors.wRechInputDecoration,
                     style: gColors.bodySaisie_B_B,
                   ),
                 )),
                 Container(
+                  width: 10,
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.cancel,
+                    size: 20.0,
+                  ),
+                  onPressed: () async {
+                    Search_TextController.clear();
+                    await Filtre();
+                  },
+                ),                Container(
                   width: 10,
                 ),
                 DropdownFiltreFam(),

@@ -7,12 +7,10 @@ import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Audit.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Equip.dart';
-import 'package:verifplus_backoff/widgets/Organes/Organe_Mixte.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Pieces.dart';
-import 'package:verifplus_backoff/widgets/Organes/Organe_Serv.dart';
-import 'package:verifplus_backoff/widgets/Organes/Organe_Synth.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Verif.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
+import 'package:verifplus_backoff/widgetTools/gObj.dart';
 
 class Organe_Dialog extends StatefulWidget {
   @override
@@ -37,23 +35,15 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
 
     await DbTools.getParam_Saisie_Base("Audit");
     DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
-    print(" initLib 0");
     DbTools.ListParam_Audit_Base.clear();
     DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    print(" initLib A");
     await DbTools.getParam_Saisie_Base("Verif");
     DbTools.ListParam_Verif_Base.sort(DbTools.affSort2Comparison);
     DbTools.ListParam_Verif_Base.clear();
     DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    print(" initLib B");
     await DbTools.getParam_Saisie_Base("Desc");
     DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
     DescAff = "";
-
-    print(" initLib C");
-
     int countCol = 0;
 
     await DbTools.getParam_Saisie("Ext", "Desc");
@@ -65,7 +55,7 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     listparamSaisieTmp.addAll(DbTools.ListParam_Saisie_Base);
     Parc_Ent elementEnt = DbTools.gParc_Ent;
 
-    print(" elementEnt ${elementEnt.toString()}");
+    print(" elementEnt Parcs_CodeArticle ${elementEnt.Parcs_CodeArticle} ${elementEnt.toString()}");
 
     DescAff = DescAffnewParam;
     List<String?>? parcsCols = [];
@@ -121,9 +111,11 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     wTmp = wTmp.replaceAll("/", "");
     wTmp = wTmp.replaceAll(" ", "");
     if (wTmp.length == 0) DescAff = "";
-    elementEnt.Parcs_Date_Desc = DescAff;
 
+    DescAff = "N°${elementEnt.Parcs_order} ${DescAff}";
+    elementEnt.Parcs_Date_Desc = DescAff;
     print("🁢🁢🁢🁢🁢🁢🁢  DescAff ${DescAff}");
+    setState(() {});
 
     DbTools.listparamSaisieEquip.clear();
     for (int i = 0; i < listparamSaisieTmp.length; i++) {
@@ -146,14 +138,14 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
 
     for (int i = 0; i < DbTools.listparamSaisieEquip.length; i++) {
       Param_Saisie element = DbTools.listparamSaisieEquip[i];
-      print(" listparamSaisieTmp ${element.DescSimpl()}");
+//      print(" listparamSaisieTmp ${element.DescSimpl()}");
     }
 
 
 
     for (int i = 0; i < DbTools.ListParam_Audit_Base.length; i++) {
       Param_Saisie element = DbTools.ListParam_Audit_Base[i];
-      print(" Param_Saisie AUDIT ${element.Desc()}");
+ //     print(" Param_Saisie AUDIT ${element.Desc()}");
 
       DbTools.ListParc_Desc.forEach((element2) {
         if (elementEnt.ParcsId == element2.ParcsDesc_ParcsId && element.Param_Saisie_ID == element2.ParcsDesc_Type) {
@@ -174,7 +166,7 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
 
 
     await DbTools.getParc_Art(elementEnt.ParcsId!);
-    print(" getParc_Art ${DbTools.ListParc_Art.length}");
+//    print(" getParc_Art ${DbTools.ListParc_Art.length}");
 
     DbTools.ListParc_Art_P.clear();
     for (int i = 0; i < DbTools.ListParc_Art.length; i++) {
@@ -210,13 +202,23 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
   }
 
   void initState() {
+
+
+
     DbTools.getParam_ParamMemDet("Param_Div", "Ext_Desc");
     if (DbTools.ListParam_Param.length > 0) DescAffnewParam = DbTools.ListParam_Param[0].Param_Param_Text;
 
     initLib();
     super.initState();
-    Title = "Intervetion / Organe";
+    Title = "Intervention / Organe";
   }
+
+
+  void onMaj() async {
+    initLib();
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -280,13 +282,13 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
   int sel = 0;
   Widget taBarContainer() {
     widgetChildren = [
-      Organe_EquipDialog(),
-      Organe_AuditDialog(),
-      Organe_VerifDialog(),
-      Organe_PiecesDialog(),
-      Organe_MixteDialog(),
-      Organe_ServDialog(),
-      Organe_SynthDialog(),
+      Organe_EquipDialog(onMaj: onMaj),
+      Organe_AuditDialog(onMaj: onMaj),
+      Organe_VerifDialog(onMaj: onMaj),
+      Organe_PiecesDialog(wListParc_Art: DbTools.ListParc_Art_P),
+      Organe_PiecesDialog(wListParc_Art: DbTools.ListParc_Art_M),
+      Organe_PiecesDialog(wListParc_Art: DbTools.ListParc_Art_S),
+      Organe_PiecesDialog(wListParc_Art: DbTools.ListParc_Art),
     ];
 
     return TabContainer(
@@ -320,7 +322,7 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
               ContentDetailCadre(context),
               Container(
                 width: screenWidth,
-                height: screenHeight - 331,
+                height: screenHeight - 350,//330
 //                color: Colors.red,
                 child: taBarContainer(),
               ),
@@ -409,7 +411,7 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
         policy: OrderedTraversalPolicy(),
         child: Container(
             width: screenWidth - 22,
-            padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
+            padding: const EdgeInsets.fromLTRB(10, 40, 10, 0),
             child: Column(
               children: [
                 Row(
@@ -417,7 +419,7 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 162,
+                      height: 100,
                       width: 500,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -502,17 +504,34 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
                   ],
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: gColors.white,
+                    border: Border.all(color: gColors.primary, width: 1),
+                    borderRadius: BorderRadius.circular(10),
+                    shape: BoxShape.rectangle,
+                  ),
+                     child:gObj.buildImage(DbTools.gParc_Ent.Parcs_CodeArticle!,120),
+                    ),
+
+                    Container(width: 10,),
+
                     Container(
-                      width: screenWidth - 42,
-                      padding: EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
-                      color: gColors.LinearGradient1,
+                      width: screenWidth - 180,
+                      padding: EdgeInsets.only(top: 5, bottom: 5, left: 10, right: 5),
+                      decoration: BoxDecoration(
+                        color: gColors.primary,
+                        border: Border.all(color: gColors.primary, width: 1),
+                        borderRadius: BorderRadius.circular(5),
+                        shape: BoxShape.rectangle,
+                      ),
                       child: Text(
                         '${DescAff}',
                         style: gColors.bodyTitle1_B_Wr,
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.left,
                       ),
                     ),
                   ],

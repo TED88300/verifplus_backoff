@@ -112,10 +112,8 @@ class _Client_SitState extends State<Client_Sit> {
 
   String selectedUserInter = "";
   String selectedUserInterID = "";
-
   List<String> ListParam_ParamDepot = [];
   String selectedValueDepot = "";
-
   Uint8List pic = Uint8List.fromList([0]);
   late Image wImage;
   bool imageisload = false;
@@ -127,11 +125,8 @@ class _Client_SitState extends State<Client_Sit> {
 
   String Grp = "Tous";
   int GrpID = 0;
-
   final List<XFile> _list = [];
-
   bool _dragging = false;
-
   Offset? offset;
 
   SiteDataGridSource siteDataGridSource = SiteDataGridSource();
@@ -142,6 +137,8 @@ class _Client_SitState extends State<Client_Sit> {
   int countfilterConditions = -1;
 
   DataGridRow memDataGridRow = DataGridRow(cells: []);
+
+  bool isDC = false;
 
 
   Future Reload() async {
@@ -231,6 +228,11 @@ class _Client_SitState extends State<Client_Sit> {
   Future AlimSaisie() async {
     print("AlimSaisie ${DbTools.gSite.Desc()}");
 
+
+
+
+
+
     textController_Adresse_Geo.text = "${DbTools.gSite.Site_Adr1} ${DbTools.gSite.Site_CP} ${DbTools.gSite.Site_Ville}";
 
     textController_Site_Code.text = DbTools.gSite.Site_Code;
@@ -245,6 +247,8 @@ class _Client_SitState extends State<Client_Sit> {
     textController_Site_Pays.text = DbTools.gSite.Site_Pays;
     textController_Site_Acces.text = DbTools.gSite.Site_Acces;
     textController_Site_Rem.text = DbTools.gSite.Site_Rem;
+
+    isDC = DbTools.gSite.Site_DecConf!;
 
     for (int i = 0; i < DbTools.ListGroupe.length; i++) {
       var Elt = DbTools.ListGroupe[i];
@@ -294,6 +298,8 @@ class _Client_SitState extends State<Client_Sit> {
     imageisload = true;
 
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
+
+
 
     setState(() {});
   }
@@ -346,35 +352,35 @@ class _Client_SitState extends State<Client_Sit> {
             children: [
               Container(
                 width: 150,
-                padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                 child: GroupeGridWidget(),
               ),
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                  padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
                   child: SiteGridWidget(),
                 ),
               ),
               Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
                   SelSite == 0
                       ? Container()
                       : Container(
-                          padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                           child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter site"),
                         ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Copy", ToolsBarCpy, tooltip: "Copier adresse Livraison"),
                   ),
                   DbTools.gSite.Site_Nom.isEmpty
                       ? Container()
                       : Container(
-                          padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                           child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.orange, "ico_Contact", ToolsBarCtact, tooltip: "Contacts"),
                         ),
                   (DbTools.gSite.Site_Nom != "???" || DbTools.ListZone.length > 0)
@@ -423,7 +429,7 @@ class _Client_SitState extends State<Client_Sit> {
   Widget ToolsBarSearch(BuildContext context) {
     return Container(
         color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+        padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
         child: Column(
           children: [
             Row(
@@ -435,7 +441,7 @@ class _Client_SitState extends State<Client_Sit> {
                 Icon(
                   Icons.search,
                   color: Colors.blue,
-                  size: 20.0,
+                  size: 30.0,
                 ),
                 Container(
                   width: 10,
@@ -443,11 +449,8 @@ class _Client_SitState extends State<Client_Sit> {
                 Expanded(
                   child: TextFormField(
                     controller: Search_TextController,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    ),
+                    decoration: gColors.wRechInputDecoration,
+
                     onChanged: (String? value) async {
                       print("_buildFieldTextSearch search ${Search_TextController.text}");
                       await Filtre();
@@ -469,14 +472,13 @@ class _Client_SitState extends State<Client_Sit> {
                   },
                 ),
                 Container(
-                  width: 20,
+                  width: 10,
                 ),
+
               ],
             ),
-            Container(
-              height: 1,
-              color: gColors.primary,
-            )
+
+
           ],
         ));
   }
@@ -573,6 +575,9 @@ class _Client_SitState extends State<Client_Sit> {
 //    DbTools.gSite.Site_GroupeId = GrpID;
     DbTools.gSite.Site_ResourceId = int.parse(selectedUserInterID);
     DbTools.gSite.Site_Depot = selectedValueDepot;
+
+    DbTools.gSite.Site_DecConf = isDC;
+
 
     print("ToolsBarSave ${DbTools.gSite.SiteId} $GrpID $Grp");
 
@@ -733,7 +738,7 @@ class _Client_SitState extends State<Client_Sit> {
             color: Colors.white,
             child: Text(
               'Site',
-              style: TextStyle(color: Colors.black, fontSize: 12),
+              style: gColors.bodySaisie_B_G,
             ),
           ),
         ),
@@ -769,7 +774,7 @@ class _Client_SitState extends State<Client_Sit> {
             color: Colors.white,
             child: Text(
               'Photo',
-              style: TextStyle(color: Colors.black, fontSize: 12),
+              style: gColors.bodySaisie_B_G,
             ),
           ),
         ),
@@ -801,11 +806,11 @@ class _Client_SitState extends State<Client_Sit> {
           left: 50,
           top: 12,
           child: Container(
-            padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+            padding: EdgeInsets.only(left: 10, right: 10),
             color: Colors.white,
             child: Text(
               'Règlementation',
-              style: TextStyle(color: Colors.black, fontSize: 12),
+              style: gColors.bodySaisie_B_G,
             ),
           ),
         ),
@@ -870,7 +875,17 @@ class _Client_SitState extends State<Client_Sit> {
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
             padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-            child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Regl", Tools, tooltip: "Réglementation"),
+            child:
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Regl", Tools, tooltip: "Réglementation"),
+              Container(width: 10,),
+              gColors.CheckBoxField(180, 8, "Site bénéficiant d'une déclaration de conformité", isDC, (sts) => setState(() => isDC = sts!)),
+            ],),
+
           ),
           Container(
             width: 280,
@@ -1012,7 +1027,7 @@ class _Client_SitState extends State<Client_Sit> {
                   ),
                   Row(
                     children: [
-                      gColors.DropdownButtonTypeInter(80, 8, "Resp Com", selectedUserInter, (sts) {
+                      gColors.DropdownButtonTypeInter(100, 8, "Collaborateur", selectedUserInter, (sts) {
                         setState(() {
                           selectedUserInter = sts!;
                           selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
@@ -1234,7 +1249,7 @@ class _Client_SitState extends State<Client_Sit> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.multiple,
+                  selectionMode: SelectionMode.single,
                   navigationMode: GridNavigationMode.row,
 
                   controller: dataGridController,

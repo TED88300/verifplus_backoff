@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
@@ -9,16 +11,14 @@ import 'package:verifplus_backoff/Tools/shared_Cookies.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/2-login.dart';
 import 'package:verifplus_backoff/widgets/4-Menu.dart';
-import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
-
+import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
   SplashScreenState createState() => new SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   var _visible = true;
   var IsRememberLogin = false;
   var milliseconds = 2000;
@@ -29,9 +29,8 @@ class SplashScreenState extends State<SplashScreen>
   startTime() async {
     print(">>>>>>>>>>>>>>>>>> inseeToken");
     try {
-      await Api_Gouv.inseeToken() ;
-    } catch (e) {
-    }
+      await Api_Gouv.inseeToken();
+    } catch (e) {}
 
     print("<<<<<<<<<<<<<<<<<< inseeToken");
 //    await DbTools.getClientAll();
@@ -41,11 +40,22 @@ class SplashScreenState extends State<SplashScreen>
     return new Timer(_duration, navigationPage);
   }
 
-  void navigationPage() async{
-    print("splash navigationPage IsRememberLogin  $IsRememberLogin");
+  void navigationPage() async {
+
+    FiltreTools.selDateTools(0);
+    FiltreTools.selDateTools(1);
+    FiltreTools.selDateTools(2);
+    FiltreTools.selDateTools(3);
+    FiltreTools.selDateTools(4);
+    FiltreTools.selDateTools(5);
+    FiltreTools.selDateTools(6);
+    FiltreTools.selDateTools(7);
+    FiltreTools.selDateTools(8);
+    FiltreTools.selDateTools(9);
+    FiltreTools.selDateTools(10);
+
     //Excel.CrtExcelPat("TK_Debarras_${DbTools.gInventaire.nom}.xlsx");
     await DbTools.getParam_SaisieAll();
-
 
     DbTools.ListParam_Param_Abrev.clear();
     DbTools.ListParam_ParamAll.forEach((element) {
@@ -61,36 +71,38 @@ class SplashScreenState extends State<SplashScreen>
       }
     });
 
+    DbTools.ListParam_Param_Status_Interv.clear();
+    DbTools.ListParam_ParamAll.forEach((element) {
+      if (element.Param_Param_Type.compareTo("Status_Interv") == 0) {
+        DbTools.ListParam_Param_Status_Interv.add(element);
+      }
+    });
+
+
+
     DbTools.ListParam_ParamCiv.clear();
     DbTools.ListParam_ParamCiv.add("");
     for (int i = 0; i < DbTools.ListParam_Param_Civ.length; i++) {
       Param_Param wParam_Param = DbTools.ListParam_Param_Civ[i];
-      if (wParam_Param.Param_Param_Text == "C")
-       DbTools.ListParam_ParamCiv.add(wParam_Param.Param_Param_ID);
+      if (wParam_Param.Param_Param_Text == "C") DbTools.ListParam_ParamCiv.add(wParam_Param.Param_Param_ID);
     }
 
     DbTools.ListParam_ParamForme.clear();
     DbTools.ListParam_ParamForme.add("");
     for (int i = 0; i < DbTools.ListParam_Param_Civ.length; i++) {
       Param_Param wParam_Param = DbTools.ListParam_Param_Civ[i];
-      if (wParam_Param.Param_Param_Text != "C")
-        DbTools.ListParam_ParamForme.add(wParam_Param.Param_Param_ID);
+      if (wParam_Param.Param_Param_Text != "C") DbTools.ListParam_ParamForme.add(wParam_Param.Param_Param_ID);
     }
 
-
-
-    if (IsRememberLogin)
-      {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Menu()));
+    if (IsRememberLogin) {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Menu()));
 //      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>       Clients_screen()));
-      }
-    else
+    } else
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
   }
 
   void initLib() async {
     await DbTools.getParam_ParamAll();
-
 
     String ColParams = "";
     DbTools.getParam_ParamMemDet("Param_Div", "Ext_Col");
@@ -107,49 +119,30 @@ class SplashScreenState extends State<SplashScreen>
     if (DbTools.ListParam_Param.length > 0) ColParamsW = DbTools.ListParam_Param[0].Param_Param_Text;
     DbTools.lColParamswidth = ColParamsW.split(",");
 
-
-    print(" ColParams $ColParams");
-    print(" DbTools.lColParams ${DbTools.lColParams.length}");
-    print(" DbTools.lColParamsdata ${DbTools.lColParams.length}");
-    print(" DbTools.lColParamswidth ${DbTools.lColParamswidth.length} ${DbTools.lColParamswidth.toString()}");
-
-
-
-
-    print("SplashScreen initLib");
     CookieManager cm = CookieManager.getInstance();
     String IsRememberLogins = cm.getCookie("IsRememberLogin");
     IsRememberLogin = (IsRememberLogins == "X");
 
-    print("SplashScreen initLib IsRememberLogin  $IsRememberLogin");
-
-
-    if (IsRememberLogin)
-    {
+    if (IsRememberLogin) {
       print("SplashScreen initLib IsRememberLogin");
       String emailLogin = cm.getCookie("emailLogin");
       String passwordLogin = cm.getCookie("passwordLogin");
-      if (!await DbTools.getUserLogin(emailLogin, passwordLogin))
-      {
-        IsRememberLogin =false;
+      if (!await DbTools.getUserLogin(emailLogin, passwordLogin)) {
+        IsRememberLogin = false;
       }
     }
 
     print("SplashScreen initLib startTime");
     await startTime();
-
   }
-
 
   @override
   void initState() {
     initLib();
     if (DbTools.gTED) milliseconds = 10;
 
-    animationController = new AnimationController(
-        vsync: this, duration: new Duration(seconds: 2));
-    animation =
-    new CurvedAnimation(parent: animationController, curve: Curves.easeOut);
+    animationController = new AnimationController(vsync: this, duration: new Duration(seconds: 2));
+    animation = new CurvedAnimation(parent: animationController, curve: Curves.easeOut);
     animation.addListener(() => this.setState(() {}));
     animationController.forward();
 
@@ -157,8 +150,7 @@ class SplashScreenState extends State<SplashScreen>
       _visible = !_visible;
     });
 
-
-        super.initState();
+    super.initState();
   }
 
   @override
@@ -190,13 +182,11 @@ class SplashScreenState extends State<SplashScreen>
     if (w > width) w = width;
     if (h > height) h = height;
 
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-
           new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -210,13 +200,14 @@ class SplashScreenState extends State<SplashScreen>
                 children: [
                   Text(
                     "Outils de vérification  ",
-                    style: gColors.bodyTitle1_B_P,),
+                    style: gColors.bodyTitle1_B_P,
+                  ),
                   Text(
                     "Incendie",
-                    style: gColors.bodyTitle1_B_S,),
-
-                ],),
-
+                    style: gColors.bodyTitle1_B_S,
+                  ),
+                ],
+              ),
             ],
           ),
         ],

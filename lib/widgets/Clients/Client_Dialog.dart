@@ -44,6 +44,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   Client wClient = Client.ClientInit();
   TextEditingController textController_Civilite = TextEditingController();
   TextEditingController textController_Nom = TextEditingController();
+  TextEditingController textController_CodeGC = TextEditingController();
   TextEditingController textController_Siret = TextEditingController();
   TextEditingController textController_NAF = TextEditingController();
   TextEditingController textController_TVA = TextEditingController();
@@ -89,9 +90,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   List<String> ListParam_ParamStatutID = [];
   String selectedValueStatut = "";
   String selectedValueStatutID = "";
-
-
-
 
   String selectedValueForme = "";
   String selectedUserInter = "";
@@ -215,6 +213,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     isClient_OK_DataPerso = wClient.Client_OK_DataPerso;
     textController_Civilite.text = wClient.Client_Civilite;
     textController_Nom.text = wClient.Client_Nom;
+    textController_CodeGC.text = wClient.Client_CodeGC;
     textController_Siret.text = wClient.Client_Siret;
     textController_NAF.text = wClient.Client_NAF;
     textController_TVA.text = wClient.Client_TVA;
@@ -437,7 +436,8 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                     Row(
                       children: [
                         DropdownButtonForme(),
-//                        gColors.TxtField(-1, 16, "Forme", textController_Civilite),
+                        gColors.TxtField(-1, 28, "Code", textController_CodeGC),
+
                         Container(
                           width: 30,
                         ),
@@ -446,7 +446,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                         Container(
                           width: 10,
                         ),
-                        gColors.CheckBoxField(50, 8, "Client", !isClient_CL_Pr, (sts) => setState(() => isClient_CL_Pr = sts!)),
+                        gColors.CheckBoxField(50, 8, "Client", !isClient_CL_Pr, (sts) => setState(() => isClient_CL_Pr = !sts!)),
                         Container(
                           width: 30,
                         ),
@@ -479,7 +479,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                     ),
                     Row(
                       children: [
-                        gColors.DropdownButtonTypeInter(80, 8, "Commercial", selectedUserInter, (sts) {
+                        gColors.DropdownButtonTypeInter(150, 8, "Collaborateur (Client)", selectedUserInter, (sts) {
                           setState(() {
                             selectedUserInter = sts!;
                             selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
@@ -746,6 +746,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     wClient.Client_OK_DataPerso = isClient_OK_DataPerso;
     wClient.Client_Civilite = textController_Civilite.text;
     wClient.Client_Nom = textController_Nom.text;
+    wClient.Client_CodeGC = textController_CodeGC.text;
     wClient.Client_Siret = textController_Siret.text;
     wClient.Client_NAF = textController_NAF.text;
     wClient.Client_TVA = textController_TVA.text;

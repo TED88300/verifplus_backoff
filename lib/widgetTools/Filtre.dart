@@ -2,8 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
+import 'package:verifplus_backoff/widgetTools/gObj.dart';
+
+
+
 
 class FiltreTools {
+
+  static List<DataGridRow> dataGridRows_CR = <DataGridRow>[];
+  static List<DataGridRow> dataGridRows_CR_Filtre = <DataGridRow>[];
+  static int Selindex = -1;
+
+  static DataGridController dataGridController_CR = DataGridController();
+
 
   static GridColumn SfGridColumn(String columnName, String columnTitle, double wWidth, double wWidthMin, AlignmentGeometry alignment, {wColumnWidthMode = ColumnWidthMode.none }) {
 
@@ -32,7 +43,17 @@ class FiltreTools {
 
   }
 
-  static Widget SfRowSel(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
+  static Widget SfRowSel(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor, {bool bCircle = false}) {
+
+    Color wColor = Colors.transparent;
+    if (bCircle)
+      {
+
+
+        wColor = gColors.getColorStatus(row.getCells()[9].value!);
+      }
+
+
     double t = 5;
     double b = 3;
 
@@ -48,6 +69,13 @@ class FiltreTools {
               style: gColors.bodySaisie_N_G.copyWith(color: txtColor),
               overflow: TextOverflow.ellipsis,
             ),
+            (!bCircle) ? Container() :
+            Container(
+              width: 5,
+            ),
+            (!bCircle) ? Container() :
+            gColors.gCircle(wColor),
+
           ],
         ));
   }
@@ -108,12 +136,27 @@ class FiltreTools {
     );
   }
 
-  static Widget SfRowIcon(String wTxt ,String wIco , AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
+  static Widget SfRowImage(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
   {
     double t = 5;
     double b = 3;
 
+    String wArtID = row.getCells()[Col].value.toString();
 
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(8, t, 8, b),
+      alignment: alignment,
+      child:gObj.buildImage(wArtID, 40),
+    );
+  }
+
+
+
+  static Widget SfRowIcon(String wTxt ,String wIco , AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
+  {
+    double t = 5;
+    double b = 3;
     TextStyle wTextStyle = gColors.bodySaisie_N_G;
     if (fBold)
       wTextStyle = gColors.bodySaisie_B_G;
@@ -137,6 +180,35 @@ class FiltreTools {
 
     );
   }
+
+  static Widget SfRowPlus(String wTxt ,String wIco , AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
+  {
+    double t = 5;
+    double b = 3;
+    TextStyle wTextStyle = gColors.bodySaisie_N_G;
+    if (fBold)
+      wTextStyle = gColors.bodySaisie_B_G;
+
+    return Container(
+        padding: EdgeInsets.fromLTRB(8, t, 8, b),
+        alignment: alignment,
+        child:
+        Row(children: [
+          wIco.isEmpty ? Container() :
+          Container(
+            child: Image.asset("assets/images/${wIco}.png", fit: BoxFit.cover),
+          ),
+          SizedBox(width: 19,),
+          Text(
+            wTxt,
+            style: wTextStyle.copyWith(color: txtColor),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],)
+
+    );
+  }
+
 
   static Widget SfRowDate(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
     double t = 5;
@@ -172,7 +244,7 @@ class FiltreTools {
           Icon(
             Icons.search,
             color: Colors.white,
-            size: 20.0,
+            size: 30.0,
           ),
           Container(
             width: 10,
@@ -185,4 +257,81 @@ class FiltreTools {
       ),
     );
   }
+
+  static DateTime gDateDeb = DateTime.now();
+  static DateTime gDateFin = DateTime.now();
+  static DateTime getDate(DateTime d) => DateTime(d.year, d.month, d.day);
+
+
+
+  static  void selDateTools(int aSel)
+  {
+
+    DateTime date = DateTime.now();
+
+    switch (aSel) {
+      case 0: // Aujourd'hui
+        gDateDeb = date;
+        gDateFin = gDateDeb;
+        break;
+      case 1: // Aujourd'hui
+        gDateDeb = date.add(Duration(days: -1));
+        gDateFin = gDateDeb;
+        break;
+      case 2: // Avant hier
+        gDateDeb = date.add(Duration(days: -2));
+        gDateFin = gDateDeb;
+        break;
+      case 3: // Semaine courante
+        gDateDeb = getDate(date.subtract(Duration(days: date.weekday - 1)));
+        gDateFin = getDate(date.add(Duration(days: DateTime.daysPerWeek - date.weekday)));
+        break;
+      case 4: // Semaine précédante
+        date = date.add(Duration(days: -7));
+        gDateDeb = getDate(date.subtract(Duration(days: date.weekday - 1)));
+        gDateFin = getDate(date.add(Duration(days: DateTime.daysPerWeek - date.weekday)));
+        break;
+      case 5: // Semaine précédant précédante
+        date = date.add(Duration(days: -14));
+        gDateDeb = getDate(date.subtract(Duration(days: date.weekday - 1)));
+        gDateFin = getDate(date.add(Duration(days: DateTime.daysPerWeek - date.weekday)));
+        break;
+      case 6: // Mois courant
+        gDateDeb = DateTime(date.year, date.month, 1);
+        gDateFin = DateTime(date.year, date.month +1, 0);
+        break;
+      case 7: // Mois précédent
+        gDateDeb = DateTime(date.year, date.month-1, 1);
+        gDateFin = DateTime(date.year, date.month , 0);
+        break;
+      case 8: // Mois précédent le précédent
+        gDateDeb = DateTime(date.year, date.month-2, 1);
+        gDateFin = DateTime(date.year, date.month-1 , 0);
+        break;
+      case 9: // Année précédente
+        gDateDeb = DateTime(date.year, 1, 1);
+        gDateFin = date;
+        break;
+      case 10: // Année précédent la précédente
+        gDateDeb = DateTime(date.year-1, 1, 1);
+        gDateFin = DateTime(date.year-1, 12 , 31);
+        break;
+      default :
+        gDateDeb = DateTime.now();
+        gDateFin = DateTime.now();
+        break;
+
+
+    }
+
+
+    print(" Sel ${aSel} gDateDeb ${DateFormat('dd/MM/yyyy').format(gDateDeb)} ${DateFormat('dd/MM/yyyy').format(gDateFin)}");
+
+
+
+  }
+
+
+
+
 }

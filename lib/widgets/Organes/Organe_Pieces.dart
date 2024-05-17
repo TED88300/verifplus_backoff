@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
+import 'package:verifplus_backoff/Tools/Srv_Articles_Ebp.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
+import 'package:verifplus_backoff/widgetTools/gObj.dart';
 
 DataGridController dataGridController = DataGridController();
 int Subindex = 0;
@@ -16,15 +17,16 @@ class ArticleDataGridSource extends DataGridSource {
   }
 
   List<DataGridRow> dataGridRows = <DataGridRow>[];
+
   @override
   List<DataGridRow> get rows => dataGridRows;
-
   void buildDataGridRows() {
     int i = 0;
-    dataGridRows = DbTools.ListParc_Art_P.map<DataGridRow>((Parc_Art parc_Art) {
-
+    dataGridRows = DbTools.ListParc_Art_Aff.map<DataGridRow>((Parc_Art parc_Art) {
       List<DataGridCell> DataGridCells = [
+        DataGridCell<String>(columnName:  'img'    , value: parc_Art.ParcsArt_Id),
         DataGridCell<String>(columnName:  'id'    , value: parc_Art.ParcsArt_Id),
+        DataGridCell<String>(columnName:  'type'    , value: parc_Art.ParcsArt_Type),
         DataGridCell<String>(columnName:  'lib'   , value: parc_Art.ParcsArt_Lib),
         DataGridCell<int>(columnName:     'qte'   , value: parc_Art.ParcsArt_Qte),
         DataGridCell<String>(columnName:  'livr'  , value: parc_Art.ParcsArt_Livr),
@@ -46,15 +48,14 @@ class ArticleDataGridSource extends DataGridSource {
     Color selectedRowTextColor = Colors.white;
     Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
     Color backgroundColor = Colors.transparent;
-
-
     List<Widget> DataGridCells = [
-      FiltreTools.SfRow(row, 0, Alignment.centerLeft, textColor, fBold: true),
+      FiltreTools.SfRowImage(row, 0, Alignment.centerLeft, textColor, fBold: true),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor, fBold: true),
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor, fBold: true),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor, fBold: true),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor, fBold: true),
-
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor, fBold: true),
+      FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor, fBold: true),
     ];
     return DataGridRowAdapter(color: backgroundColor, cells: DataGridCells);
   }
@@ -70,6 +71,10 @@ class ArticleDataGridSource extends DataGridSource {
 //*********************************************************************
 
 class Organe_PiecesDialog extends StatefulWidget {
+
+  final List<Parc_Art> wListParc_Art;
+  const Organe_PiecesDialog({Key? key, required this.wListParc_Art}) : super(key: key);
+
   @override
   State<Organe_PiecesDialog> createState() => _Organe_PiecesDialogState();
 }
@@ -83,6 +88,8 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
 
   List<double> dColumnWidth = [
     100,
+    100,
+    120,
     430,
     100,
     130,
@@ -94,6 +101,8 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
   }
 
   void initState() {
+
+    DbTools.ListParc_Art_Aff = widget.wListParc_Art;
     initLib();
     super.initState();
     Title = "Intervention";
@@ -101,11 +110,13 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
 
   List<GridColumn> getColumns() {
     List<GridColumn> wGridColumn = [
-      FiltreTools.SfGridColumn('id'  ,  'Ref'   ,       dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('lib' ,  'Libellé'  ,    dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('qte' ,  'Qte'  ,        dColumnWidth[2], dColumnWidth[2], Alignment.centerRight),
-      FiltreTools.SfGridColumn('livr',  'Livaison' ,    dColumnWidth[3], dColumnWidth[3], Alignment.center),
-      FiltreTools.SfGridColumn('fact',  'Facturation' , dColumnWidth[4], dColumnWidth[4], Alignment.center),
+      FiltreTools.SfGridColumn('img'  ,  'Img'   ,      dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id'  ,  'Ref'   ,       dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('type' ,  'Type'   ,     dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('lib' ,  'Libellé'  ,    dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('qte' ,  'Qte'  ,        dColumnWidth[4], dColumnWidth[4], Alignment.centerRight),
+      FiltreTools.SfGridColumn('livr',  'Livaison' ,    dColumnWidth[5], dColumnWidth[5], Alignment.center),
+      FiltreTools.SfGridColumn('fact',  'Facturation' , dColumnWidth[6], dColumnWidth[6], Alignment.center),
     ];
 
     return wGridColumn;
@@ -138,16 +149,19 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
     setState(() {
       if (args.column.columnName ==       'id'   ) dColumnWidth[0] = args.width;
       else if (args.column.columnName ==  'lib'  ) dColumnWidth[1] = args.width;
+      else if (args.column.columnName ==  'type'  ) dColumnWidth[1] = args.width;
       else if (args.column.columnName ==  'qte'  ) dColumnWidth[1] = args.width;
       else if (args.column.columnName ==  'livr' ) dColumnWidth[1] = args.width;
       else if (args.column.columnName ==  'fact' ) dColumnWidth[1] = args.width;
     });
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     articleDataGridSource.handleRefresh();
-    print(" EQUIP build ${DbTools.ListParc_Art_P}");
     screenWidth = MediaQuery.of(context).size.width;
     if (Title.isEmpty) return Container();
     return Center(
@@ -175,7 +189,7 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
           children: [
         Container(
           width: MediaQuery.of(context).size.width - 10,
-          height: MediaQuery.of(context).size.height - 393,
+          height: MediaQuery.of(context).size.height - 412,
           child: Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
               decoration: BoxDecoration(
@@ -186,7 +200,7 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                      width: 924,
+                      width: 1045,
                       height: 560,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -211,7 +225,7 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
                             rowHeight: 28,
                             allowColumnsResizing: true,
                             columnResizeMode: ColumnResizeMode.onResize,
-                            selectionMode: SelectionMode.multiple,
+                            selectionMode: SelectionMode.single,
                             controller: dataGridController,
                             onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                               Resize(args);
@@ -220,13 +234,6 @@ class _Organe_PiecesDialogState extends State<Organe_PiecesDialog> with SingleTi
                             gridLinesVisibility: GridLinesVisibility.both,
                             headerGridLinesVisibility: GridLinesVisibility.both,
                             columnWidthMode: ColumnWidthMode.fill,
-
-
-
-
-
-
-
                           ))),
                 ],
               )),

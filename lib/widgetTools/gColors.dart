@@ -8,6 +8,7 @@ import 'package:pluto_menu_bar/pluto_menu_bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:intl/intl.dart';
+import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie_Param.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles.dart';
 import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
@@ -22,12 +23,9 @@ import 'package:verifplus_backoff/widgets/Param/Param_Gamme_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Param_Abrev_Dialog.dart';
 
 class gColors {
-
-
   static late ThemeData wTheme;
 
   static Color backgroundColor = const Color.fromRGBO(0, 116, 227, 1);
-
 
   static double MediaQuerysizewidth = 0;
 
@@ -42,6 +40,7 @@ class gColors {
   static const Color LinearGradient1 = primary; //Color(0xFFaaaaaa);
   static const Color LinearGradient2 = Color(0xFFf6f6f6);
   static const Color LinearGradient3 = Color(0xFFe6e6e6);
+  static const Color LinearGradient4 = Color(0xFFf6f6f6);
   static const Color TextColor1 = Color(0xFF222222);
   static const Color TextColor2 = Color(0xFF555555);
   static const Color TextColor3 = Color(0xFFFFFFFF);
@@ -67,6 +66,21 @@ class gColors {
   static int ImageRandom = random.nextInt(10444) + 1;
 
   static List<PlutoMenuItem> HoverMenus = [];
+
+  static InputDecoration wRechInputDecoration = InputDecoration(
+    filled: true,
+    fillColor: gColors.LinearGradient4,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.0),
+      borderSide: BorderSide(
+        color: gColors.LinearGradient4,
+        width: 2.0,
+      ),
+    ),
+    hintText: 'Recherche',
+    isDense: true,
+    contentPadding: EdgeInsets.fromLTRB(8, 12, 0, 12),
+  );
 
   static Widget wPlutoMenuBar = PlutoMenuBar(
     mode: PlutoMenuBarMode.tap,
@@ -262,6 +276,7 @@ class gColors {
     ];
   }
 
+
   static Widget wWidgetImage = Container();
 
   static Future<Widget> wBoxDecoration() async {
@@ -284,6 +299,20 @@ class gColors {
       ),
     );
   }
+
+
+  static Widget gCircle(Color wColor)  {
+    return  Container(
+    width: 20,
+    height: 20,
+    decoration: BoxDecoration(
+    color: wColor,
+    shape: BoxShape.circle
+    ));
+  }
+
+
+
 
   static Map<int, Color> getSwatch(Color color) {
     final hslColor = HSLColor.fromColor(color);
@@ -328,15 +357,15 @@ class gColors {
       );
 
   static TextStyle get bodyTitle1_N_Wr => TextStyle(
-    color: white,
-    fontSize: 20,
-    fontWeight: FontWeight.normal,
-  );
+        color: white,
+        fontSize: 20,
+        fontWeight: FontWeight.normal,
+      );
   static TextStyle get bodyTitle20_B_Wr => TextStyle(
-    color: white,
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-  );
+        color: white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      );
 
   static TextStyle get bodyTitle1_B_tks => TextStyle(
         color: tks,
@@ -362,18 +391,16 @@ class gColors {
       );
 
   static TextStyle get bodyTitle1_B_G => TextStyle(
-    color: grey,
-    fontSize: 20,
-    fontWeight: FontWeight.bold,
-  );
-
+        color: grey,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      );
 
   static TextStyle get bodyTitle1_B_Wr => TextStyle(
         color: white,
         fontSize: 18,
         fontWeight: FontWeight.bold,
       );
-
 
   static TextStyle get bodyTitle1_B_Gr => TextStyle(
         color: grey,
@@ -386,7 +413,6 @@ class gColors {
         fontSize: 16,
         fontWeight: FontWeight.normal,
       );
-
 
   static TextStyle get bodySaisie_B_B => TextStyle(
         color: TextColor1,
@@ -405,7 +431,7 @@ class gColors {
         fontWeight: FontWeight.bold,
       );
 
-  static  TextStyle get bodySaisie_N_G => TextStyle(
+  static TextStyle get bodySaisie_N_G => TextStyle(
         color: grey,
         fontSize: wNorm,
         fontWeight: FontWeight.normal,
@@ -440,7 +466,6 @@ class gColors {
         fontSize: wNorm,
         fontWeight: FontWeight.normal,
       );
-
 
   static TextStyle get bodyText_B_G => TextStyle(
         color: grey,
@@ -628,7 +653,6 @@ class gColors {
     );
   }
 
-
   static Widget wSimpleLigneRouge() {
     return Column(
       children: [
@@ -693,19 +717,31 @@ class gColors {
       ),
     );
   }
+
   static Widget BtnAffUser(BuildContext context) {
+    String wDate = DateFormat('EEEE dd MMM yyyy', 'fr').format(DateTime.now());
+    wDate = wDate.replaceRange(
+      0,
+      1,
+      wDate.substring(0,1).toUpperCase(),
+    );
     return InkWell(
-      child: Container(margin: EdgeInsets.fromLTRB(0, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
+      child:
+      Row(children: [
+        Text(
+        "${wDate}",
+        style: gColors.bodySaisie_N_W,
+      ),
+        Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
+
+      ],),
       onTap: () {
-
         AffUser(context);
-
       },
     );
-
   }
-    static AffUser(BuildContext context) {
 
+  static AffUser(BuildContext context) {
     return showDialog(
         context: context,
         builder: (_) => new AlertDialog(
@@ -742,7 +778,6 @@ class gColors {
                         Text(DbTools.gUserLogin.User_Prenom),
                       ],
                     ),
-
                     Row(
                       children: [
                         Text('Nom : '),
@@ -795,16 +830,11 @@ class gColors {
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        print("-----------x getImage contentLength ${response.contentLength}");
-
         return await response.stream.toBytes();
       } else {
-        print("-----------x getImage Error ${response.statusCode}");
         return new Uint8List(0);
       }
     } catch (e) {
-      print("-----------x getImage Error ${e}");
-
       return new Uint8List(0);
     }
   }
@@ -1017,33 +1047,103 @@ class gColors {
     );
   }
 
-  static Widget Txt(double lWidth, String wLabel, String wValue) {
-
+  static Widget Txt(double lWidth, String wLabel, String wValue, {double tWidth = -1}) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+
       children: [
         Container(
-            width: lWidth,
+          width: lWidth,
           child: Text(
             wLabel,
-            style: gColors.bodySaisie_N_G,
+            style: gColors.bodySaisie_B_G,
           ),
         ),
         Text(
           " : ",
-          style: gColors.bodySaisie_N_B,
+          style: gColors.bodySaisie_B_B,
         ),
         Container(
+           width:  tWidth > 0 ? tWidth : null,
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
-          child :
-          Text(
-          "$wValue",
-          style: gColors.bodySaisie_B_B,
+          child: Text(
+            "$wValue",
+            style: gColors.bodySaisie_N_B,
+            overflow: tWidth > 0 ? TextOverflow.ellipsis : TextOverflow.clip,
+
           ),
         ),
-
       ],
     );
   }
+
+  static Widget Txt2(double lWidth, String wLabel, String wValue, {double tWidth = -1}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+        Container(
+          width: lWidth,
+          child: Text(
+            wLabel,
+            style: gColors.bodyTitle1_B_Gr,
+          ),
+        ),
+        Text(
+          " : ",
+          style: gColors.bodyTitle1_B_Gr,
+        ),
+        Container(
+          width:  tWidth > 0 ? tWidth : null,
+          padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+          child: Text(
+            "$wValue",
+            style: gColors.bodyTitle1_N_Gr,
+            overflow: tWidth > 0 ? TextOverflow.ellipsis : TextOverflow.clip,
+
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  static Widget TxtColumn(double lWidth, String wLabel, String wValue) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+          Container(
+            width: lWidth,
+            child: Text(
+              wLabel,
+              style: gColors.bodySaisie_B_G,
+            ),
+          ),
+          Text(
+            " : ",
+            style: gColors.bodySaisie_B_B,
+          ),
+
+        ],),
+        Container(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: Text(
+            "$wValue",
+            style: gColors.bodySaisie_N_B,
+          ),
+        ),
+      ],
+    );
+  }
+
+
 
   static Widget CheckBoxField(double lWidth, double wWidth, String wLabel, bool initValue, Function(bool? boolValue) onChanged) {
     return Container(
@@ -1072,6 +1172,36 @@ class gColors {
       ),
     );
   }
+
+  static Widget CheckBoxFieldReadOnly(double lWidth, double wWidth, String wLabel, bool initValue) {
+    return Container(
+      child: Row(
+        children: [
+          Container(
+            width: lWidth,
+            child: Text(
+              wLabel,
+              style: gColors.bodySaisie_N_G,
+            ),
+          ),
+          Text(
+            ":  ",
+            style: gColors.bodySaisie_B_B,
+          ),
+          Container(
+            width: 16,
+            child: Checkbox(
+              checkColor: Colors.white,
+              value: initValue,
+              onChanged: (b) => null,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+
 
   static Widget DropdownButtonFam(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistparamParamfam, List<String> wlistparamParamfamid) {
     if (wlistparamParamfam.length == 0) return Container();
@@ -1126,7 +1256,6 @@ class gColors {
   }
 
   static Widget DropdownButtonType(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<Param_Saisie_Param> wlistparamSaisieParam) {
-
     print("DropdownButtonType > wListParam_Saisie_Param.length ${wlistparamSaisieParam.length} ($initValue)");
 
     if (initValue == 0) return Container();
@@ -1134,15 +1263,13 @@ class gColors {
 
     List<DropdownMenuItem> dropdownlist = wlistparamSaisieParam
         .map((item) => DropdownMenuItem<String>(
-      value: item.Param_Saisie_Param_Label,
-      child: Text(
-        "${item.Param_Saisie_Param_Label}",
-        style: gColors.bodySaisie_B_B,
-      ),
-    ))
+              value: item.Param_Saisie_Param_Label,
+              child: Text(
+                "${item.Param_Saisie_Param_Label}",
+                style: gColors.bodySaisie_B_B,
+              ),
+            ))
         .toList();
-
-
 
     return Row(children: [
       Container(
@@ -1155,42 +1282,32 @@ class gColors {
       wWidth == 0
           ? Container()
           : Container(
-        width: wWidth,
-        child: Text(
-          " : ",
-          style: gColors.bodySaisie_B_G,
-        ),
-      ),
+              width: wWidth,
+              child: Text(
+                " : ",
+                style: gColors.bodySaisie_B_G,
+              ),
+            ),
       Container(
         child: DropdownButtonHideUnderline(
             child: DropdownButton2(
-              items: dropdownlist,
-              value: initValue,
-              onChanged: (value) {
-                initValue = value as String;
-                onChanged(initValue);
-              },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
-            )),
+          items: dropdownlist,
+          value: initValue,
+          onChanged: (value) {
+            initValue = value as String;
+            onChanged(initValue);
+          },
+          buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+          buttonHeight: 30,
+          dropdownMaxHeight: 800,
+          itemHeight: 32,
+        )),
       ),
     ]);
   }
 
-
   static Widget DropdownButtonTypeInter(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
-
-/*
-    print("DropdownButtonTypeInter ${wlistTypeinter.length}");
-    print("DropdownButtonTypeInter initValue $initValue");
-    print("DropdownButtonTypeInter wList_TypeInter ${wlistTypeinter.toString()}");
-    print("DropdownButtonTypeInter wList_TypeInterID ${wlistTypeinterid.toString()}");
-*/
-
     if (wlistTypeinter.length == 0) return Container();
-
     List<DropdownMenuItem> dropdownlist = wlistTypeinter
         .map((item) => DropdownMenuItem<String>(
               value: item,
@@ -1200,13 +1317,7 @@ class gColors {
               ),
             ))
         .toList();
-
-
-
-
-    if (wlistTypeinter.indexOf(initValue) <0)
-      return Container();
-
+    if (wlistTypeinter.indexOf(initValue) < 0) return Container();
 
     String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
 
@@ -1245,8 +1356,61 @@ class gColors {
     ]);
   }
 
-  static Widget DropdownButtonMission(String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
+  static Widget DropdownButtonTypeInterC(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
+    if (wlistTypeinter.length == 0) return Container();
 
+    List<DropdownMenuItem> dropdownlist = wlistTypeinter
+        .map((item) => DropdownMenuItem<String>(
+              value: item,
+              child: Text(
+                "$item",
+                style: gColors.bodySaisie_B_B,
+              ),
+            ))
+        .toList();
+
+    if (wlistTypeinter.indexOf(initValue) < 0) return Container();
+
+    String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
+
+    return Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+        padding: EdgeInsets.fromLTRB(0, 6, 0, 0),
+        width: lWidth,
+        child: Text(
+          wLabel,
+          style: gColors.bodySaisie_N_G,
+        ),
+      ),
+      wWidth == 0
+          ? Container()
+          : Container(
+              padding: EdgeInsets.fromLTRB(0, 6, 0, 0),
+              width: wWidth,
+              child: Text(
+                " : ",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ),
+      Container(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton2(
+          items: dropdownlist,
+          value: initValue,
+          onChanged: (value) {
+            String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
+            initValue = value as String;
+            onChanged(initValue);
+          },
+          buttonHeight: 30,
+          dropdownMaxHeight: 800,
+          itemHeight: 32,
+        )),
+      ),
+    ]);
+  }
+
+  static Widget DropdownButtonMission(String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
     print("DropdownButtonTypeInter ${wlistTypeinter.length}");
     print("DropdownButtonTypeInter initValue $initValue");
     print("DropdownButtonTypeInter wList_TypeInter ${wlistTypeinter.toString()}");
@@ -1256,44 +1420,36 @@ class gColors {
 
     List<DropdownMenuItem> dropdownlist = wlistTypeinter
         .map((item) => DropdownMenuItem<String>(
-      value: item,
-      child: Text(
-        "$item",
-        style: gColors.bodySaisie_B_B,
-      ),
-    ))
+              value: item,
+              child: Text(
+                "$item",
+                style: gColors.bodySaisie_B_B,
+              ),
+            ))
         .toList();
 
-
-    if (wlistTypeinter.indexOf(initValue) <0)
-      return Container();
+    if (wlistTypeinter.indexOf(initValue) < 0) return Container();
 
     String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
 
-
     return Row(children: [
-
       Container(
         child: DropdownButtonHideUnderline(
             child: DropdownButton2(
-              items: dropdownlist,
-              value: initValue,
-              onChanged: (value) {
-                String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
-                initValue = value as String;
-                onChanged(initValue);
-
-              },
-
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
-            )),
+          items: dropdownlist,
+          value: initValue,
+          onChanged: (value) {
+            String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
+            initValue = value as String;
+            onChanged(initValue);
+          },
+          buttonHeight: 30,
+          dropdownMaxHeight: 800,
+          itemHeight: 32,
+        )),
       ),
     ]);
   }
-
-
 
   static String AbrevTxt(String wTxt) {
     DbTools.ListParam_Param_Abrev.forEach((element) {
@@ -1301,8 +1457,6 @@ class gColors {
     });
     return wTxt;
   }
-
-
 
   static String AbrevTxt_Saisie_Param(String wTxt, String wparamId) {
     if (wparamId.isNotEmpty) {
@@ -1325,8 +1479,7 @@ class gColors {
     return "${wTxt[0].toUpperCase()}${wTxt.substring(1).toLowerCase().trim()}";
   }
 
-  static DateTime alignDateTime(DateTime dt, Duration alignment,
-      [bool roundUp = false]) {
+  static DateTime alignDateTime(DateTime dt, Duration alignment, [bool roundUp = false]) {
     assert(alignment >= Duration.zero);
     if (alignment == Duration.zero) return dt;
     final correction = Duration(
@@ -1334,23 +1487,23 @@ class gColors {
         hours: alignment.inDays > 0
             ? dt.hour
             : alignment.inHours > 0
-            ? dt.hour % alignment.inHours
-            : 0,
+                ? dt.hour % alignment.inHours
+                : 0,
         minutes: alignment.inHours > 0
             ? dt.minute
             : alignment.inMinutes > 0
-            ? dt.minute % alignment.inMinutes
-            : 0,
+                ? dt.minute % alignment.inMinutes
+                : 0,
         seconds: alignment.inMinutes > 0
             ? dt.second
             : alignment.inSeconds > 0
-            ? dt.second % alignment.inSeconds
-            : 0,
+                ? dt.second % alignment.inSeconds
+                : 0,
         milliseconds: alignment.inSeconds > 0
             ? dt.millisecond
             : alignment.inMilliseconds > 0
-            ? dt.millisecond % alignment.inMilliseconds
-            : 0,
+                ? dt.millisecond % alignment.inMilliseconds
+                : 0,
         microseconds: alignment.inMilliseconds > 0 ? dt.microsecond : 0);
     if (correction == Duration.zero) return dt;
     final corrected = dt.subtract(correction);
@@ -1358,8 +1511,22 @@ class gColors {
     return result;
   }
 
-  static Color getColor(String color)
-  {
+  static Color getColorStatus(String Status) {
+    Color wColor = Colors.transparent;
+    for (int p = 0; p < DbTools.ListParam_Param_Status_Interv.length; p++) {
+      Param_Param wParam_Param = DbTools.ListParam_Param_Status_Interv[p];
+      if (wParam_Param.Param_Param_ID == Status)
+      {
+        wColor = gColors.getColor(wParam_Param.Param_Param_Color);
+        break;
+      }
+    }
+
+
+    return wColor;
+  }
+
+  static Color getColor(String color) {
     Color wColor = Colors.green;
     switch (color) {
       case "Vert":
@@ -1390,13 +1557,12 @@ class gColors {
     return wColor;
   }
 
-
-  static  Widget fadeAlertAnimation(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+  static Widget fadeAlertAnimation(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return Align(
       child: FadeTransition(
         opacity: animation,
@@ -1405,34 +1571,25 @@ class gColors {
     );
   }
 
-  static  var filtreStyle = AlertStyle(
-      animationType: AnimationType.fromTop,
-      isCloseButton: true,
-      isOverlayTapDismiss: false,
-      titleStyle: gColors.bodySaisie_B_G,
-      descStyle: gColors.bodySaisie_N_G,
-      descTextAlign: TextAlign.left,
-      alertPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-
-
-      animationDuration: Duration(milliseconds: 400),
-      alertBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-        side: BorderSide(
-          color: Colors.grey,
-        ),
+  static var filtreStyle = AlertStyle(
+    animationType: AnimationType.fromTop,
+    isCloseButton: true,
+    isOverlayTapDismiss: false,
+    titleStyle: gColors.bodySaisie_B_G,
+    descStyle: gColors.bodySaisie_N_G,
+    descTextAlign: TextAlign.left,
+    alertPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+    animationDuration: Duration(milliseconds: 400),
+    alertBorder: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20.0),
+      side: BorderSide(
+        color: Colors.grey,
       ),
-      overlayColor: Color(0x88000000),
-      alertElevation: 10,
-
-
+    ),
+    overlayColor: Color(0x88000000),
+    alertElevation: 10,
   );
-
 }
-
-
-
-
 
 class DecimalTextInputFormatter extends TextInputFormatter {
   DecimalTextInputFormatter({required this.decimalRange}) : assert(decimalRange > 0);
@@ -1459,8 +1616,8 @@ class DecimalTextInputFormatter extends TextInputFormatter {
         selection: newSelection,
         composing: TextRange.empty,
       );
-
-    } else     value = newValue.text;
+    } else
+      value = newValue.text;
 
     if (value.contains(".") && value.substring(value.indexOf(".") + 1).length > decimalRange) {
       truncated = oldValue.text;
@@ -1483,8 +1640,4 @@ class DecimalTextInputFormatter extends TextInputFormatter {
 
     return newValue;
   }
-
-
-
-
 }

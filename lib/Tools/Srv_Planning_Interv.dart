@@ -47,12 +47,10 @@ class Planning_Interv {
   factory Planning_Interv.fromJson(Map<String, dynamic> json) {
 
     Planning_Interv wplanningRdv = Planning_Interv(
-
       int.parse(json['InterventionId']),
       json['Intervention_Type'],
       json['Intervention_Parcs_Type'],
       json['Intervention_Status'],
-
       int.parse(json['ZoneId']),
       json['Zone_Nom'],
       int.parse(json['SiteId']),

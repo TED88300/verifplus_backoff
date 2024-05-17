@@ -7,6 +7,7 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:package_info/package_info.dart';
 import 'package:uuid/uuid.dart';
 import 'package:verifplus_backoff/Tools/Srv_Adresses.dart';
@@ -53,7 +54,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.101";
+  static var gVersion = "v1.0.107";
   static bool gTED = true;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -83,6 +84,8 @@ class DbTools {
   static List<String> List_FactInterID = [];
   static List<String> List_UserInter = [];
   static List<String> List_UserInterID = [];
+
+  static List<ValueItem> List_ValueItem_User = [];
 
   static PackageInfo packageInfo = PackageInfo(
     appName: '',
@@ -167,7 +170,6 @@ class DbTools {
   static String gUserLoginTypeUser = "";
   static int gLoginID = -1;
 
-
   //****************************************************
   //****************************************************
   //****************************************************
@@ -178,11 +180,9 @@ class DbTools {
     List<User> ListUser = await getUser_API_Post("select", "select * from Users where User_Mail = '$aMail' AND User_PassWord = '$aPW'");
     if (ListUser == null) return false;
     if (ListUser.length == 1) {
-      print(" getUserLogin ${ListUser[0].User_TypeUserID}");
-      if (ListUser[0].User_TypeUserID <156 || ListUser[0].User_TypeUserID > 159)
-          return false;
-      if (!ListUser[0].User_Actif)
-        return false;
+      print(" getUserLogin ${ListUser[0].toString()}");
+      if (ListUser[0].User_TypeUserID < 156 || ListUser[0].User_TypeUserID > 159) return false;
+      if (!ListUser[0].User_Actif) return false;
 
       gUserLogin = ListUser[0];
       gLoginID = gUserLogin.UserID;
@@ -211,9 +211,8 @@ class DbTools {
     return false;
   }
 
-  static Widget wBoxDecoration(BuildContext context)
-  {
-    return  Container(
+  static Widget wBoxDecoration(BuildContext context) {
+    return Container(
       width: 200,
       height: 200,
       decoration: BoxDecoration(
@@ -224,7 +223,6 @@ class DbTools {
       ),
     );
   }
-
 
   static Future<bool> getUserName(String aName) async {
     List<User> ListUser = await getUser_API_Post("select", "select * from Users where User_Nom = '$aName'");
@@ -296,14 +294,15 @@ class DbTools {
     print("fields ${request.fields}");
 
     http.StreamedResponse response = await request.send();
-      print("response.statusCode ${response.statusCode}");
+    print("response.statusCode ${response.statusCode}");
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
 
       final items = parsedJson['data'];
 
-//      print("items $items");
+      print("parsedJson $parsedJson");
+      print("items $items");
 
       if (items != null) {
         List<User> UserList = await items.map<User>((json) {
@@ -361,11 +360,9 @@ class DbTools {
   //*****************************
   //*****************************
 
-
   static List<Param_Saisie> listparamSaisieEquip = [];
   static List<Param_Saisie> listparamSaisieAudit = [];
   static List<Param_Saisie> listparamSaisieVerrif = [];
-
 
   static List<Param_Saisie> ListParam_Saisie = [];
   static List<Param_Saisie> ListParam_Saisiesearchresult = [];
@@ -473,7 +470,8 @@ class DbTools {
         Param_Saisie element = ListParam_Saisie_Base[i];
         element.Param_Saisie_Ordre = i++;
         await setParam_Saisie(element);
-      };
+      }
+      ;
       return true;
     }
     return false;
@@ -555,6 +553,9 @@ class DbTools {
   static List<Param_Param> ListParam_Param = [];
   static List<Param_Param> ListParam_Param_Abrev = [];
   static List<Param_Param> ListParam_Param_Civ = [];
+  static List<Param_Param> ListParam_Param_Status_Interv = [];
+
+
   static List<String> ListParam_ParamCiv = [];
   static List<String> ListParam_ParamForme = [];
 
@@ -611,11 +612,13 @@ class DbTools {
 
     List_UserInter.clear();
     List_UserInterID.clear();
+    List_ValueItem_User.clear();
 
     for (int i = 0; i < DbTools.ListUser.length; i++) {
       var element = DbTools.ListUser[i];
       List_UserInter.add("${element.User_Nom} ${element.User_Prenom}");
       List_UserInterID.add("${element.UserID}");
+      List_ValueItem_User.add(ValueItem(label: "${element.User_Nom} ${element.User_Prenom}", value: "${element.UserID}"));
     }
   }
 
@@ -692,10 +695,9 @@ class DbTools {
 
   static Future<bool> setParam_Param(Param_Param paramParam) async {
     String wSlq = "UPDATE Param_Param SET "
-            "Param_Param_Text = \"" +
-        paramParam.Param_Param_Text +
-        "\", " +
-        "Param_Param_ID = \"" +
+            "Param_Param_Text = \"" + paramParam.Param_Param_Text + "\", "
+        + "Param_Param_Color = \"" + paramParam.Param_Param_Color + "\", "
+        + "Param_Param_ID = \"" +
         paramParam.Param_Param_ID +
         "\", " +
         "Param_Param_Int = " +
@@ -781,7 +783,6 @@ class DbTools {
     if (ListNF074_Gammes == null) return false;
 //    print("getNF074_GammesDesc ${ListNF074_Gammes.length}");
     if (ListNF074_Gammes.length > 0) {
-
       return true;
     }
     return false;
@@ -800,7 +801,6 @@ class DbTools {
     return false;
   }
 
-
   static Future<bool> getNF074_CtrlGammesArticles() async {
     String wSql = "SELECT NF074_Gammes.* FROM NF074_Gammes WHERE  NF074_Gammes_REF != '' AND NF074_Gammes_REF NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Gammes_REF;";
 //    print("getNF074_CtrlGammesArticles wSql $wSql");
@@ -813,13 +813,11 @@ class DbTools {
         var element = ListNF074_Gammes[i];
         associateList.add({"Code": "${element.NF074_Gammes_REF}", "Desc": "${element.NF074_Gammes_GAM}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlGammesArticles");
+      await exportCSV(associateList, "getNF074_CtrlGammesArticles");
       return true;
     }
     return false;
   }
-
-
 
   static Future<bool> addNF074_Gammes(NF074_Gammes wNF074_Gammes) async {
     String wValue = "NULL,'${wNF074_Gammes.NF074_Gammes_DESC}','${wNF074_Gammes.NF074_Gammes_FAB}','${wNF074_Gammes.NF074_Gammes_PRS}','${wNF074_Gammes.NF074_Gammes_CLF}','${wNF074_Gammes.NF074_Gammes_MOB}','${wNF074_Gammes.NF074_Gammes_PDT}','${wNF074_Gammes.NF074_Gammes_POIDS}','${wNF074_Gammes.NF074_Gammes_GAM}','${wNF074_Gammes.NF074_Gammes_CODF}','${wNF074_Gammes.NF074_Gammes_REF}','${wNF074_Gammes.NF074_Gammes_SERG}','${wNF074_Gammes.NF074_Gammes_APD4}','${wNF074_Gammes.NF074_Gammes_AVT}','${wNF074_Gammes.NF074_Gammes_NCERT}'";
@@ -838,8 +836,6 @@ class DbTools {
     return ret;
   }
 
-
-
   static Future<List<NF074_Gammes>> getNF074_Gammes_API_Post(String aType, String aSQL) async {
     setSrvToken();
     String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
@@ -848,7 +844,6 @@ class DbTools {
     http.StreamedResponse response = await request.send();
 
 //    print("getNF074_Gammes_API_Post ret ${response.statusCode}");
-
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
@@ -885,7 +880,6 @@ class DbTools {
     return false;
   }
 
-
   static Future<bool> setNF074_Histo_Normes(NF074_Histo_Normes aNF074_Histo_Normes) async {
     String wSlq = "UPDATE NF074_Histo_Normes SET NF074_Histo_Normes_NCERT = ${aNF074_Histo_Normes.NF074_Histo_Normes_NCERT} WHERE Param_HabId = ${aNF074_Histo_Normes.NF074_Histo_NormesId}";
     gColors.printWrapped("setNF074_Histo_Normes " + wSlq);
@@ -893,10 +887,6 @@ class DbTools {
     print("setNF074_Histo_Normes ret " + ret.toString());
     return ret;
   }
-
-
-
-
 
   static Future<List<NF074_Histo_Normes>> getNF074_Histo_Normes_API_Post(String aType, String aSQL) async {
     setSrvToken();
@@ -920,7 +910,7 @@ class DbTools {
     }
     return [];
   }
-  
+
   //*****************************
   //*****************************
   //*****************************
@@ -930,7 +920,6 @@ class DbTools {
   static NF074_Pieces_Actions gNF074_Pieces_Actions = NF074_Pieces_Actions.NF074_Pieces_ActionsInit();
 
   static Future<bool> getNF074_CtrlGammesPieces_Actions_PDT() async {
-
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE  NF074_Pieces_Actions_PDT NOT IN (SELECT NF074_Gammes_PDT FROM NF074_Gammes) GROUP BY NF074_Pieces_Actions_PDT;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
@@ -966,7 +955,6 @@ class DbTools {
     return false;
   }
 
-
   static Future<bool> getNF074_Pieces_ActionsAll() async {
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", "select * from NF074_Pieces_Actions ORDER BY NF074_Pieces_ActionsId");
     if (ListNF074_Pieces_Actions == null) return false;
@@ -977,7 +965,6 @@ class DbTools {
     }
     return false;
   }
-
 
   static Future<bool> getNF074_CtrlPiecesActionsArticles1() async {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE NF074_Pieces_Actions_Code_article_PD1 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Actions_Code_article_PD1;";
@@ -991,7 +978,7 @@ class DbTools {
         var element = ListNF074_Pieces_Actions[i];
         associateList.add({"Code": "${element.NF074_Pieces_Actions_CodeArticlePD1}", "Desc": "${element.NF074_Pieces_Actions_DescriptionPD1}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPiecesActionsArticles1");
+      await exportCSV(associateList, "getNF074_CtrlPiecesActionsArticles1");
 
       return true;
     }
@@ -1004,12 +991,10 @@ class DbTools {
     for (var map in list) {
       rows.add([map["Code"], map["Desc"]]);
     }
-    String csv = const ListToCsvConverter().convert(fieldDelimiter : ";",rows);
+    String csv = const ListToCsvConverter().convert(fieldDelimiter: ";", rows);
     List<int> bytes = utf8.encode(csv);
     await FileSaveHelper.saveAndLaunchFile(bytes, '$wName.csv');
   }
-
-
 
   static Future<bool> getNF074_CtrlPiecesActionsArticles2() async {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE NF074_Pieces_Actions_Code_article_PD2 != '' AND NF074_Pieces_Actions_Code_article_PD2 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Actions_Code_article_PD2;";
@@ -1023,7 +1008,7 @@ class DbTools {
         var element = ListNF074_Pieces_Actions[i];
         associateList.add({"Code": "${element.NF074_Pieces_Actions_CodeArticlePD2}", "Desc": "${element.NF074_Pieces_Actions_DescriptionPD2}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPiecesActionsArticles2");
+      await exportCSV(associateList, "getNF074_CtrlPiecesActionsArticles2");
 
       return true;
     }
@@ -1042,13 +1027,12 @@ class DbTools {
         var element = ListNF074_Pieces_Actions[i];
         associateList.add({"Code": "${element.NF074_Pieces_Actions_CodeArticlePD3}", "Desc": "${element.NF074_Pieces_Actions_DescriptionPD3}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPiecesActionsArticles3");
+      await exportCSV(associateList, "getNF074_CtrlPiecesActionsArticles3");
 
       return true;
     }
     return false;
   }
-
 
   static Future<List<NF074_Pieces_Actions>> getNF074_Pieces_Actions_API_Post(String aType, String aSQL) async {
     setSrvToken();
@@ -1081,8 +1065,6 @@ class DbTools {
   static List<NF074_Pieces_Det> ListNF074_Pieces_Detsearchresult = [];
   static NF074_Pieces_Det gNF074_Pieces_Det = NF074_Pieces_Det.NF074_Pieces_DetInit();
 
-
-
   static Future<bool> getNF074_CtrlGammesPiecesDet() async {
     String wSql = "SELECT NF074_Pieces_Det.* FROM NF074_Pieces_Det WHERE  NF074_Pieces_Det_CODF NOT IN (SELECT NF074_Gammes_CODF FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_CODF;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
@@ -1094,8 +1076,6 @@ class DbTools {
     }
     return false;
   }
-
-
 
   static Future<bool> getNF074_Pieces_DetAll() async {
     ListNF074_Pieces_Det = await getNF074_Pieces_Det_API_Post("select", "select * from NF074_Pieces_Det ORDER BY NF074_Pieces_DetId");
@@ -1120,7 +1100,7 @@ class DbTools {
         var element = ListNF074_Pieces_Det[i];
         associateList.add({"Code": "${element.NF074_Pieces_Det_CodeArticlePD1}", "Desc": "${element.NF074_Pieces_Det_DescriptionPD1}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPieceDetArticles1");
+      await exportCSV(associateList, "getNF074_CtrlPieceDetArticles1");
       return true;
     }
     return false;
@@ -1138,7 +1118,7 @@ class DbTools {
         var element = ListNF074_Pieces_Det[i];
         associateList.add({"Code": "${element.NF074_Pieces_Det_CodeArticlePD2}", "Desc": "${element.NF074_Pieces_Det_DescriptionPD2}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPieceDetArticles2");
+      await exportCSV(associateList, "getNF074_CtrlPieceDetArticles2");
       return true;
     }
     return false;
@@ -1156,7 +1136,7 @@ class DbTools {
         var element = ListNF074_Pieces_Det[i];
         associateList.add({"Code": "${element.NF074_Pieces_Det_CodeArticlePD3}", "Desc": "${element.NF074_Pieces_Det_DescriptionPD3}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPieceDetArticles3");
+      await exportCSV(associateList, "getNF074_CtrlPieceDetArticles3");
       return true;
     }
     return false;
@@ -1193,9 +1173,7 @@ class DbTools {
   static List<NF074_Pieces_Det_Inc> ListNF074_Pieces_Det_Incsearchresult = [];
   static NF074_Pieces_Det_Inc gNF074_Pieces_Det_Inc = NF074_Pieces_Det_Inc.NF074_Pieces_Det_IncInit();
 
-
   static Future<bool> getNF074_CtrlGammesPieces_Det_Inc_PDT() async {
-
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_PDT NOT IN (SELECT NF074_Gammes_PDT FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_Inc_PDT;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
@@ -1243,8 +1221,6 @@ class DbTools {
     return false;
   }
 
-
-
   static Future<bool> getNF074_Pieces_Det_IncAll() async {
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", "select * from NF074_Pieces_Det_Inc ORDER BY NF074_Pieces_Det_IncId");
     if (ListNF074_Pieces_Det_Inc == null) return false;
@@ -1268,7 +1244,7 @@ class DbTools {
         var element = ListNF074_Pieces_Det_Inc[i];
         associateList.add({"Code": "${element.NF074_Pieces_Det_Inc_CodeArticlePD1}", "Desc": "${element.NF074_Pieces_Det_Inc_DescriptionPD1}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPieceDetIncArticles1");
+      await exportCSV(associateList, "getNF074_CtrlPieceDetIncArticles1");
       return true;
     }
     return false;
@@ -1286,7 +1262,7 @@ class DbTools {
         var element = ListNF074_Pieces_Det_Inc[i];
         associateList.add({"Code": "${element.NF074_Pieces_Det_Inc_CodeArticlePD2}", "Desc": "${element.NF074_Pieces_Det_Inc_DescriptionPD2}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPieceDetIncArticles2");
+      await exportCSV(associateList, "getNF074_CtrlPieceDetIncArticles2");
       return true;
     }
     return false;
@@ -1304,11 +1280,12 @@ class DbTools {
         var element = ListNF074_Pieces_Det_Inc[i];
         associateList.add({"Code": "${element.NF074_Pieces_Det_Inc_CodeArticlePD3}", "Desc": "${element.NF074_Pieces_Det_Inc_DescriptionPD3}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlPieceDetIncArticles3");
+      await exportCSV(associateList, "getNF074_CtrlPieceDetIncArticles3");
       return true;
     }
     return false;
   }
+
   static Future<List<NF074_Pieces_Det_Inc>> getNF074_Pieces_Det_Inc_API_Post(String aType, String aSQL) async {
     setSrvToken();
     String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
@@ -1341,7 +1318,6 @@ class DbTools {
   static NF074_Mixte_Produit gNF074_Mixte_Produit = NF074_Mixte_Produit.NF074_Mixte_ProduitInit();
 
   static Future<bool> getNF074_CtrlGammesMixte_Produit_PDT() async {
-
     String wSql = "SELECT NF074_Mixte_Produit.* FROM NF074_Mixte_Produit WHERE  NF074_Mixte_Produit_PDT NOT IN (SELECT NF074_Gammes_PDT FROM NF074_Gammes) GROUP BY NF074_Mixte_Produit_PDT;";
     print("getNF074_CtrlGammesMixte_Produit_PDT wSql $wSql");
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
@@ -1376,9 +1352,7 @@ class DbTools {
     }
     return false;
   }
-  
-  
-  
+
   static Future<bool> getNF074_Mixte_ProduitAll() async {
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", "select * from NF074_Mixte_Produit ORDER BY NF074_Mixte_ProduitId");
     if (ListNF074_Mixte_Produit == null) return false;
@@ -1404,7 +1378,7 @@ class DbTools {
         var element = ListNF074_Mixte_Produit[i];
         associateList.add({"Code": "${element.NF074_Mixte_Produit_CodeArticlePD1}", "Desc": "${element.NF074_Mixte_Produit_DescriptionPD1}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlMixteProduitArticles1");
+      await exportCSV(associateList, "getNF074_CtrlMixteProduitArticles1");
 
       return true;
     }
@@ -1425,7 +1399,7 @@ class DbTools {
         var element = ListNF074_Mixte_Produit[i];
         associateList.add({"Code": "${element.NF074_Mixte_Produit_CodeArticlePD2}", "Desc": "${element.NF074_Mixte_Produit_DescriptionPD2}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlMixteProduitArticles2");
+      await exportCSV(associateList, "getNF074_CtrlMixteProduitArticles2");
 
       return true;
     }
@@ -1446,14 +1420,12 @@ class DbTools {
         var element = ListNF074_Mixte_Produit[i];
         associateList.add({"Code": "${element.NF074_Mixte_Produit_CodeArticlePD3}", "Desc": "${element.NF074_Mixte_Produit_DescriptionPD3}"});
       }
-      await exportCSV(associateList , "getNF074_CtrlMixteProduitArticles3");
+      await exportCSV(associateList, "getNF074_CtrlMixteProduitArticles3");
 
       return true;
     }
     return false;
   }
-
-
 
   static Future<List<NF074_Mixte_Produit>> getNF074_Mixte_Produit_API_Post(String aType, String aSQL) async {
     setSrvToken();
@@ -1643,25 +1615,20 @@ class DbTools {
     for (int i = 0; i < ListClient_CSIP_Total.length; i++) {
       Client tClient = ListClient_CSIP_Total[i];
 
-      if (tClient.ClientId == wClient .ClientId)
-      {
+      if (tClient.ClientId == wClient.ClientId) {
         wTrv = true;
         break;
       }
     }
 
-    if (!wTrv)
-    {
+    if (!wTrv) {
       ListClient_CSIP_Total.add(wClient);
     }
 
-
-
     return true;
-
   }
-  static Future<bool> getClient_User_CSIP(int wUserID) async {
 
+  static Future<bool> getClient_User_CSIP(int wUserID) async {
     ListClient_CSIP_Total.clear();
     await getClient_User_C(wUserID);
     print("  ••••••••• getClient_User_CSIP ${ListClient_CSIP.length}");
@@ -1669,7 +1636,6 @@ class DbTools {
       wClient.Client_Origine_CSIP = "C";
       ListClient_CSIP_Total_Insert(wClient);
     });
-
 
     await getClient_User_S(wUserID);
     ListClient_CSIP.forEach((wClient) {
@@ -1699,14 +1665,12 @@ class DbTools {
       ListClient_CSIP_Total_Insert(wClient);
     });
 
-
     ListClient.clear();
     ListClient.addAll(ListClient_CSIP_Total);
 
     print("  ••••••••• getClient_User_CSIP ListClient ${ListClient.length}");
     ListClient_CSIP_Total.clear();
     return true;
-
   }
 /*
 
@@ -1720,9 +1684,6 @@ class DbTools {
   UNION
   SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions, Planning where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = 11;
 */
-
-
-
 
   static Future<bool> getClient_User_C(int wUserID) async {
 //    String wSlq = "SELECT Clients.* FROM Clients Where Clients.Client_Commercial = $wUserID";
@@ -1754,7 +1715,8 @@ class DbTools {
   }
 
   static Future<bool> getClient_User_I(int wUserID) async {
-    String wSlq = "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID  where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = $wUserID";
+    String wSlq =
+        "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID  where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = $wUserID";
     print("  ••••••••• getClient_User_I ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1767,7 +1729,8 @@ class DbTools {
   }
 
   static Future<bool> getClient_User_I2(int wUserID) async {
-    String wSlq = "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable2 = Users.UserID  where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = $wUserID";
+    String wSlq =
+        "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable2 = Users.UserID  where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = $wUserID";
     print("  ••••••••• getClient_User_I2 ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1780,7 +1743,8 @@ class DbTools {
   }
 
   static Future<bool> getClient_User_P(int wUserID) async {
-    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions, Planning JOIN Users ON Planning.Planning_ResourceId = Users.UserID   where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = $wUserID";
+    String wSlq =
+        "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions, Planning JOIN Users ON Planning.Planning_ResourceId = Users.UserID   where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = $wUserID";
     print("  ••••••••• getClient_User_P ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1817,9 +1781,6 @@ class DbTools {
     return [];
   }
 
-
-
-
   //*****************************
   //*****************************
   //*****************************
@@ -1829,12 +1790,12 @@ class DbTools {
     ListClient = await getClient_API_Post("select", wSlq);
     if (ListClient == null) return false;
     if (ListClient.length > 0) {
-        return true;
-      }
+      return true;
+    }
     return false;
   }
 
-  static Future<bool> getClient(int ID ) async {
+  static Future<bool> getClient(int ID) async {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID  WHERE Clients.ClientId = $ID ORDER BY Client_Nom;";
     print("getClient wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
@@ -1846,8 +1807,6 @@ class DbTools {
     }
     return false;
   }
-
-
 
   static Future<bool> getClientDepot() async {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT'  WHERE Clients.Client_Depot = '$gDepot'  ORDER BY Client_Nom;";
@@ -1862,6 +1821,22 @@ class DbTools {
     }
     return false;
   }
+
+  static Future<bool> getClientDepotp(String wDepot) async {
+    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT'  WHERE Clients.Client_Depot = '$wDepot'  ORDER BY Client_Nom;";
+    print("getClientDepot wSlq $wSlq");
+    ListClient = await getClient_API_Post("select", wSlq);
+
+    if (ListClient == null) return false;
+    print("getClientDepot ${ListClient.length}");
+    if (ListClient.length > 0) {
+      print("getClientDepot return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
 
   static Future<bool> getClientMemID(int ID) async {
     gClient = Client.ClientInit();
@@ -1880,9 +1855,7 @@ class DbTools {
             "Client_CodeGC = \"${Client.Client_CodeGC}\", " +
         "Client_CL_Pr = ${Client.Client_CL_Pr}, " +
         "Client_Famille = \"${Client.Client_Famille}\", " +
-
         "Client_Rglt = \"${Client.Client_Rglt}\", " +
-
         "Client_Depot = \"${Client.Client_Depot}\", " +
         "Client_PersPhys = ${Client.Client_PersPhys}, " +
         "Client_OK_DataPerso = ${Client.Client_OK_DataPerso}, " +
@@ -1946,9 +1919,6 @@ class DbTools {
     }
     return [];
   }
-
-
-
 
   //*****************************
   //*****************************
@@ -2018,8 +1988,6 @@ class DbTools {
 
     return false;
   }
-
-
 
   static Future<bool> getAdresseClient(int ClientID) async {
     String wSlq = "select * from Adresses  where Adresse_ClientId = $ClientID  ORDER BY Adresse_Type,Adresse_Adr1";
@@ -2126,7 +2094,6 @@ class DbTools {
   static Groupe gGroupe = Groupe.GroupeInit();
 
   static Future<bool> getGroupeAll() async {
-
     String wTmp = "select * from Groupes ORDER BY Groupe_Nom";
     print("wTmp getGroupeAll ${wTmp}");
     ListGroupe = await getGroupe_API_Post("select", wTmp);
@@ -2140,8 +2107,6 @@ class DbTools {
     return false;
   }
 
-
-
   static Future<bool> getGroupe(int ID) async {
     String wTmp = "select * from Groupes WHERE GroupeId = $ID";
 
@@ -2152,13 +2117,11 @@ class DbTools {
 //    print("getGroupesClient ${ListGroupe.length}");
     if (ListGroupe.length > 0) {
       DbTools.gGroupe = ListGroupe[0];
-  //        print("getGroupe return TRUE");
+      //        print("getGroupe return TRUE");
       return true;
     }
     return false;
   }
-
-
 
   static Future<bool> getGroupesClient(int ID) async {
     String wTmp = "select * from Groupes WHERE Groupe_ClientId = $ID ORDER BY Groupe_Nom";
@@ -2236,7 +2199,7 @@ class DbTools {
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
-  //    print("getGroupe_API_Post parsedJson $parsedJson");
+      //    print("getGroupe_API_Post parsedJson $parsedJson");
       final items = parsedJson['data'];
 
       if (items != null) {
@@ -2266,7 +2229,7 @@ class DbTools {
     if (ListSite == null) return false;
     //print("getSiteAll ${ListSite.length}");
     if (ListSite.length > 0) {
-    //  print("getSiteAll return TRUE");
+      //  print("getSiteAll return TRUE");
       return true;
     }
     return false;
@@ -2282,13 +2245,11 @@ class DbTools {
 //    print("getSitesSite ${ListSite.length}");
     if (ListSite.length > 0) {
       gSite = ListSite[0];
-  //    print("getSite return TRUE");
+      //    print("getSite return TRUE");
       return true;
     }
     return false;
   }
-
-
 
   static Future<bool> getSitesGroupe(int ID) async {
     String wTmp = "select * from Sites WHERE Site_GroupeId = $ID ORDER BY Site_Nom";
@@ -2305,18 +2266,14 @@ class DbTools {
     return false;
   }
 
-
-
-
-
   static Future<bool> getSitesClient(int ID) async {
     String wTmp = "SELECT Sites.* FROM  Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId WHERE Groupes.Groupe_ClientId = $ID ORDER BY Site_Nom";
 
-//    print("wTmp getSitesSite ${wTmp}");
+    print("wTmp getSitesSite ${wTmp}");
     ListSite = await getSite_API_Post("select", wTmp);
 
     if (ListSite == null) return false;
-//    print("getSitesSite ${ListSite.length}");
+   print("getSitesSite ${ListSite.length}");
     if (ListSite.length > 0) {
       //    print("getSitesSite return TRUE");
       return true;
@@ -2349,6 +2306,7 @@ class DbTools {
         "Site_Acces     = \"${Site.Site_Acces}\", " +
         "Site_RT        = \"${Site.Site_RT}\", " +
         "Site_APSAD     = \"${Site.Site_APSAD}\", " +
+        "Site_DecConf     = ${Site.Site_DecConf}, " +
         "Site_ResourceId     =   ${Site.Site_ResourceId}, " +
         "Site_Rem       = \"${Site.Site_Rem}\" " +
         "WHERE SiteId   = ${Site.SiteId.toString()}";
@@ -2422,7 +2380,6 @@ class DbTools {
     return false;
   }
 
-
   static Future<bool> getZone(int ID) async {
     String wTmp = "select * from Zones WHERE ZoneId = $ID ";
 
@@ -2433,12 +2390,11 @@ class DbTools {
 //    print("getZonesClient ${ListZone.length}");
     if (ListZone.length > 0) {
       gZone = ListZone[0];
-          print("getZone return TRUE");
+      print("getZone return TRUE");
       return true;
     }
     return false;
   }
-
 
   static Future<bool> getZonesSite(int ID) async {
     String wTmp = "select * from Zones WHERE Zone_SiteId = $ID ORDER BY Zone_Nom";
@@ -2591,9 +2547,6 @@ class DbTools {
     return false;
   }
 
-
-
-
   static Future<bool> getInterventionsZone(int ID) async {
 /*
     SELECT a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId WHERE Intervention_ZoneId = 0 ORDER BY 1;
@@ -2628,7 +2581,6 @@ class DbTools {
     return false;
   }
 
-
   static Future getInterventionID(int ID) async {
     ListIntervention.forEach((element) {
       if (element.InterventionId == ID) {
@@ -2653,6 +2605,10 @@ class DbTools {
         "Intervention_Histo_Facturation      = \"${Intervention.Intervention_Histo_Facturation}\", " +
         "Intervention_Responsable            = \"${Intervention.Intervention_Responsable}\", " +
         "Intervention_Responsable2            = \"${Intervention.Intervention_Responsable2}\", " +
+        "Intervention_Responsable3            = \"${Intervention.Intervention_Responsable3}\", " +
+        "Intervention_Responsable4            = \"${Intervention.Intervention_Responsable4}\", " +
+        "Intervention_Partages                  = '${Intervention.Intervention_Partages}', " +
+        "Intervention_Contributeurs            = '${Intervention.Intervention_Contributeurs}', " +
         "Intervention_Intervenants           = \"${Intervention.Intervention_Intervenants}\", " +
         "Intervention_Reglementation         = \"${Intervention.Intervention_Reglementation}\", " +
         "Intervention_Signataire_Client      = \"${Intervention.Intervention_Signataire_Client}\", " +
@@ -2716,15 +2672,11 @@ class DbTools {
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
 
-
-
     http.StreamedResponse response = await request.send();
-
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
       final items = parsedJson['data'];
-
 
       if (items != null) {
         List<Intervention> InterventionList = await items.map<Intervention>((json) {
@@ -2737,8 +2689,6 @@ class DbTools {
     }
     return [];
   }
-
-
 
   //*************************************
   //************   PLANNING   ***********
@@ -3103,9 +3053,9 @@ class DbTools {
     ListParc_Ent = await getParc_Ent_API_Post("select", wSql);
 
     if (ListParc_Ent == null) return false;
-    print("getParc_EntID ${ListParc_Ent.length} $wSql");
+//    print("getParc_EntID ${ListParc_Ent.length} $wSql");
     if (ListParc_Ent.length > 0) {
-      print("getParc_EntID return TRUE");
+  //    print("getParc_EntID return TRUE");
       return true;
     }
     return false;
@@ -3297,11 +3247,11 @@ class DbTools {
   //******************************************
 
   static List<Parc_Art> ListParc_Art = [];
-
   static List<Parc_Art> ListParc_Art_P = [];
   static List<Parc_Art> ListParc_Art_M = [];
   static List<Parc_Art> ListParc_Art_S = [];
 
+  static List<Parc_Art> ListParc_Art_Aff = [];
 
   static List<Parc_Art> ListParc_Artsearchresult = [];
   static Parc_Art gParc_Art = Parc_Art.Parc_ArtInit(0, "");
@@ -3318,27 +3268,15 @@ class DbTools {
     return false;
   }
 
-
-
   static Future<bool> getParc_Art(int ID) async {
-
-
-
     String wTmp = "select * from Parcs_Art WHERE  ParcsArt_ParcsId = $ID ORDER BY ParcsArt_Id";
-    print("getParc_Art ${wTmp}");
-    ListParc_Art = await getParc_Art_API_Post("select",wTmp );
+    ListParc_Art = await getParc_Art_API_Post("select", wTmp);
     if (ListParc_Art == null) return false;
-    print("getParc_Art ${ListParc_Art.length}");
     if (ListParc_Art.length > 0) {
-      print("getParc_Art return TRUE");
       return true;
     }
     return false;
   }
-
-
-
-
 
   static Future<List<Parc_Art>> getParc_Art_API_Post(String aType, String aSQL) async {
     setSrvToken();
@@ -3452,6 +3390,8 @@ class DbTools {
     String wSlq = "select * from Contacts  where Contact_ClientId = $contactClientid AND Contact_AdresseId = $contactAdresseid AND Contact_Type = '$wType' ORDER BY Contact_Type";
 
     ListContact = await getContact_API_Post("select", wSlq);
+
+    gContact = Contact.ContactInit();
 
     if (ListContact == null) return false;
     //  print("getContactClientType ${ListContact.length}");
@@ -4674,18 +4614,10 @@ class DbTools {
 
     print("ctrl_NF074_Sql ${listRet.length}");
 
-
-      for (int i = 0; i < listRet.length; i++) {
-
-        print("ctrl_NF074_Sql ret ${listRet[i].ret}");
-
-
-
-      }
-
-
+    for (int i = 0; i < listRet.length; i++) {
+      print("ctrl_NF074_Sql ret ${listRet[i].ret}");
+    }
   }
-
 
   static Future<List<Ret>> getSQL_API_Post(String aType, String aSQL) async {
     setSrvToken();
@@ -4705,7 +4637,6 @@ class DbTools {
         }).toList();
         return listRet;
       }
-
     } else {
       print(response.reasonPhrase);
     }
@@ -4714,9 +4645,6 @@ class DbTools {
   //***************************************************************
   //***************************************************************
   //***************************************************************
-
-
-
 }
 
 class GrdBtnGrp {
@@ -4761,20 +4689,13 @@ class Ret {
   });
 
   factory Ret.fromJson(Map<String, dynamic> json) {
-
     Ret wRet = Ret(
-      ret : json['ret'],
+      ret: json['ret'],
     );
 
     return wRet;
   }
-
-
-
-
 }
-
-
 
 /*
 
@@ -4813,13 +4734,3 @@ ALTER TABLE `NF074 ADD PRIMARY KEY (`NF074id`);
 
 
 */
-
-
-
-
-
-
-
-
-
-

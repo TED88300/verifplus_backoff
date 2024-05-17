@@ -17,19 +17,18 @@ import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning_Edit.dart';
+import 'package:verifplus_backoff/widgets/Planning/SelectInterv.dart';
 
 class Planning extends StatefulWidget {
-
   final bool bAppBar;
   const Planning({Key? key, required this.bAppBar}) : super(key: key);
-
 
   @override
   State<Planning> createState() => _PlanningState();
 }
 
 class _PlanningState extends State<Planning> {
-  String wTitle = "";
+
   Appointment? _selectedAppointment;
   final CalendarController _calendarController = CalendarController();
 
@@ -107,7 +106,6 @@ class _PlanningState extends State<Planning> {
       ListDepot.add(wAdresse.Adresse_Nom);
     });
 
-
     if (DbTools.gClient.ClientId > 0) {
       clientNom = DbTools.gClient.Client_Nom;
       await DbTools.getGroupesClient(DbTools.gClient.ClientId);
@@ -117,8 +115,6 @@ class _PlanningState extends State<Planning> {
     }
 
     print(" DbTools.gClient.ClientId ${DbTools.gClient.ClientId} ${clientNom}");
-
-
 
     if (DbTools.gGroupe.GroupeId > 0) {
       groupeNom = DbTools.gGroupe.Groupe_Nom!;
@@ -144,7 +140,7 @@ class _PlanningState extends State<Planning> {
       DbTools.gZone.ZoneId = -1;
     }
 
-    if (DbTools.gIntervention.InterventionId! > 0) {
+    if (DbTools.gIntervention.InterventionId! >= 0) {
       interventionNom = "${DbTools.gIntervention.Intervention_Type!} ${DbTools.gIntervention.Intervention_Parcs_Type!} ${DbTools.gIntervention.Intervention_Status!}";
       await DbTools.getInterventionID(DbTools.gPlanning_Interv.Planning_Interv_InterventionId!);
     } else {
@@ -180,8 +176,6 @@ class _PlanningState extends State<Planning> {
 
     for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
       Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
-      print("wparamSaisieParam ${wparamSaisieParam.Desc()} >>>>>>>> ${wparamSaisieParam.Param_Saisie_Param_Color}");
-
       Color wColor = gColors.getColor(wparamSaisieParam.Param_Saisie_Param_Color);
       Container wDet = Container(
           margin: EdgeInsets.fromLTRB(0, 0, 25, 0),
@@ -189,7 +183,7 @@ class _PlanningState extends State<Planning> {
             children: [
               Container(
                 width: 20,
-                height: 30,
+                height: 20,
                 margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
                 color: wColor,
               ),
@@ -209,7 +203,7 @@ class _PlanningState extends State<Planning> {
           children: [
             Container(
               width: 20,
-              height: 30,
+              height: 20,
               margin: EdgeInsets.fromLTRB(0, 0, 5, 0),
               color: Color(0xFFf3a9dd),
             ),
@@ -222,10 +216,44 @@ class _PlanningState extends State<Planning> {
 
     wDets.add(wDet);
 
-    print("•••••••••••• wparamSaisieParam ${wDets.length}");
+
+     wDet = Container(
+        margin: EdgeInsets.fromLTRB(50, 0, 10, 0),
+        child: Row(
+          children: [
+            Text(
+              "Clic : ",
+              style: gColors.bodyTitle1_B_Gr,
+            ),
+            Text(
+              "Vue Intervention",
+              style: gColors.bodyTitle1_N_Gr,
+            )
+          ],
+        ));
+
+    wDets.add(wDet);
+
+    wDet = Container(
+        margin: EdgeInsets.fromLTRB(50, 0, 10, 0),
+        child: Row(
+          children: [
+            Text(
+              "Clic Long : ",
+              style: gColors.bodyTitle1_B_Gr,
+            ),
+            Text(
+              "Déplacement",
+              style: gColors.bodyTitle1_N_Gr,
+            )
+          ],
+        ));
+
+    wDets.add(wDet);
+
 
     wLegend = Container(
-      padding: EdgeInsets.fromLTRB(25, 5, 5, 5),
+      padding: EdgeInsets.fromLTRB(25, 5, 5, 0),
       color: Colors.white,
       child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: wDets),
     );
@@ -238,48 +266,46 @@ class _PlanningState extends State<Planning> {
     super.initState();
   }
 
-  Widget AppBar()
-  {
-    return
-      !widget.bAppBar ? Container() :
-      Container(
-        height: 60,
-        color: gColors.primary,
-        child: Row(
-          children: [
-            Container(
-              width: 5,
-            ),
-            InkWell(
-              child: SizedBox(
-                  height: 100.0,
-                  width: 100.0, // fixed width and height
-                  child: new Image.asset(
-                    'assets/images/AppIcow.png',
-                  )),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            Spacer(),
-            Text(
-              "Planning",
-              textAlign: TextAlign.center,
-              style: gColors.bodyTitle1_B_W,
-            ),
-            Spacer(),
-            gColors.BtnAffUser(context),
-            Container(
-              width: 150,
-              child: Text(
-                "Version : ${DbTools.gVersion}",
-                style: gColors.bodySaisie_N_W,
-              ),
-            ),
-          ],
-        ));
+  Widget AppBar() {
+    return !widget.bAppBar
+        ? Container()
+        : Container(
+            height: 60,
+            color: gColors.primary,
+            child: Row(
+              children: [
+                Container(
+                  width: 5,
+                ),
+                InkWell(
+                  child: SizedBox(
+                      height: 100.0,
+                      width: 100.0, // fixed width and height
+                      child: new Image.asset(
+                        'assets/images/AppIcow.png',
+                      )),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                Spacer(),
+                Text(
+                  "Planning",
+                  textAlign: TextAlign.center,
+                  style: gColors.bodyTitle1_B_W,
+                ),
+                Spacer(),
+                gColors.BtnAffUser(context),
+                Container(
+                  width: 150,
+                  child: Text(
+                    "Version : ${DbTools.gVersion}",
+                    style: gColors.bodySaisie_N_W,
+                  ),
+                ),
+              ],
+            ));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -308,10 +334,45 @@ class _PlanningState extends State<Planning> {
     }
 
     print("build isload $isload");
+
+    int wMargeBasse = 0;
+    if (DbTools.gIntervention.InterventionId! > 0)
+      wMargeBasse += 35;
+
+    if (isLegendVisible)
+      wMargeBasse += 160;
+
     return Material(
         child: Container(
             child: !isload
-                ? Container()
+                ? Container(
+
+              child: Column(
+                  children: [
+                  AppBar(),
+                Row(
+                  children: [
+                    Container(
+                      width: 5,
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      width: 1881,
+                      child: AffSelIntervention(),
+                    ),
+                  ],
+                ),
+                    Container(
+                      height: 175,
+                    ),
+
+                CircularProgressIndicator(),
+
+
+              ],
+            ),
+
+            )
                 : Column(
                     children: [
                       AppBar(),
@@ -320,42 +381,13 @@ class _PlanningState extends State<Planning> {
                           Container(
                             width: 5,
                           ),
-                          CommonAppBar.SquareRoundPng(context, 25, 8, Colors.green, Colors.white, "ico_Legend", ToolsBarLegend, tooltip: "Afficher Légende"),
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 377,
-                            child: Aff_Depot(),
+                            width: 1881,
+                            child: AffSelIntervention(),
                           ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 310,
-                            child: Aff_Client(),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 300,
-                            child: Aff_Groupe(),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 300,
-                            child: Aff_Site(),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 300,
-                            child: Aff_Zone(),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 300,
-                            child: Aff_Intervention(),
-                          ),
-                          /* Container(
-                            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                            width: 200,
-                            child: Column(children: wUserWidget),
-                          ),*/
+
+
                         ],
                       ),
                       (DbTools.gIntervention.InterventionId! <= 0)
@@ -364,13 +396,13 @@ class _PlanningState extends State<Planning> {
                               padding: const EdgeInsets.fromLTRB(20, 05, 20, 05),
                               color: wColor,
                               child: Text(
-                                '[${DbTools.gIntervention.InterventionId}] ${DbTools.gIntervention.Intervention_Date} $interventionNom => $wHours heures affetées',
+                                '$interventionNom => $wHours heures affetées',
                                 style: gColors.bodyTitle1_N_Wr,
                                 textAlign: TextAlign.start,
                               ),
                             ),
                       Container(
-                        height: screenHeight - (!isLegendVisible ? 153 : 183),
+                        height: screenHeight - wMargeBasse,
                         child: _getDragAndDropCalendar(_calendarController, _events, _onViewChanged, onTap, onLongPress),
                       ),
                       !isLegendVisible
@@ -382,6 +414,87 @@ class _PlanningState extends State<Planning> {
                     ],
                   )));
   }
+
+  Widget AffSelIntervention() {
+    double w = 200;
+    return Container(
+//        color: Colors.greenAccent,
+        padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+
+        width: 1680,
+        child: InkWell(
+          child: Row(
+            children: [
+              CommonAppBar.SquareRoundPng(context, 20, 8, Colors.green, Colors.white, "ico_Legend", ToolsBarLegend, tooltip: "Afficher Légende"),
+              Container(
+                width: 5,
+              ),
+              CommonAppBar.SquareRoundPng(context, 20, 8, Colors.white, Colors.red, "ico_Filtre", ToolsBarFiltre, tooltip: "Filtre"),
+              Container(
+                width: 5,
+              ),
+              gColors.Txt2(50, 'Dépot', '${Depot}', tWidth: w),
+              Container(
+                width: 5,
+              ),
+              gColors.Txt2(50, 'Client', '${clientNom}', tWidth: w+10),
+              Container(
+                width: 5,
+              ),
+              gColors.Txt2(60, 'Groupe', '${groupeNom}', tWidth: w),
+              Container(
+                width: 5,
+              ),
+              gColors.Txt2(50, 'Site', '${siteNom}', tWidth: w+10),
+              Container(
+                width: 5,
+              ),
+              gColors.Txt2(50, 'Zone', '${zoneNom}', tWidth: w),
+              Container(
+                width: 5,
+              ),
+              gColors.Txt2(90, 'Intervention', '${interventionNom}', tWidth: w+140),
+            ],
+          ),
+          onTap: ()  async{
+            print(" onTap");
+            ToolsBarFiltre();
+          },
+        ));
+  }
+
+  void ToolsBarFiltre() async {
+    showDialog<Widget>(
+      context: context,
+      builder: (BuildContext context) {
+        return SelectInter(
+          onChanged: (selChangedDetails details) async {
+            Depot           = details.depot!;
+            clientNom       = details.client!.Client_Nom;
+            if (clientNom.isNotEmpty) DbTools.gClient = details.client!;
+            groupeNom       = details.groupe!.Groupe_Nom;
+            if (groupeNom.isNotEmpty) DbTools.gGroupe = details.groupe!;
+            siteNom         = details.site!.Site_Nom;
+            if (siteNom.isNotEmpty) DbTools.gSite   = details.site!;
+            zoneNom         = details.zone!.Zone_Nom;
+            if (zoneNom.isNotEmpty) DbTools.gZone   = details.zone!;
+            interventionNom = details.intervention!.Intervention_Date!;
+            String wDate = "----/----/-------";
+            if (details.intervention!.Intervention_Date!.isNotEmpty) wDate = details.intervention!.Intervention_Date!;
+
+            interventionNom =  "[${details.intervention!.InterventionId}] ${wDate} ${details.intervention!.Intervention_Type} ${details.intervention!.Intervention_Parcs_Type} ${details.intervention!.Intervention_Status}";
+
+
+            if (interventionNom.isNotEmpty) DbTools.gIntervention = details.intervention!;
+          },
+        );
+      },
+    ).then((dynamic value) => setState(() {
+      /// update the color picker changes
+    }));
+  }
+
+
 
   void ToolsBarLegend() async {
     print("ToolsBarLegend");
@@ -431,7 +544,6 @@ class _PlanningState extends State<Planning> {
       Planning_Interv planningInterv = Planning_Interv.Planning_RdvInit();
 
       if (wplanningSrv.Planning_InterventionId == -1) {
-        print("wPlanning_Srv ADD ${wplanningSrv.Desc()}");
         planningInterv.Planning_Interv_Client_Nom = wplanningSrv.Planning_Libelle;
       } else {
         for (int r = 0; r < DbTools.ListPlanning_Interv.length; r++) {
@@ -449,7 +561,6 @@ class _PlanningState extends State<Planning> {
       }
 
       Color wColor = Colors.deepPurple;
-      ;
 
       for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
         Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
@@ -467,469 +578,13 @@ class _PlanningState extends State<Planning> {
       }
 
       final List<Object> employeeIds = <Object>[calendarResource.id];
-
       Appointment wAppointment = Appointment(subject: planningInterv.Planning_Interv_Client_Nom!, startTime: wplanningSrv.Planning_InterventionstartTime, endTime: wplanningSrv.Planning_InterventionendTime, color: wColor, resourceIds: employeeIds, recurrenceId: wplanningSrv.PlanningId);
-
       if (wplanningSrv.Planning_InterventionId == -1) print("wAppointment ADD ${wAppointment.subject} ${wAppointment.startTime} ${wAppointment.endTime} ${wAppointment.recurrenceId} ${wAppointment.resourceIds}");
-
-      appointments.add(wAppointment);
-//      appointments.add(Appointment(client: planning_Interv.Planning_Interv_Client_Nom!, site: planning_Interv.Planning_Interv_Site_Nom!, Interv: "${planning_Interv.Planning_Interv_Intervention_Type!} ${planning_Interv.Planning_Interv_Intervention_Parcs_Type!} ${planning_Interv.Planning_Interv_Intervention_Status!}", startTime: wPlanning_Srv.Planning_InterventionstartTime, endTime: wPlanning_Srv.Planning_InterventionendTime, color: calendarResource!.color, resourceIds: [int.parse(calendarResource!.id.toString())], recurrenceId: planning_Interv.Planning_Interv_InterventionId));
+        appointments.add(wAppointment);
     }
-
-    print("wAppointment ${appointments.length}");
     return appointments;
   }
 
-  Widget Aff_Depot() {
-    return ListTile(
-      contentPadding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-      title: Row(children: [
-        Text(
-          'Depots :  ',
-          style: gColors.bodyTitle1_N_Gr,
-          textAlign: TextAlign.start,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 250,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          child: Text(
-            Depot.isEmpty ? "Tous" : Depot,
-            style: gColors.bodyTitle1_B_Gr,
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            DbTools.gDepot = "";
-            DbTools.gGroupe = Groupe.GroupeInit();
-            DbTools.gGroupe.GroupeId = -1;
-            groupeNom = '';
-            DbTools.gSite = Site.SiteInit();
-            DbTools.gSite.SiteId = -1;
-            siteNom = '';
-            DbTools.gZone = Zone.ZoneInit();
-            DbTools.gZone.ZoneId = -1;
-            zoneNom = '';
-            DbTools.gIntervention = Intervention.InterventionInit();
-            DbTools.gIntervention.InterventionId = -1;
-            interventionNom = "";
-
-            setState(() {});
-          },
-        ),
-      ]),
-      onTap: () {
-        if (ListDepot.length > 0) {
-          showDialog<Widget>(
-            context: context,
-            builder: (BuildContext context) {
-              return DepotPicker(
-                onChanged: (DepotChangedDetails details) async {
-                  Depot = details.Depot!;
-                  DbTools.gDepot = details.Depot!;
-                  await DbTools.getClientDepot();
-
-                  DbTools.gClient = Client.ClientInit();
-                  DbTools.gClient.ClientId = -1;
-                  clientNom = '';
-
-                  DbTools.gGroupe = Groupe.GroupeInit();
-                  DbTools.gGroupe.GroupeId = -1;
-                  groupeNom = '';
-                  DbTools.gSite = Site.SiteInit();
-                  DbTools.gSite.SiteId = -1;
-                  siteNom = '';
-                  DbTools.gZone = Zone.ZoneInit();
-                  DbTools.gZone.ZoneId = -1;
-                  zoneNom = '';
-
-                  DbTools.gIntervention = Intervention.InterventionInit();
-                  DbTools.gIntervention.InterventionId = -1;
-                  interventionNom = "";
-
-                  setState(() {});
-                },
-                ListDepot: ListDepot,
-              );
-            },
-          ).then((dynamic value) => setState(() {
-                /// update the color picker changes
-              }));
-        }
-      },
-    );
-  }
-
-  Widget Aff_Client() {
-    return ListTile(
-      minLeadingWidth: 0,
-      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      title: Row(children: [
-        Text(
-          'Clients :  ',
-          style: gColors.bodyTitle1_N_Gr,
-          textAlign: TextAlign.start,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 185,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          child: Text(
-            clientNom.isEmpty ? "Tous" : clientNom,
-            style: gColors.bodyTitle1_B_Gr,
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            DbTools.gClient = Client.ClientInit();
-            DbTools.gClient.ClientId = -1;
-            clientNom = '';
-            DbTools.gGroupe = Groupe.GroupeInit();
-            DbTools.gGroupe.GroupeId = -1;
-            groupeNom = '';
-            DbTools.gSite = Site.SiteInit();
-            DbTools.gSite.SiteId = -1;
-            siteNom = '';
-            DbTools.gZone = Zone.ZoneInit();
-            DbTools.gZone.ZoneId = -1;
-            zoneNom = '';
-            DbTools.gIntervention = Intervention.InterventionInit();
-            DbTools.gIntervention.InterventionId = -1;
-            interventionNom = "";
-
-            setState(() {});
-          },
-        ),
-      ]),
-      onTap: () {
-        if (DbTools.ListClient.length > 0) {
-          showDialog<Widget>(
-            context: context,
-            builder: (BuildContext context) {
-              return clientPicker(
-                onChanged: (clientChangedDetails details) async {
-                  clientNom = details.clientNom!;
-                  DbTools.gClient.ClientId = details.clientId!;
-                  await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-
-                  DbTools.gGroupe = Groupe.GroupeInit();
-                  DbTools.gGroupe.GroupeId = -1;
-                  groupeNom = '';
-                  DbTools.gSite = Site.SiteInit();
-                  DbTools.gSite.SiteId = -1;
-                  siteNom = '';
-                  DbTools.gZone = Zone.ZoneInit();
-                  DbTools.gZone.ZoneId = -1;
-                  zoneNom = '';
-
-                  DbTools.gIntervention = Intervention.InterventionInit();
-                  DbTools.gIntervention.InterventionId = -1;
-                  interventionNom = "";
-
-                  for (int i = 0; i < DbTools.ListGroupe.length; i++) {
-                    var element = DbTools.ListGroupe[i];
-                    print("element ${element.GroupeId}  ${element.Groupe_Nom}");
-                  }
-                  setState(() {});
-                },
-              );
-            },
-          ).then((dynamic value) => setState(() {
-                /// update the color picker changes
-              }));
-        }
-      },
-    );
-  }
-
-  Widget Aff_Groupe() {
-    return ListTile(
-      minLeadingWidth: 0,
-      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      title: Row(children: [
-        Text(
-          'Groupes : ',
-          style: gColors.bodyTitle1_N_Gr,
-          textAlign: TextAlign.start,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 185,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          child: Text(
-            groupeNom.isEmpty ? "Tous" : "$groupeNom",
-            style: gColors.bodyTitle1_B_Gr,
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            DbTools.gGroupe = Groupe.GroupeInit();
-            DbTools.gGroupe.GroupeId = -1;
-            groupeNom = '';
-            DbTools.gSite = Site.SiteInit();
-            DbTools.gSite.SiteId = -1;
-            siteNom = '';
-            DbTools.gZone = Zone.ZoneInit();
-            DbTools.gZone.ZoneId = -1;
-            zoneNom = '';
-            DbTools.gIntervention = Intervention.InterventionInit();
-            DbTools.gIntervention.InterventionId = -1;
-            interventionNom = "";
-
-            setState(() {});
-          },
-        )
-      ]),
-      onTap: () {
-        if (DbTools.ListGroupe.length > 0) {
-          showDialog<Widget>(
-            context: context,
-            builder: (BuildContext context) {
-              return GroupePicker(
-                onChanged: (GroupeChangedDetails details) async {
-                  groupeNom = details.GroupeNom!;
-                  DbTools.gGroupe.GroupeId = details.GroupeId!;
-
-                  await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
-                  DbTools.gSite = Site.SiteInit();
-                  DbTools.gSite.SiteId = -1;
-                  siteNom = '';
-                  DbTools.gZone = Zone.ZoneInit();
-                  DbTools.gZone.ZoneId = -1;
-                  zoneNom = '';
-
-                  DbTools.gIntervention = Intervention.InterventionInit();
-                  DbTools.gIntervention.InterventionId = -1;
-                  interventionNom = "";
-
-                  setState(() {});
-                },
-              );
-            },
-          ).then((dynamic value) => setState(() {
-                /// update the color picker changes
-              }));
-        }
-      },
-    );
-  }
-
-  Widget Aff_Site() {
-    return ListTile(
-      minLeadingWidth: 0,
-      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      title: Row(children: [
-        Text(
-          'Sites : ',
-          style: gColors.bodyTitle1_N_Gr,
-          textAlign: TextAlign.start,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 200,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          child: Text(
-            siteNom.isEmpty ? "Tous" : siteNom,
-            style: gColors.bodyTitle1_B_Gr,
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            DbTools.gSite = Site.SiteInit();
-            DbTools.gSite.SiteId = -1;
-            siteNom = '';
-            DbTools.gZone = Zone.ZoneInit();
-            DbTools.gZone.ZoneId = -1;
-            zoneNom = '';
-            DbTools.gIntervention = Intervention.InterventionInit();
-            DbTools.gIntervention.InterventionId = -1;
-            interventionNom = "";
-
-            setState(() {});
-          },
-        )
-      ]),
-      onTap: () {
-        if (DbTools.ListSite.length > 0) {
-          showDialog<Widget>(
-            context: context,
-            builder: (BuildContext context) {
-              return SitePicker(
-                onChanged: (SiteChangedDetails details) async {
-                  siteNom = details.SiteNom!;
-                  DbTools.gSite.SiteId = details.SiteId!;
-
-                  await DbTools.getZonesSite(DbTools.gSite.SiteId);
-
-                  DbTools.gZone = Zone.ZoneInit();
-                  DbTools.gZone.ZoneId = -1;
-                  zoneNom = '';
-                  DbTools.gIntervention = Intervention.InterventionInit();
-                  DbTools.gIntervention.InterventionId = -1;
-                  interventionNom = "";
-
-                  setState(() {});
-                },
-              );
-            },
-          ).then((dynamic value) => setState(() {
-                /// update the color picker changes
-              }));
-        }
-      },
-    );
-  }
-
-  Widget Aff_Zone() {
-    return ListTile(
-      minLeadingWidth: 0,
-      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      title: Row(children: [
-        Text(
-          'Zones : ',
-          style: gColors.bodyTitle1_N_Gr,
-          textAlign: TextAlign.start,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 200,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          child: Text(
-            zoneNom.isEmpty ? "Toutes" : zoneNom,
-            style: gColors.bodyTitle1_B_Gr,
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            DbTools.gZone = Zone.ZoneInit();
-            DbTools.gZone.ZoneId = -1;
-            zoneNom = '';
-
-            DbTools.gIntervention = Intervention.InterventionInit();
-            DbTools.gIntervention.InterventionId = -1;
-            interventionNom = "";
-
-            setState(() {});
-          },
-        )
-      ]),
-      onTap: () {
-        if (DbTools.ListZone.length > 0) {
-          showDialog<Widget>(
-            context: context,
-            builder: (BuildContext context) {
-              return ZonePicker(
-                onChanged: (ZoneChangedDetails details) async {
-                  zoneNom = details.ZoneNom!;
-                  DbTools.gZone.ZoneId = details.ZoneId!;
-
-                  await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-                  DbTools.gIntervention = Intervention.InterventionInit();
-                  DbTools.gIntervention.InterventionId = -1;
-                  interventionNom = "";
-
-                  setState(() {});
-                },
-              );
-            },
-          ).then((dynamic value) => setState(() {
-                /// update the color picker changes
-              }));
-        }
-      },
-    );
-  }
-
-  Widget Aff_Intervention() {
-    return ListTile(
-      contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      title: Row(children: [
-        Text(
-          'Interv. : ',
-          style: gColors.bodyTitle1_N_Gr,
-          textAlign: TextAlign.start,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: 200,
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.black,
-              ),
-            ),
-          ),
-          child: Text(
-            interventionNom.isEmpty ? "Toutes" : interventionNom,
-            style: gColors.bodyTitle1_B_Gr,
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            DbTools.gIntervention = Intervention.InterventionInit();
-            DbTools.gIntervention.InterventionId = -1;
-            interventionNom = '';
-            setState(() {});
-          },
-        )
-      ]),
-      onTap: () {
-        if (DbTools.ListIntervention.length > 0) {
-          showDialog<Widget>(
-            context: context,
-            builder: (BuildContext context) {
-              return InterventionPicker(
-                onChanged: (InterventionChangedDetails details) async {
-                  interventionNom = details.InterventionNom!;
-                  await DbTools.getInterventionID(details.InterventionId!);
-
-                  setState(() {});
-                },
-              );
-            },
-          ).then((dynamic value) => setState(() {
-                /// update the color picker changes
-              }));
-        }
-      },
-    );
-  }
 
   void onMaj() async {
     print("Parent onMaj()");
@@ -1216,7 +871,6 @@ class _PlanningState extends State<Planning> {
     bool isInOther = false; // ( wStart.hour + wStart.minute + wStart.second == 0 && wEnd.hour + wEnd.minute + wEnd.second == 0 );
 
     if (wStart.hour + wStart.minute + wStart.second == 0) {
-      wStart = wStart.add(Duration(hours: 8));
       wEnd = wStart.add(Duration(hours: wDuration));
     }
     print("appointment 888 ${wStart.hour}");
@@ -1503,358 +1157,5 @@ class _ShiftDataSource extends CalendarDataSource {
   }
 }
 
-// Depots
 
-typedef DepotChanged = void Function(DepotChangedDetails pickerChangedDetails);
 
-class DepotChangedDetails {
-  DepotChangedDetails({this.Depot});
-  final String? Depot;
-}
-
-class DepotPicker extends StatefulWidget {
-  const DepotPicker({required this.onChanged, required this.ListDepot});
-
-  final DepotChanged onChanged;
-  final List<String> ListDepot;
-
-  @override
-  State<StatefulWidget> createState() => DepotPickerState();
-}
-
-class DepotPickerState extends State<DepotPicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-        data: gColors.wTheme,
-        child: AlertDialog(
-          content: SizedBox(
-              width: 500,
-              height: (widget.ListDepot.length * 50).toDouble(),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: widget.ListDepot.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final String wDepot = widget.ListDepot[index];
-                  return SizedBox(
-                      height: 50,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        title: Text(wDepot),
-                        onTap: () {
-                          setState(() {
-                            widget.onChanged(DepotChangedDetails(Depot: wDepot));
-                          });
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            Navigator.pop(context);
-                          });
-                        },
-                      ));
-                },
-              )),
-        ));
-  }
-}
-
-// Clients
-
-typedef clientChanged = void Function(clientChangedDetails pickerChangedDetails);
-
-class clientChangedDetails {
-  clientChangedDetails({this.index = -1, this.client, this.clientId, this.clientNom});
-
-  final Client? client;
-  final int index;
-  final int? clientId;
-  final String? clientNom;
-}
-
-class clientPicker extends StatefulWidget {
-  const clientPicker({required this.onChanged});
-
-  final clientChanged onChanged;
-
-  @override
-  State<StatefulWidget> createState() => clientPickerState();
-}
-
-class clientPickerState extends State<clientPicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-        data: gColors.wTheme,
-        child: AlertDialog(
-          content: SizedBox(
-              width: 500,
-              height: (DbTools.ListClient.length * 50).toDouble(),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: DbTools.ListClient.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Client wClient = DbTools.ListClient[index];
-                  return SizedBox(
-                      height: 50,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        title: Text(wClient.Client_Nom, style: DbTools.gClient.ClientId == wClient.ClientId ? gColors.bodyTitle1_B_Gr : gColors.bodyTitle1_N_Gr),
-                        onTap: () {
-                          setState(() {
-                            widget.onChanged(clientChangedDetails(clientId: wClient.ClientId, client: wClient, clientNom: wClient.Client_Nom));
-                          });
-
-                          // ignore: always_specify_types
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            // When task is over, close the dialog
-                            Navigator.pop(context);
-                          });
-                        },
-                      ));
-                },
-              )),
-        ));
-  }
-}
-
-// Groupes
-
-typedef GroupeChanged = void Function(GroupeChangedDetails pickerChangedDetails);
-
-class GroupeChangedDetails {
-  GroupeChangedDetails({this.index = -1, this.groupe, this.GroupeId, this.GroupeNom});
-
-  final Groupe? groupe;
-  final int index;
-  final int? GroupeId;
-  final String? GroupeNom;
-}
-
-class GroupePicker extends StatefulWidget {
-  const GroupePicker({required this.onChanged});
-
-  final GroupeChanged onChanged;
-
-  @override
-  State<StatefulWidget> createState() => GroupePickerState();
-}
-
-class GroupePickerState extends State<GroupePicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-        data: gColors.wTheme,
-        child: AlertDialog(
-          content: SizedBox(
-              width: 500,
-              height: (DbTools.ListGroupe.length * 50).toDouble(),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: DbTools.ListGroupe.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Groupe wGroupe = DbTools.ListGroupe[index];
-                  print("DbTools.gGroupe.GroupeId ${DbTools.gGroupe.GroupeId} wGroupe.GroupeId ${wGroupe.GroupeId}");
-
-                  return SizedBox(
-                      height: 50,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        title: Text(wGroupe.Groupe_Nom, style: DbTools.gGroupe.GroupeId == wGroupe.GroupeId ? gColors.bodyTitle1_B_Gr : gColors.bodyTitle1_N_Gr),
-                        onTap: () {
-                          setState(() {
-                            widget.onChanged(GroupeChangedDetails(GroupeId: wGroupe.GroupeId, groupe: wGroupe, GroupeNom: wGroupe.Groupe_Nom));
-                          });
-
-                          // ignore: always_specify_types
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            // When task is over, close the dialog
-                            Navigator.pop(context);
-                          });
-                        },
-                      ));
-                },
-              )),
-        ));
-  }
-}
-
-// Sites
-
-typedef SiteChanged = void Function(SiteChangedDetails pickerChangedDetails);
-
-class SiteChangedDetails {
-  SiteChangedDetails({this.index = -1, this.site, this.SiteId, this.SiteNom});
-
-  final Site? site;
-  final int index;
-  final int? SiteId;
-  final String? SiteNom;
-}
-
-class SitePicker extends StatefulWidget {
-  const SitePicker({required this.onChanged});
-
-  final SiteChanged onChanged;
-
-  @override
-  State<StatefulWidget> createState() => SitePickerState();
-}
-
-class SitePickerState extends State<SitePicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-        data: gColors.wTheme,
-        child: AlertDialog(
-          content: SizedBox(
-              width: 500,
-              height: (DbTools.ListSite.length * 50).toDouble(),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: DbTools.ListSite.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Site wSite = DbTools.ListSite[index];
-                  print("DbTools.gSite.SiteId ${DbTools.gSite.SiteId} wSite.SiteId ${wSite.SiteId}");
-
-                  return SizedBox(
-                      height: 50,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        title: Text(wSite.Site_Nom, style: DbTools.gSite.SiteId == wSite.SiteId ? gColors.bodyTitle1_B_Gr : gColors.bodyTitle1_N_Gr),
-                        onTap: () {
-                          setState(() {
-                            widget.onChanged(SiteChangedDetails(SiteId: wSite.SiteId, site: wSite, SiteNom: wSite.Site_Nom));
-                          });
-
-                          // ignore: always_specify_types
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            // When task is over, close the dialog
-                            Navigator.pop(context);
-                          });
-                        },
-                      ));
-                },
-              )),
-        ));
-  }
-}
-
-// Zones
-
-typedef ZoneChanged = void Function(ZoneChangedDetails pickerChangedDetails);
-
-class ZoneChangedDetails {
-  ZoneChangedDetails({this.index = -1, this.zone, this.ZoneId, this.ZoneNom});
-
-  final Zone? zone;
-  final int index;
-  final int? ZoneId;
-  final String? ZoneNom;
-}
-
-class ZonePicker extends StatefulWidget {
-  const ZonePicker({required this.onChanged});
-
-  final ZoneChanged onChanged;
-
-  @override
-  State<StatefulWidget> createState() => ZonePickerState();
-}
-
-class ZonePickerState extends State<ZonePicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-        data: gColors.wTheme,
-        child: AlertDialog(
-          content: SizedBox(
-              width: 500,
-              height: (DbTools.ListZone.length * 50).toDouble(),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: DbTools.ListZone.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Zone wZone = DbTools.ListZone[index];
-                  print("DbTools.gZone.ZoneId ${DbTools.gZone.ZoneId} wZone.ZoneId ${wZone.ZoneId}");
-
-                  return SizedBox(
-                      height: 50,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        title: Text(wZone.Zone_Nom, style: DbTools.gZone.ZoneId == wZone.ZoneId ? gColors.bodyTitle1_B_Gr : gColors.bodyTitle1_N_Gr),
-                        onTap: () {
-                          setState(() {
-                            widget.onChanged(ZoneChangedDetails(ZoneId: wZone.ZoneId, zone: wZone, ZoneNom: wZone.Zone_Nom));
-                          });
-
-                          // ignore: always_specify_types
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            // When task is over, close the dialog
-                            Navigator.pop(context);
-                          });
-                        },
-                      ));
-                },
-              )),
-        ));
-  }
-}
-
-// Interventions
-
-typedef InterventionChanged = void Function(InterventionChangedDetails pickerChangedDetails);
-
-class InterventionChangedDetails {
-  InterventionChangedDetails({this.index = -1, this.intervention, this.InterventionId, this.InterventionNom});
-
-  final Intervention? intervention;
-  final int index;
-  final int? InterventionId;
-  final String? InterventionNom;
-}
-
-class InterventionPicker extends StatefulWidget {
-  const InterventionPicker({required this.onChanged});
-
-  final InterventionChanged onChanged;
-
-  @override
-  State<StatefulWidget> createState() => InterventionPickerState();
-}
-
-class InterventionPickerState extends State<InterventionPicker> {
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-        data: gColors.wTheme,
-        child: AlertDialog(
-          content: SizedBox(
-              width: 500,
-              height: (DbTools.ListIntervention.length * 50).toDouble(),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                itemCount: DbTools.ListIntervention.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Intervention wIntervention = DbTools.ListIntervention[index];
-                  print("DbTools.gIntervention.InterventionId ${DbTools.gIntervention.InterventionId} wIntervention.InterventionId ${wIntervention.InterventionId}");
-
-                  return SizedBox(
-                      height: 50,
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                        title: Text("${wIntervention.Intervention_Type} ${wIntervention.Intervention_Parcs_Type} ${wIntervention.Intervention_Status} [${wIntervention.InterventionId}]", style: DbTools.gIntervention.InterventionId == wIntervention.InterventionId ? gColors.bodyTitle1_B_Gr : gColors.bodyTitle1_N_Gr),
-                        onTap: () {
-                          setState(() {
-                            widget.onChanged(InterventionChangedDetails(InterventionId: wIntervention.InterventionId, intervention: wIntervention, InterventionNom: "${wIntervention.Intervention_Type} ${wIntervention.Intervention_Parcs_Type} ${wIntervention.Intervention_Status}"));
-                          });
-
-                          // ignore: always_specify_types
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            // When task is over, close the dialog
-                            Navigator.pop(context);
-                          });
-                        },
-                      ));
-                },
-              )),
-        ));
-  }
-}

@@ -147,7 +147,7 @@ class CommonAppBar {
         ]);
   }
 
-  static Widget SquareRoundIcon(BuildContext context, double wsize, double wradius, Color bckcolor, Color color, IconData icon, VoidCallback onTapVoidCallback, {String tooltip = "", bool isEnable = true}) {
+  static Widget SquareRoundIcon(BuildContext context, double wsize, double wradius, Color bckcolor, Color color, IconData icon, VoidCallback onTapVoidCallback, {String tooltip = "", bool isEnable = true, bordercolor: gColors.LinearGradient1}) {
     return Tooltip(
         textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
         decoration: BoxDecoration(color: Colors.orange),
@@ -157,7 +157,7 @@ class CommonAppBar {
                 child: Container(
                   width: wsize,
                   height: wsize,
-                  decoration: BoxDecoration(color: bckcolor, borderRadius: BorderRadius.all(Radius.circular(wradius)), border: Border.all(color: gColors.LinearGradient1)),
+                  decoration: BoxDecoration(color: bckcolor, borderRadius: BorderRadius.all(Radius.circular(wradius)), border: Border.all(color: bordercolor)),
                   child: Icon(
                     icon,
                     color: color,
@@ -180,6 +180,10 @@ class CommonAppBar {
                 ),
               ));
   }
+
+
+
+
 
   static Widget SquareRoundPng(BuildContext context, double wsize, double wradius, Color bckcolor, Color color, String png, VoidCallback onTapVoidCallback, {String tooltip = "", bool isEnable = true}) {
     return Tooltip(

@@ -436,7 +436,7 @@ class _Articles_screenState extends State<Articles_screen> {
             Icon(
               Icons.search,
               color: Colors.blue,
-              size: 24.0,
+              size: 30.0,
             ),
             Container(
               width: 10,
@@ -449,12 +449,27 @@ class _Articles_screenState extends State<Articles_screen> {
                   print("_buildFieldTextSearch search ${Search_TextController.text}");
                   await Filtre();
                 },
-                decoration: InputDecoration(
-                  isDense: true,
-                ),
+                decoration: gColors.wRechInputDecoration,
                 style: gColors.bodySaisie_B_B,
               ),
             ),
+            Container(
+              width: 10,
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.cancel,
+                size: 20.0,
+              ),
+              onPressed: () async {
+                Search_TextController.clear();
+                await Filtre();
+              },
+            ),
+            Container(
+              width: 10,
+            ),
+
             DropdownFiltreGroupe(),
             DropdownFiltreFam(),
             DropdownFiltreSousFam(),

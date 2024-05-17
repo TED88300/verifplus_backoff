@@ -1,29 +1,33 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:image/image.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
 class ParamSite_Dialog {
   ParamSite_Dialog();
 
-  static Future<void> ParamSite_dialog(
-    BuildContext context,
-  ) async {
+  static Future<void> ParamSite_dialog(BuildContext context, {bool readonly = false}) async {
     await showDialog(
       context: context,
-      builder: (BuildContext context) => new ParamSite(),
+      builder: (BuildContext context) => new ParamSite(readonly: readonly),
     );
   }
 }
 
 class ParamSite extends StatefulWidget {
+  final bool readonly;
+  const ParamSite({Key? key, required this.readonly}) : super(key: key);
+
   @override
   State<ParamSite> createState() => _ParamSiteState();
 }
 
 class _ParamSiteState extends State<ParamSite> {
   String wTitle = "";
+
+  bool readonly = false;
 
   static List<String> listMes = [
     "Règle APSAD R1 / Sprinkleurs",
@@ -42,7 +46,23 @@ class _ParamSiteState extends State<ParamSite> {
     "DREAL (Direction régionale de l'environnement, de l'aménagement et du logement)",
     "Autres",
   ];
-  static List<bool> itemlistApp = [false, false, false, false, false, false, false, false, false, false,false, false, false, false, false,];
+  static List<bool> itemlistApp = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
 
   void initLib() async {
     String siteApsad = DbTools.gSite.Site_APSAD!;
@@ -56,6 +76,7 @@ class _ParamSiteState extends State<ParamSite> {
   }
 
   void initState() {
+    readonly = widget.readonly;
     initLib();
     super.initState();
   }
@@ -65,35 +86,28 @@ class _ParamSiteState extends State<ParamSite> {
 
     List<Widget> cclistMes = [];
     for (int i = 0; i < listMes.length; i++) {
-      print("_buildPopupDialog A");
       var wlistMes = listMes[i];
-      print("_buildPopupDialog B");
       var witemlistApp = false;
-      if (i < itemlistApp.length)
-{
-  witemlistApp = itemlistApp[i];
-
-}
-      print("_buildPopupDialog C");
-
-
-      cclistMes.add(
-
-          gColors.CheckBoxField(
-          400,
-          8,
-          "$wlistMes",
-          witemlistApp,
-          (sts) => setState(() {
-                itemlistApp[i] = sts!;
-                print("itemlistApp ${itemlistApp.toString()}");
-              }))
-
-
-
-      );
+      if (i < itemlistApp.length) {
+        witemlistApp = itemlistApp[i];
+      }
+      readonly
+          ? cclistMes.add(gColors.CheckBoxFieldReadOnly(
+              400,
+              8,
+              "$wlistMes",
+              witemlistApp,
+            ))
+          : cclistMes.add(gColors.CheckBoxField(
+              400,
+              8,
+              "$wlistMes",
+              witemlistApp,
+              (sts) => setState(() {
+                    itemlistApp[i] = sts!;
+                    print("itemlistApp ${itemlistApp.toString()}");
+                  })));
     }
-    print("_buildPopupDialog D");
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -134,7 +148,7 @@ class _ParamSiteState extends State<ParamSite> {
           ),
         ),
         child: Container(
-            height : height,
+          height: height,
           padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -154,11 +168,11 @@ class _ParamSiteState extends State<ParamSite> {
               Container(
                 height: 20,
               ),
+              readonly ? Container() :
               new ElevatedButton(
                 onPressed: () async {
                   DbTools.gSite.Site_APSAD = itemlistApp.toString();
                   DbTools.setSite(DbTools.gSite);
-
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(

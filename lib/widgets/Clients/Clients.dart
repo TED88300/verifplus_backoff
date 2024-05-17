@@ -16,6 +16,8 @@ class ClientDataSource extends DataGridSource {
   List<String> ListParam_FiltreFamID = [];
 
   ClientDataSource() {
+    DbTools.getParam_ParamFam("FamClient");
+
     ListParam_FiltreFam.clear();
     ListParam_FiltreFam.addAll(DbTools.ListParam_FiltreFam);
     ListParam_FiltreFamID.clear();
@@ -25,18 +27,23 @@ class ClientDataSource extends DataGridSource {
 
   void buildDataGridRow() {
     dataGridRow = DbTools.ListClientsearchresult.map<DataGridRow>((client) {
+
+      print("ListParam_FiltreFam ${ListParam_FiltreFam.toString()}");
+print("ListParam_FiltreFamID ${ListParam_FiltreFamID.toString()}");
+
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'id',             value: client.ClientId),
-        DataGridCell<bool>(columnName: 'contrat',       value: client.Client_Contrat),
-        DataGridCell<String>(columnName: 'statut',      value: client.Client_Statut),
-        DataGridCell<String>(columnName: 'forme',       value: client.Client_Civilite),
-        DataGridCell<String>(columnName: 'nom',         value: client.Client_Nom),
-        DataGridCell<String>(columnName: 'agence',      value: client.Client_Depot),
-        DataGridCell<String>(columnName: 'famille',     value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
-        DataGridCell<String>(columnName: 'commercial',  value: client.Users_Nom),
-        DataGridCell<String>(columnName: 'cp',          value: client.Adresse_CP),
-        DataGridCell<String>(columnName: 'ville',       value: client.Adresse_Ville),
-        DataGridCell<String>(columnName: 'pays',        value: client.Adresse_Pays),
+        DataGridCell<int>(columnName: 'id', value: client.ClientId),
+        DataGridCell<String>(columnName: 'code', value: client.Client_CodeGC),
+        DataGridCell<bool>(columnName: 'contrat', value: client.Client_Contrat),
+        DataGridCell<String>(columnName: 'statut', value: client.Client_Statut),
+        DataGridCell<String>(columnName: 'forme', value: client.Client_Civilite),
+        DataGridCell<String>(columnName: 'nom', value: client.Client_Nom),
+        DataGridCell<String>(columnName: 'agence', value: client.Client_Depot),
+        DataGridCell<String>(columnName: 'famille', value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
+        DataGridCell<String>(columnName: 'commercial', value: client.Users_Nom),
+        DataGridCell<String>(columnName: 'cp', value: client.Adresse_CP),
+        DataGridCell<String>(columnName: 'ville', value: client.Adresse_Ville),
+        DataGridCell<String>(columnName: 'pays', value: client.Adresse_Pays),
       ]);
     }).toList();
   }
@@ -57,8 +64,8 @@ class ClientDataSource extends DataGridSource {
     Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
       FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
-      FiltreTools.SfRowBool(row, 1, Alignment.center, textColor),
-      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 1, Alignment.center, textColor),
+      FiltreTools.SfRowBool(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
@@ -67,6 +74,7 @@ class ClientDataSource extends DataGridSource {
       FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -99,6 +107,7 @@ class Clients_screenState extends State<Clients_screen> {
 
   List<double> dColumnWidth = [
     80,
+    110,
     90,
     115,
     115,
@@ -121,81 +130,65 @@ class Clients_screenState extends State<Clients_screen> {
 
   DataGridRow memDataGridRow = DataGridRow(cells: []);
 
-
   List<GridColumn> getColumns() {
     return <GridColumn>[
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], 15, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('contrat', 'Ct', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('statut', 'St', dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('forme', 'Forme', dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('nom', 'Raison Social', dColumnWidth[4], dColumnWidth[4], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('famille', 'Famille', dColumnWidth[6], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('commercial', 'Commercial', dColumnWidth[7], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[8], dColumnWidth[8], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[9], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('pays', 'Pays', dColumnWidth[10], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'ID',                  dColumnWidth[0], 15, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('code', 'Cd',                dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('contrat', 'Ct',             dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('statut', 'St',              dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('forme', 'Forme',            dColumnWidth[4], dColumnWidth[4], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Raison Social',      dColumnWidth[5], dColumnWidth[5], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence',          dColumnWidth[6], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('famille', 'Famille',        dColumnWidth[7], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('commercial', 'Collaborateur',  dColumnWidth[8], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp',                  dColumnWidth[9], dColumnWidth[9], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville',            dColumnWidth[10], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('pays', 'Pays',              dColumnWidth[11], 160, Alignment.centerLeft),
     ];
   }
 
-  List<GridTableSummaryRow> getGridTableSummaryRow()
-  {
-    return
-      [      GridTableSummaryRow(
+
+
+  List<GridTableSummaryRow> getGridTableSummaryRow() {
+    return [
+      GridTableSummaryRow(
           color: gColors.secondary,
           showSummaryInRow: false,
-        title: 'Cpt: {Count}',
-        titleColumnSpan: 1,
-        columns: [
-          GridSummaryColumn(
-              name: 'Count',
-              columnName: 'id',
-              summaryType: GridSummaryType.count),
-        ],
-        position: GridTableSummaryRowPosition.bottom),
+          title: 'Cpt: {Count}',
+          titleColumnSpan: 1,
+          columns: [
+            GridSummaryColumn(name: 'Count', columnName: 'id', summaryType: GridSummaryType.count),
+          ],
+          position: GridTableSummaryRowPosition.bottom),
     ];
   }
 
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
-      if (args.column.columnName == 'id')
-        dColumnWidth[0] = args.width;
-      else if (args.column.columnName == 'contrat')
-        dColumnWidth[1] = args.width;
-      else if (args.column.columnName == 'statut')
-        dColumnWidth[2] = args.width;
-      else if (args.column.columnName == 'forme')
-        dColumnWidth[3] = args.width;
-      else if (args.column.columnName == 'nom')
-        dColumnWidth[4] = args.width;
-      else if (args.column.columnName == 'agence')
-        dColumnWidth[5] = args.width;
-      else if (args.column.columnName == 'famille')
-        dColumnWidth[6] = args.width;
-      else if (args.column.columnName == 'commercial')
-        dColumnWidth[7] = args.width;
-      else if (args.column.columnName == 'cp')
-        dColumnWidth[8] = args.width;
-      else if (args.column.columnName == 'ville')
-        dColumnWidth[9] = args.width;
-      else if (args.column.columnName == 'pays')
-        dColumnWidth[10] = args.width;
+      if (args.column.columnName == 'id')               dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'code')        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'contrat')     dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'statut')      dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'forme')       dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'nom')         dColumnWidth[5] = args.width;
+      else if (args.column.columnName == 'agence')      dColumnWidth[6] = args.width;
+      else if (args.column.columnName == 'famille')     dColumnWidth[7] = args.width;
+      else if (args.column.columnName == 'commercial')  dColumnWidth[8] = args.width;
+      else if (args.column.columnName == 'cp')          dColumnWidth[9] = args.width;
+      else if (args.column.columnName == 'ville')       dColumnWidth[10] = args.width;
+      else if (args.column.columnName == 'pays')        dColumnWidth[11] = args.width;
     });
   }
 
   Future Reload() async {
     await DbTools.getParam_ParamFam("FamClient");
 
-
     if (DbTools.gUserLoginTypeUser.contains("Admin"))
-        await DbTools.getClientAll();
+      await DbTools.getClientAll();
     else
-       await DbTools.getClient_User_CSIP(DbTools.gUserLogin.UserID);
+      await DbTools.getClient_User_CSIP(DbTools.gUserLogin.UserID);
 
     await Filtre();
-
-
-
   }
 
   Future Filtre() async {
@@ -215,7 +208,6 @@ class Clients_screenState extends State<Clients_screen> {
       });
     }
 
-
     clientInfoDataGridSource.handleRefresh();
     isLoad = true;
 
@@ -228,8 +220,6 @@ class Clients_screenState extends State<Clients_screen> {
 
   @override
   void initState() {
-
-
     super.initState();
     Reload();
   }
@@ -246,76 +236,74 @@ class Clients_screenState extends State<Clients_screen> {
         Container(
           height: 10,
         ),
-        !isLoad ? Container() :
-        SizedBox(
-          height: MediaQuery.of(context).size.height - 190,
-          child:
-          SfDataGridTheme(
-            data: SfDataGridThemeData(
-              headerColor: gColors.secondary,
-              selectionColor: gColors.backgroundColor,
-            ),
-            child: SfDataGrid(
-              source: clientInfoDataGridSource,
-              columns: getColumns(),
-              columnWidthMode: ColumnWidthMode.fill,
-              tableSummaryRows: getGridTableSummaryRow(),
+        !isLoad
+            ? Container()
+            : SizedBox(
+                height: MediaQuery.of(context).size.height - 190,
+                child: SfDataGridTheme(
+                  data: SfDataGridThemeData(
+                    headerColor: gColors.secondary,
+                    selectionColor: gColors.backgroundColor,
+                  ),
+                  child: SfDataGrid(
+                    source: clientInfoDataGridSource,
+                    columns: getColumns(),
+                    columnWidthMode: ColumnWidthMode.fill,
+                    tableSummaryRows: getGridTableSummaryRow(),
 
 //                  frozenRowsCount: 0,
 //                frozenColumnsCount: 3,
 
-              controller: dataGridController,
-              onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                if (addedRows.length > 0 && wColSel == 0) {
-                  Selindex = clientInfoDataGridSource.dataGridRow.indexOf(addedRows.last);
-                  Client wClient = DbTools.ListClientsearchresult[Selindex];
-                  print(" ADD onSelectionChanging Add ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
-                  memDataGridRow = addedRows.last;
-                  await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
-                  Reload();
-                }
+                    controller: dataGridController,
+                    onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
+                      if (addedRows.length > 0 && wColSel == 0) {
+                        Selindex = clientInfoDataGridSource.dataGridRow.indexOf(addedRows.last);
+                        Client wClient = DbTools.ListClientsearchresult[Selindex];
+                        print(" ADD onSelectionChanging Add ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                        memDataGridRow = addedRows.last;
+                        await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
+                        Reload();
+                      }
 
-                if (removedRows.length > 0 && wColSel == 0) {
-                  Selindex = clientInfoDataGridSource.dataGridRow.indexOf(removedRows.last);
-                  Client wClient = DbTools.ListClientsearchresult[Selindex];
-                  print(" REM onSelectionChanging Rem ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
-                  memDataGridRow = removedRows.last;
-                  await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
-                  Reload();
-                }
-              },
-              onFilterChanged: (DataGridFilterChangeDetails details) {
-                countfilterConditions = clientInfoDataGridSource.filterConditions.length;
-                print("onFilterChanged  countfilterConditions ${countfilterConditions}");
-                print("onFilterChanged  clientInfoDataGridSource.rows.length ${clientInfoDataGridSource.rows.length}");
-                print("onFilterChanged  clientInfoDataGridSource.dataGridRows.length ${clientInfoDataGridSource.dataGridRow.length}");
-                setState(() {});
-              },
-              onCellTap: (DataGridCellTapDetails details) {
-                wColSel = details.rowColumnIndex.columnIndex;
-                print("onCellTap wColSel ${wColSel}");
-              },
+                      if (removedRows.length > 0 && wColSel == 0) {
+                        Selindex = clientInfoDataGridSource.dataGridRow.indexOf(removedRows.last);
+                        Client wClient = DbTools.ListClientsearchresult[Selindex];
+                        print(" REM onSelectionChanging Rem ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                        memDataGridRow = removedRows.last;
+                        await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
+                        Reload();
+                      }
+                    },
+                    onFilterChanged: (DataGridFilterChangeDetails details) {
+                      countfilterConditions = clientInfoDataGridSource.filterConditions.length;
+                      print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                      print("onFilterChanged  clientInfoDataGridSource.rows.length ${clientInfoDataGridSource.rows.length}");
+                      print("onFilterChanged  clientInfoDataGridSource.dataGridRows.length ${clientInfoDataGridSource.dataGridRow.length}");
+                      setState(() {});
+                    },
+                    onCellTap: (DataGridCellTapDetails details) {
+                      wColSel = details.rowColumnIndex.columnIndex;
+                      print("onCellTap wColSel ${wColSel}");
+                    },
 
-              selectionMode: SelectionMode.multiple,
-              navigationMode: GridNavigationMode.row,
-              allowSorting: true,
-              allowFiltering: true,
-              headerRowHeight: 35,
-              rowHeight: 28,
-              allowColumnsResizing: true,
-              columnResizeMode: ColumnResizeMode.onResize,
-              onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
-                Resize(args);
-                return true;
-              },
-              gridLinesVisibility: GridLinesVisibility.both,
-              headerGridLinesVisibility: GridLinesVisibility.both,
-              isScrollbarAlwaysShown : true,
-
-            ),
-          ),
-
-        ),
+                    selectionMode: SelectionMode.single,
+                    navigationMode: GridNavigationMode.row,
+                    allowSorting: true,
+                    allowFiltering: true,
+                    headerRowHeight: 35,
+                    rowHeight: 28,
+                    allowColumnsResizing: true,
+                    columnResizeMode: ColumnResizeMode.onResize,
+                    onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                      Resize(args);
+                      return true;
+                    },
+                    gridLinesVisibility: GridLinesVisibility.both,
+                    headerGridLinesVisibility: GridLinesVisibility.both,
+                    isScrollbarAlwaysShown: true,
+                  ),
+                ),
+              ),
         Container(
           height: 10,
         ),
@@ -335,7 +323,7 @@ class Clients_screenState extends State<Clients_screen> {
                 Container(
                   width: 10,
                 ),
-                CommonAppBar.SquareRoundPng(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, "ico_Del", ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
                 Container(
                   width: 10,
                 ),
@@ -345,6 +333,9 @@ class Clients_screenState extends State<Clients_screen> {
           ],
         ));
   }
+
+
+
 
   Widget ToolsBarSearch(BuildContext context) {
     return Expanded(
@@ -359,7 +350,7 @@ class Clients_screenState extends State<Clients_screen> {
           Icon(
             Icons.search,
             color: Colors.blue,
-            size: 20.0,
+            size: 30.0,
           ),
           Container(
             width: 10,
@@ -367,11 +358,8 @@ class Clients_screenState extends State<Clients_screen> {
           Expanded(
             child: TextFormField(
               controller: Search_TextController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              ),
+              decoration:
+              gColors.wRechInputDecoration,
               onChanged: (String? value) async {
                 print("_buildFieldTextSearch search ${Search_TextController.text}");
                 await Filtre();

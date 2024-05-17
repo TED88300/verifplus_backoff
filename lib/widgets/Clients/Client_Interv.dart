@@ -217,16 +217,18 @@ class _Client_IntervState extends State<Client_Interv> {
     Ct_Fin   = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
-
-      if(wDT.difference(Ct_Debut).inHours < 0)
+      try {
+        DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+        if(wDT.difference(Ct_Debut).inHours < 0)
         {
           Ct_Debut = wDT;
         }
-      if(wDT.difference(Ct_Fin).inHours > 0)
+        if(wDT.difference(Ct_Fin).inHours > 0)
         {
           Ct_Fin = wDT;
         }
+      } catch (e) {
+      }
     }
 
     print(">>>>>> Ct_Debut ${Ct_Debut.toString()} Ct_Fin ${Ct_Fin.toString()}");
@@ -246,23 +248,34 @@ class _Client_IntervState extends State<Client_Interv> {
     List<Intervention> ListInterventionsearchresultDate = [];
     DbTools.ListInterventionsearchresult.clear();
 
-    if (textController_Ct_Debut.text.isNotEmpty) {
-      Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
-    }
 
-    if (textController_Ct_Fin.text.isNotEmpty) {
-      Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
+
+    try {
+      if (textController_Ct_Debut.text.isNotEmpty) {
+        Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
+      }
+
+      if (textController_Ct_Fin.text.isNotEmpty) {
+        Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
+      }
+    } catch (e) {
     }
 
 
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
 
-      if(wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0)
-      {
-        ListInterventionsearchresultDate.add(element);
+      try {
+        DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+        if(wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0)
+        {
+          ListInterventionsearchresultDate.add(element);
+        }
+
+      } catch (e) {
       }
+
+
 
     }
     if (Search_TextController.text.isEmpty) {
@@ -388,7 +401,7 @@ class _Client_IntervState extends State<Client_Interv> {
               rowHeight: 28,
               allowColumnsResizing: true,
               columnResizeMode: ColumnResizeMode.onResize,
-              selectionMode: SelectionMode.multiple,
+              selectionMode: SelectionMode.single,
               controller: dataGridController,
               onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                 Resize(args);
@@ -501,7 +514,7 @@ class _Client_IntervState extends State<Client_Interv> {
           Icon(
             Icons.search,
             color: Colors.blue,
-            size: 20.0,
+            size: 30.0,
           ),
           Container(
             width: 10,
@@ -509,11 +522,7 @@ class _Client_IntervState extends State<Client_Interv> {
           Expanded(
             child: TextFormField(
               controller: Search_TextController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              ),
+              decoration: gColors.wRechInputDecoration,
               onChanged: (String? value) async {
                 print("_buildFieldTextSearch search ${Search_TextController.text}");
                 await Filtre();

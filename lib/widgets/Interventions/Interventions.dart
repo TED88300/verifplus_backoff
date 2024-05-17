@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -71,7 +73,7 @@ class IntervInfoDataGridSource extends DataGridSource {
 
     Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
-      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor, bCircle : true),
       FiltreTools.SfRow(row,      1, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row,      2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row,      3, Alignment.centerLeft, textColor),
@@ -223,15 +225,19 @@ class _InterventionsState extends State<Interventions> {
     Ct_Fin   = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
-      if(wDT.difference(Ct_Debut).inHours < 0)
+      try {
+        DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+        if(wDT.difference(Ct_Debut).inHours < 0)
         {
           Ct_Debut = wDT;
         }
-      if(wDT.difference(Ct_Fin).inHours > 0)
+        if(wDT.difference(Ct_Fin).inHours > 0)
         {
           Ct_Fin = wDT;
         }
+      } catch (e) {
+      }
+
     }
 
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
@@ -244,22 +250,40 @@ class _InterventionsState extends State<Interventions> {
     List<Intervention> ListInterventionsearchresultDate = [];
     DbTools.ListInterventionsearchresult.clear();
 
-    if (textController_Ct_Debut.text.isNotEmpty) {
-      Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
+    try {
+      if (textController_Ct_Debut.text.isNotEmpty) {
+//        print("textController_Ct_Debut.text ${textController_Ct_Debut.text}");
+//        print("Ct_Debut > ${Ct_Debut}");
+        Ct_Debut = inputFormat2.parse(textController_Ct_Debut.text);
+      }
+
+      if (textController_Ct_Fin.text.isNotEmpty) {
+//        print("textController_Ct_Fin.text ${textController_Ct_Fin.text}");
+//        print("Ct_Fin > ${Ct_Fin}");
+        Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
+//        print("Ct_Fin <>> ${Ct_Fin}");
+      }
+    } catch (e) {
     }
 
-    if (textController_Ct_Fin.text.isNotEmpty) {
-      Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
-    }
+    print("Ct_Debut < ${Ct_Debut}");
+    print("Ct_Fin <>> ${Ct_Fin}");
+
 
 
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-      DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
 
-      if(wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0)
-      {
-        ListInterventionsearchresultDate.add(element);
+      try{
+        DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
+        if(wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0)
+        {
+          ListInterventionsearchresultDate.add(element);
+        }
+
+      }
+      catch (e){
+
       }
 
     }
@@ -403,7 +427,7 @@ class _InterventionsState extends State<Interventions> {
               rowHeight: 28,
               allowColumnsResizing: true,
               columnResizeMode: ColumnResizeMode.onResize,
-              selectionMode: SelectionMode.multiple,
+              selectionMode: SelectionMode.single,
               controller: dataGridController,
               onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                 Resize(args);
@@ -439,6 +463,60 @@ class _InterventionsState extends State<Interventions> {
     setState(() {});
   }
 
+  Widget popMenu()
+  {
+    return PopupMenuButton(
+      child: Tooltip(
+          textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+          decoration: BoxDecoration(color: Colors.orange),
+          message: "Filtre Date",
+          child: Container(
+              width: 30,
+              height: 30,
+              child:  Image.asset("assets/images/ico_DateFilter.png")
+              )
+            ),
+
+      onSelected: (value) async{
+        if (value == "S0") {FiltreTools.selDateTools(0);}
+        if (value == "S1") {FiltreTools.selDateTools(1);}
+        if (value == "S2") {FiltreTools.selDateTools(2);}
+        if (value == "S3") {FiltreTools.selDateTools(3);}
+        if (value == "S4") {FiltreTools.selDateTools(4);}
+        if (value == "S5") {FiltreTools.selDateTools(5);}
+        if (value == "S6") {FiltreTools.selDateTools(6);}
+        if (value == "S7") {FiltreTools.selDateTools(7);}
+        if (value == "S8") {FiltreTools.selDateTools(8);}
+        if (value == "S9") {FiltreTools.selDateTools(9);}
+        if (value == "S1") {FiltreTools.selDateTools(1);}
+
+
+        textController_Ct_Debut.text = DateFormat('dd/MM/yyyy').format(FiltreTools.gDateDeb);
+        textController_Ct_Fin.text = DateFormat('dd/MM/yyyy').format(FiltreTools.gDateFin);
+        await Filtre();
+
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+        PopupMenuItem(value: "S0", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Aujourd'hui", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S1", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Hier", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S2", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Avant hier", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S3", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Semaine courante", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S4", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Semaine précédente", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S5", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Semaine précédent la précédente", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S6", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Mois courant", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S7", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Mois précédent", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S8", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Mois précédent le précédent", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S9", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Année courante", style: gColors.bodySaisie_N_G,),           ],         ),),
+        PopupMenuItem(value: "S10", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Année précédente", style: gColors.bodySaisie_N_G,),           ],         ),),
+
+
+
+
+      ],
+    );
+  }
+
+
   Widget ToolsBarSearch(BuildContext context) {
     return Expanded(
         child: Container(
@@ -448,6 +526,12 @@ class _InterventionsState extends State<Interventions> {
         children: [
           Container(
             width: 20,
+          ),
+          popMenu(),
+
+
+          Container(
+            width: 10,
           ),
           InkWell(
             child: Row(
@@ -499,14 +583,12 @@ class _InterventionsState extends State<Interventions> {
                 selectedDate = DateTime.now();
               else
                 selectedDate =  inputFormat2.parse(textController_Ct_Fin.text);
-              await _selectDate(context, Ct_Debut , DateTime.now());
 
+              await _selectDate(context, Ct_Debut , DateTime.now());
               if(selectedDate.difference(DateTime.now()).inHours >= 0) return;
               if(selectedDate.difference(Ct_Debut).inHours < 0) return;
-
               countfilterConditions = 999;
               textController_Ct_Fin.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-
               await Filtre();
             },
           ),
@@ -516,7 +598,7 @@ class _InterventionsState extends State<Interventions> {
           Icon(
             Icons.search,
             color: Colors.blue,
-            size: 20.0,
+            size: 30.0,
           ),
           Container(
             width: 10,
@@ -524,11 +606,7 @@ class _InterventionsState extends State<Interventions> {
           Expanded(
             child: TextFormField(
               controller: Search_TextController,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-              ),
+              decoration: gColors.wRechInputDecoration,
               onChanged: (String? value) async {
                 await Filtre();
               },

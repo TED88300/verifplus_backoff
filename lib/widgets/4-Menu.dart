@@ -12,6 +12,7 @@ import 'package:verifplus_backoff/widgets/Agences/Agences.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Fam_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
+import 'package:verifplus_backoff/widgets/DashBoard.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Interventions.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Ctrl.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Ctrl2.dart';
@@ -46,6 +47,7 @@ class _MenuState extends State<Menu> {
 
   String wTitre = "Back-Office";
 
+//  Widget wAff = Planning(bAppBar : false);
   Widget wAff = Interventions();
 
   Future initLib() async {
@@ -104,6 +106,7 @@ class _MenuState extends State<Menu> {
         child: AppBar(
           backgroundColor: gColors.primary,
           title: Container(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
               color: gColors.primary,
               child: Row(
                 children: [
@@ -122,12 +125,14 @@ class _MenuState extends State<Menu> {
                         DbTools.gArticle_Fam_Ebp = Article_Fam_Ebp.Article_Fam_EbpInit();
                         DbTools.gDemndeReload = true;
                         wAff = Articles_Fam_Ebp();
-
                         setState(() {});
                       }
                     },
                   ),
                   Spacer(),
+                  Container(
+                    width: 230,
+                  ),
                   Text(
                     "$wTitre",
                     textAlign: TextAlign.center,
@@ -148,7 +153,6 @@ class _MenuState extends State<Menu> {
                       cm.addToCookie("emailLogin", "");
                       cm.addToCookie("passwordLogin", "");
                       cm.addToCookie("IsRememberLogin", "");
-
                       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
                     },
                   ),
@@ -158,7 +162,7 @@ class _MenuState extends State<Menu> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: <Widget>[
+          children: <Widget>[Container(height: 1,color: Colors.white,),
             wPlutoMenuBar,
             wAff,
           ],
@@ -180,13 +184,23 @@ class _MenuState extends State<Menu> {
   List<PlutoMenuItem> makeMenus(BuildContext context) {
     return [
       PlutoMenuItem(
+        title: 'Tableau de bord',
+        icon: Icons.dashboard,
+        onTap: () {
+          wTitre = "Planning";
+          setState(() {
+            wAff = DashBoard();
+          });
+        },
+      ),
+
+      PlutoMenuItem(
         title: 'Planning',
         icon: Icons.calendar_month,
         onTap: () {
           wTitre = "Planning";
           setState(() {
 //        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Planning()));
-
             wAff = Planning(bAppBar : false);
           });
         },
@@ -398,6 +412,9 @@ class _MenuState extends State<Menu> {
           ],
         ),
       ]),
+
+
+
       PlutoMenuItem(
         title: 'Paramètres',
         icon: Icons.settings,
@@ -559,91 +576,94 @@ class _MenuState extends State<Menu> {
               });
             },
           ),
+          PlutoMenuItem.divider(height: 10, color: Colors.white),
+          PlutoMenuItem(title: 'NF074',
+              icon: Icons.logo_dev,
+              children: [
+                PlutoMenuItem(
+                  title: "Contrôles Articles",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Contrôles Base de données NF074 : ARTICLES";
+                    setState(() {
+                      wAff = NF074_Ctrl_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem(
+                  title: "Contrôles Gammes",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Contrôles Base de données NF074 : Gammes";
+                    setState(() {
+                      wAff = NF074_Ctrl2_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem.divider(height: 10, color: Colors.white),
+                PlutoMenuItem(
+                  title: "Gammes",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Gammes";
+                    setState(() {
+                      wAff = NF074_Gammes_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem(
+                  title: "Historique Norme",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Historique Norme";
+                    setState(() {
+                      wAff = NF074_Histo_Normes_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem(
+                  title: "Produits Actions",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Produits Actions";
+                    setState(() {
+                      wAff = NF074_Pieces_Actions_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem(
+                  title: "Pièces détachées",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Pièces détachées";
+                    setState(() {
+                      wAff = NF074_Pieces_Det_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem(
+                  title: "Pièces dét. Inconnus",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Pièces détachées Inconnus";
+                    setState(() {
+                      wAff = NF074_Pieces_Det_Inc_screen();
+                    });
+                  },
+                ),
+                PlutoMenuItem(
+                  title: "Mixte Produit",
+                  icon: Icons.logo_dev,
+                  onTap: () {
+                    wTitre = "Mixte Produit";
+                    setState(() {
+                      wAff = NF074_Mixte_Produit_screen();
+                    });
+                  },
+                ),
+              ]),
         ],
       ),
-      PlutoMenuItem(title: 'NF074', icon: Icons.logo_dev, children: [
-        PlutoMenuItem(
-          title: "Contrôles Articles",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Contrôles Base de données NF074 : ARTICLES";
-            setState(() {
-              wAff = NF074_Ctrl_screen();
-            });
-          },
-        ),
-        PlutoMenuItem(
-          title: "Contrôles Gammes",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Contrôles Base de données NF074 : Gammes";
-            setState(() {
-              wAff = NF074_Ctrl2_screen();
-            });
-          },
-        ),
-        PlutoMenuItem.divider(height: 10, color: Colors.white),
-        PlutoMenuItem(
-          title: "Gammes",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Gammes";
-            setState(() {
-              wAff = NF074_Gammes_screen();
-            });
-          },
-        ),
-        PlutoMenuItem(
-          title: "Historique Norme",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Historique Norme";
-            setState(() {
-              wAff = NF074_Histo_Normes_screen();
-            });
-          },
-        ),
-        PlutoMenuItem(
-          title: "Produits Actions",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Produits Actions";
-            setState(() {
-              wAff = NF074_Pieces_Actions_screen();
-            });
-          },
-        ),
-        PlutoMenuItem(
-          title: "Pièces détachées",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Pièces détachées";
-            setState(() {
-              wAff = NF074_Pieces_Det_screen();
-            });
-          },
-        ),
-        PlutoMenuItem(
-          title: "Pièces dét. Inconnus",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Pièces détachées Inconnus";
-            setState(() {
-              wAff = NF074_Pieces_Det_Inc_screen();
-            });
-          },
-        ),
-        PlutoMenuItem(
-          title: "Mixte Produit",
-          icon: Icons.logo_dev,
-          onTap: () {
-            wTitre = "Mixte Produit";
-            setState(() {
-              wAff = NF074_Mixte_Produit_screen();
-            });
-          },
-        ),
-      ]),
     ];
   }
 }

@@ -658,7 +658,8 @@ class _Client_GrpState extends State<Client_Grp> {
 
   Widget GroupeGridWidget() {
     return Container(
-      child: Column(children: [
+      child:
+      Column(children: [
         ToolsBargrid(context),
         SizedBox(
             height: MediaQuery.of(context).size.height - 422,
@@ -700,7 +701,7 @@ class _Client_GrpState extends State<Client_Grp> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.multiple,
+                  selectionMode: SelectionMode.single,
                   controller: dataGridController,
                   onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                     Resize(args);
@@ -714,6 +715,7 @@ class _Client_GrpState extends State<Client_Grp> {
           height: 10,
         ),
       ]),
+
     );
   }
 
