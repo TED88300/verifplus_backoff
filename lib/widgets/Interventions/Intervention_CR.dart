@@ -338,7 +338,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
       for (int i = 0; i < DbTools.lColParamsdata.length; i++) {
         String ColParam = DbTools.lColParams[i];
         String ColParamsdata = DbTools.lColParamsdata[i];
-
+print("ColParam $ColParam ColParamsdata $ColParamsdata ");
       }
 
       if (DescAff.compareTo(DescAffnewParam) == 0) DescAff = "";
@@ -509,48 +509,28 @@ class _Intervention_CRState extends State<Intervention_CR> {
               ),
               child: SfDataGrid(
                 //*********************************
-
-                onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                  if (addedRows.length > 0 ) {
-                    Selindex = FiltreTools.dataGridRows_CR.indexOf(addedRows.last);
-                    DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
-                    if (wColSel == 0)
-                    {
-                      memDataGridRow = addedRows.last;
-
-                      await showDialog(
-                          context: context,
-                          builder: (BuildContext context) => new Organe_Dialog());
-                      Reload();
-                    }
-                  }
-                  else if (removedRows.length > 0 )
-                  {
-                    Selindex = FiltreTools.dataGridRows_CR.indexOf(removedRows.last);
-                    DbTools.gParc_Ent = DbTools.ListParc_Ent[Selindex];
-                    if (wColSel == 0)
-                    {
-                      memDataGridRow = removedRows.last;
-                      await showDialog(
-                          context: context,
-                          builder: (BuildContext context) => new Organe_Dialog());
-                      Reload();
-                    }
-                  }
-                },
-
                 onFilterChanged: (DataGridFilterChangeDetails details) {
                   countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
                   print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                   setState(() {});
                 },
-                onCellTap: (DataGridCellTapDetails details) {
+                onCellTap: (DataGridCellTapDetails details) async{
                   wColSel = details.rowColumnIndex.columnIndex;
+                  int wRowSel = details.rowColumnIndex.rowIndex;
+                  if (wRowSel == 0) return;
+
+                  DataGridRow wDataGridRow = parc_EntInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                  Selindex = parc_EntInfoDataGridSource.rows.indexOf(wDataGridRow);
+                  if (wColSel == 0) {
+                    await showDialog(
+                    context: context,
+                    builder: (BuildContext context) => new Organe_Dialog());
+                    Reload();
+                  }
                 },
 
                 //*********************************
                 source: parc_EntInfoDataGridSource,
-
                 allowSorting: true,
                 allowFiltering: true,
                 columns: getColumns_CR(),

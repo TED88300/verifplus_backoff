@@ -1,7 +1,6 @@
 import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -255,35 +254,25 @@ class Clients_screenState extends State<Clients_screen> {
 //                frozenColumnsCount: 3,
 
                     controller: dataGridController,
-                    onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                      if (addedRows.length > 0 && wColSel == 0) {
-                        Selindex = clientInfoDataGridSource.dataGridRow.indexOf(addedRows.last);
-                        Client wClient = DbTools.ListClientsearchresult[Selindex];
-                        print(" ADD onSelectionChanging Add ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
-                        memDataGridRow = addedRows.last;
-                        await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
-                        Reload();
-                      }
 
-                      if (removedRows.length > 0 && wColSel == 0) {
-                        Selindex = clientInfoDataGridSource.dataGridRow.indexOf(removedRows.last);
-                        Client wClient = DbTools.ListClientsearchresult[Selindex];
-                        print(" REM onSelectionChanging Rem ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
-                        memDataGridRow = removedRows.last;
-                        await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
-                        Reload();
-                      }
-                    },
+
                     onFilterChanged: (DataGridFilterChangeDetails details) {
                       countfilterConditions = clientInfoDataGridSource.filterConditions.length;
-                      print("onFilterChanged  countfilterConditions ${countfilterConditions}");
-                      print("onFilterChanged  clientInfoDataGridSource.rows.length ${clientInfoDataGridSource.rows.length}");
-                      print("onFilterChanged  clientInfoDataGridSource.dataGridRows.length ${clientInfoDataGridSource.dataGridRow.length}");
                       setState(() {});
                     },
-                    onCellTap: (DataGridCellTapDetails details) {
+                    onCellTap: (DataGridCellTapDetails details) async {
+                      int wRowSel = details.rowColumnIndex.rowIndex;
+                      if (wRowSel == 0) return;
+
                       wColSel = details.rowColumnIndex.columnIndex;
-                      print("onCellTap wColSel ${wColSel}");
+                      DataGridRow wDataGridRow = clientInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                      Selindex = clientInfoDataGridSource.dataGridRow.indexOf(wDataGridRow);
+                      if (wColSel == 0) {
+                        Client wClient = DbTools.ListClientsearchresult[Selindex];
+                        print(" ADD onSelectionChanging Add ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
+                        await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
+                        Reload();
+                      }
                     },
 
                     selectionMode: SelectionMode.single,

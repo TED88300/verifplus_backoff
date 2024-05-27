@@ -48,6 +48,8 @@ Parcs_Date_Desc
   String? Parcs_FREQ_Label = "";
   String? Parcs_ANN_Id = "";
   String? Parcs_ANN_Label = "";
+  String? Parcs_FAB_Id = "";
+  String? Parcs_FAB_Label = "";
   String? Parcs_NIV_Id = "";
   String? Parcs_NIV_Label = "";
   String? Parcs_ZNE_Id = "";
@@ -61,7 +63,6 @@ Parcs_Date_Desc
   String? Parcs_Audit_Note = "";
   String? Parcs_Verif_Note = "";
   int?    Parcs_Intervention_Timer = 0;
-
   String? Parcs_UUID          = "";
   String? Parcs_UUID_Parent   = "";
   String? Parcs_CodeArticle   = "";
@@ -89,6 +90,8 @@ Parcs_Date_Desc
     this.Parcs_FREQ_Label,
     this.Parcs_ANN_Id,
     this.Parcs_ANN_Label,
+      this.Parcs_FAB_Id,
+      this.Parcs_FAB_Label,
     this.Parcs_NIV_Id,
     this.Parcs_NIV_Label,
     this.Parcs_ZNE_Id,
@@ -133,6 +136,8 @@ Parcs_Date_Desc
     this.Parcs_FREQ_Label  = Parcs_FREQ_Label ;
     this.Parcs_ANN_Id  = Parcs_ANN_Id ;
     this.Parcs_ANN_Label  = Parcs_ANN_Label ;
+    this.Parcs_FAB_Id  = Parcs_FAB_Id ;
+    this.Parcs_FAB_Label  = Parcs_FAB_Label ;
     this.Parcs_NIV_Id  = Parcs_NIV_Id ;
     this.Parcs_NIV_Label  = Parcs_NIV_Label ;
     this.Parcs_ZNE_Id  = Parcs_ZNE_Id ;
@@ -166,52 +171,8 @@ Parcs_Date_Desc
   }
 
   static Parc_EntInit(int parcsInterventionid, String parcsType, int parcsOrder) {
-
-    Parc_Ent wparcEnt = Parc_Ent.Parc_EntInit(0,"",0);
-    wparcEnt.ParcsId = null;
-    wparcEnt.Parcs_InterventionId = parcsInterventionid;
-    wparcEnt.Parcs_Type = parcsType;
-    wparcEnt.Parcs_order = parcsOrder;
-    wparcEnt.Parcs_Date_Rev = "";
-    wparcEnt.Parcs_QRCode = "";
-    wparcEnt.Parcs_FREQ_Id    = "";
-    wparcEnt.Parcs_FREQ_Label = "";
-    wparcEnt.Parcs_ANN_Id    = "";
-    wparcEnt.Parcs_ANN_Label = "";
-    wparcEnt.Parcs_NIV_Id    = "";
-    wparcEnt.Parcs_NIV_Label = "";
-    wparcEnt.Parcs_ZNE_Id    = "";
-    wparcEnt.Parcs_ZNE_Label = "";
-    wparcEnt.Parcs_EMP_Id    = "";
-    wparcEnt.Parcs_EMP_Label = "";
-    wparcEnt.Parcs_LOT_Id    = "";
-    wparcEnt.Parcs_LOT_Label = "";
-    wparcEnt.Parcs_SERIE_Id    = "";
-    wparcEnt.Parcs_SERIE_Label = "";
-    wparcEnt.Parcs_Audit_Note = "";
-    wparcEnt.Parcs_Verif_Note = "";
-    wparcEnt.Parcs_Intervention_Timer = 0;
-
-    wparcEnt.Parcs_UUID = "";
-    wparcEnt.Parcs_UUID_Parent = "";
-    wparcEnt.Parcs_CodeArticle = "";
-    wparcEnt.Parcs_CODF = "";
-    wparcEnt.Parcs_NCERT = "";
-    wparcEnt.Livr = "";
-    wparcEnt.Devis = "";
-    wparcEnt.Action = "";
-
-
-    wparcEnt.Parcs_Date_Desc = "";
-    wparcEnt.Parcs_Install = false;
-    wparcEnt.Parcs_MaintCorrect = false;
-    wparcEnt.Parcs_MaintPrev = false;
-
-
-    wparcEnt.Parcs_Cols = [];
-
-
-    return wparcEnt;
+    Parc_Ent wParc_Ent = Parc_Ent(0 , parcsOrder, parcsInterventionid, parcsType,"","","","","","","","","","","","","","","","","","","","",0,"","","","","","","","",false,false,false,"");
+    return wParc_Ent;
   }
 
   Map<String, dynamic> toMap() {
@@ -226,6 +187,8 @@ Parcs_Date_Desc
       'Parcs_FREQ_Label':     Parcs_FREQ_Label,
       'Parcs_ANN_Id':  Parcs_ANN_Id,
       'Parcs_ANN_Label':     Parcs_ANN_Label,
+      'Parcs_FAB_Id':  Parcs_FAB_Id,
+      'Parcs_FAB_Label':     Parcs_FAB_Label,
       'Parcs_NIV_Id':  Parcs_NIV_Id,
       'Parcs_NIV_Label':     Parcs_NIV_Label,
       'Parcs_ZNE_Id':  Parcs_ZNE_Id,
@@ -273,6 +236,8 @@ Parcs_Date_Desc
         json['Parcs_FREQ_Label'],
         json['Parcs_ANN_Id'],
         json['Parcs_ANN_Label'],
+        json['Parcs_ANN_Id'],
+        json['Parcs_ANN_Label'],
         json['Parcs_NIV_Id'],
         json['Parcs_NIV_Label'],
         json['Parcs_ZNE_Id'],
@@ -314,6 +279,7 @@ Parcs_Date_Desc
     return 'Parc_Ent {ParcsId: $ParcsId, Parcs_order $Parcs_order, Parcs_InterventionId : $Parcs_InterventionId, Parcs_QRCode $Parcs_QRCode, '
         'Parcs_FREQ_Id $Parcs_FREQ_Id, Parcs_FREQ_Label $Parcs_FREQ_Label, '
         'Parcs_ANN_Id $Parcs_ANN_Id, Parcs_ANN_Label $Parcs_ANN_Label, '
+        'Parcs_FAB_Id $Parcs_FAB_Id, Parcs_FAB_Label $Parcs_FAB_Label, '
         'Parcs_NIV_Id $Parcs_NIV_Id, Parcs_NIV_Label $Parcs_NIV_Label, '
         'Parcs_ZNE_Id $Parcs_ZNE_Id, Parcs_ZNE_Label $Parcs_ZNE_Label, '
         'Parcs_EMP_Id $Parcs_EMP_Id, Parcs_EMP_Label $Parcs_EMP_Label, '

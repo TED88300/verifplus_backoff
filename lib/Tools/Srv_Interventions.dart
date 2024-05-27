@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class Intervention {
   int? InterventionId = 0;
   int? Intervention_ZoneId = 0;
@@ -32,9 +34,14 @@ class Intervention {
 
   String? Intervention_Remarque = "";
   int? Cnt = 0;
+  int Intervention_Sat = 0;
+
+  Uint8List Intervention_Signature_Client = Uint8List.fromList([]);
+  Uint8List Intervention_Signature_Tech = Uint8List.fromList([]);
+  String Intervention_Signataire_Date_Client	 = "";
 
   static InterventionInit() {
-    return Intervention(-1, 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","","", 0);
+    return Intervention(-1, 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","","", 0, 0,Uint8List.fromList([]),Uint8List.fromList([]) ,"");
   }
 
   Intervention(int InterventionId, int Intervention_ZoneId, String Intervention_Date, String Intervention_Type, String Intervention_Parcs_Type, String Intervention_Status, String Intervention_Histo_Status, String Intervention_Facturation, String Intervention_Histo_Facturation, String Intervention_Responsable,
@@ -42,7 +49,13 @@ class Intervention {
       String Intervention_Responsable3,
       String Intervention_Responsable4,
       String Intervention_Partages, String Intervention_Contributeurs, String Intervention_Intervenants, String Intervention_Reglementation, String Intervention_Signataire_Client, String Intervention_Signataire_Tech,
-      String Intervention_Signataire_Date, String Intervention_Remarque, int Cnt) {
+      String Intervention_Signataire_Date, String Intervention_Remarque,
+      int Cnt,
+      int Intervention_Sat,
+      Uint8List Intervention_Signature_Client,
+      Uint8List Intervention_Signature_Tech,
+      String Intervention_Signataire_Date_Client,
+  ) {
     this.InterventionId = InterventionId;
     this.Intervention_ZoneId = Intervention_ZoneId;
     this.Intervention_Date = Intervention_Date;
@@ -65,6 +78,10 @@ class Intervention {
     this.Intervention_Signataire_Date = Intervention_Signataire_Date;
     this.Intervention_Remarque = Intervention_Remarque;
     this.Cnt = Cnt;
+    this.Intervention_Sat = Intervention_Sat;
+    this.Intervention_Signataire_Client = Intervention_Signataire_Client;
+    this.Intervention_Signataire_Tech = Intervention_Signataire_Tech;
+    this.Intervention_Signataire_Date_Client = Intervention_Signataire_Date_Client;
   }
 
   factory Intervention.fromJson(Map<String, dynamic> json) {
@@ -72,13 +89,53 @@ class Intervention {
 
     String wCnt = "0";
     if (json['Cnt'] != null) wCnt = json['Cnt'];
+    String wIntervention_Sat = "0";
+    if (json['Intervention_Sat'] != null) wIntervention_Sat = json['Intervention_Sat'];
+
+    Uint8List wUint8ListTech = Uint8List.fromList([]);
+    if (json['Intervention_Signature_Tech'].toString().isNotEmpty) {
+      String value = json['Intervention_Signature_Tech'];
+      if (value.length > 2) {
+        List<int> list = value.replaceAll('[', '').replaceAll(']', '').split(',').map<int>((e) {
+          return int.tryParse(e)!;
+        }).toList();
+
+        wUint8ListTech = Uint8List.fromList(list);
+      }
+    }
+
+    Uint8List wUint8List = Uint8List.fromList([]);
+    if (json['Intervention_Signature_Client'].toString().isNotEmpty) {
+      String value = json['Intervention_Signature_Client'];
+      if (value.length > 2) {
+        List<int> list = value.replaceAll('[', '').replaceAll(']', '').split(',').map<int>((e) {
+          return int.tryParse(e)!;
+        }).toList();
+
+        wUint8List = Uint8List.fromList(list);
+      }
+    }
+
 
     Intervention wIntervention = Intervention(int.parse(json['InterventionId']), int.parse(json['Intervention_ZoneId']), json['Intervention_Date'], json['Intervention_Type'], json['Intervention_Parcs_Type'], json['Intervention_Status'], json['Intervention_Histo_Status'], json['Intervention_Facturation'], json['Intervention_Histo_Facturation'], json['Intervention_Responsable'],
         json['Intervention_Responsable2'],
         json['Intervention_Responsable3'],
         json['Intervention_Responsable4'],
-        json['Intervention_Partages'], json['Intervention_Contributeurs'], json['Intervention_Intervenants'], json['Intervention_Reglementation'],
-        json['Intervention_Signataire_Client'], json['Intervention_Signataire_Tech'], json['Intervention_Signataire_Date'], json['Intervention_Remarque'], int.parse(wCnt));
+        json['Intervention_Partages'],
+      json['Intervention_Contributeurs'],
+      json['Intervention_Intervenants'],
+      json['Intervention_Reglementation'],
+        json['Intervention_Signataire_Client'],
+      json['Intervention_Signataire_Tech'],
+      json['Intervention_Signataire_Date'],
+      json['Intervention_Remarque'],
+    int.parse(wCnt),
+    int.parse(wIntervention_Sat),
+    wUint8ListTech,
+    wUint8List,
+    json['Intervention_Signataire_Date_Client'],
+
+  );
 
     return wIntervention;
   }
@@ -88,13 +145,45 @@ class Intervention {
 
     String wCnt = "0";
     if (json['Cnt'] != null) wCnt = json['Cnt'];
+  String wIntervention_Sat = "0";
+  if (json['Intervention_Sat'] != null) wIntervention_Sat = json['Intervention_Sat'];
+
+    Uint8List wUint8ListTech = Uint8List.fromList([]);
+    if (json['Intervention_Signature_Tech'].toString().isNotEmpty) {
+      String value = json['Intervention_Signature_Tech'];
+      if (value.length > 2) {
+        List<int> list = value.replaceAll('[', '').replaceAll(']', '').split(',').map<int>((e) {
+          return int.tryParse(e)!;
+        }).toList();
+
+        wUint8ListTech = Uint8List.fromList(list);
+      }
+    }
+
+    Uint8List wUint8List = Uint8List.fromList([]);
+    if (json['Intervention_Signature_Client'].toString().isNotEmpty) {
+      String value = json['Intervention_Signature_Client'];
+      if (value.length > 2) {
+        List<int> list = value.replaceAll('[', '').replaceAll(']', '').split(',').map<int>((e) {
+          return int.tryParse(e)!;
+        }).toList();
+
+        wUint8List = Uint8List.fromList(list);
+      }
+    }
 
     Intervention wIntervention = Intervention(int.parse(json['InterventionId']), int.parse(json['Intervention_ZoneId']), json['Intervention_Date'], json['Intervention_Type'], json['Intervention_Parcs_Type'], json['Intervention_Status'], json['Intervention_Histo_Status'], json['Intervention_Facturation'], json['Intervention_Histo_Facturation'], json['Intervention_Responsable'],
         json['Intervention_Responsable2'],
         json['Intervention_Responsable3'],
         json['Intervention_Responsable4'],
         json['Intervention_Partages'], json['Intervention_Contributeurs'], json['Intervention_Intervenants'], json['Intervention_Reglementation'],
-        json['Intervention_Signataire_Client'], json['Intervention_Signataire_Tech'], json['Intervention_Signataire_Date'], json['Intervention_Remarque'], int.parse(wCnt));
+        json['Intervention_Signataire_Client'], json['Intervention_Signataire_Tech'], json['Intervention_Signataire_Date'], json['Intervention_Remarque']
+        , int.parse(wCnt)
+  , int.parse(wIntervention_Sat),wUint8ListTech,
+      wUint8List,
+      json['Intervention_Signataire_Date_Client'],
+
+  );
 
     wIntervention.Client_Nom = json['Client_Nom'];
     wIntervention.Groupe_Nom = json['Groupe_Nom'];
@@ -117,8 +206,8 @@ class Intervention {
         '$Zone_Nom   '
         '$Intervention_ZoneId   '
         '$Intervention_Date     '
-        '$Intervention_Type     '
-        '$Intervention_Parcs_Type         '
+        '>>> Intervention_Type >>> $Intervention_Type     '
+        '>>> Intervention_Parcs_Type >>> $Intervention_Parcs_Type         '
         '$Intervention_Status             '
         '$Intervention_Histo_Status       '
         '$Intervention_Facturation        '
@@ -135,6 +224,7 @@ class Intervention {
         '$Intervention_Signataire_Tech    '
         '$Intervention_Signataire_Date    '
         '$Intervention_Remarque '
-        '$Cnt';
+        '$Cnt  '
+        '$Intervention_Sat';
   }
 }

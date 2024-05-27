@@ -401,25 +401,7 @@ class _Organe_AuditDialogState extends State<Organe_AuditDialog> with SingleTick
                   ),
                   child: SfDataGrid(
                     //*********************************
-                    onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                      if (addedRows.length > 0 ) {
-                        FiltreTools.Selindex = FiltreTools.dataGridRows_CR.indexOf(addedRows.last);
-                        DbTools.gParc_Ent = DbTools.ListParc_Ent[FiltreTools.Selindex];
-                        if (wColSel == 0)
-                        {
-                          widget.onMaj();
-                        }
-                      }
-                      else if (removedRows.length > 0 )
-                      {
-                        FiltreTools.Selindex = FiltreTools.dataGridRows_CR.indexOf(removedRows.last);
-                        DbTools.gParc_Ent = DbTools.ListParc_Ent[FiltreTools.Selindex];
-                        if (wColSel == 0)
-                        {
-                          widget.onMaj();
-                        }
-                      }
-                    },
+
                     onFilterChanged: (DataGridFilterChangeDetails details) {
                       countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
                       print("onFilterChanged  countfilterConditions ${countfilterConditions}");
@@ -427,7 +409,18 @@ class _Organe_AuditDialogState extends State<Organe_AuditDialog> with SingleTick
                     },
 
                     onCellTap: (DataGridCellTapDetails details) {
+                      int wRowSel = details.rowColumnIndex.rowIndex;
+                      if (wRowSel == 0) return;
+
                       wColSel = details.rowColumnIndex.columnIndex;
+                      DataGridRow wDataGridRow = parc_EntInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                      FiltreTools.Selindex = parc_EntInfoDataGridSource.rows.indexOf(wDataGridRow);
+                      DbTools.gParc_Ent = DbTools.ListParc_Ent[FiltreTools.Selindex];
+                      if (wColSel == 0)
+                      {
+                        widget.onMaj();
+                      }
+
                     },
 
 

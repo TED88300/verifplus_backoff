@@ -54,8 +54,8 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.107";
-  static bool gTED = true;
+  static var gVersion = "v1.0.112";
+  static bool gTED = false;
   static var notif = Notif();
   static bool EdtTicket = false;
   static bool gIsIntroPass = false;
@@ -74,6 +74,7 @@ class DbTools {
   static String OrgLib = "";
   static String ParamTypeOg = "";
   static bool gDemndeReload = false;
+
   static List<String> List_TypeInter = [];
   static List<String> List_TypeInterID = [];
   static List<String> List_ParcTypeInter = [];
@@ -84,7 +85,6 @@ class DbTools {
   static List<String> List_FactInterID = [];
   static List<String> List_UserInter = [];
   static List<String> List_UserInterID = [];
-
   static List<ValueItem> List_ValueItem_User = [];
 
   static PackageInfo packageInfo = PackageInfo(
@@ -555,7 +555,6 @@ class DbTools {
   static List<Param_Param> ListParam_Param_Civ = [];
   static List<Param_Param> ListParam_Param_Status_Interv = [];
 
-
   static List<String> ListParam_ParamCiv = [];
   static List<String> ListParam_ParamForme = [];
 
@@ -592,6 +591,7 @@ class DbTools {
     DbTools.List_TypeInter.addAll(DbTools.ListParam_ParamFam);
     DbTools.List_TypeInterID.clear();
     DbTools.List_TypeInterID.addAll(DbTools.ListParam_ParamFamID);
+
     await DbTools.getParam_ParamFam("Type_Organe");
     DbTools.List_ParcTypeInter.clear();
     DbTools.List_ParcTypeInter.addAll(DbTools.ListParam_ParamFam);
@@ -695,9 +695,13 @@ class DbTools {
 
   static Future<bool> setParam_Param(Param_Param paramParam) async {
     String wSlq = "UPDATE Param_Param SET "
-            "Param_Param_Text = \"" + paramParam.Param_Param_Text + "\", "
-        + "Param_Param_Color = \"" + paramParam.Param_Param_Color + "\", "
-        + "Param_Param_ID = \"" +
+            "Param_Param_Text = \"" +
+        paramParam.Param_Param_Text +
+        "\", " +
+        "Param_Param_Color = \"" +
+        paramParam.Param_Param_Color +
+        "\", " +
+        "Param_Param_ID = \"" +
         paramParam.Param_Param_ID +
         "\", " +
         "Param_Param_Int = " +
@@ -1802,7 +1806,25 @@ class DbTools {
     if (ListClient == null) return false;
     if (ListClient.length > 0) {
       DbTools.gClient = ListClient[0];
+      return true;
+    }
+    return false;
+  }
 
+  static Future<bool> getClientRech(String wRech) async {
+    String wSlq = 'SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, " " , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = "FACT" JOIN Users ON Clients.Client_Commercial = Users.UserID'
+            ' WHERE Clients.Client_Nom LIKE "%' +
+        '${wRech}' +
+        '%" OR Adresse_CP LIKE "%' +
+        '${wRech}' +
+        '%" OR Adresse_Ville LIKE "%' +
+        '${wRech}' +
+        '%" ORDER BY Client_Nom;';
+    print("getClient wSlq $wSlq");
+    ListClient = await getClient_API_Post("select", wSlq);
+    if (ListClient == null) return false;
+    if (ListClient.length > 0) {
+      DbTools.gClient = ListClient[0];
       return true;
     }
     return false;
@@ -1835,8 +1857,6 @@ class DbTools {
     }
     return false;
   }
-
-
 
   static Future<bool> getClientMemID(int ID) async {
     gClient = Client.ClientInit();
@@ -2235,6 +2255,18 @@ class DbTools {
     return false;
   }
 
+  static Future<bool> getSiteRech(String wRech) async {
+    String wSlq = 'select * from Sites WHERE Site_Nom LIKE "%' + '${wRech}' + '%" OR Site_CP LIKE "%' + '${wRech}' + '%" OR Site_Ville LIKE "%' + '${wRech}' + '%" ORDER BY Site_Nom;';
+    print("getSiteRech wSlq $wSlq");
+    ListSite = await getSite_API_Post("select", wSlq);
+    if (ListSite == null) return false;
+    if (ListSite.length > 0) {
+      gSite = ListSite[0];
+      return true;
+    }
+    return false;
+  }
+
   static Future<bool> getSite(int ID) async {
     String wTmp = "select * from Sites WHERE SiteId = $ID";
 
@@ -2273,7 +2305,7 @@ class DbTools {
     ListSite = await getSite_API_Post("select", wTmp);
 
     if (ListSite == null) return false;
-   print("getSitesSite ${ListSite.length}");
+    print("getSitesSite ${ListSite.length}");
     if (ListSite.length > 0) {
       //    print("getSitesSite return TRUE");
       return true;
@@ -2399,14 +2431,14 @@ class DbTools {
   static Future<bool> getZonesSite(int ID) async {
     String wTmp = "select * from Zones WHERE Zone_SiteId = $ID ORDER BY Zone_Nom";
 
-//    print("wTmp getZonesClient ${wTmp}");
+    print("wTmp getZonesClient ${wTmp}");
     ListZone = await getZone_API_Post("select", wTmp);
 
     if (ListZone == null) return false;
-//    print("getZonesClient ${ListZone.length}");
+    print("getZonesClient ${ListZone.length}");
     if (ListZone.length > 0) {
       gZone = ListZone[0];
-      //    print("getZonesClient return TRUE");
+      print("getZonesClient return TRUE");
       return true;
     }
     return false;
@@ -2466,10 +2498,10 @@ class DbTools {
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
 
-//    print("getZone_API_Post " + aSQL);
+    print("getZone_API_Post " + aSQL);
 
     http.StreamedResponse response = await request.send();
-    //  print("getZone_API_Post response ${response.statusCode}" );
+    print("getZone_API_Post response ${response.statusCode}");
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
@@ -2510,6 +2542,111 @@ class DbTools {
     } else {
       return 0;
     }
+  }
+
+  static Future<bool> copyInterventionAll(int ID) async {
+    String wNow = DateFormat('dd/MM/yyyy').format(DateTime.now());
+
+    String wSql = "INSERT INTO Interventions ("
+        "InterventionId, "
+        "Intervention_ZoneId, "
+        "Intervention_Date,"
+        "Intervention_Date_Visite, "
+        "Intervention_Type, "
+        "Intervention_Parcs_Type, "
+        "Intervention_Status, "
+        "Intervention_Histo_Status, "
+        "Intervention_Facturation, "
+        "Intervention_Histo_Facturation, "
+        "Intervention_Responsable, "
+        "Intervention_Responsable2, "
+        "Intervention_Responsable3,"
+        " Intervention_Responsable4, "
+        "Intervention_Partages,     "
+        "Intervention_Contributeurs, "
+        "Intervention_Intervenants, "
+        "Intervention_Reglementation, "
+        "Intervention_Signataire_Client, "
+        "Intervention_Signature_Client, "
+        "Intervention_Signataire_Tech,   "
+        "Intervention_Signature_Tech, "
+        "Intervention_Signataire_Date,   "
+        "Intervention_Signataire_Date_Client, "
+        "Intervention_Remarque, Livr,  "
+        "Intervention_Contrat, "
+        "Intervention_TypeContrat, "
+        "Intervention_Duree, "
+        "Intervention_Organes, "
+        "Intervention_RT, "
+        "Intervention_APSAD, "
+        "Intervention_Sat) "
+        "SELECT NULL, Intervention_ZoneId,"
+        " '$wNow', "
+        " '$wNow',"
+        " 'Installation',"
+        " Intervention_Parcs_Type,"
+        " 'Programmée',"
+        " Intervention_Histo_Status,"
+        " Intervention_Facturation,"
+        " Intervention_Histo_Facturation,"
+        " Intervention_Responsable,"
+        " Intervention_Responsable2,"
+        " Intervention_Responsable3,"
+        " Intervention_Responsable4,"
+        " Intervention_Partages,"
+        " Intervention_Contributeurs,"
+        " Intervention_Intervenants,"
+        " Intervention_Reglementation,"
+        " Intervention_Signataire_Client,"
+        " Intervention_Signature_Client,"
+        " Intervention_Signataire_Tech,"
+        " Intervention_Signature_Tech,"
+        " Intervention_Signataire_Date,"
+        " Intervention_Signataire_Date_Client,"
+        " Intervention_Remarque,"
+        " Livr,"
+        " Intervention_Contrat,"
+        " Intervention_TypeContrat,"
+        " Intervention_Duree,"
+        " Intervention_Organes,"
+        " Intervention_RT,"
+        " Intervention_APSAD,"
+        " Intervention_Sat FROM Interventions Where Interventions.InterventionId = $ID;";
+    bool ret = await add_API_Post("insert", wSql);
+
+    int Interventions_LastID = gLastID;
+    print("copyInterventionAll ret $ret Interventions_LastID $Interventions_LastID");
+
+
+
+    await getParc_EntID( ID);
+    for (int i = 0; i < ListParc_Ent.length; i++) {
+      var wParc_Ent = ListParc_Ent[i];
+
+      var uuid = Uuid();
+      String uuidv1 = uuid.v1();
+
+      wSql = "INSERT INTO Parcs_Ent (ParcsId, Parcs_order, Parcs_InterventionId, Parcs_Type, Parcs_Date_Fab, Parcs_Date_Rev, Parcs_QRCode, Parcs_FREQ_Id, Parcs_FREQ_Label, Parcs_ANN_Id, Parcs_ANN_Label, Parcs_FAB_Id, Parcs_FAB_Label, Parcs_NIV_Id, Parcs_NIV_Label, Parcs_ZNE_Id, Parcs_ZNE_Label, Parcs_EMP_Id, Parcs_EMP_Label, Parcs_LOT_Id, Parcs_LOT_Label, Parcs_SERIE_Id, Parcs_SERIE_Label, Parcs_Audit_Note, Parcs_Verif_Note, Parcs_Intervention_Timer, Parcs_UUID, Parcs_UUID_Parent, Parcs_CodeArticle, Parcs_CODF, Parcs_NCERT, Livr, Devis, Action) "
+          "SELECT NULL, Parcs_order, $Interventions_LastID, Parcs_Type, Parcs_Date_Fab, Parcs_Date_Rev, Parcs_QRCode, Parcs_FREQ_Id, Parcs_FREQ_Label, Parcs_ANN_Id, Parcs_ANN_Label, Parcs_FAB_Id, Parcs_FAB_Label, Parcs_NIV_Id, Parcs_NIV_Label, Parcs_ZNE_Id, Parcs_ZNE_Label, Parcs_EMP_Id, Parcs_EMP_Label, Parcs_LOT_Id, Parcs_LOT_Label, Parcs_SERIE_Id, Parcs_SERIE_Label, Parcs_Audit_Note, Parcs_Verif_Note, Parcs_Intervention_Timer, '$uuidv1', Parcs_UUID_Parent, Parcs_CodeArticle, Parcs_CODF, Parcs_NCERT, Livr, Devis, Action FROM Parcs_Ent WHERE ParcsId = ${wParc_Ent.ParcsId};";
+      ret = await add_API_Post("insert", wSql);
+
+    int Parcs_Ent_LastID = gLastID;
+      print("copyInterventionAll ret $ret Parcs_Ent_LastID $Parcs_Ent_LastID");
+
+      wSql = "INSERT INTO Parcs_Desc (ParcsDescId, ParcsDesc_ParcsId, ParcsDesc_Type, ParcsDesc_Id, ParcsDesc_Lib) "
+      "SELECT NULL, $Parcs_Ent_LastID, ParcsDesc_Type, ParcsDesc_Id, ParcsDesc_Lib FROM Parcs_Desc where Parcs_Desc.ParcsDesc_ParcsId = ${wParc_Ent.ParcsId};";
+      ret = await add_API_Post("insert", wSql);
+
+    }
+
+    await getParc_EntID( Interventions_LastID);
+    for (int i = 0; i < ListParc_Ent.length; i++) {
+      var wParc_Ent = ListParc_Ent[i];
+      wSql = "UPDATE Parcs_Desc SET ParcsDesc_Id = -1,ParcsDesc_Lib = '---' WHERE Parcs_Desc.ParcsDesc_ParcsId = ${wParc_Ent.ParcsId} AND Parcs_Desc.ParcsDesc_Id != '';";
+      ret = await add_API_Post("upddel", wSql);
+      print("copyInterventionAll ret $ret UPDATE $wSql");
+    }
+    return ret;
   }
 
   static Future<bool> getInterventionAll() async {
@@ -2575,7 +2712,7 @@ class DbTools {
     print("getInterventionAll ${ListIntervention.length}");
     if (ListIntervention.length > 0) {
       gIntervention = ListIntervention[0];
-      print("getInterventionAll return TRUE");
+      print("getInterventionAll return TRUE ${gIntervention.Desc()}");
       return true;
     }
     return false;
@@ -2718,7 +2855,7 @@ class DbTools {
   }
 
   static Future getPlanning_InterventionIdRes(int InterventionId) async {
-    ListUserH = await getPlanningH_API_Post("select", "SELECT Users.User_Nom , Users.User_Prenom, SUM(TIMEDIFF( Planning.Planning_InterventionendTime,Planning.Planning_InterventionstartTime) / 10000) as H FROM Planning , Users where `Planning_ResourceId` = Users.UserID AND   Planning_InterventionId = $InterventionId GROUP BY Planning.Planning_ResourceId ORDER BY H DESC;");
+    ListUserH = await getPlanningH_API_Post("select", "SELECT Users.User_Nom , Users.User_Prenom, SUM(TIMEDIFF( Planning.Planning_InterventionendTime,Planning.Planning_InterventionstartTime) / 10000) as H FROM Planning , Users where Planning_ResourceId = Users.UserID AND   Planning_InterventionId = $InterventionId GROUP BY Planning.Planning_ResourceId ORDER BY H DESC;");
     if (ListUserH == null) return false;
     if (ListUserH.length > 0) {
       return true;
@@ -3055,14 +3192,14 @@ class DbTools {
     if (ListParc_Ent == null) return false;
 //    print("getParc_EntID ${ListParc_Ent.length} $wSql");
     if (ListParc_Ent.length > 0) {
-  //    print("getParc_EntID return TRUE");
+      //    print("getParc_EntID return TRUE");
       return true;
     }
     return false;
   }
 
   static Future<bool> setParc_Ent(Parc_Ent parcEnt) async {
-    String wSlq = "UPDATE Parc_Ents SET "
+    String wSlq = "UPDATE Parcs_Ent SET "
             "ParcsId     =   ${parcEnt.ParcsId}, " +
         "Parcs_order     =   ${parcEnt.Parcs_order}, " +
         "Parcs_InterventionId = \"${parcEnt.Parcs_InterventionId}\", " +
@@ -3095,16 +3232,16 @@ class DbTools {
 
   static Future<bool> addParc_EntAdrType(int parcsInterventionid) async {
     String wValue = "NULL, $parcsInterventionid, ";
-    String wSlq = "INSERT INTO Parc_Ents (ParcsId, Parcs_InterventionId, ) VALUES ($wValue)";
+    String wSlq = "INSERT INTO Parcs_Ent (ParcsId, Parcs_InterventionId, ) VALUES ($wValue)";
     print("addParc_Ent " + wSlq);
     bool ret = await add_API_Post("insert", wSlq);
     print("addParc_Ent ret " + ret.toString());
     return ret;
   }
 
-  static Future<bool> addParc_Ent(int parcsInterventionid) async {
-    String wValue = "NULL, $parcsInterventionid";
-    String wSlq = "INSERT INTO Parc_Ents (ParcsId, Parcs_InterventionId) VALUES ($wValue)";
+  static Future<bool> addParc_Ent(int parcsInterventionid, String parcTypeInter) async {
+    String wValue = "NULL, $parcsInterventionid, '${parcTypeInter}'";
+    String wSlq = "INSERT INTO Parcs_Ent (ParcsId, Parcs_InterventionId, Parcs_Type) VALUES ($wValue)";
     print("addParc_Ent " + wSlq);
     bool ret = await add_API_Post("insert", wSlq);
     print("addParc_Ent ret " + ret.toString());
@@ -3112,7 +3249,7 @@ class DbTools {
   }
 
   static Future<bool> delParc_Ent(Parc_Ent parcEnt) async {
-    String aSQL = "DELETE FROM Parc_Ents WHERE Parc_EntId = ${parcEnt.ParcsId} ";
+    String aSQL = "DELETE FROM Parcs_Ent WHERE Parc_EntId = ${parcEnt.ParcsId} ";
     print("delParc_Ent " + aSQL);
     bool ret = await add_API_Post("upddel", aSQL);
     print("delParc_Ent ret " + ret.toString());
@@ -4458,26 +4595,18 @@ class DbTools {
     gLastID = -1;
     String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
 
-//    print("SrvUrl " + SrvUrl);
+    print("aSQL  " + aSQL);
 //    print("aType " + aType);
 
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL});
 
     http.StreamedResponse response = await request.send();
-//    print("add_API_Post " + response.statusCode.toString());
+    print("add_API_Post " + response.statusCode.toString());
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
 
       var success = parsedJson['success'];
-
-/*
-      print("add_API_Post parsedJson ${parsedJson.toString()}");
-      print("add_API_Post success $success");
-      var decsql = parsedJson['decsql'];
-      print("add_API_Post decsql $decsql");
-*/
-
       if (success == 1) {
         gLastID = int.tryParse("${parsedJson['last_id']}") ?? 0;
       }
@@ -4696,41 +4825,3 @@ class Ret {
     return wRet;
   }
 }
-
-/*
-
-
-
-CREATE TABLE `NF074` (
-`NF074id` int(11) NOT NULL,
-`NF074_Fichier` varchar(512) NOT NULL DEFAULT '',
-`NF074_No`        varchar(5) NOT NULL DEFAULT '',
-`NF074_MM` varchar(2) NOT NULL DEFAULT '',
-`NF074_AAAA` varchar(4) NOT NULL DEFAULT '',
-`NF074_Fabricant` varchar(512) NOT NULL DEFAULT '',
-`NF074_Certif` varchar(512) NOT NULL DEFAULT '',
-`NF074_RTCH` varchar(512) NOT NULL DEFAULT '',
-`NF074_Type` varchar(512) NOT NULL DEFAULT '',
-`NF074_Vol` varchar(512) NOT NULL DEFAULT '',
-`NF074_Add` varchar(512) NOT NULL DEFAULT '',
-`NF074_QAdd` varchar(512) NOT NULL DEFAULT '',
-`NF074_MAdd` varchar(512) NOT NULL DEFAULT '',
-`NF074_Agent` varchar(512) NOT NULL DEFAULT '',
-`NF074_Foyers` varchar(512) NOT NULL DEFAULT '',
-`NF074_Temps` varchar(512) NOT NULL DEFAULT '',
-`NF074_Durée` varchar(512) NOT NULL DEFAULT '',
-`NF074_Transp` varchar(512) NOT NULL DEFAULT '',
-`NF074_Pres` varchar(512) NOT NULL DEFAULT '',
-`NF074_Aux` varchar(512) NOT NULL DEFAULT '',
-`NF074_NORME` varchar(512) NOT NULL DEFAULT '',
-`NF074_USINE` varchar(512) NOT NULL DEFAULT '',
-`NF074_Entrée` varchar(512) NOT NULL DEFAULT '',
-`NF074_Sortie` varchar(512) NOT NULL DEFAULT '')
-ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-
-ALTER TABLE `NF074 ADD PRIMARY KEY (`NF074id`);
-
-
-
-*/

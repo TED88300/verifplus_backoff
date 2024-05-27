@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:tab_container/tab_container.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_CR.dart';
+import 'package:verifplus_backoff/widgets/Interventions/Intervention_Signature.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamSite_Dialog.dart';
 
@@ -336,7 +336,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       wScreen("BL"),
       wScreen("BC"),
       wScreen("Devis"),
-      wScreen("Signature"),
+      Intervention_Signature(),
     ];
     return Container(
       color: Colors.white,
@@ -462,7 +462,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     return FocusTraversalGroup(
         policy: OrderedTraversalPolicy(),
         child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+            padding: const EdgeInsets.fromLTRB(10, 30, 10, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -539,17 +539,50 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           Container(
                             width: 30,
                           ),
-                          gColors.Txt(160, "Dernière visite réccurente", "01/05/2023"),
+                          gColors.Txt(160, "Dernière visite réccurente", "${DbTools.gIntervention.Intervention_Status}"),
                           Container(
                             width: 30,
                           ),
+                          (DbTools.gIntervention.Intervention_Status == "Clôturée" && DbTools.gIntervention.Intervention_Type == "Installation" ) ?
                           TextButton(
                               child: Text(
                                 "Programmer",
                                 style: gColors.bodySaisie_N_B,
                               ),
                               style: ButtonStyle(padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)), foregroundColor: MaterialStateProperty.all<Color>(Colors.black), shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0), side: BorderSide(color: Colors.black)))),
-                              onPressed: () => null),
+                              onPressed: () async    {
+                                await DbTools.copyInterventionAll(DbTools.gIntervention.InterventionId!);
+
+                                Alert(
+                                  context: context,
+                                  style: gColors.alertStyle,
+                                  alertAnimation: gColors.fadeAlertAnimation,
+                                  image: Container(
+                                    height: 100,
+                                    width: 100,
+                                    child: Image.asset('assets/images/AppIco.png'),
+                                  ),
+                                  title: "Vérif+ Alerte",
+                                  desc: "Une nouvelle intervention à bien été programmée",
+                                  buttons: [
+
+                                    DialogButton(
+                                        child: Text(
+                                          "Ok",
+                                          style: TextStyle(color: Colors.white, fontSize: 20),
+                                        ),
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+
+                                          Navigator.pop(context);
+                                        },
+                                        color: gColors.primaryGreen)
+                                  ],
+                                ).show();
+
+
+                                },
+                          ) : Container(),
                         ],
                       ),
                       Container(height: 20),
@@ -838,8 +871,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           Row(
                             children: [
                               gColors.Txt(60, "Agence", "${DbTools.gClient.Client_Depot}"),
-                              Container(width: 10),
-                              gColors.Txt(80, "Resposable", "???"),
+
                             ],
                           ),
                           Container(height: 10),

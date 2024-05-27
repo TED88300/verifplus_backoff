@@ -343,50 +343,34 @@ class _Client_IntervState extends State<Client_Interv> {
             ),
             child: SfDataGrid(
               //*********************************
-              onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                if (addedRows.length > 0 ) {
-                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
-                  DbTools.gIntervention = DbTools.ListIntervention[Selindex];
-                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
-                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
-                  if (wColSel == 0)
-                  {
-                    await showDialog(
-                        context: context,
-                        builder: (BuildContext context) => new Intervention_Dialog(
-                          site: DbTools.gSite,
-                        ));
-                    Reload();
 
-                  }
-                }
-                else if (removedRows.length > 0 )
-                {
-                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
-                  DbTools.gIntervention = DbTools.ListIntervention[Selindex];
-                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
-                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
-                  if (wColSel == 0)
-                  {
-                    await showDialog(
-                        context: context,
-                        builder: (BuildContext context) => new Intervention_Dialog(
-                          site: DbTools.gSite,
-                        ));
-                    Reload();
-
-                  }
-                }
-              },
 
               onFilterChanged: (DataGridFilterChangeDetails details) {
                 countfilterConditions = intervInfoDataGridSource.filterConditions.length;
                 setState(() {});
               },
-              onCellTap: (DataGridCellTapDetails details) {
+              onCellTap: (DataGridCellTapDetails details) async {
+                int wRowSel = details.rowColumnIndex.rowIndex;
+                if (wRowSel == 0) return;
+
                 wColSel = details.rowColumnIndex.columnIndex;
+                if (wColSel == 0)
+                {
+                  DataGridRow wDataGridRow = intervInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(wDataGridRow);
+                  DbTools.gIntervention = DbTools.ListIntervention[Selindex];
+                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
+                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
+                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
+
+                  await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => new Intervention_Dialog(
+                    site: DbTools.gSite,
+                  ));
+                  Reload();
+
+                }
               },
 
               //*********************************

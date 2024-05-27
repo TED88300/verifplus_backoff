@@ -437,8 +437,15 @@ class _Organe_VerifDialogState extends State<Organe_VerifDialog> with SingleTick
 
                 onCellTap: (DataGridCellTapDetails details) {
                   wColSel = details.rowColumnIndex.columnIndex;
-                },
+                  DataGridRow wDataGridRow = parc_EntInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                  FiltreTools.Selindex = parc_EntInfoDataGridSource.rows.indexOf(wDataGridRow);
+                  DbTools.gParc_Ent = DbTools.ListParc_Ent[FiltreTools.Selindex];
+                  if (wColSel == 0)
+                  {
+                    widget.onMaj();
+                  }
 
+                },
 
                 //*********************************
                 source: parc_EntInfoDataGridSource,

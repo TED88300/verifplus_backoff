@@ -59,20 +59,33 @@ class Zone {
   }
 
   factory Zone.fromJson(Map<String, dynamic> json) {
-//    print("json $json");
+    print("json $json");
 
-    String wgroupeNom = "";
+    if (json['Groupe_Nom'] == null) json['Groupe_Nom'] ="";
 
-    try {
-      wgroupeNom = json['Groupe_Nom'];
-    } catch (e) {
-      print(e);
-    }
 
-    Zone wZone = Zone(int.parse(json['ZoneId']), int.parse(json['Zone_SiteId']),
+
+    Zone wZone = Zone(
+        int.parse(json['ZoneId']),
+        int.parse(json['Zone_SiteId']),
         json['Zone_Code'],
         json['Zone_Depot'],
-        json['Zone_Nom'], json['Zone_Adr1'], json['Zone_Adr2'], json['Zone_Adr3'], json['Zone_Adr4'], json['Zone_CP'], json['Zone_Ville'], json['Zone_Pays'], json['Zone_Acces'], json['Zone_Rem'], json['Livr'], wgroupeNom);
+        json['Zone_Nom'],
+        json['Zone_Adr1'],
+        json['Zone_Adr2'],
+        json['Zone_Adr3'],
+        json['Zone_Adr4'],
+        json['Zone_CP'],
+        json['Zone_Ville'],
+        json['Zone_Pays'],
+        json['Zone_Acces'],
+        json['Zone_Rem'],
+        json['Livr'],
+        json['Groupe_Nom'],
+     );
+
+    print("Zone B");
+
     return wZone;
   }
 

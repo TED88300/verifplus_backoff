@@ -28,12 +28,19 @@ class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  int cpthelp = 1;
+
+
+
+
   void initLib() async {}
 
   @override
   void initState() {
     super.initState();
     initLib();
+
+
     if (DbTools.gTED) {
       emailController.text = "daudiert2@wanadoo.fr";
       passwordController.text = "Zzt88300";
@@ -68,6 +75,8 @@ class _LoginState extends State<Login> {
       width: MediaQuery.of(context).size.width / 10,
       child: ElevatedButton(
         onPressed: () async {
+          cpthelp = 0;
+
           if (await DbTools.getUserLogin(
               emailController.text, passwordController.text)) {
             CookieManager cm = CookieManager.getInstance();
@@ -177,26 +186,55 @@ class _LoginState extends State<Login> {
         color: gColors.white,
         child: Column(
           children: <Widget>[
-/*
-            SizedBox(height: 8.0),
-            Image.asset('assets/images/MondialFeu.png',height: 100,),
-*/
+
             SizedBox(height: 100.0),
-            new Image.asset('assets/images/AppIco.png', height: 100,),
-            SizedBox(height: 8.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Outils de vérification ",
-                  style: gColors.bodyTitle1_B_P,
-                ),
-                Text(
-                  "Incendie",
-                  style: gColors.bodyTitle1_B_tks.copyWith(fontSize: 32),
-                ),
-              ],
+
+            InkWell(
+              child: Container(
+                child:
+                new Image.asset('assets/images/AppIco.png', height: 100,),
+              ),
+              onTap: () {
+                cpthelp += 1;
+              },
             ),
+
+
+
+            SizedBox(height: 8.0),
+
+
+            InkWell(
+              child: Container(
+                child:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Outils de vérification ",
+                      style: gColors.bodyTitle1_B_P,
+                    ),
+                    Text(
+                      "Incendie",
+                      style: gColors.bodyTitle1_B_tks.copyWith(fontSize: 32),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () {
+                if (cpthelp == 2)
+                  {
+                    DbTools.gTED = true;
+                    setState(() {
+
+                    });
+                  }
+
+              },
+            ),
+
+
+
             Container(
               width: MediaQuery.of(context).size.width / 8,
               child:

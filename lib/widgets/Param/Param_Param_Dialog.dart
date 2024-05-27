@@ -292,7 +292,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
       new DaviColumn(name: 'Couleur', grow: 2, stringValue: (row) => row.Param_Param_Color),
     ];
 
-    print("Param_ParamGridWidget");
+    print("Param_Param_Dialog Param_ParamGridWidget");
     DaviModel<Param_Param>? _model;
     _model = DaviModel<Param_Param>(rows: DbTools.ListParam_Paramsearchresult, columns: wColumns);
     return new DaviTheme(

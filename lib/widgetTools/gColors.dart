@@ -46,6 +46,7 @@ class gColors {
   static const Color TextColor3 = Color(0xFFFFFFFF);
   static const Color white = Colors.white;
   static const Color grey = Colors.black;
+  static const Color greyLight = Color(0xFFf1f1f1);
   static const Color transparent = Colors.transparent;
   static const Color trspWhite = Color(0xFFEEEEEE);
 
@@ -81,6 +82,24 @@ class gColors {
     isDense: true,
     contentPadding: EdgeInsets.fromLTRB(8, 12, 0, 12),
   );
+
+  static InputDecoration wRechInputDecorationSelPlanning = InputDecoration(
+    filled: true,
+    fillColor: gColors.LinearGradient4,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(1.0),
+      borderSide: BorderSide(
+        color: gColors.primary,
+        width: 0.5,
+      ),
+    ),
+    hintText: 'Recherche',
+    isDense: true,
+    contentPadding: EdgeInsets.fromLTRB(8, 12, 0, 12),
+  );
+
+
+
 
   static Widget wPlutoMenuBar = PlutoMenuBar(
     mode: PlutoMenuBarMode.tap,
@@ -276,6 +295,23 @@ class gColors {
     ];
   }
 
+  static var alertStyle = AlertStyle(
+      animationType: AnimationType.fromTop,
+      isCloseButton: false,
+      isOverlayTapDismiss: false,
+      descStyle: TextStyle(fontWeight: FontWeight.bold),
+      animationDuration: Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: gColors.bodyTitle1_B_tks,
+      overlayColor: Color(0x88000000),
+      alertElevation: 20,
+      alertAlignment: Alignment.center);
+
 
   static Widget wWidgetImage = Container();
 
@@ -343,6 +379,14 @@ class gColors {
         fontSize: 32,
         fontWeight: FontWeight.bold,
       );
+
+
+  static TextStyle get bodyTitle1_B_B => TextStyle(
+    color: primary,
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+  );
+
 
   static TextStyle get bodyTitle1_B_W => TextStyle(
         color: white,
@@ -1057,19 +1101,19 @@ class gColors {
           width: lWidth,
           child: Text(
             wLabel,
-            style: gColors.bodySaisie_B_G,
+            style: gColors.bodySaisie_N_G,
           ),
         ),
         Text(
           " : ",
-          style: gColors.bodySaisie_B_B,
+          style: gColors.bodySaisie_N_B,
         ),
         Container(
            width:  tWidth > 0 ? tWidth : null,
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
           child: Text(
             "$wValue",
-            style: gColors.bodySaisie_N_B,
+            style: gColors.bodySaisie_B_B,
             overflow: tWidth > 0 ? TextOverflow.ellipsis : TextOverflow.clip,
 
           ),
@@ -1307,6 +1351,9 @@ class gColors {
   }
 
   static Widget DropdownButtonTypeInter(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
+
+    print("ListeOrg wlistTypeinter ${wlistTypeinter.length} ${wlistTypeinterid.length}");
+
     if (wlistTypeinter.length == 0) return Container();
     List<DropdownMenuItem> dropdownlist = wlistTypeinter
         .map((item) => DropdownMenuItem<String>(
@@ -1317,6 +1364,10 @@ class gColors {
               ),
             ))
         .toList();
+
+
+    print("ListeOrg wlistTypeinter.indexOf(initValue) ${initValue} ${wlistTypeinter.indexOf(initValue)}");
+
     if (wlistTypeinter.indexOf(initValue) < 0) return Container();
 
     String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];

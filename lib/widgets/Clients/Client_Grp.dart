@@ -670,15 +670,7 @@ class _Client_GrpState extends State<Client_Grp> {
                 ),
                 child: SfDataGrid(
                   //*********************************
-                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    if (addedRows.length > 0) {
-                      Selindex = groupeDataGridSource.dataGridRows.indexOf(addedRows.last);
-                      SelGroupe = dataGridController.selectedIndex;
-                      print(" onSelectionChanged  SelGroupe ${SelGroupe}");
-                      DbTools.gGroupe = DbTools.ListGroupesearchresult[Selindex];
-                        AlimSaisie();
-                    }
-                  },
+
                   onFilterChanged: (DataGridFilterChangeDetails details) {
                     countfilterConditions = groupeDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
@@ -687,6 +679,13 @@ class _Client_GrpState extends State<Client_Grp> {
                   onCellTap: (DataGridCellTapDetails details) {
                     wColSel = details.rowColumnIndex.columnIndex;
                     wRowSel = details.rowColumnIndex.rowIndex;
+                    if (wRowSel == 0) return;
+                    DataGridRow wDataGridRow = groupeDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                    Selindex = groupeDataGridSource.dataGridRows.indexOf(wDataGridRow);
+                    SelGroupe = dataGridController.selectedIndex;
+                    print(" onSelectionChanged  SelGroupe ${SelGroupe}");
+                    DbTools.gGroupe = DbTools.ListGroupesearchresult[Selindex];
+                    AlimSaisie();
                   },
 
                   //*********************************

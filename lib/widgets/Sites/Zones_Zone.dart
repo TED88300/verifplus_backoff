@@ -707,43 +707,29 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 ),
                 child: SfDataGrid(
                   //*********************************
-                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    if (addedRows.length > 0) {
-                      Selindex = zoneDataGridSource.dataGridRows.indexOf(addedRows.last);
-                      SelZone = dataGridController.selectedIndex;
-                      print(" onSelectionChanged  SelZone ${SelZone}");
-                      DbTools.gZone = DbTools.ListZonesearchresult[Selindex];
-                      AlimSaisie();
 
-                      if (wColSel == 0) {
-                        memDataGridRow = addedRows.last;
-                        DbTools.gIntervention = Intervention.InterventionInit();
-                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
-                        Reload();
 
-                      }
-                    } else if (removedRows.length > 0) {
-                      Selindex = zoneDataGridSource.dataGridRows.indexOf(removedRows.last);
-                      SelZone = dataGridController.selectedIndex;
-                      print(" onSelectionChanged  SelZone ${SelZone}");
-                      DbTools.gZone = DbTools.ListZonesearchresult[Selindex];
-                      AlimSaisie();
-                      if (wColSel == 0) {
-                        memDataGridRow = removedRows.last;
-                        DbTools.gIntervention = Intervention.InterventionInit();
-                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
-                        Reload();
-                      }
-                    }
-                  },
                   onFilterChanged: (DataGridFilterChangeDetails details) {
                     countfilterConditions = zoneDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                     setState(() {});
                   },
-                  onCellTap: (DataGridCellTapDetails details) {
+                  onCellTap: (DataGridCellTapDetails details) async{
                     wColSel = details.rowColumnIndex.columnIndex;
-                    wRowSel = details.rowColumnIndex.rowIndex;
+                   wRowSel = details.rowColumnIndex.rowIndex;
+                if (wRowSel == 0) return;
+                    DataGridRow wDataGridRow = zoneDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                    Selindex = zoneDataGridSource.dataGridRows.indexOf(wDataGridRow);
+                    AlimSaisie();
+                    if (wColSel == 0) {
+
+                      DbTools.gIntervention = Intervention.InterventionInit();
+                      await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+                      Reload();
+                    }
+
+
+
                   },
 
                   //*********************************
@@ -776,48 +762,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
         ),
       ]),
     );
-  }
-
-  Widget ZoneGridWidgetVP() {
-    List<DaviColumn<Zone>> wColumns = [
-      DaviColumn(
-          pinStatus: PinStatus.left,
-          width: 30,
-          cellBuilder: (BuildContext context, DaviRow<Zone> aZone) {
-            return InkWell(
-                child: const Icon(Icons.edit, size: 16),
-                onTap: () async {
-                  DbTools.gZone = aZone.data;
-                  await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
-                });
-          }),
-      new DaviColumn(name: 'Code', width: 100, stringValue: (row) => row.Zone_Code),
-      new DaviColumn(name: 'Nom', width: 420, stringValue: (row) => row.Zone_Nom),
-      new DaviColumn(name: 'Adresse', width: 420, stringValue: (row) => "${row.Zone_Adr1}"),
-      new DaviColumn(name: 'Cp', width: 100, stringValue: (row) => "${row.Zone_CP}"),
-      new DaviColumn(name: 'Ville', width: 300, stringValue: (row) => "${row.Zone_Ville}"),
-    ];
-    print("ZoneGridWidget ${DbTools.ListZonesearchresult.length}");
-    DaviModel<Zone>? _model;
-    _model = DaviModel<Zone>(rows: DbTools.ListZonesearchresult, columns: wColumns);
-    return new DaviTheme(
-        child: new Davi<Zone>(visibleRowsCount: 25, _model, onRowTap: (aZone) async {
-          SelZone = DbTools.ListZonesearchresult.indexOf(aZone);
-
-          DbTools.gZone = aZone;
-          AlimSaisie();
-        }),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
-          row: RowThemeData(color: (rowIndex) {
-            return SelZone == rowIndex ? gColors.secondarytxt : Colors.white;
-          }),
-          cell: CellThemeData(
-            contentHeight: 24,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
-        ));
   }
 
   Widget DropdownButtonDepot() {

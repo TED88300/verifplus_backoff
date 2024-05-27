@@ -48,11 +48,8 @@ class FiltreTools {
     Color wColor = Colors.transparent;
     if (bCircle)
       {
-
-
         wColor = gColors.getColorStatus(row.getCells()[9].value!);
       }
-
 
     double t = 5;
     double b = 3;
@@ -75,11 +72,45 @@ class FiltreTools {
             ),
             (!bCircle) ? Container() :
             gColors.gCircle(wColor),
-
           ],
         ));
   }
+  static Widget SfRow(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor,  {bool fBold = false, bool bCircle = false }    )
+  {
+    double t = 5;
+    double b = 3;
+    Color wColor = Colors.transparent;
+    if (bCircle)
+    {
+      wColor = gColors.getColorStatus(row.getCells()[Col].value!);
+    }
 
+    TextStyle wTextStyle = gColors.bodySaisie_N_G;
+    if (fBold)
+      wTextStyle = gColors.bodySaisie_B_G;
+    return Container(
+      padding: EdgeInsets.fromLTRB(8, t, 8, b),
+      alignment: alignment,
+      child:
+      Row(
+        children: [
+          (!bCircle) ? Container() :
+          gColors.gCircle(wColor),
+          (!bCircle) ? Container() :
+          Container(
+            width: 5,
+          ),
+          Text(
+            row.getCells()[Col].value.toString(),
+            style: wTextStyle.copyWith(color: txtColor),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            softWrap: false,
+          )
+        ],
+      ),
+    );
+  }
   static Widget SfRowBool(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
     double t = 5;
     double b = 3;
@@ -117,24 +148,7 @@ class FiltreTools {
   }
 
 
-  static Widget SfRow(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
-  {
-    double t = 5;
-    double b = 3;
 
-    TextStyle wTextStyle = gColors.bodySaisie_N_G;
-    if (fBold)
-      wTextStyle = gColors.bodySaisie_B_G;
-    return Container(
-      padding: EdgeInsets.fromLTRB(8, t, 8, b),
-      alignment: alignment,
-      child: Text(
-        row.getCells()[Col].value.toString(),
-        style: wTextStyle.copyWith(color: txtColor),
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
 
   static Widget SfRowImage(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
   {
@@ -214,10 +228,15 @@ class FiltreTools {
     double t = 5;
     double b = 3;
 
+    print(" ,row.getCells()[Col].value ${row.getCells()[Col].value}");
+
     String wTmp = "";
     try {
-       wTmp = DateFormat('dd/MM/yyyy').format(row.getCells()[Col].value);
+      var wDate = DateTime.parse(row.getCells()[Col].value);
+       wTmp = DateFormat('dd/MM/yyyy').format(wDate);
     } catch (e) {
+      print(" error ${e}");
+
     }
 
 

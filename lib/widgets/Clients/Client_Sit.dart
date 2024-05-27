@@ -228,15 +228,8 @@ class _Client_SitState extends State<Client_Sit> {
   Future AlimSaisie() async {
     print("AlimSaisie ${DbTools.gSite.Desc()}");
 
-
-
-
-
-
     textController_Adresse_Geo.text = "${DbTools.gSite.Site_Adr1} ${DbTools.gSite.Site_CP} ${DbTools.gSite.Site_Ville}";
-
     textController_Site_Code.text = DbTools.gSite.Site_Code;
-
     textController_Site_Nom.text = DbTools.gSite.Site_Nom;
     textController_Site_Adr1.text = DbTools.gSite.Site_Adr1;
     textController_Site_Adr2.text = DbTools.gSite.Site_Adr2;
@@ -297,8 +290,12 @@ class _Client_SitState extends State<Client_Sit> {
     }
     imageisload = true;
 
+    print("Fin AlimSaisie 1");
+
+
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
 
+    print("Fin AlimSaisie 2");
 
 
     setState(() {});
@@ -1129,7 +1126,7 @@ class _Client_SitState extends State<Client_Sit> {
 
   List<double> dColumnWidth = [
     80,
-    450,
+    350,
     350,
     120,
     160,
@@ -1152,7 +1149,7 @@ class _Client_SitState extends State<Client_Sit> {
   List<GridColumn> getColumns() {
     return <GridColumn>[
       FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('nom', 'Nom', double.nan, 160, Alignment.centerLeft, wColumnWidthMode: ColumnWidthMode.lastColumnFill),
+      FiltreTools.SfGridColumn('nom', 'Nom', dColumnWidth[1], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
@@ -1188,53 +1185,38 @@ class _Client_SitState extends State<Client_Sit> {
                 ),
                 child: SfDataGrid(
                   //*********************************
-                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    if (addedRows.length > 0 ) {
-                      Selindex = siteDataGridSource.dataGridRows.indexOf(addedRows.last);
-                      SelSite = dataGridController.selectedIndex;
-                      print(" onSelectionChanged  SelSite ${SelSite}");
-                      DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
-                      AlimSaisie();
-                      if (wColSel == 0)
-                      {
-                        memDataGridRow = addedRows.last;
-                        await showDialog(
-                        context: context,
-                        builder: (BuildContext context) => new Zones_Dialog(
-                          site: DbTools.gSite,
-                        ));
-                        Reload();
 
-                      }
-                    }
-                    else if (removedRows.length > 0 )
-                      {
-                        Selindex = siteDataGridSource.dataGridRows.indexOf(removedRows.last);
-                        SelSite = dataGridController.selectedIndex;
-                        print(" onSelectionChanged  SelSite ${SelSite}");
-                        DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
-                        AlimSaisie();
-                        if (wColSel == 0)
-                        {
-                          memDataGridRow = removedRows.last;
-                          await showDialog(
-                              context: context,
-                              builder: (BuildContext context) => new Zones_Dialog(
-                                site: DbTools.gSite,
-                              ));
-                          Reload();
 
-                        }
-                      }
-                  },
                   onFilterChanged: (DataGridFilterChangeDetails details) {
+
                     countfilterConditions = siteDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                     setState(() {});
                   },
-                  onCellTap: (DataGridCellTapDetails details) {
+                  onCellTap: (DataGridCellTapDetails details) async{
                     wColSel = details.rowColumnIndex.columnIndex;
-                    wRowSel = details.rowColumnIndex.rowIndex;
+                   wRowSel = details.rowColumnIndex.rowIndex;
+                if (wRowSel == 0) return;
+                    DataGridRow wDataGridRow = siteDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                    Selindex = siteDataGridSource.dataGridRows.indexOf(wDataGridRow);
+
+
+                    print(" onSelectionChanged  B SelSite ${SelSite}");
+                    DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
+                    AlimSaisie();
+                    if (wColSel == 0)
+                    {
+                      print(" onSelectionChanged C SelSite ${SelSite}");
+                      await showDialog(
+                      context: context,
+                      builder: (BuildContext context) => new Zones_Dialog(
+                        site: DbTools.gSite,
+                      ));
+                      Reload();
+
+                    }
+
+
                   },
 
                   //*********************************
@@ -1249,7 +1231,7 @@ class _Client_SitState extends State<Client_Sit> {
                   rowHeight: 28,
                   allowColumnsResizing: true,
                   columnResizeMode: ColumnResizeMode.onResize,
-                  selectionMode: SelectionMode.single,
+                  selectionMode: SelectionMode.none,
                   navigationMode: GridNavigationMode.row,
 
                   controller: dataGridController,

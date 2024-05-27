@@ -95,6 +95,8 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   String selectedUserInter = "";
   String selectedUserInterID = "";
 
+  late  TabContainerController? tabContainerController;
+
   String wRep = "";
   Future initLib() async {
 
@@ -167,11 +169,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ListParam_ParamFam.addAll(DbTools.ListParam_ParamFam);
     ListParam_ParamFamID.clear();
     ListParam_ParamFamID.addAll(DbTools.ListParam_ParamFamID);
-
-
-
-
-
 
     DbTools.gClient = wClient;
 
@@ -254,11 +251,34 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   }
 
   void initState() {
+    widgetChildren = [
+      Client_Fact(client_Fact_Controller: client_Fact_Controller,),
+      (DbTools.gViewCtact.compareTo("Groupe") == 0) ? Ctact_Grp(onMaj: onMaj,) : Client_Grp(onMaj: onMaj,),
+      (DbTools.gViewCtact.compareTo("Site") == 0) ? Ctact_Site(onMaj: onMaj,) : Client_Sit(onMaj: onMaj,),
+      Client_Interv(onMaj: onMaj,),
+      wScreen("Docs ventes"),
+      wScreen("Articles/parc"),
+      wScreen("Stat"),
+      wScreen("Fichiers"),
+      wScreen("Notes"),
+      Client_Map(),
+    ];
+
+    tabContainerController = TabContainerController(length: widgetChildren.length,initialIndex: 2);
+
+
     print("initState >");
     initLib();
     super.initState();
     print("initState <");
   }
+
+  @override
+  void dispose() {
+    tabContainerController!.dispose();
+    super.dispose();
+  }
+
 
   void onMaj() async {
     print("Parent onMaj()");
@@ -326,18 +346,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   int sel = 0;
 
   Widget Content(BuildContext context) {
-    widgetChildren = [
-      Client_Fact(client_Fact_Controller: client_Fact_Controller,),
-      (DbTools.gViewCtact.compareTo("Groupe") == 0) ? Ctact_Grp(onMaj: onMaj,) : Client_Grp(onMaj: onMaj,),
-      (DbTools.gViewCtact.compareTo("Site") == 0) ? Ctact_Site(onMaj: onMaj,) : Client_Sit(onMaj: onMaj,),
-      Client_Interv(onMaj: onMaj,),
-      wScreen("Docs ventes"),
-      wScreen("Articles/parc"),
-      wScreen("Stat"),
-      wScreen("Fichiers"),
-      wScreen("Notes"),
-      Client_Map(),
-    ];
+
 
     return Container(
       color: Colors.white,
@@ -364,6 +373,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
 
   Widget taBarContainer() {
     return TabContainer(
+      controller: tabContainerController!,
       tabDuration : Duration(milliseconds: 600),
       color: gColors.primary,
       children: widgetChildren,

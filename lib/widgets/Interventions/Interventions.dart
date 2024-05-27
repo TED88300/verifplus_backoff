@@ -35,17 +35,18 @@ class IntervInfoDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     dataGridRows = DbTools.ListInterventionsearchresult.map<DataGridRow>((Intervention Interv) {
+
       return DataGridRow(cells: <DataGridCell>[
         DataGridCell<int>(columnName: 'id', value: Interv.InterventionId),
+        DataGridCell<String>(columnName: 'status', value: Interv.Intervention_Status),
         DataGridCell<String>(columnName: 'client', value: Interv.Client_Nom),
         DataGridCell<String>(columnName: 'groupe', value: Interv.Groupe_Nom),
         DataGridCell<String>(columnName: 'site', value: Interv.Site_Nom),
         DataGridCell<String>(columnName: 'zone', value: Interv.Zone_Nom),
-        DataGridCell<DateTime>(columnName: 'date', value: inputFormat2.parse(Interv.Intervention_Date!)),
-        DataGridCell<String>(columnName: 'org', value: DbTools.getParam_Param_Text("Type_Organe", Interv.Intervention_Parcs_Type!)),
+        DataGridCell<String>(columnName: 'date', value: "${inputFormat2.parse(Interv.Intervention_Date!)}"),
         DataGridCell<String>(columnName: 'type', value: Interv.Intervention_Type),
+        DataGridCell<String>(columnName: 'org', value: DbTools.getParam_Param_Text("Type_Organe", Interv.Intervention_Parcs_Type!)),
         DataGridCell<int>(columnName: 'organes', value: Interv.Cnt),
-        DataGridCell<String>(columnName: 'status', value: Interv.Intervention_Status),
         DataGridCell<String>(columnName: 'factu', value: Interv.Intervention_Facturation),
         DataGridCell<String>(columnName: 'RespCom', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable!)),
         DataGridCell<String>(columnName: 'RespTech', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable2!)),
@@ -54,7 +55,6 @@ class IntervInfoDataGridSource extends DataGridSource {
     }).toList();
     sortedColumns.add(SortColumnDetails(name: 'organes', sortDirection: DataGridSortDirection.descending));
     sort();
-
   }
 
   @override
@@ -73,17 +73,22 @@ class IntervInfoDataGridSource extends DataGridSource {
 
     Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
-      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor, bCircle : true),
-      FiltreTools.SfRow(row,      1, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      2, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      3, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      4, Alignment.centerLeft, textColor),
-      FiltreTools.SfRowDate(row,  5, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      6, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      7, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      8, Alignment.center, textColor),
-      FiltreTools.SfRow(row,      9, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row,      10, Alignment.centerLeft, textColor),
+      FiltreTools.SfRowSel(
+        row,
+        0,
+        Alignment.centerLeft,
+        textColor,
+      ), // bCircle : true),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor, bCircle: true),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
+      FiltreTools.SfRowDate(row, 6, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 7, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 8, Alignment.center, textColor),
+      FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 13, Alignment.centerLeft, textColor),
@@ -94,9 +99,6 @@ class IntervInfoDataGridSource extends DataGridSource {
   Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
     return Container(alignment: Alignment.center, child: Text(summaryValue));
   }
-
-
-
 }
 
 //*********************************************************************
@@ -111,15 +113,15 @@ class Interventions extends StatefulWidget {
 class _InterventionsState extends State<Interventions> {
   List<double> dColumnWidth = [
     80,
+    125,
     200,
-    130,
-    200,
+    150,
+    300,
     170,
-    130,
-    130,
+    120,
     130,
     110,
-    130,
+    80,
     110,
     190,
     190,
@@ -134,57 +136,47 @@ class _InterventionsState extends State<Interventions> {
   DateTime selectedDate = DateTime.now();
 
   int wColSel = -1;
+  int wRowSel = -1;
   int Selindex = -1;
   int countfilterConditions = -1;
-
 
   var inputFormat = DateFormat('yyyy-MM-dd');
   var inputFormat2 = DateFormat('dd/MM/yyyy');
   DateTime Ct_Debut = DateTime.now();
   DateTime Ct_Fin = DateTime.now();
 
-  DataGridRow memDataGridRow = DataGridRow(cells: []);
-
-
   List<GridColumn> getColumns() {
     return <GridColumn>[
-      FiltreTools.SfGridColumn('id', 'ID',          dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('groupe', 'Client',  dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('groupe', 'Groupe',  dColumnWidth[2], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('site', 'Site',      dColumnWidth[3], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('zone', 'Zone',      dColumnWidth[4], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('date', 'Date',      dColumnWidth[5], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('org', 'Organes',    dColumnWidth[6], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('type', 'Type',      dColumnWidth[7], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('organes', 'Cpt',    dColumnWidth[8], dColumnWidth[1], Alignment.center),
-      FiltreTools.SfGridColumn('status', 'Status',  dColumnWidth[9], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('factu', 'Fact',     dColumnWidth[10], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespCom', 'RespCom',dColumnWidth[11], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespTech', 'RespTech',dColumnWidth[12], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('status', 'Status', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('groupe', 'Client', dColumnWidth[2], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('groupe', 'Groupe', dColumnWidth[3], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('site', 'Site', dColumnWidth[4], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('zone', 'Zone', dColumnWidth[5], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('date', 'Date', dColumnWidth[6], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('org', 'Organes', dColumnWidth[7], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('type', 'Type', dColumnWidth[8], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('organes', 'Cpt', dColumnWidth[9], dColumnWidth[1], Alignment.center),
+      FiltreTools.SfGridColumn('factu', 'Fact', dColumnWidth[10], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RespCom', 'RespCom', dColumnWidth[11], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RespTech', 'RespTech', dColumnWidth[12], dColumnWidth[1], Alignment.centerLeft),
       FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[13], dColumnWidth[1], Alignment.centerLeft),
     ];
   }
 
-  List<GridTableSummaryRow> getGridTableSummaryRow()
-  {
-    return
-      [      GridTableSummaryRow(
+  List<GridTableSummaryRow> getGridTableSummaryRow() {
+    return [
+      GridTableSummaryRow(
           color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,
           columns: [
-            GridSummaryColumn(
-                name: 'Count',
-                columnName: 'id',
-                summaryType: GridSummaryType.count),
-          GridSummaryColumn(
-              name: 'Sum',
-              columnName: 'organes',
-              summaryType: GridSummaryType.sum),
+            GridSummaryColumn(name: 'Count', columnName: 'id', summaryType: GridSummaryType.count),
+            GridSummaryColumn(name: 'Sum', columnName: 'organes', summaryType: GridSummaryType.sum),
           ],
           position: GridTableSummaryRowPosition.bottom),
-      ];
+    ];
   }
 
   void Resize(ColumnResizeUpdateDetails args) {
@@ -222,22 +214,18 @@ class _InterventionsState extends State<Interventions> {
     await DbTools.getInterventionAll();
 
     Ct_Debut = DateTime.now();
-    Ct_Fin   = DateTime(1980);
+    Ct_Fin = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
       try {
         DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
-        if(wDT.difference(Ct_Debut).inHours < 0)
-        {
+        if (wDT.difference(Ct_Debut).inHours < 0) {
           Ct_Debut = wDT;
         }
-        if(wDT.difference(Ct_Fin).inHours > 0)
-        {
+        if (wDT.difference(Ct_Fin).inHours > 0) {
           Ct_Fin = wDT;
         }
-      } catch (e) {
-      }
-
+      } catch (e) {}
     }
 
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
@@ -246,7 +234,6 @@ class _InterventionsState extends State<Interventions> {
   }
 
   Future Filtre() async {
-
     List<Intervention> ListInterventionsearchresultDate = [];
     DbTools.ListInterventionsearchresult.clear();
 
@@ -263,29 +250,20 @@ class _InterventionsState extends State<Interventions> {
         Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
 //        print("Ct_Fin <>> ${Ct_Fin}");
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     print("Ct_Debut < ${Ct_Debut}");
     print("Ct_Fin <>> ${Ct_Fin}");
 
-
-
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
 
-      try{
+      try {
         DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
-        if(wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0)
-        {
+        if (wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0) {
           ListInterventionsearchresultDate.add(element);
         }
-
-      }
-      catch (e){
-
-      }
-
+      } catch (e) {}
     }
     if (Search_TextController.text.isEmpty) {
       DbTools.ListInterventionsearchresult.addAll(ListInterventionsearchresultDate);
@@ -302,18 +280,12 @@ class _InterventionsState extends State<Interventions> {
       });
     }
 
-
-    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
     intervInfoDataGridSource.handleRefresh();
-    dataGridController.selectedRows.clear();
-    dataGridController.selectedRows.add(memDataGridRow);
-
     setState(() {});
   }
 
   @override
   void initState() {
-
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
     textController_Ct_Fin.text = inputFormat2.format(Ct_Fin);
 
@@ -335,9 +307,7 @@ class _InterventionsState extends State<Interventions> {
       ),
       child: Column(children: [
         ToolsBar(context),
-
         InterventionGridWidget(),
-
         Container(
           height: 10,
         ),
@@ -345,10 +315,25 @@ class _InterventionsState extends State<Interventions> {
     );
   }
 
-
-  Widget InterventionGridWidget()
+  Future Open_Intervention() async
   {
-    return   SizedBox(
+    DbTools.gIntervention = DbTools.ListIntervention[Selindex];
+    await DbTools.getClient(DbTools.gIntervention.ClientId!);
+    await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
+    await DbTools.getSite(DbTools.gIntervention.SiteId!);
+    await DbTools.getZone(DbTools.gIntervention.ZoneId!);
+    await showDialog(
+    context: context,
+    builder: (BuildContext context) => new Intervention_Dialog(
+      site: DbTools.gSite,
+    ));
+    Reload();
+
+  }
+
+
+  Widget InterventionGridWidget() {
+    return SizedBox(
         height: MediaQuery.of(context).size.height - 200,
         child: SfDataGridTheme(
             data: SfDataGridThemeData(
@@ -356,63 +341,26 @@ class _InterventionsState extends State<Interventions> {
               selectionColor: gColors.backgroundColor,
               //rowHoverColor: gColors.white,
               //rowHoverTextStyle : TextStyle(color: gColors.tks),
-
             ),
             child: SfDataGrid(
               //*********************************
-              onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                if (addedRows.length > 0 ) {
-                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
-                  DbTools.gIntervention = DbTools.ListIntervention[Selindex];
-                  await DbTools.getClient(DbTools.gIntervention.ClientId!);
-                  print("•••••••••• DbTools.gClient.ClientId ${DbTools.gClient.ClientId} / ${DbTools.gIntervention.ClientId!} ");
-
-                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
-                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
-                  if (wColSel == 0)
-                  {
-                     memDataGridRow = addedRows.last;
-
-                    await showDialog(
-                        context: context,
-                        builder: (BuildContext context) => new Intervention_Dialog(
-                          site: DbTools.gSite,
-                        ));
-                    Reload();
-
-
-                  }
-                }
-                else if (removedRows.length > 0 )
-                {
-                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
-                  DbTools.gIntervention = DbTools.ListIntervention[Selindex];
-                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
-                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
-                  if (wColSel == 0)
-                  {
-                     memDataGridRow = removedRows.last;
-
-                    await showDialog(
-                        context: context,
-                        builder: (BuildContext context) => new Intervention_Dialog(
-                          site: DbTools.gSite,
-                        ));
-                    Reload();
-
-
-                  }
-                }
-              },
 
               onFilterChanged: (DataGridFilterChangeDetails details) {
                 countfilterConditions = intervInfoDataGridSource.filterConditions.length;
                 setState(() {});
               },
+
+
               onCellTap: (DataGridCellTapDetails details) {
                 wColSel = details.rowColumnIndex.columnIndex;
+               wRowSel = details.rowColumnIndex.rowIndex;
+                if (wRowSel == 0) return;
+                DataGridRow wDataGridRow = intervInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                Selindex = intervInfoDataGridSource.dataGridRows.indexOf(wDataGridRow);
+                if (wColSel == 0) {
+                  Open_Intervention();
+                }
+
               },
 
               //*********************************
@@ -463,59 +411,195 @@ class _InterventionsState extends State<Interventions> {
     setState(() {});
   }
 
-  Widget popMenu()
-  {
+  Widget popMenu() {
     return PopupMenuButton(
-      child: Tooltip(
-          textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
-          decoration: BoxDecoration(color: Colors.orange),
-          message: "Filtre Date",
-          child: Container(
-              width: 30,
-              height: 30,
-              child:  Image.asset("assets/images/ico_DateFilter.png")
-              )
-            ),
-
-      onSelected: (value) async{
-        if (value == "S0") {FiltreTools.selDateTools(0);}
-        if (value == "S1") {FiltreTools.selDateTools(1);}
-        if (value == "S2") {FiltreTools.selDateTools(2);}
-        if (value == "S3") {FiltreTools.selDateTools(3);}
-        if (value == "S4") {FiltreTools.selDateTools(4);}
-        if (value == "S5") {FiltreTools.selDateTools(5);}
-        if (value == "S6") {FiltreTools.selDateTools(6);}
-        if (value == "S7") {FiltreTools.selDateTools(7);}
-        if (value == "S8") {FiltreTools.selDateTools(8);}
-        if (value == "S9") {FiltreTools.selDateTools(9);}
-        if (value == "S1") {FiltreTools.selDateTools(1);}
-
+      child: Tooltip(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal), decoration: BoxDecoration(color: Colors.orange), message: "Filtre Date", child: Container(width: 30, height: 30, child: Image.asset("assets/images/ico_DateFilter.png"))),
+      onSelected: (value) async {
+        if (value == "S0") {
+          FiltreTools.selDateTools(0);
+        }
+        if (value == "S1") {
+          FiltreTools.selDateTools(1);
+        }
+        if (value == "S2") {
+          FiltreTools.selDateTools(2);
+        }
+        if (value == "S3") {
+          FiltreTools.selDateTools(3);
+        }
+        if (value == "S4") {
+          FiltreTools.selDateTools(4);
+        }
+        if (value == "S5") {
+          FiltreTools.selDateTools(5);
+        }
+        if (value == "S6") {
+          FiltreTools.selDateTools(6);
+        }
+        if (value == "S7") {
+          FiltreTools.selDateTools(7);
+        }
+        if (value == "S8") {
+          FiltreTools.selDateTools(8);
+        }
+        if (value == "S9") {
+          FiltreTools.selDateTools(9);
+        }
+        if (value == "S1") {
+          FiltreTools.selDateTools(1);
+        }
 
         textController_Ct_Debut.text = DateFormat('dd/MM/yyyy').format(FiltreTools.gDateDeb);
         textController_Ct_Fin.text = DateFormat('dd/MM/yyyy').format(FiltreTools.gDateFin);
         await Filtre();
-
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-        PopupMenuItem(value: "S0", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Aujourd'hui", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S1", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Hier", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S2", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Avant hier", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S3", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Semaine courante", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S4", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Semaine précédente", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S5", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Semaine précédent la précédente", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S6", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Mois courant", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S7", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Mois précédent", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S8", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Mois précédent le précédent", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S9", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Année courante", style: gColors.bodySaisie_N_G,),           ],         ),),
-        PopupMenuItem(value: "S10", height : 36, child: Row(children: [Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)), Text("Année précédente", style: gColors.bodySaisie_N_G,),           ],         ),),
-
-
-
-
+        PopupMenuItem(
+          value: "S0",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Aujourd'hui",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S1",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Hier",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S2",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Avant hier",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S3",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Semaine courante",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S4",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Semaine précédente",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S5",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Semaine précédent la précédente",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S6",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Mois courant",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S7",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Mois précédent",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S8",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Mois précédent le précédent",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S9",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Année courante",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: "S10",
+          height: 36,
+          child: Row(
+            children: [
+              Container(padding: const EdgeInsets.only(right: 8.0), child: Icon(Icons.date_range)),
+              Text(
+                "Année précédente",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
-
 
   Widget ToolsBarSearch(BuildContext context) {
     return Expanded(
@@ -528,8 +612,6 @@ class _InterventionsState extends State<Interventions> {
             width: 20,
           ),
           popMenu(),
-
-
           Container(
             width: 10,
           ),
@@ -550,12 +632,11 @@ class _InterventionsState extends State<Interventions> {
               if (textController_Ct_Debut.text.isEmpty)
                 selectedDate = DateTime.now();
               else
-                selectedDate =  inputFormat2.parse(textController_Ct_Debut.text);
-              await _selectDate(context, DateTime(1980) , DateTime.now());
+                selectedDate = inputFormat2.parse(textController_Ct_Debut.text);
+              await _selectDate(context, DateTime(1980), DateTime.now());
 
-
-              if(selectedDate.difference(DateTime.now()).inHours >= 0) return;
-              if(selectedDate.difference(Ct_Fin).inHours >= 0) return;
+              if (selectedDate.difference(DateTime.now()).inHours >= 0) return;
+              if (selectedDate.difference(Ct_Fin).inHours >= 0) return;
               countfilterConditions = 999;
               textController_Ct_Debut.text = DateFormat('dd/MM/yyyy').format(selectedDate);
 
@@ -582,11 +663,11 @@ class _InterventionsState extends State<Interventions> {
               if (textController_Ct_Fin.text.isEmpty)
                 selectedDate = DateTime.now();
               else
-                selectedDate =  inputFormat2.parse(textController_Ct_Fin.text);
+                selectedDate = inputFormat2.parse(textController_Ct_Fin.text);
 
-              await _selectDate(context, Ct_Debut , DateTime.now());
-              if(selectedDate.difference(DateTime.now()).inHours >= 0) return;
-              if(selectedDate.difference(Ct_Debut).inHours < 0) return;
+              await _selectDate(context, Ct_Debut, DateTime.now());
+              if (selectedDate.difference(DateTime.now()).inHours >= 0) return;
+              if (selectedDate.difference(Ct_Debut).inHours < 0) return;
               countfilterConditions = 999;
               textController_Ct_Fin.text = DateFormat('dd/MM/yyyy').format(selectedDate);
               await Filtre();
@@ -634,7 +715,7 @@ class _InterventionsState extends State<Interventions> {
     ));
   }
 
-  Future<void> _selectDate(BuildContext context,DateTime firstDate, DateTime lastDate ) async {
+  Future<void> _selectDate(BuildContext context, DateTime firstDate, DateTime lastDate) async {
     final DateTime? picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: firstDate, lastDate: lastDate);
     if (picked != null && picked != selectedDate) {
       setState(() {

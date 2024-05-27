@@ -279,29 +279,6 @@ class User_ListeState extends State<User_Liste> {
                 ),
                 child: SfDataGrid(
                   //*********************************
-                  onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                    if (addedRows.length > 0 && wColSel == 0) {
-                      Selindex = userDataGridSource.dataGridRows.indexOf(addedRows.last);
-                      SelUser = dataGridController.selectedIndex;
-                      DbTools.gUser = DbTools.ListUser[Selindex];
-                      print(" ADD onSelectionChanged  SelUser ${SelUser} gUser ${DbTools.gUser.UserID}");
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => User_Edit(user: DbTools.gUser)));
-                      Reload();
-                    }
-
-                    if (removedRows.length > 0 && wColSel == 0) {
-                      Selindex = userDataGridSource.dataGridRows.indexOf(removedRows.last);
-                      SelUser = dataGridController.selectedIndex;
-                      DbTools.gUser = DbTools.ListUser[Selindex];
-                      print(" REM onSelectionChanged  SelUser ${SelUser} SelUser ${SelUser} gUser ${DbTools.gUser.UserID}");
-                      await Navigator.push(context, MaterialPageRoute(builder: (context) => User_Edit(user: DbTools.gUser)));
-                      Reload();
-                    }
-
-
-                  },
-
-
 
 
                   onFilterChanged: (DataGridFilterChangeDetails details) {
@@ -309,9 +286,20 @@ class User_ListeState extends State<User_Liste> {
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                     setState(() {});
                   },
-                  onCellTap: (DataGridCellTapDetails details) {
+                  onCellTap: (DataGridCellTapDetails details) async{
                     wColSel = details.rowColumnIndex.columnIndex;
-                    wRowSel = details.rowColumnIndex.rowIndex;
+                   wRowSel = details.rowColumnIndex.rowIndex;
+                if (wRowSel == 0) return;
+                    DataGridRow wDataGridRow = userDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                    Selindex = userDataGridSource.dataGridRows.indexOf(wDataGridRow);
+                    if (wColSel == 0)
+                    {
+                      SelUser = dataGridController.selectedIndex;
+                      DbTools.gUser = DbTools.ListUser[Selindex];
+                      print(" REM onSelectionChanged  SelUser ${SelUser} SelUser ${SelUser} gUser ${DbTools.gUser.UserID}");
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => User_Edit(user: DbTools.gUser)));
+                      Reload();
+                    }
                   },
 
                   //*********************************

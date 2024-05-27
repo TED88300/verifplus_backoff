@@ -15,6 +15,8 @@ import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
 import 'package:verifplus_backoff/widgets/Sites/Missions_Dialog.dart';
+import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
+
 
 DataGridController dataGridController = DataGridController();
 
@@ -36,7 +38,7 @@ class IntervInfoDataGridSource extends DataGridSource {
     dataGridRows = DbTools.ListInterventionsearchresult.map<DataGridRow>((Intervention Interv) {
       return DataGridRow(cells: <DataGridCell>[
         DataGridCell<int>(columnName: 'id', value: Interv.InterventionId),
-        DataGridCell<DateTime>(columnName: 'date', value: inputFormat2.parse(Interv.Intervention_Date!)),
+        DataGridCell<String>(columnName: 'date', value: "${inputFormat2.parse(Interv.Intervention_Date!)}"),
         DataGridCell<String>(columnName: 'org', value: DbTools.getParam_Param_Text("Type_Organe", Interv.Intervention_Parcs_Type!)),
         DataGridCell<String>(columnName: 'type', value: Interv.Intervention_Type),
         DataGridCell<int>(columnName: 'organes', value: Interv.Cnt),
@@ -346,11 +348,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
   void AlimSaisie() async {
     print("AlimSaisie A InterventionId ${DbTools.gIntervention.InterventionId}");
     if (DbTools.gIntervention.Intervention_Type!.isNotEmpty) {
-      selectedTypeInter = DbTools.gIntervention.Intervention_Type!;
+      selectedTypeInterID = DbTools.gIntervention.Intervention_Type!;
       print("selectedTypeInter ${selectedTypeInter}");
-      print("selectedTypeInter ${DbTools.List_TypeInter.indexOf(selectedTypeInter)}");
+      print("DbTools.List_TypeInter.indexOf(selectedTypeInter) ${DbTools.List_TypeInterID.indexOf(selectedTypeInterID)}");
+      print("DbTools.List_TypeInter ${DbTools.List_TypeInter}");
 
-      selectedTypeInterID = DbTools.List_TypeInterID[DbTools.List_TypeInter.indexOf(selectedTypeInter)];
+      selectedTypeInter = DbTools.List_TypeInter[DbTools.List_TypeInterID.indexOf(selectedTypeInterID)];
 
       _controllerPartage.clearAllSelection();
     if(DbTools.gIntervention.Intervention_Partages!.isNotEmpty)
@@ -416,7 +419,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
     if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
       DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
-      print("selectedUserInter $selectedUserInter");
+      print("Zone_Interv selectedUserInter $selectedUserInter");
       selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
@@ -442,10 +445,10 @@ class _Zone_IntervState extends State<Zone_Interv> {
       print("selectedUserInter4 $selectedUserInter4");
       selectedUserInterID4 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter4)];
     }
-    
-    
-    
-    
+
+    print(" DbTools.gIntervention.Intervention_Date! ${DbTools.gIntervention.Intervention_Date!}");
+
+
     textController_Intervention_Date.text = DbTools.gIntervention.Intervention_Date!;
     textController_Intervention_Type.text = DbTools.gIntervention.Intervention_Type!;
     textController_Intervention_Remarque.text = "${DbTools.gIntervention.Intervention_Remarque!}";
@@ -590,7 +593,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
   void ToolsBarSave() async {
     DbTools.gIntervention.Intervention_Date = textController_Intervention_Date.text;
-    DbTools.gIntervention.Intervention_Type = selectedTypeInter;
+    DbTools.gIntervention.Intervention_Type = selectedTypeInterID;
     DbTools.gIntervention.Intervention_Status = selectedStatusInter;
     DbTools.gIntervention.Intervention_Facturation = selectedFactInter;
     DbTools.gIntervention.Intervention_Responsable = "$selectedUserInterID";
@@ -612,29 +615,24 @@ class _Zone_IntervState extends State<Zone_Interv> {
     });
     print("selectedOptions ${selectedOptions})");
     DbTools.gIntervention.Intervention_Contributeurs = "$selectedOptions";
-
-
-
-
-
     DbTools.gIntervention.Intervention_Remarque = textController_Intervention_Remarque.text;
-
-
     await DbTools.setIntervention(DbTools.gIntervention);
     await Filtre();
   }
 
   void ToolsBarAdd() async {
-    String wNow = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    await DbTools.addIntervention(DbTools.gZone.ZoneId, wNow, "Vérification");
-    DbTools.getInterventionID(DbTools.gLastID);
-    await initLib();
+
+
+    print("Zone_Interv_Add >");
+    await Zone_Interv_Add.Dialogs_Add(context, true);
+    await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+    await Filtre();
   }
 
   void ToolsPlanning() async {
     print("ToolsPlanning");
     await showDialog(context: context, builder: (BuildContext context) => new Planning(bAppBar : true));
-    setState(() {});
+    AlimSaisie();
   }
 
 
@@ -683,9 +681,6 @@ class _Zone_IntervState extends State<Zone_Interv> {
     await Missions_Dialog.Missions_dialog(context);
     setState(() {});
   }
-
-
-
 
 
   Widget ContentIntervention(BuildContext context) {
@@ -929,51 +924,32 @@ class _Zone_IntervState extends State<Zone_Interv> {
               ),
               child: SfDataGrid(
                 //*********************************
-                onSelectionChanged: (List<DataGridRow> addedRows, List<DataGridRow> removedRows) async {
-                  if (addedRows.length > 0) {
-                    print("");
-                    Selindex = intervInfoDataGridSource.dataGridRows.indexOf(addedRows.last);
-                    memDataGridRow = addedRows.last;
-                    DbTools.gIntervention = DbTools.ListInterventionsearchresult[Selindex];
-                    await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-                    await DbTools.getSite(DbTools.gIntervention.SiteId!);
-                    await DbTools.getZone(DbTools.gIntervention.ZoneId!);
-                    AlimSaisie();
-                    if (wColSel == 0) {
-
-                      await showDialog(
-                          context: context,
-                          builder: (BuildContext context) => new Intervention_Dialog(
-                                site: DbTools.gSite,
-                              ));
-                      Reload();
-
-                    }
-                  } else if (removedRows.length > 0) {
-                    Selindex = intervInfoDataGridSource.dataGridRows.indexOf(removedRows.last);
-                    memDataGridRow = removedRows.last;
-                    DbTools.gIntervention = DbTools.ListIntervention[Selindex];
-                    await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-                    await DbTools.getSite(DbTools.gIntervention.SiteId!);
-                    await DbTools.getZone(DbTools.gIntervention.ZoneId!);
-                    AlimSaisie();
-                    if (wColSel == 0) {
-                      await showDialog(
-                          context: context,
-                          builder: (BuildContext context) => new Intervention_Dialog(
-                                site: DbTools.gSite,
-                              ));
-                      Reload();
-                    }
-                  }
-                },
-
                 onFilterChanged: (DataGridFilterChangeDetails details) {
                   countfilterConditions = intervInfoDataGridSource.filterConditions.length;
                   setState(() {});
                 },
-                onCellTap: (DataGridCellTapDetails details) {
+                onCellTap: (DataGridCellTapDetails details) async {
+                  int wRowSel = details.rowColumnIndex.rowIndex;
+                  if (wRowSel == 0) return;
+
                   wColSel = details.rowColumnIndex.columnIndex;
+                  DataGridRow wDataGridRow = intervInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                  Selindex = intervInfoDataGridSource.dataGridRows.indexOf(wDataGridRow);
+                  DbTools.gIntervention = DbTools.ListInterventionsearchresult[Selindex];
+                  await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
+                  await DbTools.getSite(DbTools.gIntervention.SiteId!);
+                  await DbTools.getZone(DbTools.gIntervention.ZoneId!);
+                  AlimSaisie();
+                  if (wColSel == 0) {
+
+                    await showDialog(
+                    context: context,
+                    builder: (BuildContext context) => new Intervention_Dialog(
+                      site: DbTools.gSite,
+                    ));
+                    Reload();
+
+                  }
                 },
 
                 //*********************************
