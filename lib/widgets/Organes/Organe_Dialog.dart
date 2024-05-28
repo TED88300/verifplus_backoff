@@ -29,7 +29,8 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
   String DescAffnewParam = "";
 
   Future initLib() async {
-    await DbTools.getContactSite(DbTools.gSite.SiteId);
+
+  /*  await DbTools.getContactSite(DbTools.gSite.SiteId);
     await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
     await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
 
@@ -37,12 +38,18 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
     DbTools.ListParam_Audit_Base.clear();
     DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
+
     await DbTools.getParam_Saisie_Base("Verif");
     DbTools.ListParam_Verif_Base.sort(DbTools.affSort2Comparison);
     DbTools.ListParam_Verif_Base.clear();
     DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
+
     await DbTools.getParam_Saisie_Base("Desc");
     DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
+*/
+
+
+
     DescAff = "";
     int countCol = 0;
 

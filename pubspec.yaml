@@ -63,13 +63,11 @@ dependencies:
   aligned_dialog: ^0.0.7
   hand_signature: ^3.0.2
 
-
 dependency_overrides:
   pdf:
     path: ./pdf
   printing:
     path: ./printing
-
 
 flutter:
   uses-material-design: true

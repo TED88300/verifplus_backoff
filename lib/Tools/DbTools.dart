@@ -54,7 +54,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.112";
+  static var gVersion = "v1.0.116";
   static bool gTED = false;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -3166,6 +3166,48 @@ class DbTools {
   }
 
   //******************************************
+  //*********   LOAD INTERVENTION   **********
+  //******************************************
+
+
+  static Future getAll4Intervention() async {
+
+//    await DbTools.getGroupeID(widget.site.Site_GroupeId);
+
+  // Intervention_Dialog
+    await DbTools.getGroupeID(DbTools.gSite.Site_GroupeId);
+    await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
+    await DbTools.getPlanning_InterventionId(DbTools.gIntervention.InterventionId!);
+    await DbTools.getPlanning_InterventionIdRes(DbTools.gIntervention.InterventionId!);
+    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
+
+    // Intervention_CR
+    await DbTools.getContactSite(DbTools.gSite.SiteId);
+//    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
+    await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
+
+    await DbTools.getParam_Saisie_Base("Audit");
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
+    DbTools.ListParam_Audit_Base.clear();
+    DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
+
+    await DbTools.getParam_Saisie_Base("Verif");
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
+    DbTools.ListParam_Verif_Base.clear();
+    DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
+
+    await DbTools.getParam_Saisie_Base("Desc");
+    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
+    DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
+
+
+
+
+
+  }
+
+
+  //******************************************
   //************   Parc_Ents   ***************
   //******************************************
 
@@ -3414,6 +3456,23 @@ class DbTools {
     }
     return false;
   }
+
+
+
+  static Future<bool> getParcs_ArtInter(int Parcs_InterventionId) async {
+    try {
+      ListParc_Art = await getParc_Art_API_Post("select", "SELECT Parcs_Art.* FROM Parcs_Art, Parcs_Ent  WHERE ParcsArt_ParcsId = ParcsId AND Parcs_InterventionId = $Parcs_InterventionId");
+      if (ListParc_Art == null) return false;
+      if (ListParc_Art.length > 0) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+
 
   static Future<List<Parc_Art>> getParc_Art_API_Post(String aType, String aSQL) async {
     setSrvToken();

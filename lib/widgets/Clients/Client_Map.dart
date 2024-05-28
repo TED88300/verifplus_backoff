@@ -134,11 +134,13 @@ class _Client_MapState extends State<Client_Map> {
                     child:
 
                     InkWell(
-                      child: Expanded(
                         child: Container(
-//                  width: imageisload ? 700 :500,
+                          width: imageisload ? 540 :400,
                           height: 100,
                           decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), border: Border.all(color: gColors.primary)),
+
+
+
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -203,8 +205,9 @@ class _Client_MapState extends State<Client_Map> {
 
                             ],
                           ),
+
                         ),
-                      ),
+
                       onTap: () {
                         print("onTap marker $wTitle");
                         wAffInfoWindows = false;
@@ -252,7 +255,6 @@ class _Client_MapState extends State<Client_Map> {
         onTap: () async {
           print("onTap marker $title");
           int wID = aID;
-
           imageisload = false;
           String wUserImg = "Site_${wID}.jpg";
           pic = await gColors.getImage(wUserImg);
@@ -262,9 +264,6 @@ class _Client_MapState extends State<Client_Map> {
             );
             imageisload = true;
           }
-
-
-
 
           wTitle = title;
           wAdresse = snippet;

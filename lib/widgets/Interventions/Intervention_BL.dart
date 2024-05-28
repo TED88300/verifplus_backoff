@@ -5,6 +5,7 @@ import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
+import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
@@ -19,8 +20,8 @@ int Subindex = 0;
 //*********************************************************************
 //*********************************************************************
 
-class Parc_EntInfoDataGridSource extends DataGridSource {
-  Parc_EntInfoDataGridSource() {
+class Parc_ArtInfoDataGridSource extends DataGridSource {
+  Parc_ArtInfoDataGridSource() {
     buildDataGridRows();
     print (" AAAAAA buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
 
@@ -30,23 +31,11 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
   List<DataGridRow> get rows => FiltreTools.dataGridRows_CR_Filtre;
 
   void buildDataGridRows() {
-    FiltreTools.dataGridRows_CR = DbTools.ListParc_Ent.map<DataGridRow>((Parc_Ent parc_Ent) {
+    FiltreTools.dataGridRows_CR = DbTools.ListParc_Art.map<DataGridRow>((Parc_Art Parc_Art) {
       List<DataGridCell> DataGridCells = [
-        DataGridCell<int>(columnName: 'id', value: parc_Ent.ParcsId),
-        DataGridCell<int>(columnName: 'ordre', value: parc_Ent.Parcs_order),
+        DataGridCell<int>(columnName: 'id', value: Parc_Art.ParcsArtId),
+        DataGridCell<String>(columnName: 'Lib', value: Parc_Art.ParcsArt_Lib),
       ];
-      for (int i = 0; i < DbTools.lColParams.length; i++) {
-        String ColParam = DbTools.lColParams[i];
-        String ColParamsdata = parc_Ent.Parcs_Cols![i]!;
-        if (ColParam == "DATE" && ColParamsdata.isNotEmpty)
-          {
-            DataGridCells.add(DataGridCell<DateTime>(columnName: 'date', value: DateTime.parse(ColParamsdata)));
-          }
-        else
-          DataGridCells.add(DataGridCell<String>(columnName: ColParam, value: ColParamsdata));
-      }
-
-
       return DataGridRow(cells: DataGridCells);
     }).toList();
 
@@ -73,24 +62,8 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 //      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
     ];
 
-    int n = 2;
-    for (int i = 0; i < DbTools.lColParams.length; i++) {
-      String ColParam = DbTools.lColParams[i];
-      if (ColParam == "DATE")
-        {
-          DataGridCells.add(FiltreTools.SfRowDate(row,  n++, Alignment.centerLeft, textColor));
-        }
-      else
-        {
-          if (ColParam == "ACTION")
-            {
-              DataGridCells.add(FiltreTools.SfRow(row, n++, Alignment.center, textColor));
-            }
-          else
-            DataGridCells.add(FiltreTools.SfRow(row, n++, Alignment.centerLeft, textColor));
 
-        }
-    }
+
 
     return DataGridRowAdapter(color: backgroundColor, cells: DataGridCells);
   }
@@ -105,14 +78,14 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-class Intervention_CR extends StatefulWidget {
-  const Intervention_CR({Key? key}) : super(key: key);
+class Intervention_BL extends StatefulWidget {
+  const Intervention_BL({Key? key}) : super(key: key);
 
   @override
-  State<Intervention_CR> createState() => _Intervention_CRState();
+  State<Intervention_BL> createState() => _Intervention_BLState();
 }
 
-class _Intervention_CRState extends State<Intervention_CR> {
+class _Intervention_BLState extends State<Intervention_BL> {
   String DescAffnewParam = "";
 
   List<double> dColumnWidth_CR = [
@@ -120,7 +93,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
     60,
   ];
 
-  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
+  Parc_ArtInfoDataGridSource parc_ArtInfoDataGridSource = Parc_ArtInfoDataGridSource();
 
   int wColSel = -1;
   int Selindex = -1;
@@ -191,224 +164,16 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
   Future Reload() async {
 
-//    await DbTools.getAll4Intervention();
 
-    print("◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎ Intervention_CR → Reload A");
-
-    DbTools.gContact = Contact.ContactInit();
-    Search_TextController.text = "";
-
-/*
-    await DbTools.getContactSite(DbTools.gSite.SiteId);
-    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
-    await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
-*/
-
-/*
-
-    await DbTools.getParam_Saisie_Base("Audit");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
-    DbTools.ListParam_Audit_Base.clear();
-    DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    await DbTools.getParam_Saisie_Base("Verif");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
-    DbTools.ListParam_Verif_Base.clear();
-    DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    await DbTools.getParam_Saisie_Base("Desc");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
-    DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
-*/
-
-    String DescAff = "";
-    Parcs_ColsTitle!.clear();
-    DbTools.ListParam_Saisie.forEach((element) async {
-      if (element.Param_Saisie_Affichage.compareTo("COL") == 0) {
-
-        Parcs_ColsTitle!.add(element.Param_Saisie_Affichage_Titre);
-      }
-    });
-
-    DbTools.OrgLib = subLibArray[Subindex];
-    await DbTools.getParam_Saisie(DbTools.subTitleArray[Subindex], "Desc");
-    print(">>>>>>>>>>> DescAffnewParam $DescAffnewParam");
-    //DescAffnewParam PDT POIDS PRS MOB / ZNE EMP NIV / ANN / FAB
-    List<Param_Saisie> listparamSaisieTmp = [];
-    listparamSaisieTmp.addAll(DbTools.ListParam_Saisie);
-    listparamSaisieTmp.addAll(DbTools.ListParam_Saisie_Base);
-
-    print(" Nbre Ligne ${DbTools.ListParc_Ent.length}");
-
-    for (int p = 0; p < DbTools.ListParc_Ent.length; p++) {
-      Parc_Ent elementEnt = DbTools.ListParc_Ent[p];
-      DbTools.lColParamsdata = List.filled(DbTools.lColParams.length, "");
-
-      DescAff = DescAffnewParam;
-      List<String?>? parcsCols = [];
-      listparamSaisieTmp.forEach((element) async {
-          element.Param_Saisie_Value = "";
-
-//        print(" element.Param_Saisie_ID ${element.Param_Saisie_ID} ${elementEnt.Action}");
-
-        if (element.Param_Saisie_ID.compareTo("FREQ") == 0) {
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_FREQ_Label!, element.Param_Saisie_ID)}");
-        } else if (element.Param_Saisie_ID.compareTo("ANN") == 0) {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String lColParam = DbTools.lColParams[i];
-            if (lColParam == element.Param_Saisie_ID) {
-              DbTools.lColParamsdata[i] = elementEnt.Parcs_ANN_Label!;
-            }
-          }
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_ANN_Label!, element.Param_Saisie_ID)}");
-        } else if (element.Param_Saisie_ID.compareTo("NIV") == 0) {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String lColParam = DbTools.lColParams[i];
-            if (lColParam == element.Param_Saisie_ID) {
-              DbTools.lColParamsdata[i] = elementEnt.Parcs_NIV_Label!;
-            }
-          }
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_NIV_Label!, element.Param_Saisie_ID)}");
-        } else if (element.Param_Saisie_ID.compareTo("ZNE") == 0) {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String lColParam = DbTools.lColParams[i];
-            if (lColParam == element.Param_Saisie_ID) {
-              DbTools.lColParamsdata[i] = elementEnt.Parcs_ZNE_Label!;
-            }
-          }
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_ZNE_Label!, element.Param_Saisie_ID)}");
-        } else if (element.Param_Saisie_ID.compareTo("EMP") == 0) {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String lColParam = DbTools.lColParams[i];
-            if (lColParam == element.Param_Saisie_ID) {
-              DbTools.lColParamsdata[i] = elementEnt.Parcs_EMP_Label!;
-            }
-          }
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_EMP_Label!, element.Param_Saisie_ID)}");
-        } else if (element.Param_Saisie_ID.compareTo("LOT") == 0) {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String lColParam = DbTools.lColParams[i];
-            if (lColParam == element.Param_Saisie_ID) {
-              DbTools.lColParamsdata[i] = elementEnt.Parcs_LOT_Label!;
-            }
-          }
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_LOT_Label!, element.Param_Saisie_ID)}");
-        } else if (element.Param_Saisie_ID.compareTo("SERIE") == 0) {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String lColParam = DbTools.lColParams[i];
-            if (lColParam == element.Param_Saisie_ID) {
-              DbTools.lColParamsdata[i] = elementEnt.Parcs_SERIE_Label!;
-            }
-          }
-          DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(elementEnt.Parcs_SERIE_Label!, element.Param_Saisie_ID)}");
-        } else {
-          bool trv = false;
-
-
-          int iColParam = 0;
-          DbTools.ListParc_Desc.forEach((element2) {
-//              print(" ZONE A TRAITER ELEMENT2 ${element2.ParcsDesc_Type} ${elementEnt.ParcsId}");
-            if (elementEnt.ParcsId == element2.ParcsDesc_ParcsId && element.Param_Saisie_ID == element2.ParcsDesc_Type) {
-              DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "${gColors.AbrevTxt_Saisie_Param(element2.ParcsDesc_Lib!, element.Param_Saisie_ID)}");
-              for (int i = 0; i < DbTools.lColParams.length; i++) {
-                String lColParam = DbTools.lColParams[i];
-                if (lColParam == element.Param_Saisie_ID) {
-                  DbTools.lColParamsdata[i] = element2.ParcsDesc_Lib!;
-                }
-              }
-              trv = true;
-            }
-          });
-
-
-          if (!trv) {
-            DescAff = DescAff.replaceAll("${element.Param_Saisie_ID}", "");
-          }
-        }
-      });
-
-
-      for (int i = 0; i < DbTools.lColParams.length; i++) {
-        String lColParam = DbTools.lColParams[i];
-        if (lColParam == "DATE") {
-          DbTools.lColParamsdata[i] = elementEnt.Parcs_Date_Rev!;
-        }
-      }
-
-      for (int i = 0; i < DbTools.lColParams.length; i++) {
-        String lColParam = DbTools.lColParams[i];
-        if (lColParam == "ACTION") {
-          //print(" ACTION ${i} ${elementEnt.Action}");
-          DbTools.lColParamsdata[i] = elementEnt.Action!;
-        }
-      }
-
-      for (int i = 0; i < DbTools.lColParamsdata.length; i++) {
-        String ColParam = DbTools.lColParams[i];
-        String ColParamsdata = DbTools.lColParamsdata[i];
-        print("ColParam $ColParam ColParamsdata $ColParamsdata ");
-      }
-
-      if (DescAff.compareTo(DescAffnewParam) == 0) DescAff = "";
-      String wTmp = DescAff;
-      wTmp = wTmp.replaceAll("---", "");
-      wTmp = wTmp.replaceAll("/", "");
-      wTmp = wTmp.replaceAll(" ", "");
-
-      if (wTmp.length == 0) DescAff = "";
-      elementEnt.Parcs_Date_Desc = DescAff;
-      DbTools.ListParc_Ent[p].Parcs_Cols!.clear();
-      DbTools.ListParc_Ent[p].Parcs_Cols!.addAll(DbTools.lColParamsdata);
-
-
-      String parcsdescTypeDesc = "";
-      String parcsdescTypePdt = "";
-      Parc_Desc parcDescDesc = Parc_Desc(0, 0, "", "", "");
-      Parc_Desc parcDescPdt = Parc_Desc(0, 0, "", "", "");
-
-      DbTools.ListParc_Desc.forEach((element2) {
-        if (elementEnt.ParcsId == element2.ParcsDesc_ParcsId) {
-          if (element2.ParcsDesc_Type!.compareTo("DESC") == 0) {
-            parcsdescTypeDesc = element2.ParcsDesc_Lib!;
-            parcDescDesc = element2;
-          }
-
-          if (element2.ParcsDesc_Type!.compareTo("PDT") == 0) {
-            parcsdescTypePdt = element2.ParcsDesc_Lib!;
-            parcDescPdt = element2;
-          }
-        }
-      });
-
-      bool parcsMaintprev = true;
-      bool parcsMaintcorrect = true;
-      bool parcsInstall = true;
-
-      bool Maj = false;
-      if (elementEnt.Parcs_MaintPrev != parcsMaintprev) {
-        elementEnt.Parcs_MaintPrev = parcsMaintprev;
-        Maj = true;
-      }
-      if (elementEnt.Parcs_MaintCorrect != parcsMaintcorrect) {
-        elementEnt.Parcs_MaintCorrect = parcsMaintcorrect;
-        Maj = true;
-      }
-      if (elementEnt.Parcs_Install != parcsInstall) {
-        elementEnt.Parcs_Install = parcsInstall;
-        Maj = true;
-      }
-    }
-
-
+    await DbTools.getParcs_ArtInter(DbTools.gIntervention.InterventionId!);
     print (" Reload buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
-
     Filtre();
   }
 
   Future Filtre() async {
     DbTools.ListContactsearchresult.clear();
     DbTools.ListContactsearchresult.addAll(DbTools.ListContact);
-    parc_EntInfoDataGridSource.handleRefresh();
+    parc_ArtInfoDataGridSource.handleRefresh();
 
     print (" FILTRE dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
 
@@ -441,8 +206,8 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
     }
 
-    parc_EntInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'ordre', sortDirection: DataGridSortDirection.ascending));
-    parc_EntInfoDataGridSource.sort();
+    parc_ArtInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'ordre', sortDirection: DataGridSortDirection.ascending));
+    parc_ArtInfoDataGridSource.sort();
     dataGridController_CR.selectedRows.clear();
     dataGridController_CR.selectedRows.add(memDataGridRow);
 
@@ -518,7 +283,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
               child: SfDataGrid(
                 //*********************************
                 onFilterChanged: (DataGridFilterChangeDetails details) {
-                  countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
+                  countfilterConditions = parc_ArtInfoDataGridSource.filterConditions.length;
                   print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                   setState(() {});
                 },
@@ -527,8 +292,8 @@ class _Intervention_CRState extends State<Intervention_CR> {
                   int wRowSel = details.rowColumnIndex.rowIndex;
                   if (wRowSel == 0) return;
 
-                  DataGridRow wDataGridRow = parc_EntInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
-                  Selindex = parc_EntInfoDataGridSource.rows.indexOf(wDataGridRow);
+                  DataGridRow wDataGridRow = parc_ArtInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                  Selindex = parc_ArtInfoDataGridSource.rows.indexOf(wDataGridRow);
                   if (wColSel == 0) {
                     await showDialog(
                     context: context,
@@ -538,7 +303,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
                 },
 
                 //*********************************
-                source: parc_EntInfoDataGridSource,
+                source: parc_ArtInfoDataGridSource,
                 allowSorting: true,
                 allowFiltering: true,
                 columns: getColumns_CR(),
@@ -633,7 +398,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
   }
 
   void ToolsBarSupprFilter() async {
-    parc_EntInfoDataGridSource.clearFilters();
+    parc_ArtInfoDataGridSource.clearFilters();
     countfilterConditions = 0;
     setState(() {});
   }

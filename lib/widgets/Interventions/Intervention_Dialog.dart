@@ -10,6 +10,7 @@ import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+import 'package:verifplus_backoff/widgets/Interventions/Intervention_BL.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_CR.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Signature.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
@@ -70,6 +71,9 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
 
   Future initLib() async {
 
+    await DbTools.getAll4Intervention();
+
+
     imageisload = false;
     String wUserImg = "Site_${DbTools.gSite.SiteId}.jpg";
     pic = await gColors.getImage(wUserImg);
@@ -89,7 +93,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     }
     imageisload = true;
 
-    await DbTools.getGroupeID(widget.site.Site_GroupeId);
+//    await DbTools.getGroupeID(widget.site.Site_GroupeId);
 
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
@@ -136,7 +140,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     }
 
 
-    await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
+//    await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
 
     List<String> listMes = [
       "Règle APSAD R1 / Sprinkleurs",
@@ -190,13 +194,14 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
 
     wColor = gColors.getColorStatus(DbTools.gIntervention.Intervention_Status!);
 
-    await DbTools.getPlanning_InterventionId(DbTools.gIntervention.InterventionId!);
+//    await DbTools.getPlanning_InterventionId(DbTools.gIntervention.InterventionId!);
 
     firstDate = DateTime(2100);
     lastDate = DateTime(1900);
     wHours = 0;
 
-    await DbTools.getPlanning_InterventionIdRes(DbTools.gIntervention.InterventionId!);
+//    await DbTools.getPlanning_InterventionIdRes(DbTools.gIntervention.InterventionId!);
+
     wIntervenants = "";
     for (int i = 0; i < DbTools.ListUserH.length; i++) {
       var element = DbTools.ListUserH[i];
@@ -212,7 +217,8 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       if (lastDate.isBefore(wplanningSrv.Planning_InterventionendTime)) lastDate = wplanningSrv.Planning_InterventionendTime;
     }
 
-    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
+//    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
+
     firstDateEff = DateTime(2100);
     lastDateEff = DateTime(1900);
     wHoursEff = 0;
@@ -333,7 +339,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   Widget Content(BuildContext context) {
     widgetChildren = [
       Intervention_CR(),
-      wScreen("BL"),
+      Intervention_BL(),
       wScreen("BC"),
       wScreen("Devis"),
       Intervention_Signature(),
@@ -631,26 +637,41 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   }
 
   Widget wScreen(String wTxt) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(
-          color: Colors.black12,
+    return
+
+      Container(
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+//      padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(0.0),
+          border: Border.all(
+            color: Colors.black26,
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Container(
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4.0),
+            border: Border.all(
+              color: Colors.black12,
+            ),
+          ),
+          child: Column(
             children: [
-              Text("$wTxt"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("$wTxt"),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
-    );
+        ),
+      );
+
+
   }
 
   // *******************************************************************************
