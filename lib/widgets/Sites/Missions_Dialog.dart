@@ -40,8 +40,6 @@ class _MissionsState extends State<Missions> {
 
   bool isSelect = false;
 
-
-
   Future Reload() async {
     await DbTools.getInterMissionsIntervention(DbTools.gIntervention.InterventionId!);
     builddoc();
@@ -58,7 +56,6 @@ class _MissionsState extends State<Missions> {
   }
 
   void initLib() async {
-
     await DbTools.getParam_ParamFam("Missions");
     List_Mission.clear();
     List_Mission.addAll(DbTools.ListParam_ParamFam);
@@ -67,7 +64,6 @@ class _MissionsState extends State<Missions> {
 
     selectedMission = List_Mission[0];
     selectedMissionID = List_MissionID[0];
-
 
     await DbTools.getInterMissionsIntervention(DbTools.gIntervention.InterventionId!);
 
@@ -130,7 +126,6 @@ class _MissionsState extends State<Missions> {
 
     print("wDocPath $wDocPath length ${_bytes.length}");
 
-
     print("_bytes length ${_bytes.length}");
     if (_bytes.length > 0) {
       wPdf = SfPdfViewer.memory(
@@ -176,13 +171,11 @@ class _MissionsState extends State<Missions> {
       );
     }
     setState(() {});
-
   }
 
   void onSetState() async {
     print("Parent onMaj() Relaod()");
     builddoc();
-
   }
 
   Widget Photo() {
@@ -208,7 +201,7 @@ class _MissionsState extends State<Missions> {
 
   @override
   Widget build(BuildContext context) {
-    double width = 600;
+    double width = 800;
     double height = 580; //MediaQuery.of(context).size.height - 200;
 
     return AlertDialog(
@@ -261,8 +254,12 @@ class _MissionsState extends State<Missions> {
                         Container(
                           width: 1,
                         ),
+                        Text(
+                          "Libellé : ",
+                          style: gColors.bodySaisie_N_G,
+                        ),
                         Container(
-                          width: 480,
+                          width: 600,
                           child: _buildFieldText(context, wInterMission),
                         ),
                         Container(
@@ -327,6 +324,10 @@ class _MissionsState extends State<Missions> {
                         Container(
                           width: 1,
                         ),
+                        Text(
+                          "Aide à la saisie : ",
+                          style: gColors.bodySaisie_N_G,
+                        ),
                         Container(
                           width: 280,
                           child: gColors.DropdownButtonMission(selectedMission, (sts) {
@@ -338,11 +339,27 @@ class _MissionsState extends State<Missions> {
                             });
                           }, List_Mission, List_MissionID),
                         ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Container(
-                          width: 280,
+                          width: 1,
+                        ),
+                        Text(
+                          "Note : ",
+                          style: gColors.bodySaisie_N_G,
+                        ),
+                        Container(
+                          width: 680,
                           child: _buildFieldNote(context, wInterMission),
                         ),
                       ],
+                    ),
+                    Container(
+                      height: 20,
                     ),
                     Row(
                       children: [
@@ -394,6 +411,8 @@ class _MissionsState extends State<Missions> {
   final InterMission_NoteController = TextEditingController();
   Widget _buildFieldNote(BuildContext context, InterMission interMission) {
     return TextFormField(
+      maxLines: 5,
+      minLines: 5,
       controller: InterMission_NoteController,
       decoration: InputDecoration(
         isDense: true,
@@ -449,22 +468,18 @@ class _MissionsState extends State<Missions> {
 //**********************************
 
   void _onRowTap(BuildContext context, InterMission interMission) {
-      isSelect = true;
+    isSelect = true;
 
-      wInterMission = interMission;
-      InterMission_TextController.text = interMission.InterMission_Nom;
-      InterMission_NoteController.text = interMission.InterMission_Note;
-      builddoc();
-      print("_onRowTap ${wInterMission.InterMission_Nom}");
-
+    wInterMission = interMission;
+    InterMission_TextController.text = interMission.InterMission_Nom;
+    InterMission_NoteController.text = interMission.InterMission_Note;
+    builddoc();
+    print("_onRowTap ${wInterMission.InterMission_Nom}");
   }
 
 //**********************************
 //**********************************
 //**********************************
-
-
-
 
   _startFileDoc(VoidCallback onSetState) async {
     String wDocPath = "Mission_${wInterMission.InterMissionId}_Doc.pdf";

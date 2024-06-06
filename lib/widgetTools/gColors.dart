@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -1155,7 +1156,11 @@ class gColors {
 
 
   static Widget TxtColumn(double lWidth, String wLabel, String wValue) {
-    return Column(
+
+    return
+
+
+        Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1167,22 +1172,20 @@ class gColors {
             width: lWidth,
             child: Text(
               wLabel,
-              style: gColors.bodySaisie_B_G,
+              style: gColors.bodySaisie_N_G,
             ),
           ),
           Text(
             " : ",
-            style: gColors.bodySaisie_B_B,
+            style: gColors.bodySaisie_N_B,
           ),
 
         ],),
-        Container(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: Text(
+         Text(
             "$wValue",
-            style: gColors.bodySaisie_N_B,
+            style: gColors.bodySaisie_B_B,
           ),
-        ),
+
       ],
     );
   }

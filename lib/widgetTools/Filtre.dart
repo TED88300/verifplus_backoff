@@ -4,9 +4,6 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/gObj.dart';
 
-
-
-
 class FiltreTools {
 
   static List<DataGridRow> dataGridRows_CR = <DataGridRow>[];
@@ -14,8 +11,6 @@ class FiltreTools {
   static int Selindex = -1;
 
   static DataGridController dataGridController_CR = DataGridController();
-
-
   static GridColumn SfGridColumn(String columnName, String columnTitle, double wWidth, double wWidthMin, AlignmentGeometry alignment, {wColumnWidthMode = ColumnWidthMode.none }) {
 
     TextAlign wTextAlign = TextAlign.left;
@@ -88,6 +83,13 @@ class FiltreTools {
     TextStyle wTextStyle = gColors.bodySaisie_N_G;
     if (fBold)
       wTextStyle = gColors.bodySaisie_B_G;
+
+    String wTmp = "";
+    try {
+        wTmp = row.getCells()[Col].value.toString();
+    } catch (e) {
+    }
+
     return Container(
       padding: EdgeInsets.fromLTRB(8, t, 8, b),
       alignment: alignment,
@@ -101,7 +103,7 @@ class FiltreTools {
             width: 5,
           ),
           Text(
-            row.getCells()[Col].value.toString(),
+            wTmp,
             style: wTextStyle.copyWith(color: txtColor),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
@@ -111,6 +113,7 @@ class FiltreTools {
       ),
     );
   }
+
   static Widget SfRowBool(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor) {
     double t = 5;
     double b = 3;
@@ -120,7 +123,6 @@ class FiltreTools {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-
           children: [
             (row.getCells()[Col].value.toString() == "true") ?
             Icon(Icons.check, color: Colors.blueAccent, size: 20)
@@ -147,16 +149,11 @@ class FiltreTools {
         ));
   }
 
-
-
-
   static Widget SfRowImage(DataGridRow row, int Col, AlignmentGeometry alignment, Color txtColor,  {bool fBold = false }    )
   {
     double t = 5;
     double b = 3;
-
     String wArtID = row.getCells()[Col].value.toString();
-
 
     return Container(
       padding: EdgeInsets.fromLTRB(8, t, 8, b),
@@ -228,14 +225,14 @@ class FiltreTools {
     double t = 5;
     double b = 3;
 
-    print(" ,row.getCells()[Col].value ${row.getCells()[Col].value}");
-
     String wTmp = "";
     try {
-      var wDate = DateTime.parse(row.getCells()[Col].value);
+//      print(">>>>>${row.getCells()[Col].value.toString()}");
+      DateTime wDate = new DateFormat("yyyy-MM-dd hh:mm:ss.sss").parse(row.getCells()[Col].value.toString());
+//      print(">>>>>${wDate}");
        wTmp = DateFormat('dd/MM/yyyy').format(wDate);
     } catch (e) {
-      print(" error ${e}");
+      print(" error ${e} ");
 
     }
 

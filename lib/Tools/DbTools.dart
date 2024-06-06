@@ -54,7 +54,7 @@ class Notif with ChangeNotifier {
 
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.116";
+  static var gVersion = "v1.0.124";
   static bool gTED = false;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -74,6 +74,10 @@ class DbTools {
   static String OrgLib = "";
   static String ParamTypeOg = "";
   static bool gDemndeReload = false;
+
+  static String selectedUserInter4 = "";
+  static String selectedUserInter4RC = "";
+
 
   static List<String> List_TypeInter = [];
   static List<String> List_TypeInterID = [];
@@ -3433,7 +3437,7 @@ class DbTools {
   static List<Parc_Art> ListParc_Art_Aff = [];
 
   static List<Parc_Art> ListParc_Artsearchresult = [];
-  static Parc_Art gParc_Art = Parc_Art.Parc_ArtInit(0, "");
+  static Parc_Art gParc_Art  =new  Parc_Art();
 
   static Future<bool> getParc_ArtAll() async {
     ListParc_Art = await getParc_Art_API_Post("select", "select * from Parc_Art ORDER BY ParcsDescId");
@@ -3472,6 +3476,20 @@ class DbTools {
     }
   }
 
+  static Future<bool> getParcs_ArtInterSum(int Parcs_InterventionId) async {
+    try {
+      String wTmp = "SELECT Parcs_Art.*, SUM(`ParcsArt_Qte`) as Qte FROM Parcs_Art, Parcs_Ent WHERE ParcsArt_ParcsId = ParcsId AND Parcs_InterventionId = ${Parcs_InterventionId} GROUP BY ParcsArt_Id,ParcsArt_Fact,ParcsArt_Livr ORDER BY `Parcs_Art`.`ParcsArt_Id` ASC;";
+
+      ListParc_Art = await getParc_Art_API_Post("select", wTmp);
+      if (ListParc_Art == null) return false;
+      if (ListParc_Art.length > 0) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 
 
   static Future<List<Parc_Art>> getParc_Art_API_Post(String aType, String aSQL) async {

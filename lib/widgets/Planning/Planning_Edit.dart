@@ -39,6 +39,8 @@ class _Planning_EditState extends State<Planning_Edit> {
 
   String selectedUserInter = "";
   String selectedUserInter2 = "";
+  String selectedUserInter3 = "";
+  String selectedUserInter4 = "";
 
   int ResourceId = 0;
   String ResourceNom = "";
@@ -68,10 +70,18 @@ class _Planning_EditState extends State<Planning_Edit> {
     print("gUser ${DbTools.gUser.Desc()}");
     selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
 
-
     await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable2!);
     print("gUser ${DbTools.gUser.Desc()}");
     selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+
+    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable3!);
+    print("gUser ${DbTools.gUser.Desc()}");
+    selectedUserInter3 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+
+    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable4!);
+    print("gUser ${DbTools.gUser.Desc()}");
+    selectedUserInter4 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+
 
 
     setState(() {});
@@ -112,7 +122,7 @@ class _Planning_EditState extends State<Planning_Edit> {
       elevation: 0,
       child: Container(
         width: 1200,
-        height: 440,
+        height: 700,
         color: Colors.transparent,
         alignment: Alignment.center,
         child: Column(
@@ -140,16 +150,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                       Container(
                         width: 20,
                       ),
-                      Text(
-                        "Client : ",
-                        style: gColors.bodyTitle1_B_Gr,
-                        textAlign: TextAlign.start,
-                      ),
-                      Text(
-                        "${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom} /  ${DbTools.gPlanning_Interv.Planning_Interv_Groupe_Nom} / ${DbTools.gPlanning_Interv.Planning_Interv_Site_Nom} / ${DbTools.gPlanning_Interv.Planning_Interv_Zone_Nom}",
-                        style: gColors.bodyTitle1_N_Gr,
-                        textAlign: TextAlign.start,
-                      ),
+                      gColors.Txt(100, "Client", "${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom} /  ${DbTools.gPlanning_Interv.Planning_Interv_Groupe_Nom} / ${DbTools.gPlanning_Interv.Planning_Interv_Site_Nom} / ${DbTools.gPlanning_Interv.Planning_Interv_Zone_Nom}"),
                     ],
                   ),
             (IntevId < 0)
@@ -159,73 +160,60 @@ class _Planning_EditState extends State<Planning_Edit> {
                       Container(
                         width: 20,
                       ),
-                      Text(
-                        "Intervention : ",
-                        style: gColors.bodyTitle1_B_Gr,
-                        textAlign: TextAlign.start,
-                      ),
-                      Text(
-                        "[${DbTools.gPlanning_Interv.Planning_Interv_InterventionId}] ${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Type} / ${DbTools.getParam_Param_Text("Type_Organe", DbTools.gIntervention.Intervention_Parcs_Type!)} /${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Status}",
-                        style: gColors.bodyTitle1_N_Gr,
-                        textAlign: TextAlign.start,
-                      ),
+                      gColors.Txt(100, "Intervention", "[${DbTools.gPlanning_Interv.Planning_Interv_InterventionId}] ${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Type} / ${DbTools.getParam_Param_Text("Type_Organe", DbTools.gIntervention.Intervention_Parcs_Type!)} /${DbTools.gPlanning_Interv.Planning_Interv_Intervention_Status}"),
                     ],
                   ),
 
-           Row(
-                    children: [
-                      Container(
-                        width: 20,
-                      ),
-                      Text(
-                        "Responsable Commercial : ",
-                        style: gColors.bodyTitle1_B_Gr,
-                        textAlign: TextAlign.start,
-                      ),
-                      Text(
-                        "${selectedUserInter}",
-                        style: gColors.bodyTitle1_N_Gr,
-                        textAlign: TextAlign.start,
-                      ),
-                    ],
-                  ),
-
-
-           Row(
-              children: [
-                Container(
-                  width: 20,
-                ),
-                Text(
-                  "Responsable Technique : ",
-                  style: gColors.bodyTitle1_B_Gr,
-                  textAlign: TextAlign.start,
-                ),
-                Text(
-                  "${selectedUserInter2}",
-                  style: gColors.bodyTitle1_N_Gr,
-                  textAlign: TextAlign.start,
-                ),
-              ],
+            Container(
+              height: 15,
             ),
-
-
-
+            (IntevId < 0) ? Container() :
             Row(
               children: [
                 Container(
                   width: 20,
                 ),
-                Text(
-                  "Technicien : ",
-                  style: gColors.bodyTitle1_B_Gr,
-                  textAlign: TextAlign.start,
+                gColors.Txt(160, "Commercial intervention", "${selectedUserInter}"),
+              ],
+            ),
+            (IntevId < 0) ? Container() :
+            Row(
+              children: [
+                Container(
+                  width: 20,
                 ),
-                Text(
-                  "[$ResourceId] $ResourceNom",
-                  style: gColors.bodyTitle1_N_Gr,
-                  textAlign: TextAlign.start,
+                gColors.Txt(160, "Manager commercial", "${selectedUserInter2}"),
+              ],
+            ),
+            (IntevId < 0) ? Container() :
+            Row(
+              children: [
+                Container(
+                  width: 20,
                 ),
+                gColors.Txt(160, "Manager Technique", "${selectedUserInter3}"),
+              ],
+            ),
+            (IntevId < 0) ? Container() :
+            Row(
+              children: [
+                Container(
+                  width: 20,
+                ),
+                gColors.Txt(160, "Référent technique", "${selectedUserInter4}"),
+              ],
+            ),
+            Container(
+              width: 20,
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 20,
+                ),
+
+                gColors.Txt(160, "Technicien", "[$ResourceId] $ResourceNom"),
+
               ],
             ),
             (IntevId < 0)
@@ -237,38 +225,12 @@ class _Planning_EditState extends State<Planning_Edit> {
                         Container(
                           width: 20,
                         ),
-                        Text(
-                          "Ressources affectées : ",
-                          style: gColors.bodyTitle1_B_Gr,
-                          textAlign: TextAlign.start,
-                        ),
+                        gColors.TxtColumn(160, "Ressources affectées", "${wIntervenants}"),
                       ],
                     ),
                   ),
-            (IntevId < 0)
-                ? Container()
-                : Container(
-                    padding: const EdgeInsets.only(right: 20, bottom: 15),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 20,
-                        ),
-                        Container(
-                          width: 835,
-                          child: Text(
-                            "$wIntervenants",
-                            style: gColors.bodyTitle1_N_Gr,
-                            textAlign: TextAlign.start,
-                            maxLines: 5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-            (IntevId >= 0)
-                ? Container()
-                : Container(
+
+                 Container(
                     child: ListTile(
                         title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -282,7 +244,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                             children: <Widget>[
                               Text(
                                 'Début',
-                                style: gColors.bodyTitle1_B_Gr,
+                                style: gColors.bodyTitle1_N_Gr,
                                 textAlign: TextAlign.start,
                               ),
                               TextField(
@@ -294,7 +256,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                                 },
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
-                                style: gColors.bodyTitle1_N_Gr,
+                                style: gColors.bodyTitle1_B_Gr,
                                 decoration: InputDecoration(
                                   isDense: true,
                                   suffix: SizedBox(
@@ -327,9 +289,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                                                 if (date != null && date != _startDate) {
                                                   setState(() {
                                                     final Duration difference = _endDate.difference(_startDate);
-
                                                     _startDate = DateTime(date.year, date.month, date.day, _startTime.hour, _startTime.minute);
-
                                                     _endDate = _startDate.add(difference);
                                                     _endTime = TimeOfDay(hour: _endDate.hour, minute: _endDate.minute);
                                                   });
@@ -403,7 +363,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text('Fin', style: gColors.bodyTitle1_B_Gr, textAlign: TextAlign.start),
+                              Text('Fin', style: gColors.bodyTitle1_N_Gr, textAlign: TextAlign.start),
                               TextField(
                                 readOnly: true,
                                 controller: TextEditingController(text: (DateFormat('dd/MM/yy HH:mm')).format(_endDate)),
@@ -413,7 +373,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                                 },
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
-                                style: gColors.bodyTitle1_N_Gr,
+                                style: gColors.bodyTitle1_B_Gr,
                                 decoration: InputDecoration(
                                   isDense: true,
                                   suffix: SizedBox(
@@ -527,7 +487,7 @@ class _Planning_EditState extends State<Planning_Edit> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
                 Text(
                   'Libellè',
-                  style: gColors.bodyTitle1_B_Gr,
+                  style: gColors.bodyTitle1_N_Gr,
                   textAlign: TextAlign.start,
                 ),
                 TextField(
@@ -537,7 +497,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                     wPlanning_Srv.Planning_Libelle = value;
                   },
                   keyboardType: TextInputType.multiline,
-                  style: gColors.bodyTitle1_N_Gr,
+                  style: gColors.bodyTitle1_B_Gr,
                 ),
               ]),
             ),
@@ -547,6 +507,7 @@ class _Planning_EditState extends State<Planning_Edit> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
+                  (IntevId < 0) ? Container() :
                   Padding(
                     padding: const EdgeInsets.only(left: 0),
                     child: RawMaterialButton(
@@ -564,7 +525,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                         await DbTools.getZonesSite(DbTools.gSite.SiteId);
                         DbTools.gZone.ZoneId = DbTools.gPlanning_Interv.Planning_Interv_ZoneId!;
                         await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog( ));
+                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
 
 //                        Navigator.pop(context);
                       },
@@ -574,7 +535,6 @@ class _Planning_EditState extends State<Planning_Edit> {
                       ),
                     ),
                   ),
-
                   Spacer(),
                   IconButton(
                     icon: Icon(Icons.delete, color: Colors.red),

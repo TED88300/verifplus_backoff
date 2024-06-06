@@ -941,7 +941,6 @@ class _Zone_IntervState extends State<Zone_Interv> {
                   await DbTools.getZone(DbTools.gIntervention.ZoneId!);
                   AlimSaisie();
                   if (wColSel == 0) {
-
                     await showDialog(
                     context: context,
                     builder: (BuildContext context) => new Intervention_Dialog(

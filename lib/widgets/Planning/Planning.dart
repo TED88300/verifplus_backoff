@@ -698,7 +698,7 @@ class _PlanningState extends State<Planning> {
                     child: Container(
                         alignment: Alignment.center,
                         width: 900,
-                        height: 440,
+                        height: 460,
                         child: Theme(
                             data: gColors.wTheme,
                             child: Card(

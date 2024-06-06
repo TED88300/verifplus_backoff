@@ -322,6 +322,7 @@ class _InterventionsState extends State<Interventions> {
     await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
     await DbTools.getSite(DbTools.gIntervention.SiteId!);
     await DbTools.getZone(DbTools.gIntervention.ZoneId!);
+
     await showDialog(
     context: context,
     builder: (BuildContext context) => new Intervention_Dialog(

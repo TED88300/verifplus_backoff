@@ -4,20 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:printing/printing.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:verifplus_backoff/pdf/BondeCommande.dart';
+import 'package:verifplus_backoff/pdf/Pdf_CR.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
-class Aff_Bdc extends StatefulWidget {
-  const Aff_Bdc({Key? key}) : super(key: key);
+class Aff_CR extends StatefulWidget {
+  const Aff_CR({Key? key}) : super(key: key);
 
   @override
-  Aff_BdcState createState() {
-    return Aff_BdcState();
+  Aff_CRState createState() {
+    return Aff_CRState();
   }
 }
 
-class Aff_BdcState extends State<Aff_Bdc> with SingleTickerProviderStateMixin {
+class Aff_CRState extends State<Aff_CR> with SingleTickerProviderStateMixin {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
 
   Uint8List gwBdC = Uint8List.fromList([]);
@@ -26,7 +26,7 @@ class Aff_BdcState extends State<Aff_Bdc> with SingleTickerProviderStateMixin {
 
   @override
   void initLib() async {
-    gwBdC = await generateBdC();
+    gwBdC = await generateCR();
     genBdC = true;
     setState(() {});
   }
@@ -66,26 +66,7 @@ class Aff_BdcState extends State<Aff_Bdc> with SingleTickerProviderStateMixin {
   AppBar appBar() {
     return AppBar(
       automaticallyImplyLeading: false,
-      actions: <Widget>[
-        IconButton(
-            icon: const Icon(
-              Icons.print,
-              color: Colors.white,
-            ),
-            onPressed: () {
 
-              PdfPreview(
-                maxPageWidth: 700,
-                build: (format) => generateBdC(),
-                canDebug : false,
-                canChangePageFormat : false,
-                canChangeOrientation : false,
-
-                onPrinted: _showPrintedToast,
-                onShared: _showSharedToast,
-              );
-            }),
-      ],
       title: Container(
           color: gColors.primary,
           child: Row(
@@ -140,7 +121,7 @@ class Aff_BdcState extends State<Aff_Bdc> with SingleTickerProviderStateMixin {
             )
           :PdfPreview(
         maxPageWidth: 700,
-        build: (format) => generateBdC(),
+        build: (format) => generateCR(),
         canDebug : false,
         canChangePageFormat : false,
         canChangeOrientation : false,
@@ -149,13 +130,6 @@ class Aff_BdcState extends State<Aff_Bdc> with SingleTickerProviderStateMixin {
         onShared: _showSharedToast,
       )
 
-/*      SfPdfViewer.memory(
-              gwBdC,
-              key: _pdfViewerKey,
-              enableDocumentLinkAnnotation: false,
-              enableTextSelection: false,
-              interactionMode: PdfInteractionMode.pan,
-            ),*/
     );
   }
 }

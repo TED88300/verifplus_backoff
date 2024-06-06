@@ -229,19 +229,12 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
           selectedValueFam = ListParam_ParamFam[ListParam_ParamFamID.indexOf(selectedValueFamID)];
         }
     }
-
-
-
-
     for (int i = 0; i < ListParam_Saisie_ParamType.length; i++) {
       String element = ListParam_Saisie_ParamType[i].Param_Saisie_Param_Label;
       if (element.compareTo("${wClient.Client_TypeContrat}") == 0) {
         selectedType = element;
       }
     }
-
-
-
 
     print("selected ${wClient.Client_Famille} FAMILLE  $selectedValueFamID $selectedValueFam");
     Title = "Fiche client";
@@ -251,6 +244,9 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   }
 
   void initState() {
+
+    print("Client_Dialog initState ${DbTools.gViewCtact}");
+
     widgetChildren = [
       Client_Fact(client_Fact_Controller: client_Fact_Controller,),
       (DbTools.gViewCtact.compareTo("Groupe") == 0) ? Ctact_Grp(onMaj: onMaj,) : Client_Grp(onMaj: onMaj,),
@@ -282,6 +278,18 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
 
   void onMaj() async {
     print("Parent onMaj()");
+    widgetChildren = [
+      Client_Fact(client_Fact_Controller: client_Fact_Controller,),
+      (DbTools.gViewCtact.compareTo("Groupe") == 0) ? Ctact_Grp(onMaj: onMaj,) : Client_Grp(onMaj: onMaj,),
+      (DbTools.gViewCtact.compareTo("Site") == 0) ? Ctact_Site(onMaj: onMaj,) : Client_Sit(onMaj: onMaj,),
+      Client_Interv(onMaj: onMaj,),
+      wScreen("Docs ventes"),
+      wScreen("Articles/parc"),
+      wScreen("Stat"),
+      wScreen("Fichiers"),
+      wScreen("Notes"),
+      Client_Map(),
+    ];
     setState(() {});
   }
 
@@ -977,7 +985,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       ),
       Container(
         width: 90,
-        child: Text("Règlement : ",
+        child: Text("Statut : ",
           style: gColors.bodySaisie_N_G,),
       ),
       Container(

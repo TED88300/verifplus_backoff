@@ -1,6 +1,7 @@
 import 'package:davi/davi.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
 
@@ -112,19 +113,21 @@ class _Ctact_SiteState extends State<Ctact_Site> {
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.green, Colors.white, Icons.add, ToolsBarAdd, tooltip: "Ajouter"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'ico_Save', ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, 'ico_Add', ToolsBarAdd, tooltip: "Ajouter"),
                   ),
-
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
                     child:
                     CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.purple, Colors.white, Icons.keyboard_backspace, ToolsBarCtact, tooltip: "Adresse"),
                   ),
-
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.red, "ico_Del", ToolsBarDelete, tooltip: "Suppression"),
+                  ),
                 ],
               ),
               ContentContactCadre(context),
@@ -133,6 +136,76 @@ class _Ctact_SiteState extends State<Ctact_Site> {
         ],
       ),
     );
+  }
+
+  Widget fadeAlertAnimation(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+      ) {
+    return Align(
+      child: FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+    );
+  }
+
+  var alertStyle = AlertStyle(
+      animationType: AnimationType.fromTop,
+      isCloseButton: false,
+      isOverlayTapDismiss: false,
+      descStyle: TextStyle(fontWeight: FontWeight.bold),
+      animationDuration: Duration(milliseconds: 400),
+      alertBorder: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        side: BorderSide(
+          color: Colors.grey,
+        ),
+      ),
+      titleStyle: gColors.bodyTitle1_B_tks,
+      overlayColor: Color(0x88000000),
+      alertElevation: 20,
+      alertAlignment: Alignment.center);
+
+
+  void ToolsBarDelete() async {
+    print("ToolsBarDelete");
+    Alert(
+      context: context,
+      style: alertStyle,
+      alertAnimation: fadeAlertAnimation,
+      image: Container(
+        height: 100,
+        width: 100,
+        child: Image.asset('assets/images/AppIco.png'),
+      ),
+      title: "Vérif+ Alerte",
+      desc: "Êtes-vous sûre de vouloir supprimer ce Contact ?",
+      buttons: [
+        DialogButton(
+            child: Text(
+              "Annuler",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            color: Colors.black12),
+        DialogButton(
+            child: Text(
+              "Suprimer",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () async {
+              await DbTools.delContact(DbTools.gContact);
+              initLib();
+              Navigator.of(context).pop();
+            },
+            color: Colors.red)
+      ],
+    ).show();
   }
 
   void ToolsBarCtact() async {
@@ -355,7 +428,7 @@ class _Ctact_SiteState extends State<Ctact_Site> {
 
   Widget ContactGridWidget() {
     List<DaviColumn<Contact>> wColumns = [
-      new DaviColumn(name: 'Civ.', width: 60, stringValue: (row) => "${row.Contact_Civilite}"),
+      new DaviColumn(name: 'Civ.', grow: 1, stringValue: (row) => "${row.Contact_Civilite}"),
       new DaviColumn(name: 'Nom', grow: 10, stringValue: (row) => "${row.Contact_Nom}"),
       new DaviColumn(name: 'Prenom', grow: 10, stringValue: (row) => "${row.Contact_Prenom}"),
       new DaviColumn(name: 'Fonction', grow: 2, stringValue: (row) => "${row.Contact_Fonction}"),

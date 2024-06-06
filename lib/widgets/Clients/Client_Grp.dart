@@ -718,11 +718,6 @@ class _Client_GrpState extends State<Client_Grp> {
     );
   }
 
-  
-  
-  
-  
-  
   Widget ToolsBargrid(BuildContext context) {
     return Container(
         color: Colors.white,

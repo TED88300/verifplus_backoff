@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:hand_signature/signature.dart';
 import 'package:intl/intl.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/pdf/Aff_Bdc.dart';
+import 'package:verifplus_backoff/pdf/Aff_CR.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 
@@ -77,8 +77,7 @@ class Intervention_SignatureState extends State<Intervention_Signature> {
                 new ElevatedButton(
                   onPressed: () async {
                     await HapticFeedback.vibrate();
-
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => Aff_Bdc()));
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => Aff_CR()));
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: gColors.primaryGreen,

@@ -12,15 +12,15 @@ import 'package:verifplus_backoff/pdf/PdfTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
 
-Future<Uint8List> generateBdC() async {
+Future<Uint8List> generateCR() async {
   final lorem = pw.LoremText();
   PdfPageFormat pageFormat;
-  final bdC = BdC();
+  final bdC = Pdf_CR();
   pageFormat = PdfPageFormat.a4.applyMargin(left: 0, top: 0, right: 0, bottom: 0);
   return await bdC.buildPdf(pageFormat);
 }
 
-class BdC {
+class Pdf_CR {
   final List<Organe> organes = [];
 
   final double tax = .20;
@@ -79,8 +79,14 @@ class BdC {
       );
     }
 
-    final doc = pw.Document();
-    ByteData _logo_1 = await rootBundle.load('assets/Logo_1.jpg');
+    var fontTheme = ThemeData.withFont(
+      base: Font.ttf(await rootBundle.load("assets/fonts/OpenSans-Regular.ttf")),
+      bold: Font.ttf(await rootBundle.load("assets/fonts/OpenSans-Bold.ttf")),
+      italic: Font.ttf(await rootBundle.load("assets/fonts/OpenSans-Italic.ttf")),
+      boldItalic: Font.ttf(await rootBundle.load("assets/fonts/OpenSans-BoldItalic.ttf")),
+    );
+
+    final doc = pw.Document(theme: fontTheme,);    ByteData _logo_1 = await rootBundle.load('assets/Logo_1.jpg');
     imageData_1 = (_logo_1)!.buffer.asUint8List();
 
     ByteData _logo_Logo_Pied = await rootBundle.load('assets/Logo_Pied.png');

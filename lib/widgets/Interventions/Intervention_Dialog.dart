@@ -15,6 +15,7 @@ import 'package:verifplus_backoff/widgets/Interventions/Intervention_CR.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Signature.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamSite_Dialog.dart';
+import 'package:verifplus_backoff/widgets/Sites/Zone_Dialog.dart';
 
 class Intervention_Dialog extends StatefulWidget {
   final Site site;
@@ -65,12 +66,14 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
 
   Color wColor = Colors.transparent;
 
+  bool isLoad = true;
 
   final MultiSelectController _controllerPartage = MultiSelectController();
   final MultiSelectController _controllerContrib = MultiSelectController();
 
-  Future initLib() async {
 
+
+  Future initLib() async {
     await DbTools.getAll4Intervention();
 
 
@@ -107,7 +110,6 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     selectedUserInter4 = DbTools.List_UserInter[0];
     selectedUserInterID4 = DbTools.List_UserInterID[0];
 
-
     if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
       DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
@@ -140,7 +142,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     }
 
 
-//    await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
+    await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
 
     List<String> listMes = [
       "Règle APSAD R1 / Sprinkleurs",
@@ -194,30 +196,25 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
 
     wColor = gColors.getColorStatus(DbTools.gIntervention.Intervention_Status!);
 
-//    await DbTools.getPlanning_InterventionId(DbTools.gIntervention.InterventionId!);
 
     firstDate = DateTime(2100);
     lastDate = DateTime(1900);
     wHours = 0;
 
-//    await DbTools.getPlanning_InterventionIdRes(DbTools.gIntervention.InterventionId!);
 
     wIntervenants = "";
     for (int i = 0; i < DbTools.ListUserH.length; i++) {
       var element = DbTools.ListUserH[i];
       wIntervenants = "$wIntervenants${wIntervenants.isNotEmpty ? ", " : ""}${element.User_Nom} ${element.User_Prenom} (${element.H}h)";
     }
-
     for (int i = 0; i < DbTools.ListPlanning.length; i++) {
       var wplanningSrv = DbTools.ListPlanning[i];
       wHours += wplanningSrv.Planning_InterventionendTime.difference(wplanningSrv.Planning_InterventionstartTime).inHours;
-
       if (firstDate.isAfter(wplanningSrv.Planning_InterventionstartTime)) firstDate = wplanningSrv.Planning_InterventionstartTime;
-
       if (lastDate.isBefore(wplanningSrv.Planning_InterventionendTime)) lastDate = wplanningSrv.Planning_InterventionendTime;
     }
 
-//    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
+
 
     firstDateEff = DateTime(2100);
     lastDateEff = DateTime(1900);
@@ -257,13 +254,14 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       _controllerContrib.setSelectedOptions(valueItems);
     }
 
+    isLoad = true;
     setState(() {});
   }
 
   void initState() {
     wImage = Image(
       image: AssetImage('assets/images/ico_Photo.png'),
-      height: 100,
+      height: 50,
     );
     initLib();
     super.initState();
@@ -275,7 +273,6 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     if (Title.isEmpty) return Container();
-
 
 
     return Center(
@@ -328,7 +325,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                     ],
                   )),
             ),
-            body: Content(context),
+            body:  Content(context),
           )),
     );
   }
@@ -357,7 +354,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                 width: screenWidth,
                 height: screenHeight - 468, // HAUTEUR TAB
 //                color: Colors.red,
-                child: taBarContainer(),
+                child: isLoad ? taBarContainer() : Container(),
               ),
             ],
           )),
@@ -525,7 +522,9 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           gColors.Txt(50, "Site", "${widget.site.Site_Code} ${widget.site.Site_Nom}\n${widget.site.Site_Adr1} ${widget.site.Site_CP} ${widget.site.Site_Ville}"),
                         ],
                       ),
-                      Container(height: 20),
+                      Container(height: 10),
+
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -537,7 +536,8 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           gColors.TxtColumn(100, "Contact du site", "${DbTools.gContact.Contact_Prenom} ${DbTools.gContact.Contact_Nom} - ${DbTools.gContact.Contact_Tel1.isEmpty ? DbTools.gContact.Contact_Tel2 : DbTools.gContact.Contact_Tel1} - ${DbTools.gContact.Contact_eMail}"),
                         ],
                       ),
-                      Container(height: 20),
+
+                      Container(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -591,7 +591,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           ) : Container(),
                         ],
                       ),
-                      Container(height: 20),
+                      Container(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -603,7 +603,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           gColors.Txt(190, "Règlementations applicables", "${wMes}", tWidth: 268),
                         ],
                       ),
-                      Container(height: 20),
+                      Container(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,7 +614,37 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           gColors.CheckBoxFieldReadOnly(310, 8, "Site bénéficiant d'une déclaration de conformité", isDC),
                         ],
                       ),
+                      Container(height: 1),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 0),
+                        child: RawMaterialButton(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                          ),
+                          fillColor: gColors.GrdBtn_Colors4sel,
+                          onPressed: () async {
+// INTERVENTION
+                            DbTools.gClient.ClientId = DbTools.gPlanning_Interv.Planning_Interv_ClientId!;
+                            await DbTools.getGroupesClient(DbTools.gClient.ClientId);
+                            DbTools.gGroupe.GroupeId = DbTools.gPlanning_Interv.Planning_Interv_GroupeId!;
+                            await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
+                            DbTools.gSite.SiteId = DbTools.gPlanning_Interv.Planning_Interv_SiteId!;
+                            await DbTools.getZonesSite(DbTools.gSite.SiteId);
+                            DbTools.gZone.ZoneId = DbTools.gPlanning_Interv.Planning_Interv_ZoneId!;
+                            await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+                            await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+
+//                        Navigator.pop(context);
+                          },
+                          child: const Text(
+                            '     INTERVENTION     ',
+                            style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+                          ),
+                        ),
+                      ),
                       Container(height: 10),
+
+
                     ],
                   ),
                 ),
@@ -745,37 +775,37 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                       Container(
                         child: Text(
                           "Plannifier du ",
-                          style: gColors.bodySaisie_B_G,
+                          style: gColors.bodySaisie_N_G,
                         ),
                       ),
                       Container(
                         child: Text(
                           "${DateFormat('dd/MM/yyyy').format(firstDate)}",
-                          style: gColors.bodySaisie_N_G,
+                          style: gColors.bodySaisie_B_G,
                         ),
                       ),
                       Container(
                         child: Text(
                           " au ",
-                          style: gColors.bodySaisie_B_G,
+                          style: gColors.bodySaisie_N_G,
                         ),
                       ),
                       Container(
                         child: Text(
                           "${DateFormat('dd/MM/yyyy').format(lastDate)}",
-                          style: gColors.bodySaisie_N_G,
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          " pour ",
                           style: gColors.bodySaisie_B_G,
                         ),
                       ),
                       Container(
                         child: Text(
-                          "${wHours} heures",
+                          " pour ",
                           style: gColors.bodySaisie_N_G,
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          "${wHours} heures",
+                          style: gColors.bodySaisie_B_G,
                         ),
                       ),
                     ],
@@ -786,37 +816,37 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                       Container(
                         child: Text(
                           "Effectuée du ",
-                          style: gColors.bodySaisie_B_G,
+                          style: gColors.bodySaisie_N_G,
                         ),
                       ),
                       Container(
                         child: Text(
                           "${DateFormat('dd/MM/yyyy').format(firstDateEff)}",
-                          style: gColors.bodySaisie_N_G,
+                          style: gColors.bodySaisie_B_G,
                         ),
                       ),
                       Container(
                         child: Text(
                           " au ",
-                          style: gColors.bodySaisie_B_G,
+                          style: gColors.bodySaisie_N_G,
                         ),
                       ),
                       Container(
                         child: Text(
                           "${DateFormat('dd/MM/yyyy').format(lastDateEff)}",
-                          style: gColors.bodySaisie_N_G,
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          " en ",
                           style: gColors.bodySaisie_B_G,
                         ),
                       ),
                       Container(
                         child: Text(
-                          "${wHoursEff} heures",
+                          " en ",
                           style: gColors.bodySaisie_N_G,
+                        ),
+                      ),
+                      Container(
+                        child: Text(
+                          "${wHoursEff} heures",
+                          style: gColors.bodySaisie_B_G,
                         ),
                       ),
                     ],
@@ -930,7 +960,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                                   Container(
                                     child: Text(
                                       "Ressources Techniques : ",
-                                      style: gColors.bodySaisie_B_G,
+                                      style: gColors.bodySaisie_N_G,
                                     ),
                                   ),
                                   Container(height: 5),
@@ -942,7 +972,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                                 width: 290,
                                 child: Text(
                                   wIntervenants,
-                                  style: gColors.bodySaisie_N_G,
+                                  style: gColors.bodySaisie_B_G,
                                 ),
                               ),
                             ],

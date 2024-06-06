@@ -8,6 +8,8 @@ import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/shared_Cookies.dart';
+import 'package:verifplus_backoff/pdf/Aff_BL.dart';
+import 'package:verifplus_backoff/pdf/Aff_CR.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/2-login.dart';
 import 'package:verifplus_backoff/widgets/4-Menu.dart';
@@ -96,7 +98,9 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
 
     if (IsRememberLogin) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Menu()));
-//      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>       Clients_screen()));
+//      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Aff_CR()));
+//      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Aff_BL()));
+    //      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) =>       Clients_screen()));
     } else
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
   }

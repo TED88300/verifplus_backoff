@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -8,12 +9,13 @@ import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
+import 'package:verifplus_backoff/pdf/Aff_BL.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Dialog.dart';
 
-DataGridController dataGridController_CR = DataGridController();
+DataGridController dataGridController_BL = DataGridController();
 int Subindex = 0;
 
 //*********************************************************************
@@ -23,8 +25,7 @@ int Subindex = 0;
 class Parc_ArtInfoDataGridSource extends DataGridSource {
   Parc_ArtInfoDataGridSource() {
     buildDataGridRows();
-    print (" AAAAAA buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
-
+    print (" AAAAAA buildDataGridRows dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
   }
 
   @override
@@ -32,38 +33,41 @@ class Parc_ArtInfoDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     FiltreTools.dataGridRows_CR = DbTools.ListParc_Art.map<DataGridRow>((Parc_Art Parc_Art) {
+      print("Parc_Art ${Parc_Art.Desc()}");
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'id', value: Parc_Art.ParcsArtId),
-        DataGridCell<String>(columnName: 'Lib', value: Parc_Art.ParcsArt_Lib),
+        DataGridCell<String>(columnName: 'code', value: Parc_Art.ParcsArt_Id),
+        DataGridCell<String>(columnName: 'lib', value: Parc_Art.ParcsArt_Lib),
+        DataGridCell<String>(columnName: 'fact', value: Parc_Art.ParcsArt_Fact),
+        DataGridCell<String>(columnName: 'livf', value: Parc_Art.ParcsArt_Livr),
+        DataGridCell<int>(columnName: 'qte', value: Parc_Art.ParcsArt_Qte),
       ];
       return DataGridRow(cells: DataGridCells);
     }).toList();
-
-
-
   }
 
   @override
   Future<void> handleRefresh() async {
     buildDataGridRows();
-    print (" handleRefresh buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+    print (" handleRefresh buildDataGridRows dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
     notifyListeners();
   }
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController_CR.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    Color textColor = dataGridController_BL.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
     Color backgroundColor = Colors.transparent;
 
     List<Widget> DataGridCells = [
       FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerRight, textColor),
 //      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
     ];
-
-
-
 
     return DataGridRowAdapter(color: backgroundColor, cells: DataGridCells);
   }
@@ -88,12 +92,16 @@ class Intervention_BL extends StatefulWidget {
 class _Intervention_BLState extends State<Intervention_BL> {
   String DescAffnewParam = "";
 
-  List<double> dColumnWidth_CR = [
+  List<double> dColumnWidth_BL = [
     80,
-    60,
+    120,
+    1100,
+    200,
+    200,
+    120,
   ];
 
-  Parc_ArtInfoDataGridSource parc_ArtInfoDataGridSource = Parc_ArtInfoDataGridSource();
+  Parc_ArtInfoDataGridSource parc_ArtInfoDataGridSource = new Parc_ArtInfoDataGridSource();
 
   int wColSel = -1;
   int Selindex = -1;
@@ -104,32 +112,23 @@ class _Intervention_BLState extends State<Intervention_BL> {
 
   List<String> subLibArray = [""];
   List<GrdBtn> lGrdBtn = [];
-
   List<Param_Param> ListParam_ParamTypeOg = [];
-
   DataGridRow memDataGridRow = DataGridRow(cells: []);
 
-
-  List<GridColumn> getColumns_CR() {
+  List<GridColumn> getColumns_BL() {
     List<GridColumn> wGridColumn = [
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth_CR[0], dColumnWidth_CR[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth_CR[1], dColumnWidth_CR[1], Alignment.centerLeft),
-//      FiltreTools.SfGridColumn('desc'      ,           'Organes'     , double.nan, dColumnWidth[2], Alignment.centerLeft, wColumnWidthMode :ColumnWidthMode.lastColumnFill),
+      FiltreTools.SfGridColumn('id',    'ID', dColumnWidth_BL[0], dColumnWidth_BL[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('code',  'Code', dColumnWidth_BL[1], dColumnWidth_BL[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('lib' ,   'Libellé', dColumnWidth_BL[2], dColumnWidth_BL[2], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('fact',  'Facturation', dColumnWidth_BL[3], dColumnWidth_BL[3], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('livr',  'Livraison', dColumnWidth_BL[4], dColumnWidth_BL[4], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('qte' ,  'Qte', dColumnWidth_BL[5], dColumnWidth_BL[5], Alignment.centerLeft),
     ];
-
-    int n = 3;
-    for (int i = 0; i < DbTools.lColParams.length; i++) {
-      String ColParam = DbTools.lColParams[i];
-      if (ColParam == "ACTION")
-        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth_CR[i+2], dColumnWidth_CR[1], Alignment.center));
-      else
-        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth_CR[i+2], dColumnWidth_CR[1], Alignment.centerLeft));
-    }
 
     return wGridColumn;
   }
 
-  List<GridTableSummaryRow> getGridTableSummaryRow_CR() {
+  List<GridTableSummaryRow> getGridTableSummaryRow_BL() {
     return [
       GridTableSummaryRow(
           color: gColors.secondary,
@@ -143,30 +142,22 @@ class _Intervention_BLState extends State<Intervention_BL> {
     ];
   }
 
-  void Resize_CR(ColumnResizeUpdateDetails args) {
+  void Resize_BL(ColumnResizeUpdateDetails args) {
     setState(() {
-      if (args.column.columnName == 'id')
-        dColumnWidth_CR[0] = args.width;
-      else if (args.column.columnName == 'ordre') dColumnWidth_CR[1] = args.width;
-      else
-        {
-          for (int i = 0; i < DbTools.lColParams.length; i++) {
-            String ColParam = DbTools.lColParams[i];
-            if (args.column.columnName == ColParam)
-              {
-                print("🁢🁢🁢🁢🁢🁢🁢  Resize ${args.width}");
-                dColumnWidth_CR[i+2] = args.width;
-              }
-          }
-        }
+      if (args.column.columnName == 'id')        dColumnWidth_BL[0] = args.width;
+      else if (args.column.columnName == 'code') dColumnWidth_BL[1] = args.width;
+      else if (args.column.columnName == 'lib' ) dColumnWidth_BL[2] = args.width;
+      else if (args.column.columnName == 'fact') dColumnWidth_BL[3] = args.width;
+      else if (args.column.columnName == 'livr') dColumnWidth_BL[4] = args.width;
+      else if (args.column.columnName == 'qte')  dColumnWidth_BL[5] = args.width;
     });
   }
 
   Future Reload() async {
 
 
-    await DbTools.getParcs_ArtInter(DbTools.gIntervention.InterventionId!);
-    print (" Reload buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+    await DbTools.getParcs_ArtInterSum(DbTools.gIntervention.InterventionId!);
+    print (" Reload buildDataGridRows dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
     Filtre();
   }
 
@@ -175,7 +166,7 @@ class _Intervention_BLState extends State<Intervention_BL> {
     DbTools.ListContactsearchresult.addAll(DbTools.ListContact);
     parc_ArtInfoDataGridSource.handleRefresh();
 
-    print (" FILTRE dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+    print (" FILTRE dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
 
 
     FiltreTools.dataGridRows_CR_Filtre.clear();
@@ -183,12 +174,12 @@ class _Intervention_BLState extends State<Intervention_BL> {
       FiltreTools.dataGridRows_CR_Filtre.addAll(FiltreTools.dataGridRows_CR);
     else
     {
-      print (" dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+      print (" dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
       for (int i = 0; i < FiltreTools.dataGridRows_CR.length; i++) {
         bool isTrv = false;
-        DataGridRow dataGridRows_CR = FiltreTools.dataGridRows_CR[i];
-        for (int j = 0; j < dataGridRows_CR.getCells().length; j++) {
-          DataGridCell dataGridCell = dataGridRows_CR.getCells()[j];
+        DataGridRow dataGridRows_BL = FiltreTools.dataGridRows_CR[i];
+        for (int j = 0; j < dataGridRows_BL.getCells().length; j++) {
+          DataGridCell dataGridCell = dataGridRows_BL.getCells()[j];
 
           print (" dataGridCell ${dataGridCell.value}");
 
@@ -200,7 +191,7 @@ class _Intervention_BLState extends State<Intervention_BL> {
         if (isTrv)
         {
           print (" ADD");
-          FiltreTools.dataGridRows_CR_Filtre.add(dataGridRows_CR);
+          FiltreTools.dataGridRows_CR_Filtre.add(dataGridRows_BL);
         }
       }
 
@@ -208,8 +199,8 @@ class _Intervention_BLState extends State<Intervention_BL> {
 
     parc_ArtInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'ordre', sortDirection: DataGridSortDirection.ascending));
     parc_ArtInfoDataGridSource.sort();
-    dataGridController_CR.selectedRows.clear();
-    dataGridController_CR.selectedRows.add(memDataGridRow);
+    dataGridController_BL.selectedRows.clear();
+    dataGridController_BL.selectedRows.add(memDataGridRow);
 
     setState(() {});
   }
@@ -224,7 +215,7 @@ class _Intervention_BLState extends State<Intervention_BL> {
     for (int i = 0; i < DbTools.lColParamswidth.length; i++) {
       String ColParamswidth = DbTools.lColParamswidth[i];
       double iColParamswidth = double.tryParse(ColParamswidth) ?? 0;
-      dColumnWidth_CR.add(iColParamswidth);
+      dColumnWidth_BL.add(iColParamswidth);
     }
 
     DbTools.subTitleArray.clear();
@@ -254,11 +245,10 @@ class _Intervention_BLState extends State<Intervention_BL> {
 
   @override
   Widget build(BuildContext context) {
-    print (" build dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+    print (" build dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
 
     return Container(
       margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-//      padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(0.0),
@@ -266,21 +256,21 @@ class _Intervention_BLState extends State<Intervention_BL> {
           color: Colors.black26,
         ),
       ),
-      child: ListOrganes( context),
+      child: ListArticles( context),
     );
   }
 
-  Widget ListOrganes(BuildContext context) {
+  Widget ListArticles(BuildContext context) {
     return Column(children: [
       ToolsBar(context),
       SizedBox(
           height: MediaQuery.of(context).size.height - 590, // HAUTEUR LISTE
-          child: SfDataGridTheme(
-              data: SfDataGridThemeData(
+          child: new SfDataGridTheme(
+              data: new SfDataGridThemeData(
                 headerColor: gColors.secondary,
                 selectionColor: gColors.backgroundColor,
               ),
-              child: SfDataGrid(
+              child: new SfDataGrid(
                 //*********************************
                 onFilterChanged: (DataGridFilterChangeDetails details) {
                   countfilterConditions = parc_ArtInfoDataGridSource.filterConditions.length;
@@ -306,17 +296,17 @@ class _Intervention_BLState extends State<Intervention_BL> {
                 source: parc_ArtInfoDataGridSource,
                 allowSorting: true,
                 allowFiltering: true,
-                columns: getColumns_CR(),
-                tableSummaryRows: getGridTableSummaryRow_CR(),
+                columns: getColumns_BL(),
+                tableSummaryRows: getGridTableSummaryRow_BL(),
 
                 headerRowHeight: 35,
                 rowHeight: 28,
                 allowColumnsResizing: true,
                 columnResizeMode: ColumnResizeMode.onResize,
                 selectionMode: SelectionMode.single,
-                controller: dataGridController_CR,
+                controller: dataGridController_BL,
                 onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
-                  Resize_CR(args);
+                  Resize_BL(args);
                   return true;
                 },
                 gridLinesVisibility: GridLinesVisibility.both,
@@ -386,8 +376,10 @@ class _Intervention_BLState extends State<Intervention_BL> {
                   Container(
                     width: 20,
                   ),
-
-
+                  CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.white : Colors.black12, gColors.primary, Icons.print, ToolsBarPrint, tooltip: "Imprimer"),
+                  Container(
+                    width: 20,
+                  ),
                 ],
 
 
@@ -402,4 +394,14 @@ class _Intervention_BLState extends State<Intervention_BL> {
     countfilterConditions = 0;
     setState(() {});
   }
+
+  void ToolsBarPrint() async {
+    await HapticFeedback.vibrate();
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => Aff_BL()));
+    setState(() {});
+  }
+
+
+
+
 }

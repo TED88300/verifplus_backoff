@@ -420,6 +420,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     DbTools.gZone.Zone_Pays = textController_Zone_Pays.text;
     DbTools.gZone.Zone_Acces = textController_Zone_Acces.text;
     DbTools.gZone.Zone_Rem = textController_Zone_Rem.text;
+    DbTools.gZone.Zone_Depot = selectedValueDepot;
 
     await DbTools.setZone(DbTools.gZone);
 
@@ -648,11 +649,11 @@ class _Zones_ZoneState extends State<Zones_Zone> {
 
   List<double> dColumnWidth = [
     80,
-    450,
+    400,
     350,
     120,
-    160,
-    160,
+    200,
+    200,
   ];
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
@@ -707,8 +708,6 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 ),
                 child: SfDataGrid(
                   //*********************************
-
-
                   onFilterChanged: (DataGridFilterChangeDetails details) {
                     countfilterConditions = zoneDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
@@ -720,16 +719,16 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 if (wRowSel == 0) return;
                     DataGridRow wDataGridRow = zoneDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
                     Selindex = zoneDataGridSource.dataGridRows.indexOf(wDataGridRow);
+
+                    DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
+
+
                     AlimSaisie();
                     if (wColSel == 0) {
-
                       DbTools.gIntervention = Intervention.InterventionInit();
                       await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
                       Reload();
                     }
-
-
-
                   },
 
                   //*********************************

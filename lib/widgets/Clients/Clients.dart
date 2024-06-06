@@ -250,9 +250,6 @@ class Clients_screenState extends State<Clients_screen> {
                     columnWidthMode: ColumnWidthMode.fill,
                     tableSummaryRows: getGridTableSummaryRow(),
 
-//                  frozenRowsCount: 0,
-//                frozenColumnsCount: 3,
-
                     controller: dataGridController,
 
 

@@ -1199,8 +1199,6 @@ class _Client_SitState extends State<Client_Sit> {
                 if (wRowSel == 0) return;
                     DataGridRow wDataGridRow = siteDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
                     Selindex = siteDataGridSource.dataGridRows.indexOf(wDataGridRow);
-
-
                     print(" onSelectionChanged  B SelSite ${SelSite}");
                     DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
                     AlimSaisie();

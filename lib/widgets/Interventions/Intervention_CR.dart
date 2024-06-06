@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -7,6 +8,7 @@ import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
+import 'package:verifplus_backoff/pdf/Aff_CR.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
@@ -21,7 +23,7 @@ int Subindex = 0;
 
 class Parc_EntInfoDataGridSource extends DataGridSource {
   Parc_EntInfoDataGridSource() {
-    buildDataGridRows();
+    Parc_Ent_buildDataGridRows();
     print (" AAAAAA buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
 
   }
@@ -29,7 +31,7 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
   @override
   List<DataGridRow> get rows => FiltreTools.dataGridRows_CR_Filtre;
 
-  void buildDataGridRows() {
+  void Parc_Ent_buildDataGridRows() {
     FiltreTools.dataGridRows_CR = DbTools.ListParc_Ent.map<DataGridRow>((Parc_Ent parc_Ent) {
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'id', value: parc_Ent.ParcsId),
@@ -37,7 +39,12 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
       ];
       for (int i = 0; i < DbTools.lColParams.length; i++) {
         String ColParam = DbTools.lColParams[i];
-        String ColParamsdata = parc_Ent.Parcs_Cols![i]!;
+//        print("⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈⎈      parc_Ent.Parcs_Cols![i]! ${parc_Ent.Parcs_Cols![i]!}");
+        String ColParamsdata = "";
+        try {
+           ColParamsdata = parc_Ent.Parcs_Cols![i]!;
+        } catch (e) {
+        }
         if (ColParam == "DATE" && ColParamsdata.isNotEmpty)
           {
             DataGridCells.add(DataGridCell<DateTime>(columnName: 'date', value: DateTime.parse(ColParamsdata)));
@@ -46,6 +53,7 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
           DataGridCells.add(DataGridCell<String>(columnName: ColParam, value: ColParamsdata));
       }
 
+      print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗    Parc_Ent_buildDataGridRows  DataGridCells ${DataGridCells.length}");
 
       return DataGridRow(cells: DataGridCells);
     }).toList();
@@ -56,7 +64,7 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 
   @override
   Future<void> handleRefresh() async {
-    buildDataGridRows();
+    Parc_Ent_buildDataGridRows();
     print (" handleRefresh buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
     notifyListeners();
   }
@@ -73,17 +81,23 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 //      FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
     ];
 
+
+    print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗      DbTools.lColParams.length ${DbTools.lColParams.length}");
+
+
     int n = 2;
     for (int i = 0; i < DbTools.lColParams.length; i++) {
       String ColParam = DbTools.lColParams[i];
       if (ColParam == "DATE")
         {
+//          print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗      ColParam ${ColParam}");
           DataGridCells.add(FiltreTools.SfRowDate(row,  n++, Alignment.centerLeft, textColor));
         }
       else
         {
           if (ColParam == "ACTION")
             {
+ //             print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗      ColParam ${ColParam}");
               DataGridCells.add(FiltreTools.SfRow(row, n++, Alignment.center, textColor));
             }
           else
@@ -120,7 +134,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
     60,
   ];
 
-  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
+  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = new  Parc_EntInfoDataGridSource();
 
   int wColSel = -1;
   int Selindex = -1;
@@ -191,35 +205,11 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
   Future Reload() async {
 
-//    await DbTools.getAll4Intervention();
-
     print("◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎ Intervention_CR → Reload A");
 
     DbTools.gContact = Contact.ContactInit();
     Search_TextController.text = "";
 
-/*
-    await DbTools.getContactSite(DbTools.gSite.SiteId);
-    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
-    await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
-*/
-
-/*
-
-    await DbTools.getParam_Saisie_Base("Audit");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
-    DbTools.ListParam_Audit_Base.clear();
-    DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    await DbTools.getParam_Saisie_Base("Verif");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
-    DbTools.ListParam_Verif_Base.clear();
-    DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    await DbTools.getParam_Saisie_Base("Desc");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
-    DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
-*/
 
     String DescAff = "";
     Parcs_ColsTitle!.clear();
@@ -399,7 +389,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
       }
     }
 
-
+    print("◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎ Intervention_CR → Reload Fin");
     print (" Reload buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
 
     Filtre();
@@ -446,11 +436,14 @@ class _Intervention_CRState extends State<Intervention_CR> {
     dataGridController_CR.selectedRows.clear();
     dataGridController_CR.selectedRows.add(memDataGridRow);
 
+    print("◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎◼︎ Intervention_CR → FILTRE Fin");
+
     setState(() {});
   }
 
   @override
   void initLib() async {
+    await DbTools.getAll4Intervention();
     Reload();
   }
 
@@ -489,7 +482,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
   @override
   Widget build(BuildContext context) {
-    print (" build dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+//    print (" parc_EntInfoDataGridSource ${parc_EntInfoDataGridSource.rows.length} ${parc_EntInfoDataGridSource.rows[0].getCells().length}");
 
     return Container(
       margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -510,12 +503,12 @@ class _Intervention_CRState extends State<Intervention_CR> {
       ToolsBar(context),
       SizedBox(
           height: MediaQuery.of(context).size.height - 590, // HAUTEUR LISTE
-          child: SfDataGridTheme(
-              data: SfDataGridThemeData(
+          child: new SfDataGridTheme(
+              data: new SfDataGridThemeData(
                 headerColor: gColors.secondary,
                 selectionColor: gColors.backgroundColor,
               ),
-              child: SfDataGrid(
+              child: new SfDataGrid(
                 //*********************************
                 onFilterChanged: (DataGridFilterChangeDetails details) {
                   countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
@@ -571,8 +564,6 @@ class _Intervention_CRState extends State<Intervention_CR> {
 
   Widget ToolsBar(BuildContext context) {
     return
-
-
       Container(
           color: Colors.white,
           padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
@@ -581,7 +572,6 @@ class _Intervention_CRState extends State<Intervention_CR> {
               Row(
                 children: [
                   CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
-
                   Container(
                     width: 20,
                   ),
@@ -622,11 +612,14 @@ class _Intervention_CRState extends State<Intervention_CR> {
                     width: 20,
                   ),
 
+                  CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.white : Colors.black12, gColors.primary, Icons.print, ToolsBarPrint, tooltip: "Imprimer"),
+                  Container(
+                    width: 20,
+                  ),
+
+
 
                 ],
-
-
-
               ),
             ],
           ));
@@ -637,4 +630,12 @@ class _Intervention_CRState extends State<Intervention_CR> {
     countfilterConditions = 0;
     setState(() {});
   }
+
+  void ToolsBarPrint() async {
+    await HapticFeedback.vibrate();
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => Aff_CR()));
+    setState(() {});
+  }
+
+
 }
