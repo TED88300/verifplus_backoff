@@ -139,7 +139,7 @@ class _NF074_Mixte_Produit_screenState extends State<NF074_Mixte_Produit_screen>
 
 
                           String wTable = "Mixte_Produit";
-                          await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
+                          await Upload.UploadSrvCsvPickerNF74(wTable, onSetStateOn, onSetStateOff);
 
                           print("iStrfExp B ${iStrfExp}");
                         }

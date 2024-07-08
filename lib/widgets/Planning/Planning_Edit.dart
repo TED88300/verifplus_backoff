@@ -2,13 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning_Interv.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
+import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Dialog.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class Planning_Edit extends StatefulWidget {
   final Appointment? wAppointment;
@@ -48,14 +51,15 @@ class _Planning_EditState extends State<Planning_Edit> {
   TextEditingController textController_Lib = TextEditingController();
   String wIntervenants = "";
 
+  TextEditingController textController_Adresse_Geo = TextEditingController();
+
+
   void initLib() async {
     await DbTools.getPlanning_InterventionIdRes(IntevId!);
-    print("DbTools.ListUserH ${DbTools.ListUserH.length}");
-
     ResourceId = int.parse(widget.wAppointment!.resourceIds![0].toString());
     for (int u = 0; u < DbTools.ListUser.length; u++) {
       User user = DbTools.ListUser[u];
-      if (user.UserID == ResourceId) ResourceNom = "${user.User_Nom} ${user.User_Prenom}";
+      if (user.User_Matricule == ResourceId.toString()) ResourceNom = "${user.User_Nom} ${user.User_Prenom}";
     }
 
     for (int i = 0; i < DbTools.ListUserH.length; i++) {
@@ -66,19 +70,19 @@ class _Planning_EditState extends State<Planning_Edit> {
     await DbTools.getInterventionIDSrv(IntevId);
     print("gIntervention ${DbTools.gIntervention.Desc()}");
 
-    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
+    await DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable!);
     print("gUser ${DbTools.gUser.Desc()}");
     selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
 
-    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable2!);
+    await DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable2!);
     print("gUser ${DbTools.gUser.Desc()}");
     selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
 
-    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable3!);
+    await DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable3!);
     print("gUser ${DbTools.gUser.Desc()}");
     selectedUserInter3 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
 
-    await DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable4!);
+    await DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable4!);
     print("gUser ${DbTools.gUser.Desc()}");
     selectedUserInter4 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
 
@@ -115,14 +119,117 @@ class _Planning_EditState extends State<Planning_Edit> {
     super.initState();
   }
 
+
+  Widget AutoAdresse(double lWidth, double wWidth, String wLabel, TextEditingController textEditingController, {int Ligne = 1, String sep = " : "}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        lWidth == -1
+            ? Container(
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          child: Text(
+            wLabel,
+            style: gColors.bodySaisie_N_G,
+          ),
+        )
+            : Container(
+          width: lWidth,
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          child: Text(
+            wLabel,
+            style: gColors.bodySaisie_N_G,
+          ),
+        ),
+        Container(
+          width: 12,
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          child: Text(
+            sep,
+            style: gColors.bodySaisie_B_G,
+          ),
+        ),
+        Container(
+            width: wWidth,
+            child: TypeAheadField(
+              animationStart: 0,
+              animationDuration: Duration.zero,
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: textEditingController,
+                decoration: InputDecoration(
+                  isDense: true,
+                ),
+              ),
+              suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                color: Colors.white,
+              ),
+              suggestionsCallback: (pattern) async {
+                await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
+                List<String> matches = <String>[];
+                Api_Gouv.properties.forEach((propertie) {
+                  matches.add(propertie.label!);
+                });
+                return matches;
+              },
+              itemBuilder: (context, sone) {
+                return Card(
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      child: Text(sone.toString()),
+                    ));
+              },
+              onSuggestionSelected: (suggestion) {
+                Api_Gouv.properties.forEach((propertie) {
+                  if (propertie.label!.compareTo(suggestion) == 0) {
+                    Api_Gouv.gProperties = propertie;
+                  }
+                });
+                textController_Adresse_Geo.text = suggestion;
+              },
+            )),
+        Container(
+          width: 20,
+        ),
+      ],
+    );
+  }
+
+  Widget ToolsBar_Insee(BuildContext context) {
+    return Container(
+//        width: 400,
+        color: Colors.white,
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+//                  width: 320,
+                  child: AutoAdresse(80, 690, "Recherche", textController_Adresse_Geo),
+                ),
+                CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.arrow_downward, ToolsBarCopySearch, tooltip: "Copier recherche"),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  void ToolsBarCopySearch() async {
+    print("ToolsBarCopySearch_Livr ${Api_Gouv.gProperties.toJson()}");
+    textController_Lib.text = "${textController_Lib.text} ${Api_Gouv.gProperties.name!} ${Api_Gouv.gProperties.postcode!} ${Api_Gouv.gProperties.city!}".trim();
+    wPlanning_Srv.Planning_Libelle = textController_Lib.text;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
+
       insetPadding: const EdgeInsets.all(10),
       elevation: 0,
       child: Container(
         width: 1200,
-        height: 700,
+        height: 900,
         color: Colors.transparent,
         alignment: Alignment.center,
         child: Column(
@@ -275,13 +382,22 @@ class _Planning_EditState extends State<Planning_Edit> {
                                               hoverElevation: 0,
                                               onPressed: () async {
                                                 final DateTime? date = await showDatePicker(
+
                                                     context: context,
                                                     initialDate: _startDate,
                                                     firstDate: DateTime(1900),
                                                     lastDate: DateTime(2100),
                                                     builder: (BuildContext context, Widget? child) {
                                                       return Theme(
-                                                        data: ThemeData(brightness: Brightness.light, colorScheme: _getColorScheme(true), primaryColor: gColors.backgroundColor),
+                                                        data: ThemeData.dark().copyWith(
+                                                          colorScheme: ColorScheme.dark(
+                                                            primary: Colors.blue,
+                                                            onPrimary: Colors.white,
+                                                            surface: Colors.white,
+                                                            onSurface: gColors.primary,
+                                                          ),
+                                                          dialogBackgroundColor:Colors.blue[900],
+                                                        ),
                                                         child: child!,
                                                       );
                                                     });
@@ -401,7 +517,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                                                       return Theme(
                                                         data: ThemeData(
                                                           brightness: Brightness.light,
-                                                          colorScheme: _getColorScheme(true),
+                                                          colorScheme: _getColorScheme(false),
                                                           primaryColor: gColors.backgroundColor,
                                                         ),
                                                         child: child!,
@@ -483,8 +599,10 @@ class _Planning_EditState extends State<Planning_Edit> {
                     ],
                   ))),
             Container(
+              height: 110,
               padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 2),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+                ToolsBar_Insee(context),
                 Text(
                   'Libellè',
                   style: gColors.bodyTitle1_N_Gr,

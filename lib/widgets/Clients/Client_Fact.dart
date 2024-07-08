@@ -905,7 +905,7 @@ class _Client_FactState extends State<Client_Fact> {
                 Container(
                   width: 5,
                 ),
-                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave_Livr, tooltip: "Sauvegarder"),
 
                 Container(
                   width: 10,
@@ -1151,11 +1151,16 @@ class _Client_FactState extends State<Client_Fact> {
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 0, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
-            )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 0, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),        )),
       ),
     ]);
   }
@@ -1198,10 +1203,16 @@ class _Client_FactState extends State<Client_Fact> {
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),
             )),
       ),
     ]);

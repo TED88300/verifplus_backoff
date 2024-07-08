@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
-
 class PdfView extends StatefulWidget {
+  final SfPdfViewer wSfPdfViewer;
 
-  final Widget pdf;
-
-  const PdfView({Key? key, required this.pdf}) : super(key: key);
-
+  const PdfView({Key? key, required this.wSfPdfViewer}) : super(key: key);
 
   @override
   _PdfViewState createState() => _PdfViewState();
 }
 
 class _PdfViewState extends State<PdfView> {
+  late SfPdfViewer wSfPdfViewer;
+
   void initLib() async {}
 
   @override
   void initState() {
+    wSfPdfViewer = widget.wSfPdfViewer;
+    print(" ${wSfPdfViewer.controller!.zoomLevel}");
+
     super.initState();
   }
 
+  double width = 0;
+  bool isZoom = false;
   @override
   Widget build(BuildContext context) {
-
-    double width = MediaQuery.of(context).size.width;
+    width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height - 56;
     return Scaffold(
       appBar: AppBar(
@@ -67,24 +71,83 @@ class _PdfViewState extends State<PdfView> {
               ],
             )),
       ),
-      backgroundColor: gColors.primary,
+      backgroundColor: gColors.white,
       body: Container(
-        padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-        color: gColors.white,
-        child: Column(
-          children: <Widget>[
-            Container(
-              width: width,
-              height: height,
-              child: widget.pdf,
-            )
+          width: width,
+          padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+          color: gColors.white,
+          child: Stack(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  isZoom ?
+                            Container(
+                              width: width,
+                              height: height,
+                              child: wSfPdfViewer,
+                            )
+                      :
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                    Container(
+                      width: 500,
+                      height: height,
+                      child:
+                      wSfPdfViewer,
+                    ),
+
+                  ],)
 
 
-          ],
-        ),
-      ),
+                ],
+              ),
+              Positioned(
+                right: 20,
+                top: 10,
+                child: Container(
+                    padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        InkWell(
+                          child: Icon(
+                            Icons.zoom_out,
+                            color: Colors.black,
+                            size: 48.0,
+                          ),
+                          onTap: () async {
+                            if (wSfPdfViewer.controller!.zoomLevel > 1)
+                              wSfPdfViewer.controller!.zoomLevel = wSfPdfViewer.controller!.zoomLevel - 1;
+                            else {
+                              isZoom = false;
+                            }
+                            setState(() {});
+                          },
+                        ),
+                        InkWell(
+                          child: Icon(
+                            Icons.zoom_in,
+                            color: Colors.black,
+                            size: 48.0,
+                          ),
+                          onTap: () async {
+                            if (isZoom)
+                              wSfPdfViewer.controller!.zoomLevel = wSfPdfViewer.controller!.zoomLevel + 1;
+                            else {
+                              isZoom = true;
+                              wSfPdfViewer.controller!.zoomLevel = 1;
+                            }
+
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    )),
+              ),
+            ],
+          )),
     );
   }
-
-
 }

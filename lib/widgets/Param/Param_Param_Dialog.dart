@@ -397,10 +397,17 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
               print("selectedValueColor $selectedValueColorID $selectedValueColor");
             });
           },
-          buttonHeight: 50,
-          buttonWidth: 150,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
         ));
   }
 

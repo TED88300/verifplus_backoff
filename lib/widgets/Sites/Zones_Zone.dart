@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +13,19 @@ import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
+import 'package:verifplus_backoff/Tools/Upload.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+import 'package:verifplus_backoff/widgets/Sites/ParamZone_Dialog.dart';
+import 'package:verifplus_backoff/widgets/Sites/ParamZone_Dialog2.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Dialog.dart';
+
+import 'package:image/image.dart' as IMG;
+import 'package:http/http.dart' as http;
+import 'package:cross_file/cross_file.dart';
+
 
 DataGridController dataGridController = DataGridController();
 
@@ -54,10 +66,13 @@ class ZoneDataGridSource extends DataGridSource {
     double t = 5;
     double b = 3;
 
-    Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
 
-    Color backgroundColor = Colors.transparent;
+    Color selectedRowTextColor = Colors.white;
+    bool selected = (DbTools.gZone.ZoneId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? selectedRowTextColor : Colors.black;
+    Color backgroundColor = selected ? gColors.backgroundColor : Colors.transparent;
+
+
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
       FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
@@ -111,12 +126,25 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   int Selindex = -1;
   int countfilterConditions = -1;
 
+  final List<XFile> _list = [];
+  bool _dragging = false;
+  Offset? offset;
+  late Image wImage;
+  bool imageisload = false;
+  Uint8List pic = Uint8List.fromList([0]);
+
+
+
   ZoneDataGridSource zoneDataGridSource = ZoneDataGridSource();
 
   DataGridRow memDataGridRow = DataGridRow(cells: []);
 
   Future Reload() async {
+    await DbTools.getGroupesClient(DbTools.gClient.ClientId);
+
+    Zone wZone = DbTools.gZone;
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
+    if (wZone.ZoneId >=0 ) DbTools.gZone = wZone;
     print("initLib getZonesClient ${DbTools.ListZone.length}");
     await Filtre();
   }
@@ -189,6 +217,26 @@ class _Zones_ZoneState extends State<Zones_Zone> {
     }
     await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
 
+    imageisload = false;
+    String wUserImg = "Zone_${DbTools.gZone.ZoneId}.jpg";
+    pic = await gColors.getImage(wUserImg);
+    print("pic $wUserImg"); // ${pic}");
+    if (pic.length > 0) {
+      wImage = Image.memory(
+        pic,
+        fit: BoxFit.scaleDown,
+        width: 200,
+        height: 200,
+      );
+    } else {
+      wImage = Image(
+        image: AssetImage('assets/images/Avatar.png'),
+        height: 200,
+      );
+    }
+    imageisload = true;
+    
+    
     setState(() {});
   }
 
@@ -343,6 +391,13 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 ],
               ),
               ContentZoneCadre(context),
+              Column(
+                children: [
+                  ContentZonePhoto(context),
+                  ContentZoneRegle(context),
+                ],
+              )
+
             ],
           ),
         ],
@@ -569,7 +624,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
             padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
             color: Colors.white,
             child: Text(
-              'Zone',
+              'Zone #${DbTools.gZone.ZoneId}',
               style: TextStyle(color: Colors.black, fontSize: 12),
             ),
           ),
@@ -704,7 +759,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
             child: SfDataGridTheme(
                 data: SfDataGridThemeData(
                   headerColor: gColors.secondary,
-                  selectionColor: gColors.backgroundColor,
+                  selectionColor: gColors.transparent,
                 ),
                 child: SfDataGrid(
                   //*********************************
@@ -715,20 +770,19 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                   },
                   onCellTap: (DataGridCellTapDetails details) async{
                     wColSel = details.rowColumnIndex.columnIndex;
-                   wRowSel = details.rowColumnIndex.rowIndex;
-                if (wRowSel == 0) return;
+                    wRowSel = details.rowColumnIndex.rowIndex;
+                    if (wRowSel == 0) return;
+
                     DataGridRow wDataGridRow = zoneDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
                     Selindex = zoneDataGridSource.dataGridRows.indexOf(wDataGridRow);
-
                     DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
-
 
                     AlimSaisie();
                     if (wColSel == 0) {
                       DbTools.gIntervention = Intervention.InterventionInit();
                       await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
-                      Reload();
                     }
+                    Reload();
                   },
 
                   //*********************************
@@ -794,20 +848,389 @@ class _Zones_ZoneState extends State<Zones_Zone> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 4, right: 4),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 290,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 4, right: 4),
+                height: 30,
+                width: 290,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
         )),
       ),
     ]);
   }
+
+  Widget ContentZonePhoto(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 280,
+          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
+          padding: EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: gColors.primary, width: 1),
+            borderRadius: BorderRadius.circular(5),
+            shape: BoxShape.rectangle,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Photo(),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 50,
+          top: 12,
+          child: Container(
+            padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+            color: Colors.white,
+            child: Text(
+              'Photo',
+              style: gColors.bodySaisie_B_G,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+
+  Widget ContentZoneRegle(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 280,
+          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
+          padding: EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: gColors.primary, width: 1),
+            borderRadius: BorderRadius.circular(5),
+            shape: BoxShape.rectangle,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Regles(),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 50,
+          top: 12,
+          child: Container(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            color: Colors.white,
+            child: Text(
+              'Règlementations',
+              style: gColors.bodySaisie_B_G,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget Regles() {
+    String wRegl = "";
+    String wAPSAD = "";
+
+    List<String> listRegl = [
+      "Règle APSAD R1 / Sprinkleurs",
+      "Règle APSAD D2 / Brouillard d'eau",
+      "Règle APSAD R3 / Maintenance colonnes incendies",
+      "Règle APSAD R4 / Extincteurs portatifs et mobiles",
+      "Règle APSAD R5 / RIA et PIA",
+      "Règle APSAD R7  / Détection incendie",
+      "Règle APSAD R12 / Extinction mousse à haut foisonnement",
+      "Règle APSAD R13 / Extinction automatique à gaz",
+      "Règle APSAD R16 / Compartimentage",
+      "Règle APSAD R17 / Désenfumage naturel",
+      "ERT (Etablissement recevant des travailleurs)",
+      "ERP (Etablissement recevant du public)",
+      "IGH (Immeuble de grander hauteur)",
+      "DREAL (Direction régionale de l'environnement, de l'aménagement et du logement)",
+      "Autres",
+    ];
+    List<bool> itemlistApp = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+
+    String ZoneRegl = DbTools.gZone.Zone_Regle!;
+    if (ZoneRegl.isNotEmpty) {
+      itemlistApp = json.decode(ZoneRegl).cast<bool>().toList();
+
+      for (int i = 0; i < itemlistApp.length; i++) {
+        var element = itemlistApp[i];
+        if (element) {
+          wRegl = "$wRegl${wRegl.isNotEmpty ? ", " : ""}${listRegl[i]}";
+        }
+      }
+    }
+
+
+    List<String> listAPSAD = [
+      "APSAD N1 / Sprinkleurs",
+      "APSAD N2 / Brouillard d'eau",
+      "APSAD N3 / Maintenance colonnes incendies",
+      "APSAD N4 / Extincteurs portatifs et mobiles",
+      "APSAD N5 / RIA et PIA",
+      "APSAD N7  / Détection incendie",
+      "APSAD N12 / Extinction mousse à haut foisonnement",
+      "APSAD N13 / Extinction automatique à gaz",
+      "APSAD N16 / Compartimentage",
+      "APSAD N17 / Désenfumage naturel",
+
+    ];
+
+    List<bool> itemlistAPSAD = [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+
+    String ZoneAPSAD = DbTools.gZone.Zone_APSAD!;
+    if (ZoneAPSAD.isNotEmpty) {
+      itemlistAPSAD = json.decode(ZoneAPSAD).cast<bool>().toList();
+
+      for (int i = 0; i < itemlistAPSAD.length; i++) {
+        var element = itemlistAPSAD[i];
+        if (element) {
+          wAPSAD = "$wAPSAD${wAPSAD.isNotEmpty ? ", " : ""}${listAPSAD[i]}";
+        }
+      }
+    }
+
+
+
+    return FocusTraversalGroup(
+        policy: OrderedTraversalPolicy(),
+        child: Expanded(
+            child: Container(
+                child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Regl", Tools, tooltip: "Réglementation"),
+                        Container(
+                          width: 10,
+                        ),
+                        Text(
+                          "Règlementations applicables\nà l'établissement du client",
+                          style: gColors.bodySaisie_N_G,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 280,
+                    height: 75,
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: Text(
+                      wRegl,
+                      style: gColors.bodySaisie_N_G,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "apsad", Tools2, tooltip: "APSAD"),
+                        Container(
+                          width: 10,
+                        ),
+                        Text(
+                          "APSAD",
+                          style: gColors.bodySaisie_N_G,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 280,
+                    height: 75,
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: Text(
+                      wAPSAD,
+                      style: gColors.bodySaisie_N_G,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                  ),
+                ]))));
+  }
+
+  void Tools() async {
+    await ParamZone_Dialog.ParamZone_dialog(context);
+    setState(() {});
+  }
+
+
+  void Tools2() async {
+    await ParamZone_Dialog2.ParamZone_Dialog(context);
+    setState(() {});
+  }
+
+  void onSetState() async {
+    print("Parent onMaj() Relaod()");
+    AlimSaisie();
+  }
+
+
+  Widget Photo() {
+    String wImgPath = "${DbTools.SrvImg}Zone_${DbTools.gZone.ZoneId}.jpg";
+//    print("wImgPath $wImgPath");
+    return Container(
+        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+        child: Row(
+          children: [
+            Tooltip(
+                textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+                decoration: BoxDecoration(color: Colors.orange),
+                message: "Selection fichier photo",
+                child: InkWell(
+                  child: Container(
+                    width: 30,
+                    child: Image.asset("assets/images/ico_Photo.png"),
+                  ),
+                  onTap: () async {
+                    await _startFilePicker(onSetState);
+                  },
+                )),
+            Container(width: 10),
+            DropTarget(
+              onDragDone: (detail) async {
+                setState(() {
+                  _list.addAll(detail.files);
+                });
+                if (detail.files.length > 0) {
+                  var file = _list[0];
+                  print('onDragDone ${file.path} - ${file.name}');
+                  print('onDragDone ${await file.lastModified()} ${await file.length()}  ${file.mimeType}');
+
+                  Uint8List bytes = await file.readAsBytes();
+                  IMG.Image? img = await IMG.decodeImage(bytes);
+                  IMG.Image resized = await IMG.copyResize(img!, width: 940, maintainAspect: true);
+                  List<int> stream2 = await IMG.encodeJpg(resized);
+                  String wPath = DbTools.SrvUrl;
+                  var uri = Uri.parse(wPath.toString());
+                  var request = new http.MultipartRequest("POST", uri);
+                  request.fields.addAll({
+                    'tic12z': DbTools.SrvToken,
+                    'zasq': 'uploadphoto',
+                    'imagepath': "Zone_${DbTools.gZone.ZoneId}.jpg",
+                  });
+
+                  var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream2, filename: "xxx.jpg");
+                  request.files.add(multipartFile);
+                  var response = await request.send();
+                  print(response.statusCode);
+                  response.stream.transform(utf8.decoder).listen((value) {
+                    print("value " + value);
+                    print("Fin");
+                    DbTools.notif.BroadCast();
+                    onSetState();
+                  });
+                }
+              },
+              onDragUpdated: (details) {
+                setState(() {
+                  offset = details.localPosition;
+                });
+              },
+              onDragEntered: (detail) {
+                setState(() {
+                  _dragging = true;
+                  offset = detail.localPosition;
+                });
+              },
+              onDragExited: (detail) {
+                setState(() {
+                  _dragging = false;
+                  offset = null;
+                });
+              },
+              child: (imageisload)
+                  ? wImage
+                  : Container(
+                height: 200,
+                width: 200,
+                color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.black26,
+                child: Stack(
+                  children: [
+                    if (_list.isEmpty) const Center(child: Text("Drop here")) else Text(_list.map((e) => e.path).join("\n")),
+                    if (offset != null)
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          '$offset',
+                          style: gColors.bodySaisie_N_G,
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ));
+  }
+
+  _startFilePicker(VoidCallback onSetState) async {
+    print("UploadFilePicker > Zone_${DbTools.gZone.ZoneId}.jpg");
+    await Upload.UploadFilePicker("Zone_${DbTools.gZone.ZoneId}.jpg", onSetState);
+    print("UploadFilePicker <");
+    print("UploadFilePicker <<");
+  }
+
+
+
 }

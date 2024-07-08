@@ -347,10 +347,18 @@ class _Param_Hab_screenState extends State<Param_Hab_screen> {
           onChanged: (value) {
             GetGrpHab(value!);
           },
-          buttonHeight: 50,
-          buttonWidth: 120,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
+
         ));
   }
 

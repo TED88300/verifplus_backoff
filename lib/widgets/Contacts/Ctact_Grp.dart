@@ -490,10 +490,16 @@ class _Ctact_GrpState extends State<Ctact_Grp> {
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),
             )),
       ),
     ]);

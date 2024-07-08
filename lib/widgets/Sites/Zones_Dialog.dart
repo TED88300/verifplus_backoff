@@ -19,6 +19,9 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
   double screenWidth = 0;
   Future initLib() async {
     await DbTools.getGroupeID(widget.site.Site_GroupeId);
+    await DbTools.getContactClientAdrType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
+
+
     setState(() {});
   }
 
@@ -186,23 +189,58 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
             policy: OrderedTraversalPolicy(),
             child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        gColors.Txt(80, "Site", "${widget.site.Site_Code} ${widget.site.Site_Nom}"),
-                      ],
-                    ),
-                    Container(height: 10),
-                    Row(
-                      children: [
-                        gColors.Txt(80, "Adresse", "${widget.site.Site_Adr1} ${widget.site.Site_CP} ${widget.site.Site_Ville}"),
-                      ],
-                    ),
-                  ],
-                )
+                child:
+
+                Row(children: [
+
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          gColors.Txt(80, "Site", "${widget.site.Site_Code} ${widget.site.Site_Nom}"),
+                        ],
+                      ),
+                      Container(height: 10),
+                      Row(
+                        children: [
+                          gColors.Txt(80, "Adresse", "${widget.site.Site_Adr1} ${widget.site.Site_CP} ${widget.site.Site_Ville}"),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  Container(width: 50),
+
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          gColors.Txt(80, "Contact", "${DbTools.gContact.Contact_Prenom} ${DbTools.gContact.Contact_Nom}"),
+                        ],
+                      ),
+                      Container(height: 10),
+                      Row(
+                        children: [
+                          gColors.Txt(80, "Portable", "${DbTools.gContact.Contact_Tel2}"),
+                        ],
+                      ),
+                      Container(height: 10),
+                      Row(
+                        children: [
+                          gColors.Txt(80, "eMail", "${DbTools.gContact.Contact_eMail}"),
+                        ],
+                      ),
+                    ],
+                  )
+
+                ],)
+
+
+
                 //)
                 ));
   }

@@ -137,7 +137,7 @@ class _NF074_Histo_Normes_screenState extends State<NF074_Histo_Normes_screen> w
                     ),
                     onTap: () async {
                           String wTable = "Histo_Normes";
-                          await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
+                          await Upload.UploadSrvCsvPickerNF74(wTable, onSetStateOn, onSetStateOff);
                           print("iStrfExp B ${iStrfExp}");
                         }
                   ),

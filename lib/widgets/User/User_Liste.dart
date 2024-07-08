@@ -1,16 +1,18 @@
-import 'package:davi/davi.dart';
+import 'dart:convert' show utf8;
+import 'dart:convert';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
-import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
+import 'package:verifplus_backoff/stub_file_picking/platform_file_picker.dart';
+import 'package:verifplus_backoff/stub_file_picking/web_file_picker.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/User/User_Edit.dart';
-
 
 DataGridController dataGridController = DataGridController();
 
@@ -29,22 +31,22 @@ class UserDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     dataGridRows = DbTools.ListUser.map<DataGridRow>((User user) {
-      int wActif = user.User_Actif ? 1 : 0 ;
-      int wIsole = user.User_Niv_Isole ? 1 : 0 ;
+
+      int wActif = user.User_Actif ? 1 : 0;
+      int wIsole = user.User_Niv_Isole ? 1 : 0;
       return DataGridRow(cells: <DataGridCell>[
-        DataGridCell<int>(columnName:     'id'        , value: user.UserID),
-        DataGridCell<int>(columnName:    'actif'     , value: wActif),
-        DataGridCell<String>(columnName:  'matricule' , value: user.User_Matricule),
-        DataGridCell<String>(columnName:  'type'      , value: user.User_TypeUser),
-        DataGridCell<String>(columnName:  'niv'       , value: user.User_NivHab),
-        DataGridCell<int>(columnName:    'isole'     , value: wIsole),
-        DataGridCell<String>(columnName:  'agence'    , value: user.User_Depot ),
-        DataGridCell<String>(columnName:  'nom'       , value: user.User_Nom   ),
-        DataGridCell<String>(columnName:  'prenom'    , value: user.User_Prenom),
-        DataGridCell<String>(columnName:  'cp'        , value: user.User_Cp    ),
-        DataGridCell<String>(columnName:  'ville'     , value: user.User_Ville ),
-        DataGridCell<String>(columnName:  'tel'       , value: user.User_Tel   ),
-        DataGridCell<String>(columnName:  'mail'      , value: user.User_Mail  ),
+        DataGridCell<int>(columnName: 'id', value: user.UserID),
+        DataGridCell<int>(columnName: 'actif', value: wActif),
+        DataGridCell<String>(columnName: 'matricule', value: user.User_Matricule),
+        DataGridCell<String>(columnName: 'fam', value: user.User_Famille),
+        DataGridCell<String>(columnName: 'fonc', value: user.User_Fonction),
+        DataGridCell<String>(columnName: 'agence', value: user.User_Depot),
+        DataGridCell<String>(columnName: 'nom', value: user.User_Nom),
+        DataGridCell<String>(columnName: 'prenom', value: user.User_Prenom),
+        DataGridCell<String>(columnName: 'cp', value: user.User_Cp),
+        DataGridCell<String>(columnName: 'ville', value: user.User_Ville),
+        DataGridCell<String>(columnName: 'tel', value: user.User_Tel),
+        DataGridCell<String>(columnName: 'mail', value: user.User_Mail),
       ]);
     }).toList();
   }
@@ -70,14 +72,13 @@ class UserDataGridSource extends DataGridSource {
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
-      FiltreTools.SfRowBoolint(row, 5, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 7, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -91,30 +92,28 @@ class UserDataGridSource extends DataGridSource {
 //*********************************************************************
 //*********************************************************************
 
-
 class User_Liste extends StatefulWidget {
   @override
   User_ListeState createState() => User_ListeState();
 }
 
-class User_ListeState extends State<User_Liste> {
-
+class User_ListeState extends State<User_Liste> with TickerProviderStateMixin {
+  bool iStrfExp = false;
+  late AnimationController acontroller;
 
   List<double> dColumnWidth = [
     80,
-    120,
-    140,
-    150,
-    150,
-    120,
-    150,
-    150,
+    110,
+    135,
+    125,
+    190,
+    200,
+    200,
     160,
     100,
-    170,
+    240,
     120,
-    170,
-
+    230,
   ];
 
   UserDataGridSource userDataGridSource = UserDataGridSource();
@@ -127,116 +126,65 @@ class User_ListeState extends State<User_Liste> {
 
   List<GridColumn> getColumns() {
     return <GridColumn>[
-      FiltreTools.SfGridColumn('id'       , 'Id'       , dColumnWidth[0 ], dColumnWidth[0], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('actif'    , 'Actif'    , dColumnWidth[1 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('matricule', 'Matricule', dColumnWidth[2 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('type'     , 'Type'     , dColumnWidth[3 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('niv'      , 'Niv'      , dColumnWidth[4 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('isole'    , 'Isole'    , dColumnWidth[5 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence'   , 'Agence'   , dColumnWidth[6 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('nom'      , 'Nom'      , dColumnWidth[7 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('prenom'   , 'Prenom'   , dColumnWidth[8 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('cp'       , 'Cp'       , dColumnWidth[9 ], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ville'    , 'Ville'    , dColumnWidth[10], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('tel'      , 'Tel'      , dColumnWidth[11], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('mail'     , 'Mail'     , dColumnWidth[12], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'Id', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('actif', 'Actif', dColumnWidth[1], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('matricule', 'Matricule', dColumnWidth[2], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('fam', 'Famille', dColumnWidth[3], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('fonc', 'Fonction', dColumnWidth[4], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Nom', dColumnWidth[6], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('prenom', 'Prenom', dColumnWidth[7], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[8], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[9], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('tel', 'Tel', dColumnWidth[10], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('mail', 'Mail', dColumnWidth[11], 160, Alignment.centerLeft),
     ];
   }
 
-  List<GridTableSummaryRow> getGridTableSummaryRow()
-  {
-    return
-      [      GridTableSummaryRow(
+  List<GridTableSummaryRow> getGridTableSummaryRow() {
+    return [
+      GridTableSummaryRow(
           color: gColors.secondary,
           showSummaryInRow: false,
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,
           columns: [
-            GridSummaryColumn(
-                name: 'Count',
-                columnName: 'id',
-                summaryType: GridSummaryType.count),
+            GridSummaryColumn(name: 'Count', columnName: 'id', summaryType: GridSummaryType.count),
           ],
           position: GridTableSummaryRowPosition.bottom),
-      ];
+    ];
   }
 
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
-           if (args.column.columnName ==      'id' )             dColumnWidth[0] = args.width;
-           else if (args.column.columnName == 'actif'    )       dColumnWidth[1 ] = args.width;
-           else if (args.column.columnName == 'matricule')       dColumnWidth[2 ] = args.width;
-           else if (args.column.columnName == 'type'     )       dColumnWidth[3 ] = args.width;
-           else if (args.column.columnName == 'niv'      )       dColumnWidth[4 ] = args.width;
-           else if (args.column.columnName == 'isole'    )       dColumnWidth[5 ] = args.width;
-           else if (args.column.columnName == 'agence'   )       dColumnWidth[6 ] = args.width;
-           else if (args.column.columnName == 'nom'      )       dColumnWidth[7 ] = args.width;
-           else if (args.column.columnName == 'prenom'   )       dColumnWidth[8 ] = args.width;
-           else if (args.column.columnName == 'cp'       )       dColumnWidth[9 ] = args.width;
-           else if (args.column.columnName == 'ville'    )       dColumnWidth[10] = args.width;
-           else if (args.column.columnName == 'tel'      )       dColumnWidth[11] = args.width;
-           else if (args.column.columnName == 'mail'     )       dColumnWidth[12] = args.width;
-
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
+      else if (args.column.columnName == 'actif')
+        dColumnWidth[1] = args.width;
+      else if (args.column.columnName == 'matricule')
+        dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'fam')
+        dColumnWidth[3] = args.width;
+      else if (args.column.columnName == 'fonc')
+        dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'agence')
+        dColumnWidth[5] = args.width;
+      else if (args.column.columnName == 'nom')
+        dColumnWidth[6] = args.width;
+      else if (args.column.columnName == 'prenom')
+        dColumnWidth[7] = args.width;
+      else if (args.column.columnName == 'cp')
+        dColumnWidth[8] = args.width;
+      else if (args.column.columnName == 'ville')
+        dColumnWidth[9] = args.width;
+      else if (args.column.columnName == 'tel')
+        dColumnWidth[10] = args.width;
+      else if (args.column.columnName == 'mail') dColumnWidth[11] = args.width;
     });
   }
 
-
   Future Reload() async {
     await DbTools.getUserAll();
-
-
-    for (int j = 0; j < DbTools.ListParam_ParamAll.length; j++) {
-    Param_Param param = DbTools.ListParam_ParamAll[j];
-      if (param.Param_Param_Type.compareTo("NivHab") == 0) {
-        print("NivHab ${param.Param_ParamId} ${param.Param_Param_ID}");
-      }
-    }
-
-    for (int j = 0; j < DbTools.ListParam_ParamAll.length; j++) {
-      Param_Param param = DbTools.ListParam_ParamAll[j];
-      if (param.Param_Param_Type.compareTo("TypeUser") == 0) {
-        print("TypeUser ${param.Param_ParamId} ${param.Param_Param_ID}");
-      }
-    }
-
-    for (int i = 0; i < DbTools.ListUser.length; i++) {
-
-        DbTools.ListUser[i].User_NivHab = "???";
-
-      //      print("wUser.User_NivHabID ${wUser.User_NivHabID} ${DbTools.ListParam_Param.length}");
-      for (int j = 0; j < DbTools.ListParam_ParamAll.length; j++) {
-        Param_Param param = DbTools.ListParam_ParamAll[j];
-        if (param.Param_Param_Type.compareTo("NivHab") == 0) {
-//          print("param.Param_ParamId ${param.Param_ParamId}");
-          if (param.Param_ParamId == DbTools.ListUser[i].User_NivHabID) {
-            DbTools.ListUser[i].User_NivHab = param.Param_Param_ID;
-            break;
-          }
-        }
-      }
-    };
-
-
-    for (int i = 0; i < DbTools.ListUser.length; i++) {
-
-
-      DbTools.ListUser[i].User_TypeUser = "???";
-
-
-      //      print("wUser.User_TypeUserID ${wUser.User_TypeUserID} ${DbTools.ListParam_Param.length}");
-      for (int j = 0; j < DbTools.ListParam_ParamAll.length; j++) {
-        Param_Param param = DbTools.ListParam_ParamAll[j];
-        if (param.Param_Param_Type.compareTo("TypeUser") == 0) {
-//          print("param.Param_ParamId ${param.Param_ParamId}");
-          if (param.Param_ParamId == DbTools.ListUser[i].User_TypeUserID) {
-            DbTools.ListUser[i].User_TypeUser = param.Param_Param_ID;
-            break;
-          }
-        }
-      }
-    };
-
-
 
 
     await userDataGridSource.handleRefresh();
@@ -253,12 +201,26 @@ class User_ListeState extends State<User_Liste> {
   void initState() {
     super.initState();
     initLib();
+    acontroller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        //print("setSt 2");
+        setState(() {});
+      });
+    acontroller.repeat(reverse: true);
+    acontroller.stop();
+  }
+
+  @override
+  void dispose() {
+    acontroller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return
-      UserGridWidget();
+    return UserGridWidget();
   }
 
   //********************************************
@@ -279,21 +241,18 @@ class User_ListeState extends State<User_Liste> {
                 ),
                 child: SfDataGrid(
                   //*********************************
-
-
                   onFilterChanged: (DataGridFilterChangeDetails details) {
                     countfilterConditions = userDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                     setState(() {});
                   },
-                  onCellTap: (DataGridCellTapDetails details) async{
+                  onCellTap: (DataGridCellTapDetails details) async {
                     wColSel = details.rowColumnIndex.columnIndex;
-                   wRowSel = details.rowColumnIndex.rowIndex;
-                if (wRowSel == 0) return;
+                    wRowSel = details.rowColumnIndex.rowIndex;
+                    if (wRowSel == 0) return;
                     DataGridRow wDataGridRow = userDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
                     Selindex = userDataGridSource.dataGridRows.indexOf(wDataGridRow);
-                    if (wColSel == 0)
-                    {
+                    if (wColSel == 0) {
                       SelUser = dataGridController.selectedIndex;
                       DbTools.gUser = DbTools.ListUser[Selindex];
                       print(" REM onSelectionChanged  SelUser ${SelUser} SelUser ${SelUser} gUser ${DbTools.gUser.UserID}");
@@ -341,10 +300,57 @@ class User_ListeState extends State<User_Liste> {
             Row(
               children: [
                 CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
+                iStrfExp
+                    ? CircularProgressIndicator(
+                        value: acontroller.value,
+                        semanticsLabel: 'Circular progress indicator',
+                      )
+                    : InkWell(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 8,
+                            ),
+                            Icon(
+                              Icons.file_open,
+                              color: Colors.red,
+                              size: 24.0,
+                            ),
+                            Container(
+                              width: 8,
+                            ),
+                            Text(
+                              "Export Users sur serveur",
+                              style: gColors.bodySaisie_N_G,
+                            )
+                          ],
+                        ),
+                        onTap: () async {
+                          ImportUser(
+                            context,
+                          );
+                        }),
               ],
             ),
           ],
         ));
+  }
+
+  void onSetStateOn() async {
+    setState(() {
+      acontroller.forward();
+      acontroller.repeat(reverse: true);
+      iStrfExp = true;
+    });
+  }
+
+  void onSetStateOff() async {
+    setState(() {
+      acontroller.stop();
+      iStrfExp = false;
+    });
+
+    Reload();
   }
 
   void ToolsBarSupprFilter() async {
@@ -353,79 +359,137 @@ class User_ListeState extends State<User_Liste> {
     setState(() {});
   }
 
-
-  Widget UserGridWidgetvp() {
-    List<DaviColumn<User>> wColumns = [
-      new DaviColumn(
-          name: 'Id',
-          width: 60,
-          stringValue: (row) => "${row.UserID}"
-              ""),
-      new DaviColumn(
-          name: 'Actif',
-          width: 50,
-          cellBuilder: (BuildContext context, DaviRow<User> row) {
-            return Checkbox(
-              checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                return gColors.primary;
-              }),
-              value: row.data.User_Actif,
-              onChanged: (bool? value) {},
-            );
-          }),
-
-      //cellBuilder: (context, row) =>  Checkbox(checkColor: Colors.red, value: row.data.User_Actif),),
-
-      new DaviColumn(name: 'Matricule', width: 90, stringValue: (row) => "${row.User_Matricule}"),
-      new DaviColumn(name: 'Type', width: 100, stringValue: (row) => row.User_TypeUser),
-      new DaviColumn(name: 'Niveau', width: 90, stringValue: (row) => row.User_NivHab),
-
-      new DaviColumn(name: 'Isolé', width: 50, cellBuilder: (BuildContext context, DaviRow<User> row) {
-            return Checkbox(checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                return gColors.primary;
-              }),
-              value: row.data.User_Niv_Isole,
-              onChanged: (bool? value) {},
-            );       }),
-
-      new DaviColumn(name: 'Agence', grow: 18, stringValue: (row) => "${row.User_Depot}"),
-      new DaviColumn(name: 'Nom', grow: 18, stringValue: (row) => "${row.User_Nom}"),
-      new DaviColumn(name: 'Prénom', grow: 18, stringValue: (row) => "${row.User_Prenom}"),
-      new DaviColumn(name: 'Code postal', stringValue: (row) => "${row.User_Cp}"),
-      new DaviColumn(name: 'Ville', grow: 18, stringValue: (row) => "${row.User_Ville}"),
-      new DaviColumn(name: 'Tel', grow: 6, stringValue: (row) => "${row.User_Tel}"),
-      new DaviColumn(name: 'Mail', grow: 8, stringValue: (row) => "${row.User_Mail}"),
-    ];
-
-    print("Param_GammeGridWidget");
-    DaviModel<User>? _model;
-
-    _model = DaviModel<User>(rows: DbTools.ListUser, columns: wColumns);
-
-    return new DaviTheme(
-        child: new Davi<User>(
-          _model,
-          visibleRowsCount: 32,
-          onRowTap: (User) => _onRowTap(context, User),
-        ),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, expandableName: false),
-          cell: CellThemeData(
-            contentHeight: 24,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
-        ));
-  }
-
 //**********************************
 //**********************************
 //**********************************
 
-  void _onRowTap(BuildContext context, User user) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => User_Edit(user: user)));
-    Reload();
+  void ImportUser(
+    BuildContext context,
+  ) async {
+    List<User> ListUser = [];
+    ListUser.addAll(DbTools.ListUser);
+
+    String wTable = "Users";
+    await PlatformFilePicker().startWebCsvPicker((files) async {
+      onSetStateOn();
+
+      if (files.length == 1) {
+        FlutterWebFile file = files.first;
+///        print("ImportUser " + file.file.name);
+
+        List<int> input = file.fileBytes;
+        String convertedValue = utf8.decode(input);
+        List<List<dynamic>> rowsAsListOfValues = const CsvToListConverter(eol: "\r\n", fieldDelimiter: ";", shouldParseNumbers: false).convert(convertedValue);
+
+        String wSql1 = "INSERT INTO $wTable (";
+
+        List<dynamic> Titre = rowsAsListOfValues[0];
+//        print("Titre " + Titre.toString());
+        for (int j = 0; j < Titre.length; j++) {
+          String Champs = Titre[j];
+          if (j > 0) wSql1 += ",";
+          String wChamps = Champs.substring(1);
+          wSql1 += wChamps;
+        }
+        wSql1 += ") VALUES";
+//        print("wSql1 " + wSql1.toString());
+
+        for (int i = 1; i < rowsAsListOfValues.length; i++) {
+          List<dynamic> Ligne = rowsAsListOfValues[i];
+          String wSql2 = "";
+          if (i > 1) wSql2 += ",";
+          wSql2 += " (";
+//          print("Ligne " + Ligne.toString());
+          for (int j = 0; j < Ligne.length; j++) {
+            String Champs = Ligne[j];
+            if (j > 0) wSql2 += ",";
+            if (Titre[j].substring(0, 1) == "s") {
+              wSql2 += "\"$Champs\"";
+            } else {
+              wSql2 += Champs;
+            }
+          }
+          wSql2 += ")";
+          wSql1 += wSql2;
+        }
+        wSql1 += ";";
+
+//        print("" + wSql1.toString());
+
+
+        String wSql = "TRUNCATE $wTable";
+        bool ret = await DbTools.add_API_Post("upddel", wSql);
+        ret = await DbTools.add_API_Post("upddel", wSql1);
+
+        await DbTools.getUserAll();
+        List<String> wListFam = [];
+        List<String> wListFonc = [];
+        List<String> wListServ = [];
+
+      for (int i = 0; i < DbTools.ListUser.length; i++) {
+          User wUser = DbTools.ListUser[i];
+          print("wUser.User_Matricule ${wUser.User_Matricule} ${wUser.User_Nom}");
+          for (int j = 0; j < ListUser.length; j++) {
+            User wUservp = ListUser[j];
+
+            print("           wUservp.User_Matricule ${wUservp.User_Matricule}");
+
+            if (wUser.User_Matricule == wUservp.User_Matricule)
+              {
+                wUser.User_PassWord = wUservp.User_PassWord;
+                DbTools.setUser(wUser);
+                break;
+              }
+          }
+
+          if (!wListFam.contains(wUser.User_Famille))
+            {
+              wListFam.add(wUser.User_Famille);
+            }
+          if (!wListFonc.contains(wUser.User_Fonction))
+          {
+            wListFonc.add(wUser.User_Fonction);
+          }
+          if (!wListServ.contains(wUser.User_Service))
+          {
+            wListServ.add(wUser.User_Service);
+          }
+      }
+
+
+        wSql = "Delete FROM Param_Param  Where Param_Param.Param_Param_Type = 'Type_Famille';";
+        ret = await DbTools.add_API_Post("upddel", wSql);
+        for (int j = 0; j < wListFam.length; j++) {
+          print("wListFam ${wListFam[j]}");
+          wSql = "INSERT INTO Param_Param (Param_ParamId, Param_Param_Type, Param_Param_ID, Param_Param_Text) VALUES (NULL, 'Type_Famille', \"${wListFam[j]}\", \"${wListFam[j]}\")";
+          ret = await DbTools.add_API_Post("upddel", wSql);
+        }
+
+
+        wSql = "Delete FROM Param_Param  Where Param_Param.Param_Param_Type = 'Type_Fonction';";
+        ret = await DbTools.add_API_Post("upddel", wSql);
+        for (int j = 0; j < wListFonc.length; j++) {
+          print("wListFonc ${wListFonc[j]}");
+          wSql = "INSERT INTO Param_Param (Param_ParamId, Param_Param_Type, Param_Param_ID, Param_Param_Text) VALUES (NULL, 'Type_Fonction', \"${wListFonc[j]}\", \"${wListFonc[j]}\")";
+          ret = await DbTools.add_API_Post("upddel", wSql);
+        }
+
+        wSql = "Delete FROM Param_Param  Where Param_Param.Param_Param_Type = 'Type_Service';";
+        ret = await DbTools.add_API_Post("upddel", wSql);
+        for (int j = 0; j < wListServ.length; j++) {
+          print("wListServ ${wListServ[j]}");
+          wSql = "INSERT INTO Param_Param (Param_ParamId, Param_Param_Type, Param_Param_ID, Param_Param_Text) VALUES (NULL, 'Type_Service', \"${wListServ[j]}\", \"${wListServ[j]}\")";
+          ret = await DbTools.add_API_Post("upddel", wSql);
+        }
+
+
+
+
+
+
+
+        onSetStateOff();
+      }
+    });
   }
 }

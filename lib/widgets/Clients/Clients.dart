@@ -35,7 +35,6 @@ print("ListParam_FiltreFamID ${ListParam_FiltreFamID.toString()}");
         DataGridCell<String>(columnName: 'code', value: client.Client_CodeGC),
         DataGridCell<bool>(columnName: 'contrat', value: client.Client_Contrat),
         DataGridCell<String>(columnName: 'statut', value: client.Client_Statut),
-        DataGridCell<String>(columnName: 'forme', value: client.Client_Civilite),
         DataGridCell<String>(columnName: 'nom', value: client.Client_Nom),
         DataGridCell<String>(columnName: 'agence', value: client.Client_Depot),
         DataGridCell<String>(columnName: 'famille', value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
@@ -43,6 +42,8 @@ print("ListParam_FiltreFamID ${ListParam_FiltreFamID.toString()}");
         DataGridCell<String>(columnName: 'cp', value: client.Adresse_CP),
         DataGridCell<String>(columnName: 'ville', value: client.Adresse_Ville),
         DataGridCell<String>(columnName: 'pays', value: client.Adresse_Pays),
+        DataGridCell<String>(columnName: 'cpL', value: client.Adresse_CP_Livr),
+        DataGridCell<String>(columnName: 'villeL', value: client.Adresse_Ville_Livr),
       ]);
     }).toList();
   }
@@ -74,6 +75,7 @@ print("ListParam_FiltreFamID ${ListParam_FiltreFamID.toString()}");
       FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -109,7 +111,6 @@ class Clients_screenState extends State<Clients_screen> {
     110,
     90,
     115,
-    115,
     400,
     180,
     250,
@@ -117,6 +118,8 @@ class Clients_screenState extends State<Clients_screen> {
     95,
     250,
     120,
+    95,
+    250,
   ];
 
 //  ClientInfoDataGridSource clientInfoDataGridSource = ClientInfoDataGridSource();
@@ -135,14 +138,15 @@ class Clients_screenState extends State<Clients_screen> {
       FiltreTools.SfGridColumn('code', 'Cd',                dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
       FiltreTools.SfGridColumn('contrat', 'Ct',             dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
       FiltreTools.SfGridColumn('statut', 'St',              dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('forme', 'Forme',            dColumnWidth[4], dColumnWidth[4], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('nom', 'Raison Social',      dColumnWidth[5], dColumnWidth[5], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence', 'Agence',          dColumnWidth[6], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('famille', 'Famille',        dColumnWidth[7], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('commercial', 'Collaborateur',  dColumnWidth[8], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('cp', 'Cp',                  dColumnWidth[9], dColumnWidth[9], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ville', 'Ville',            dColumnWidth[10], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('pays', 'Pays',              dColumnWidth[11], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Raison Social',      dColumnWidth[4], dColumnWidth[5], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence',          dColumnWidth[5], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('famille', 'Famille',        dColumnWidth[6], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('commercial', 'Collaborateur',  dColumnWidth[7], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp',                  dColumnWidth[8], dColumnWidth[9], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville Fact',            dColumnWidth[9], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('pays', 'Pays',              dColumnWidth[10], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cpL', 'Cp',                  dColumnWidth[8], dColumnWidth[9], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('villeL', 'Ville Livr',            dColumnWidth[9], 160, Alignment.centerLeft),
     ];
   }
 
@@ -168,7 +172,6 @@ class Clients_screenState extends State<Clients_screen> {
       else if (args.column.columnName == 'code')        dColumnWidth[1] = args.width;
       else if (args.column.columnName == 'contrat')     dColumnWidth[2] = args.width;
       else if (args.column.columnName == 'statut')      dColumnWidth[3] = args.width;
-      else if (args.column.columnName == 'forme')       dColumnWidth[4] = args.width;
       else if (args.column.columnName == 'nom')         dColumnWidth[5] = args.width;
       else if (args.column.columnName == 'agence')      dColumnWidth[6] = args.width;
       else if (args.column.columnName == 'famille')     dColumnWidth[7] = args.width;
@@ -176,16 +179,20 @@ class Clients_screenState extends State<Clients_screen> {
       else if (args.column.columnName == 'cp')          dColumnWidth[9] = args.width;
       else if (args.column.columnName == 'ville')       dColumnWidth[10] = args.width;
       else if (args.column.columnName == 'pays')        dColumnWidth[11] = args.width;
+      else if (args.column.columnName == 'cpL')          dColumnWidth[9] = args.width;
+      else if (args.column.columnName == 'villeL')       dColumnWidth[10] = args.width;
     });
   }
 
   Future Reload() async {
     await DbTools.getParam_ParamFam("FamClient");
 
+    print("gUserLoginTypeUser ${DbTools.gUserLoginTypeUser}");
+
     if (DbTools.gUserLoginTypeUser.contains("Admin"))
       await DbTools.getClientAll();
     else
-      await DbTools.getClient_User_CSIP(DbTools.gUserLogin.UserID);
+      await DbTools.getClient_User_CSIP(DbTools.gUserLogin.User_Matricule);
 
     await Filtre();
   }
@@ -196,6 +203,7 @@ class Clients_screenState extends State<Clients_screen> {
     print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
 
     if (Search_TextController.text.isEmpty) {
+      print("_buildFieldTextSearch Filtre ${DbTools.ListClient.length}");
       DbTools.ListClientsearchresult.addAll(DbTools.ListClient);
     } else {
       print("_buildFieldTextSearch liste ${Search_TextController.text}");

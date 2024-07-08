@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,9 +99,6 @@ class gColors {
     isDense: true,
     contentPadding: EdgeInsets.fromLTRB(8, 12, 0, 12),
   );
-
-
-
 
   static Widget wPlutoMenuBar = PlutoMenuBar(
     mode: PlutoMenuBarMode.tap,
@@ -313,14 +311,13 @@ class gColors {
       alertElevation: 20,
       alertAlignment: Alignment.center);
 
-
   static Widget wWidgetImage = Container();
 
   static Future<Widget> wBoxDecoration() async {
     Uint8List pic = Uint8List.fromList([0]);
     late ImageProvider wImage;
 
-    String wUserImgPath = "${DbTools.SrvImg}User_${DbTools.gUserLogin.UserID}.jpg";
+    String wUserImgPath = "${DbTools.SrvImg}User_${DbTools.gUserLogin.User_Matricule}.jpg";
     pic = await gColors.networkImageToByte(wUserImgPath);
     print("pic $wUserImgPath $pic");
     if (pic.length > 0) {
@@ -337,19 +334,9 @@ class gColors {
     );
   }
 
-
-  static Widget gCircle(Color wColor)  {
-    return  Container(
-    width: 20,
-    height: 20,
-    decoration: BoxDecoration(
-    color: wColor,
-    shape: BoxShape.circle
-    ));
+  static Widget gCircle(Color wColor) {
+    return Container(width: 20, height: 20, decoration: BoxDecoration(color: wColor, shape: BoxShape.circle));
   }
-
-
-
 
   static Map<int, Color> getSwatch(Color color) {
     final hslColor = HSLColor.fromColor(color);
@@ -381,13 +368,11 @@ class gColors {
         fontWeight: FontWeight.bold,
       );
 
-
   static TextStyle get bodyTitle1_B_B => TextStyle(
-    color: primary,
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-  );
-
+        color: primary,
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+      );
 
   static TextStyle get bodyTitle1_B_W => TextStyle(
         color: white,
@@ -768,18 +753,18 @@ class gColors {
     wDate = wDate.replaceRange(
       0,
       1,
-      wDate.substring(0,1).toUpperCase(),
+      wDate.substring(0, 1).toUpperCase(),
     );
     return InkWell(
-      child:
-      Row(children: [
-        Text(
-        "${wDate}",
-        style: gColors.bodySaisie_N_W,
+      child: Row(
+        children: [
+          Text(
+            "${wDate}",
+            style: gColors.bodySaisie_N_W,
+          ),
+          Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
+        ],
       ),
-        Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0), height: 40, width: 40, child: DbTools.wBoxDecoration(context)),
-
-      ],),
       onTap: () {
         AffUser(context);
       },
@@ -835,6 +820,102 @@ class gColors {
                         Text('Type : '),
                         Spacer(),
                         Text(DbTools.gUserLoginTypeUser),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                Text(DbTools.gVersion,
+                    style: TextStyle(
+                      fontSize: 12,
+                    )),
+                Container(
+                  width: 90,
+                ),
+                ElevatedButton(
+                  child: Text(
+                    "OK",
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ));
+  }
+
+  static AffUser_Mat(BuildContext context) async {
+    Uint8List pic = Uint8List.fromList([0]);
+
+    String wUserImg = "User_${DbTools.gUser.User_Matricule}.jpg";
+
+    pic = await gColors.getImage(wUserImg);
+    late ImageProvider wImage;
+    if (pic.length > 0) {
+      wImage = MemoryImage(pic);
+    }
+
+    return showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+              title: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    image: DecorationImage(image: wImage, fit: BoxFit.fill),
+                    color: Colors.white,
+//        shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Container(color: Colors.grey, height: 1.0),
+                SizedBox(height: 8.0),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Text(
+                    "Collaborateur",
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+              ]),
+              content: Container(
+                height: 120,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text('N° matricule : '),
+                        Spacer(),
+                        Text(DbTools.gUser.User_Matricule),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Prénom : '),
+                        Spacer(),
+                        Text(DbTools.gUser.User_Prenom),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Nom : '),
+                        Spacer(),
+                        Text(DbTools.gUser.User_Nom),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('Type : '),
+                        Spacer(),
+                        Text(DbTools.gUser.User_TypeUser),
                       ],
                     ),
                   ],
@@ -1096,7 +1177,6 @@ class gColors {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: [
         Container(
           width: lWidth,
@@ -1110,13 +1190,12 @@ class gColors {
           style: gColors.bodySaisie_N_B,
         ),
         Container(
-           width:  tWidth > 0 ? tWidth : null,
+          width: tWidth > 0 ? tWidth : null,
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
           child: Text(
             "$wValue",
             style: gColors.bodySaisie_B_B,
             overflow: tWidth > 0 ? TextOverflow.ellipsis : TextOverflow.clip,
-
           ),
         ),
       ],
@@ -1127,7 +1206,6 @@ class gColors {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: [
         Container(
           width: lWidth,
@@ -1141,26 +1219,20 @@ class gColors {
           style: gColors.bodyTitle1_B_Gr,
         ),
         Container(
-          width:  tWidth > 0 ? tWidth : null,
+          width: tWidth > 0 ? tWidth : null,
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
           child: Text(
             "$wValue",
             style: gColors.bodyTitle1_N_Gr,
             overflow: tWidth > 0 ? TextOverflow.ellipsis : TextOverflow.clip,
-
           ),
         ),
       ],
     );
   }
 
-
   static Widget TxtColumn(double lWidth, String wLabel, String wValue) {
-
-    return
-
-
-        Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1168,29 +1240,26 @@ class gColors {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Container(
-            width: lWidth,
-            child: Text(
-              wLabel,
-              style: gColors.bodySaisie_N_G,
+            Container(
+              width: lWidth,
+              child: Text(
+                wLabel,
+                style: gColors.bodySaisie_N_G,
+              ),
             ),
-          ),
-          Text(
-            " : ",
-            style: gColors.bodySaisie_N_B,
-          ),
-
-        ],),
-         Text(
-            "$wValue",
-            style: gColors.bodySaisie_B_B,
-          ),
-
+            Text(
+              " : ",
+              style: gColors.bodySaisie_N_B,
+            ),
+          ],
+        ),
+        Text(
+          "$wValue",
+          style: gColors.bodySaisie_B_B,
+        ),
       ],
     );
   }
-
-
 
   static Widget CheckBoxField(double lWidth, double wWidth, String wLabel, bool initValue, Function(bool? boolValue) onChanged) {
     return Container(
@@ -1248,8 +1317,6 @@ class gColors {
     );
   }
 
-
-
   static Widget DropdownButtonFam(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistparamParamfam, List<String> wlistparamParamfamid) {
     if (wlistparamParamfam.length == 0) return Container();
 
@@ -1293,10 +1360,16 @@ class gColors {
             initValue = value as String;
             onChanged(initValue);
           },
-          buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-          buttonHeight: 30,
-          dropdownMaxHeight: 800,
-          itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            height: 30,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 800,
+          ),
         )),
       ),
     ]);
@@ -1344,17 +1417,22 @@ class gColors {
             initValue = value as String;
             onChanged(initValue);
           },
-          buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-          buttonHeight: 30,
-          dropdownMaxHeight: 800,
-          itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            height: 30,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 800,
+          ),
         )),
       ),
     ]);
   }
 
   static Widget DropdownButtonTypeInter(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
-
     print("ListeOrg wlistTypeinter ${wlistTypeinter.length} ${wlistTypeinterid.length}");
 
     if (wlistTypeinter.length == 0) return Container();
@@ -1367,7 +1445,6 @@ class gColors {
               ),
             ))
         .toList();
-
 
     print("ListeOrg wlistTypeinter.indexOf(initValue) ${initValue} ${wlistTypeinter.indexOf(initValue)}");
 
@@ -1402,9 +1479,15 @@ class gColors {
             initValue = value as String;
             onChanged(initValue);
           },
-          buttonHeight: 30,
-          dropdownMaxHeight: 800,
-          itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+            height: 30,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 800,
+          ),
         )),
       ),
     ]);
@@ -1423,7 +1506,11 @@ class gColors {
             ))
         .toList();
 
-    if (wlistTypeinter.indexOf(initValue) < 0) return Container();
+    if (wlistTypeinter.indexOf(initValue) < 0) {
+      print("initValue Not in");
+
+      return Container();
+    }
 
     String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
 
@@ -1442,34 +1529,135 @@ class gColors {
               padding: EdgeInsets.fromLTRB(0, 6, 0, 0),
               width: wWidth,
               child: Text(
-                " : ",
+                ":",
                 style: gColors.bodySaisie_N_G,
               ),
             ),
       Container(
         child: DropdownButtonHideUnderline(
-            child: DropdownButton2(
-          items: dropdownlist,
-          value: initValue,
-          onChanged: (value) {
-            String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
-            initValue = value as String;
-            onChanged(initValue);
-          },
-          buttonHeight: 30,
-          dropdownMaxHeight: 800,
-          itemHeight: 32,
-        )),
+          child: DropdownButton2(
+            items: dropdownlist,
+            value: initValue,
+            onChanged: (value) {
+              String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
+              initValue = value as String;
+              onChanged(initValue);
+            },
+            buttonStyleData: const ButtonStyleData(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              height: 30,
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              height: 32,
+            ),
+            dropdownStyleData: DropdownStyleData(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              maxHeight: 800,
+            ),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  static Widget DropdownButtonTypeInterC2(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
+    if (wlistTypeinter.length == 0) return Container();
+
+    print("$wLabel |$initValue| ${initValue.isEmpty}");
+
+    List<DropdownMenuItem> dropdownlist = wlistTypeinter
+        .map((item) => DropdownMenuItem<String>(
+              value: item,
+              child: Text(
+                "$item",
+                style: gColors.bodySaisie_B_B,
+              ),
+            ))
+        .toList();
+
+    List<DropdownMenuItem> selectedlist = wlistTypeinter
+        .map((item) => DropdownMenuItem<String>(
+              value: item,
+              child: initValue.trim().isEmpty
+                  ? Container(width: 220)
+                  : Container(
+                      width: 220,
+                      padding: EdgeInsets.fromLTRB(8, 3, 8, 3),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: gColors.primary, width: 1),
+                        borderRadius: BorderRadius.circular(16),
+                        shape: BoxShape.rectangle,
+                        color: gColors.primary,
+                      ),
+                      child: Text(
+                        "$item",
+                        style: gColors.bodySaisie_B_W,
+                      ),
+                    ),
+            ))
+        .toList();
+
+    if (wlistTypeinter.indexOf(initValue) < 0) {
+      print("initValue Not in");
+
+      return Container();
+    }
+
+    String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
+
+    double wPad = 15;
+    return Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Container(
+        padding: EdgeInsets.fromLTRB(0, wPad, 0, wPad),
+        width: lWidth,
+        child: Text(
+          wLabel,
+          style: gColors.bodySaisie_N_G,
+        ),
+      ),
+      wWidth == 0
+          ? Container()
+          : Container(
+              padding: EdgeInsets.fromLTRB(0, wPad, 0, wPad),
+              width: wWidth,
+              child: Text(
+                ":",
+                style: gColors.bodySaisie_N_G,
+              ),
+            ),
+      Container(
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton2(
+            items: dropdownlist,
+            value: initValue,
+            selectedItemBuilder: (BuildContext context) {
+              return selectedlist;
+            },
+            onChanged: (value) {
+              String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
+              initValue = value as String;
+              onChanged(initValue);
+            },
+            buttonStyleData: const ButtonStyleData(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              height: 30,
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              height: 32,
+            ),
+            dropdownStyleData: DropdownStyleData(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              maxHeight: 800,
+            ),
+          ),
+        ),
       ),
     ]);
   }
 
   static Widget DropdownButtonMission(String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
-    print("DropdownButtonTypeInter ${wlistTypeinter.length}");
-    print("DropdownButtonTypeInter initValue $initValue");
-    print("DropdownButtonTypeInter wList_TypeInter ${wlistTypeinter.toString()}");
-    print("DropdownButtonTypeInter wList_TypeInterID ${wlistTypeinterid.toString()}");
-
     if (wlistTypeinter.length == 0) return Container();
 
     List<DropdownMenuItem> dropdownlist = wlistTypeinter
@@ -1478,6 +1666,19 @@ class gColors {
               child: Text(
                 "$item",
                 style: gColors.bodySaisie_B_B,
+              ),
+            ))
+        .toList();
+
+    List<DropdownMenuItem> selectedlist = wlistTypeinter
+        .map((item) => DropdownMenuItem<String>(
+              value: item,
+              child: Container(
+                width: 220,
+                child: Text(
+                  "$item",
+                  style: gColors.bodySaisie_B_B,
+                ),
               ),
             ))
         .toList();
@@ -1492,14 +1693,23 @@ class gColors {
             child: DropdownButton2(
           items: dropdownlist,
           value: initValue,
+          selectedItemBuilder: (BuildContext context) {
+            return selectedlist;
+          },
           onChanged: (value) {
             String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
             initValue = value as String;
             onChanged(initValue);
           },
-          buttonHeight: 30,
-          dropdownMaxHeight: 800,
-          itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+            height: 30,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 800,
+          ),
         )),
       ),
     ]);
@@ -1569,13 +1779,11 @@ class gColors {
     Color wColor = Colors.transparent;
     for (int p = 0; p < DbTools.ListParam_Param_Status_Interv.length; p++) {
       Param_Param wParam_Param = DbTools.ListParam_Param_Status_Interv[p];
-      if (wParam_Param.Param_Param_ID == Status)
-      {
+      if (wParam_Param.Param_Param_ID == Status) {
         wColor = gColors.getColor(wParam_Param.Param_Param_Color);
         break;
       }
     }
-
 
     return wColor;
   }

@@ -297,18 +297,24 @@ class Articles_Ebp_Link_VerifState extends State<Articles_Ebp_Link_Verif> {
                   Filtre();
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-              buttonDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.black26,
-                ),
-                color: Colors.white,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
               ),
-              buttonHeight: 30,
-              buttonWidth: 340,
-              dropdownMaxHeight: 250,
-              itemHeight: 32,
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
             )),
       ),
     ]);

@@ -24,7 +24,6 @@ int Subindex = 0;
 class Parc_EntInfoDataGridSource extends DataGridSource {
   Parc_EntInfoDataGridSource() {
     Parc_Ent_buildDataGridRows();
-    print (" AAAAAA buildDataGridRows dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
 
   }
 
@@ -53,8 +52,6 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
           DataGridCells.add(DataGridCell<String>(columnName: ColParam, value: ColParamsdata));
       }
 
-      print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗    Parc_Ent_buildDataGridRows  DataGridCells ${DataGridCells.length}");
-
       return DataGridRow(cells: DataGridCells);
     }).toList();
 
@@ -82,22 +79,18 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
     ];
 
 
-    print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗      DbTools.lColParams.length ${DbTools.lColParams.length}");
-
 
     int n = 2;
     for (int i = 0; i < DbTools.lColParams.length; i++) {
       String ColParam = DbTools.lColParams[i];
       if (ColParam == "DATE")
         {
-//          print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗      ColParam ${ColParam}");
           DataGridCells.add(FiltreTools.SfRowDate(row,  n++, Alignment.centerLeft, textColor));
         }
       else
         {
           if (ColParam == "ACTION")
             {
- //             print("☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗☗      ColParam ${ColParam}");
               DataGridCells.add(FiltreTools.SfRow(row, n++, Alignment.center, textColor));
             }
           else
@@ -195,7 +188,7 @@ class _Intervention_CRState extends State<Intervention_CR> {
             String ColParam = DbTools.lColParams[i];
             if (args.column.columnName == ColParam)
               {
-                print("🁢🁢🁢🁢🁢🁢🁢  Resize ${args.width}");
+//                print("🁢🁢🁢🁢🁢🁢🁢  Resize ${args.width}");
                 dColumnWidth_CR[i+2] = args.width;
               }
           }
@@ -336,7 +329,6 @@ class _Intervention_CRState extends State<Intervention_CR> {
       for (int i = 0; i < DbTools.lColParamsdata.length; i++) {
         String ColParam = DbTools.lColParams[i];
         String ColParamsdata = DbTools.lColParamsdata[i];
-        print("ColParam $ColParam ColParamsdata $ColParamsdata ");
       }
 
       if (DescAff.compareTo(DescAffnewParam) == 0) DescAff = "";

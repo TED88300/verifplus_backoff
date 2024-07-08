@@ -14,11 +14,18 @@ class Zone {
   String Zone_Pays = "";
   String Zone_Acces = "";
   String Zone_Rem = "";
-  String Livr = "";
+
+  String Zone_APSAD = "";
+  String Zone_APSAD_Date = "";
+  String Zone_Regle = "";
+
+
+      String Livr = "";
   String Groupe_Nom = "";
 
+
   static ZoneInit() {
-    return Zone(0, 0, "", "", "", "", "", "", "", "", "", "", "", "", "","");
+    return Zone(0, 0, "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "","");
   }
 
   Zone(
@@ -36,6 +43,9 @@ class Zone {
     String Zone_Pays,
     String Zone_Acces,
     String Zone_Rem,
+      String Zone_APSAD,
+      String Zone_APSAD_Date,
+      String Zone_Regle,
     String Livr,
     String Groupe_Nom,
   ) {
@@ -54,6 +64,9 @@ class Zone {
     this.Zone_Pays = Zone_Pays;
     this.Zone_Acces = Zone_Acces;
     this.Zone_Rem = Zone_Rem;
+    this.Zone_APSAD = Zone_APSAD;
+    this.Zone_APSAD_Date = Zone_APSAD_Date;
+    this.Zone_Regle = Zone_Regle;
     this.Livr = Livr;
     this.Groupe_Nom = Groupe_Nom;
   }
@@ -80,6 +93,9 @@ class Zone {
         json['Zone_Pays'],
         json['Zone_Acces'],
         json['Zone_Rem'],
+      json['Zone_APSAD'],
+      json['Zone_APSAD_Date'],
+      json['Zone_Regle'],
         json['Livr'],
         json['Groupe_Nom'],
      );
@@ -104,6 +120,9 @@ class Zone {
         '$Zone_Pays     '
         '$Zone_Acces     '
         '$Zone_Rem      '
+        '$Zone_APSAD      '
+        '$Zone_APSAD_Date      '
+        '$Zone_Regle      '
         '$Livr      '
         '$Groupe_Nom      ';
   }

@@ -139,7 +139,7 @@ class _NF074_Gammes_screenState extends State<NF074_Gammes_screen> with TickerPr
                     ),
                     onTap: () async {
                           String wTable = "Gammes";
-                          await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
+                          await Upload.UploadSrvCsvPickerNF74(wTable, onSetStateOn, onSetStateOff);
 
                           print("iStrfExp B ${iStrfExp}");
                         }

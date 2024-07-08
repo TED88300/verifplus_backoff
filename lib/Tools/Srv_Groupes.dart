@@ -13,6 +13,8 @@ class Groupe {
   String Groupe_Pays = "";
   String Groupe_Acces = "";
   String Groupe_Rem = "";
+  int NbSite = 0;
+  String SiteId = "";
 
   static GroupeInit() {
     return Groupe(0, 0, "", "", "", "", "", "", "", "", "","", "", "");
@@ -52,11 +54,36 @@ class Groupe {
 
   factory Groupe.fromJson(Map<String, dynamic> json) {
 //    print("json $json");
-    Groupe wUser = Groupe(int.parse(json['GroupeId']), int.parse(json['Groupe_ClientId']),
+    Groupe wGroupe = Groupe(int.parse(json['GroupeId']), int.parse(json['Groupe_ClientId']),
         json['Groupe_Code'],
         json['Groupe_Depot'],
-        json['Groupe_Nom'], json['Groupe_Adr1'], json['Groupe_Adr2'], json['Groupe_Adr3'], json['Groupe_Adr4'], json['Groupe_CP'], json['Groupe_Ville'], json['Groupe_Pays'], json['Groupe_Acces'], json['Groupe_Rem']);
-    return wUser;
+        json['Groupe_Nom'],
+        json['Groupe_Adr1'],
+        json['Groupe_Adr2'],
+        json['Groupe_Adr3'],
+        json['Groupe_Adr4'],
+        json['Groupe_CP'],
+        json['Groupe_Ville'],
+        json['Groupe_Pays'],
+        json['Groupe_Acces'],
+        json['Groupe_Rem']);
+
+    wGroupe.SiteId = "";
+    wGroupe.NbSite = 0;
+
+    try{
+      wGroupe.SiteId = json['SiteId'];
+      if (json['SiteId'] != "0")
+        wGroupe.NbSite = int.parse(json['NbSite']);
+
+    }
+    catch (e) {
+
+    }
+
+
+
+    return wGroupe;
   }
 
   String Desc() {

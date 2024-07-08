@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -18,6 +19,8 @@ import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning_Edit.dart';
 import 'package:verifplus_backoff/widgets/Planning/SelectInterv.dart';
+import 'package:verifplus_backoff/widgets/Planning/SelectIntervAdd.dart';
+import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
 class Planning extends StatefulWidget {
   final bool bAppBar;
@@ -28,7 +31,6 @@ class Planning extends StatefulWidget {
 }
 
 class _PlanningState extends State<Planning> {
-
   Appointment? _selectedAppointment;
   final CalendarController _calendarController = CalendarController();
 
@@ -38,7 +40,7 @@ class _PlanningState extends State<Planning> {
   int _selectedColorIndex = 0;
   String _client = '';
 
-  int selUserID = -1;
+  int selUser_Matricule = -1;
 
   bool isLegendVisible = false;
   Widget wLegend = Container();
@@ -63,6 +65,12 @@ class _PlanningState extends State<Planning> {
   final List<CalendarResource> _employeeCollection = <CalendarResource>[];
   final List<TimeRegion> _specialTimeRegions = <TimeRegion>[];
 
+  static List<String> ListParam_ParamFonction = [];
+  static List<String> ListParam_ParamFonctionID = [];
+  String selectedValueFonction = "";
+  String selectedValueFonctionID = "";
+
+
 //  List<Widget> wUserWidget = [];
   bool isload = false;
   final List<CalendarView> _allowedViews = <CalendarView>[
@@ -73,11 +81,8 @@ class _PlanningState extends State<Planning> {
 
   void _onViewChanged(ViewChangedDetails visibleDatesChangedDetails) {
     _visibleDates = visibleDatesChangedDetails.visibleDates;
-
     _currentView = _calendarController.view!;
-
     print("_onViewChanged _currentView : $_currentView");
-
     SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
       setState(() {
         // Update the scroll view when view changes.
@@ -88,7 +93,6 @@ class _PlanningState extends State<Planning> {
   Future Reload() async {
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload A");
     await DbTools.getParam_Saisie_Param("Status");
-
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload B");
     await DbTools.getPlanning_IntervAll();
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload C");
@@ -99,6 +103,26 @@ class _PlanningState extends State<Planning> {
   }
 
   void initLib() async {
+
+    ListParam_ParamFonction.clear();
+    ListParam_ParamFonctionID.clear();
+
+
+    ListParam_ParamFonction.add("Tous");
+    ListParam_ParamFonctionID.add("*");
+
+
+    DbTools.ListParam_ParamAll.forEach((element) {
+      if (element.Param_Param_Type.compareTo("Type_Fonction") == 0) {
+        ListParam_ParamFonction.add(element.Param_Param_Text);
+        ListParam_ParamFonctionID.add(element.Param_Param_ID);
+      }
+    });
+    selectedValueFonction = ListParam_ParamFonction[0];
+    selectedValueFonctionID = ListParam_ParamFonctionID[0];
+
+
+
     await DbTools.initListFam();
     await DbTools.getAdresseType("AGENCE");
     ListDepot.clear();
@@ -117,7 +141,7 @@ class _PlanningState extends State<Planning> {
     print(" DbTools.gClient.ClientId ${DbTools.gClient.ClientId} ${clientNom}");
 
     if (DbTools.gGroupe.GroupeId > 0) {
-      groupeNom = DbTools.gGroupe.Groupe_Nom!;
+      groupeNom = DbTools.gGroupe.Groupe_Nom;
       await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
     } else {
       DbTools.gGroupe = Groupe.GroupeInit();
@@ -125,7 +149,7 @@ class _PlanningState extends State<Planning> {
     }
 
     if (DbTools.gSite.SiteId > 0) {
-      siteNom = DbTools.gSite.Site_Nom!;
+      siteNom = DbTools.gSite.Site_Nom;
       await DbTools.getZonesSite(DbTools.gSite.SiteId);
     } else {
       DbTools.gSite = Site.SiteInit();
@@ -133,7 +157,7 @@ class _PlanningState extends State<Planning> {
     }
 
     if (DbTools.gZone.ZoneId > 0) {
-      zoneNom = DbTools.gZone.Zone_Nom!;
+      zoneNom = DbTools.gZone.Zone_Nom;
       await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
     } else {
       DbTools.gZone = Zone.ZoneInit();
@@ -216,8 +240,7 @@ class _PlanningState extends State<Planning> {
 
     wDets.add(wDet);
 
-
-     wDet = Container(
+    wDet = Container(
         margin: EdgeInsets.fromLTRB(50, 0, 10, 0),
         child: Row(
           children: [
@@ -250,7 +273,6 @@ class _PlanningState extends State<Planning> {
         ));
 
     wDets.add(wDet);
-
 
     wLegend = Container(
       padding: EdgeInsets.fromLTRB(25, 5, 5, 0),
@@ -317,6 +339,11 @@ class _PlanningState extends State<Planning> {
     if (DbTools.gIntervention.InterventionId! > 0) {
       for (int p = 0; p < DbTools.ListParam_Saisie_Param.length; p++) {
         Param_Saisie_Param wparamSaisieParam = DbTools.ListParam_Saisie_Param[p];
+
+        print(" TEST COLOR ${wparamSaisieParam.Param_Saisie_Param_Label} ${DbTools.gIntervention.Intervention_Status}");
+
+
+
         if (wparamSaisieParam.Param_Saisie_Param_Label.compareTo(DbTools.gIntervention.Intervention_Status!) == 0) {
           wColor = gColors.getColor(wparamSaisieParam.Param_Saisie_Param_Color);
           break;
@@ -328,51 +355,42 @@ class _PlanningState extends State<Planning> {
         wplanningSrv = DbTools.ListPlanning[p];
         if (wplanningSrv.Planning_InterventionId == DbTools.gIntervention.InterventionId) {
           wHours += wplanningSrv.Planning_InterventionendTime.difference(wplanningSrv.Planning_InterventionstartTime).inHours;
-//              print("wPlanning_Srv ${wPlanning_Srv.Planning_InterventionstartTime} ${wPlanning_Srv.Planning_InterventionendTime} $wHours");
         }
       }
     }
 
     print("build isload $isload");
 
-    int wMargeBasse = 0;
-    if (DbTools.gIntervention.InterventionId! > 0)
-      wMargeBasse += 35;
+    int wMargeBasse = 35;
 
-    if (isLegendVisible)
-      wMargeBasse += 160;
+    if (isLegendVisible) wMargeBasse += 160;
 
     return Material(
         child: Container(
             child: !isload
                 ? Container(
-
-              child: Column(
-                  children: [
-                  AppBar(),
-                Row(
-                  children: [
-                    Container(
-                      width: 5,
+                    child: Column(
+                      children: [
+                        AppBar(),
+                        Row(
+                          children: [
+                            Container(
+                              width: 5,
+                            ),
+                            Container(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              width: 1881,
+                              child: AffSelIntervention(),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          height: 175,
+                        ),
+                        CircularProgressIndicator(),
+                      ],
                     ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      width: 1881,
-                      child: AffSelIntervention(),
-                    ),
-                  ],
-                ),
-                    Container(
-                      height: 175,
-                    ),
-
-                CircularProgressIndicator(),
-
-
-              ],
-            ),
-
-            )
+                  )
                 : Column(
                     children: [
                       AppBar(),
@@ -386,21 +404,93 @@ class _PlanningState extends State<Planning> {
                             width: 1881,
                             child: AffSelIntervention(),
                           ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 5,
+                          ),
+                          Container(
+                            width: 70,
+                            child: Text("Fonction : ",
+                              style: gColors.bodyTitle1_B_Gr,
+                            ),
+                          ),
+                          Container(
+                            child: DropdownButtonHideUnderline(
+                                child: DropdownButton2(
+                                  hint: Text(
+                                    'Séléctionner une Fonction',
+                                    style: gColors.bodyTitle1_N_Gr,
+                                  ),
+                                  items: ListParam_ParamFonction.map((item) => DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(
+                                      "  $item",
+                                      style: gColors.bodyTitle1_N_Gr,
+                                    ),
+                                  )).toList(),
+                                  value: selectedValueFonction,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedValueFonctionID = ListParam_ParamFonctionID[ListParam_ParamFonction.indexOf(value!)];
+                                      selectedValueFonction = value;
+                                      print("selectedValueFonction $selectedValueFonctionID $selectedValueFonction");
+                                      setState(() {});
+                                    });
+                                  },
+                                  buttonStyleData: const ButtonStyleData(
+                                    padding: const EdgeInsets.only(left: 14, right: 14),
+                                    height: 30,
+                                    width: 350,
+                                  ),
+                                  menuItemStyleData: const MenuItemStyleData(
+                                    height: 32,
+                                  ),
+                                  dropdownStyleData: DropdownStyleData(
+                                    maxHeight: 250,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Colors.black26,
+                                      ),
+                                      color: Colors.white,
+                                    ),
+                                  ),
 
+
+                                )),
+                          ),
+//                          CommonAppBar.SquareRoundPng(context, 20, 8, Colors.white, Colors.red, "ico_Filtre", ToolsBarFiltre, tooltip: "Filtre"),
+
+                          Spacer(),
+                          (DbTools.gIntervention.InterventionId! <= 0)
+                              ? Container()
+                              :
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(20, 05, 20, 05),
+                            color: wColor,
+                            child: Text(
+                              '$interventionNom => $wHours heures affetées',
+                              style: gColors.bodyTitle1_N_Wr,
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          Spacer(),
+
+                          Container(
+                            width: 420,
+                          ),
+                          Container(
+                            width: 5,
+                          ),
 
                         ],
                       ),
-                      (DbTools.gIntervention.InterventionId! <= 0)
-                          ? Container()
-                          : Container(
-                              padding: const EdgeInsets.fromLTRB(20, 05, 20, 05),
-                              color: wColor,
-                              child: Text(
-                                '$interventionNom => $wHours heures affetées',
-                                style: gColors.bodyTitle1_N_Wr,
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
+
+
+
                       Container(
                         height: screenHeight - wMargeBasse,
                         child: _getDragAndDropCalendar(_calendarController, _events, _onViewChanged, onTap, onLongPress),
@@ -420,24 +510,27 @@ class _PlanningState extends State<Planning> {
     return Container(
 //        color: Colors.greenAccent,
         padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-
         width: 1680,
         child: InkWell(
           child: Row(
             children: [
               CommonAppBar.SquareRoundPng(context, 20, 8, Colors.green, Colors.white, "ico_Legend", ToolsBarLegend, tooltip: "Afficher Légende"),
               Container(
-                width: 5,
+                width: 15,
+              ),
+              CommonAppBar.SquareRoundPng(context, 20, 8, Colors.green, Colors.white, "AddInter", ToolsBarAddInter, tooltip: "Ajouter Intervention"),
+              Container(
+                width: 15,
               ),
               CommonAppBar.SquareRoundPng(context, 20, 8, Colors.white, Colors.red, "ico_Filtre", ToolsBarFiltre, tooltip: "Filtre"),
               Container(
-                width: 5,
+                width: 15,
               ),
               gColors.Txt2(50, 'Dépot', '${Depot}', tWidth: w),
               Container(
                 width: 5,
               ),
-              gColors.Txt2(50, 'Client', '${clientNom}', tWidth: w+10),
+              gColors.Txt2(50, 'Client', '${clientNom}', tWidth: w + 10),
               Container(
                 width: 5,
               ),
@@ -445,7 +538,7 @@ class _PlanningState extends State<Planning> {
               Container(
                 width: 5,
               ),
-              gColors.Txt2(50, 'Site', '${siteNom}', tWidth: w+10),
+              gColors.Txt2(50, 'Site', '${siteNom}', tWidth: w + 10),
               Container(
                 width: 5,
               ),
@@ -453,10 +546,10 @@ class _PlanningState extends State<Planning> {
               Container(
                 width: 5,
               ),
-              gColors.Txt2(90, 'Intervention', '${interventionNom}', tWidth: w+140),
+              gColors.Txt2(90, 'Intervention', '${interventionNom}', tWidth: w + 110),
             ],
           ),
-          onTap: ()  async{
+          onTap: () async {
             print(" onTap");
             ToolsBarFiltre();
           },
@@ -469,23 +562,57 @@ class _PlanningState extends State<Planning> {
       builder: (BuildContext context) {
         return SelectInter(
           onChanged: (selChangedDetails details) async {
-            Depot           = details.depot!;
-            clientNom       = details.client!.Client_Nom;
+            Depot = details.depot!;
+            clientNom = details.client!.Client_Nom;
             if (clientNom.isNotEmpty) DbTools.gClient = details.client!;
-            groupeNom       = details.groupe!.Groupe_Nom;
+            groupeNom = details.groupe!.Groupe_Nom;
             if (groupeNom.isNotEmpty) DbTools.gGroupe = details.groupe!;
-            siteNom         = details.site!.Site_Nom;
-            if (siteNom.isNotEmpty) DbTools.gSite   = details.site!;
-            zoneNom         = details.zone!.Zone_Nom;
-            if (zoneNom.isNotEmpty) DbTools.gZone   = details.zone!;
+            siteNom = details.site!.Site_Nom;
+            if (siteNom.isNotEmpty) DbTools.gSite = details.site!;
+            zoneNom = details.zone!.Zone_Nom;
+            if (zoneNom.isNotEmpty) DbTools.gZone = details.zone!;
             interventionNom = details.intervention!.Intervention_Date!;
             String wDate = "----/----/-------";
             if (details.intervention!.Intervention_Date!.isNotEmpty) wDate = details.intervention!.Intervention_Date!;
 
-            interventionNom =  "[${details.intervention!.InterventionId}] ${wDate} ${details.intervention!.Intervention_Type} ${details.intervention!.Intervention_Parcs_Type} ${details.intervention!.Intervention_Status}";
-
+            interventionNom = "[${details.intervention!.InterventionId}] ${wDate} ${details.intervention!.Intervention_Type} ${details.intervention!.Intervention_Parcs_Type} ${details.intervention!.Intervention_Status}";
 
             if (interventionNom.isNotEmpty) DbTools.gIntervention = details.intervention!;
+          },
+        );
+      },
+    ).then((dynamic value) => setState(() {
+          /// update the color picker changes
+        }));
+  }
+
+  void ToolsBarLegend() async {
+    print("ToolsBarLegend");
+    isLegendVisible = !isLegendVisible;
+    print("ToolsBarLegend ${isLegendVisible}");
+    setState(() {});
+  }
+
+  void ToolsBarAddInter() async {
+    showDialog<Widget>(
+      context: context,
+      builder: (BuildContext context) {
+        return SelectInterAdd(
+          onChanged: (selChangedDetails details) async {
+            Depot = details.depot!;
+            clientNom = details.client!.Client_Nom;
+            if (clientNom.isNotEmpty) DbTools.gClient = details.client!;
+            groupeNom = details.groupe!.Groupe_Nom;
+            if (groupeNom.isNotEmpty) DbTools.gGroupe = details.groupe!;
+            siteNom = details.site!.Site_Nom;
+            if (siteNom.isNotEmpty) DbTools.gSite = details.site!;
+            zoneNom = details.zone!.Zone_Nom;
+            if (zoneNom.isNotEmpty) DbTools.gZone = details.zone!;
+
+            String wDate = "----/----/-------";
+            if (DbTools.gIntervention!.Intervention_Date!.isNotEmpty) wDate = DbTools.gIntervention!.Intervention_Date!;
+            interventionNom = "[${DbTools.gIntervention!.InterventionId}] ${wDate} ${DbTools.gIntervention!.Intervention_Type} ${DbTools.gIntervention!.Intervention_Parcs_Type} ${DbTools.gIntervention!.Intervention_Status}";
+
           },
         );
       },
@@ -496,36 +623,27 @@ class _PlanningState extends State<Planning> {
 
 
 
-  void ToolsBarLegend() async {
-    print("ToolsBarLegend");
-    isLegendVisible = !isLegendVisible;
-    print("ToolsBarLegend ${isLegendVisible}");
-    setState(() {});
-  }
-
   Future addUser() async {
 //    wUserWidget.clear();
-    await DbTools.getUserAll();
-
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>> getUserAll");
+    await DbTools.getUserAllN0();
 
     Uint8List pic = Uint8List.fromList([0]);
     _employeeCollection.clear();
 
     for (int u = 0; u < DbTools.ListUser.length; u++) {
       User user = DbTools.ListUser[u];
+
       String wInitP = user.User_Prenom.isEmpty ? "" : "${user.User_Prenom[0]} ";
-      String wUserImg = "User_${user.UserID}.jpg";
+      String wUserImg = "User_${user.User_Matricule}.jpg";
       pic = await gColors.getImage(wUserImg);
       late ImageProvider wImage;
       if (pic.length > 0) {
         wImage = MemoryImage(pic);
       }
 
-      _employeeCollection.add(CalendarResource(displayName: "$wInitP${user.User_Nom}", id: "${user.UserID}", color: _colorCollection[0], image: (pic.length > 0) ? wImage : null));
+          _employeeCollection.add(CalendarResource(displayName: "$wInitP${user.User_Nom}", id: "${user.User_Matricule}", color: _colorCollection[0], image: (pic.length > 0) ? wImage : null));
     }
 
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>> getUserAll FIN");
   }
 
   Future<List<Appointment>> genAppointmentsSrv() async {
@@ -580,11 +698,10 @@ class _PlanningState extends State<Planning> {
       final List<Object> employeeIds = <Object>[calendarResource.id];
       Appointment wAppointment = Appointment(subject: planningInterv.Planning_Interv_Client_Nom!, startTime: wplanningSrv.Planning_InterventionstartTime, endTime: wplanningSrv.Planning_InterventionendTime, color: wColor, resourceIds: employeeIds, recurrenceId: wplanningSrv.PlanningId);
       if (wplanningSrv.Planning_InterventionId == -1) print("wAppointment ADD ${wAppointment.subject} ${wAppointment.startTime} ${wAppointment.endTime} ${wAppointment.recurrenceId} ${wAppointment.resourceIds}");
-        appointments.add(wAppointment);
+      appointments.add(wAppointment);
     }
     return appointments;
   }
-
 
   void onMaj() async {
     print("Parent onMaj()");
@@ -595,6 +712,10 @@ class _PlanningState extends State<Planning> {
   Future getClient() async {
     clientNom = DbTools.gPlanning_Interv.Planning_Interv_Client_Nom!;
     DbTools.gClient.ClientId = DbTools.gPlanning_Interv.Planning_Interv_ClientId!;
+
+    await DbTools.getClient(DbTools.gClient.ClientId);
+    Depot = DbTools.gClient.Client_Depot;
+
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
 
     groupeNom = DbTools.gPlanning_Interv.Planning_Interv_Groupe_Nom!;
@@ -644,17 +765,35 @@ class _PlanningState extends State<Planning> {
     }
   }
 
+  Future onTapUser(CalendarTapDetails calendarTapDetails) async {
+    print("OnTap ${calendarTapDetails.resource!.id}");
+
+    DbTools.getUserMat("${calendarTapDetails.resource!.id}");
+
+    print("OnTap ${DbTools.gUser.User_Nom}");
+    gColors.AffUser_Mat(context);
+  }
+
   void onTap(CalendarTapDetails calendarTapDetails) async {
     print("calendarTapDetails.targetElement ${calendarTapDetails.targetElement} ${calendarTapDetails.resource!.id}");
+
+    if (calendarTapDetails.targetElement == CalendarElement.resourceHeader) {
+      await onTapUser(calendarTapDetails);
+      return;
+    }
 
     if (calendarTapDetails.targetElement == CalendarElement.viewHeader || calendarTapDetails.targetElement == CalendarElement.header) {
       return;
     }
 
+    print("OnTap");
+
     _selectedAppointment = null;
     if (calendarTapDetails.appointments != null && calendarTapDetails.targetElement == CalendarElement.appointment) {
       final dynamic appointment = calendarTapDetails.appointments![0];
       if (appointment is Appointment) {
+        print("OnTap A");
+
         _selectedAppointment = appointment;
         showDialog<Widget>(
             context: context,
@@ -679,6 +818,7 @@ class _PlanningState extends State<Planning> {
                   _events.notifyListeners(CalendarDataSourceAction.add, appointment);
                 });
 
+
                 _selectedAppointment = newAppointment;
               }
 
@@ -698,7 +838,7 @@ class _PlanningState extends State<Planning> {
                     child: Container(
                         alignment: Alignment.center,
                         width: 900,
-                        height: 460,
+                        height: 490,
                         child: Theme(
                             data: gColors.wTheme,
                             child: Card(
@@ -720,8 +860,8 @@ class _PlanningState extends State<Planning> {
       int planningResourceid = int.parse(calendarTapDetails.resource!.id.toString());
       bool isInOther = false;
 
-//      print("Add App $wStart");
-      //    print("Add App $wEnd");
+      print("Add App $wStart");
+      print("Add App $wEnd");
 
       for (int p = 0; p < DbTools.ListPlanning.length; p++) {
         Planning_Srv wplanningSrv = DbTools.ListPlanning[p];
@@ -732,16 +872,16 @@ class _PlanningState extends State<Planning> {
 
             bool ea = wEnd.isAfter(wplanningSrv.Planning_InterventionstartTime) || wEnd.isAtSameMomentAs(wplanningSrv.Planning_InterventionstartTime);
             bool eb = wEnd.isBefore(wplanningSrv.Planning_InterventionendTime) || wEnd.isAtSameMomentAs(wplanningSrv.Planning_InterventionendTime);
-//            print("appointment ${wplanningSrv.PlanningId} ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
+            print("appointment ${wplanningSrv.PlanningId} ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
 
             if (sa && sb) {
               isInOther = true;
-              //            print("add appointment ${wplanningSrv.PlanningId} ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
+              print("add appointment ${wplanningSrv.PlanningId} ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
               break;
             }
             if (ea && eb) {
               isInOther = true;
-              //          print("add appointment ${wplanningSrv.PlanningId}  ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
+              print("add appointment ${wplanningSrv.PlanningId}  ${wplanningSrv.Planning_InterventionstartTime} ${wplanningSrv.Planning_InterventionendTime}  ($sa $sb $ea $eb) $isInOther");
               break;
             }
           }
@@ -787,7 +927,7 @@ class _PlanningState extends State<Planning> {
     }
 
     Appointment wAppointment = appointment;
-    int wAppUserid = int.parse(wAppointment.resourceIds![0].toString());
+    int wAppUser_Matricule = int.parse(wAppointment.resourceIds![0].toString());
 
     appointment.startTime = gColors.alignDateTime(appointment.startTime, Duration(minutes: 30));
     appointment.endTime = gColors.alignDateTime(appointment.endTime, Duration(minutes: 30));
@@ -803,7 +943,7 @@ class _PlanningState extends State<Planning> {
 
     for (int p = 0; p < DbTools.ListPlanning.length; p++) {
       Planning_Srv wplanningSrv = DbTools.ListPlanning[p];
-      if (wplanningSrv.Planning_ResourceId! == wAppUserid && wplanningSrv.PlanningId != uptplanningSrv.PlanningId) {
+      if (wplanningSrv.Planning_ResourceId! == wAppUser_Matricule && wplanningSrv.PlanningId != uptplanningSrv.PlanningId) {
         bool sa = wStart.isAfter(wplanningSrv.Planning_InterventionstartTime);
         bool sb = wStart.isBefore(wplanningSrv.Planning_InterventionendTime);
 
@@ -852,7 +992,7 @@ class _PlanningState extends State<Planning> {
     dynamic appointment = details.appointment!;
 
     Appointment wAppointment = appointment;
-    int wAppUserid = int.parse(wAppointment.resourceIds![0].toString());
+    int wAppUser_Matricule = int.parse(wAppointment.resourceIds![0].toString());
     int wDuration = appointment.endTime.difference(appointment.startTime).inHours;
 
     if (wDuration < 1) wDuration = 1;
@@ -877,7 +1017,7 @@ class _PlanningState extends State<Planning> {
 
     for (int p = 0; p < DbTools.ListPlanning.length; p++) {
       Planning_Srv wplanningSrv = DbTools.ListPlanning[p];
-      if (wplanningSrv.Planning_ResourceId! == wAppUserid && wplanningSrv.PlanningId != int.parse(appointment.recurrenceId.toString())) {
+      if (wplanningSrv.Planning_ResourceId! == wAppUser_Matricule && wplanningSrv.PlanningId != int.parse(appointment.recurrenceId.toString())) {
         bool sa = wStart.isAfter(wplanningSrv.Planning_InterventionstartTime);
         bool sb = wStart.isBefore(wplanningSrv.Planning_InterventionendTime);
 
@@ -925,9 +1065,9 @@ class _PlanningState extends State<Planning> {
   void _addSpecialRegions() {
     final DateTime date = DateTime.now().add(Duration(days: -365));
     for (int i = 0; i < _employeeCollection.length; i++) {
-      _specialTimeRegions.add(TimeRegion(startTime: DateTime(date.year, date.month, date.day, 12), endTime: DateTime(date.year, date.month, date.day, 14), text: 'Lunch', color: Colors.grey.withOpacity(0.2), resourceIds: <Object>[_employeeCollection[i].id], recurrenceRule: 'FREQ=DAILY;INTERVAL=1'));
+      _specialTimeRegions.add(TimeRegion(startTime: DateTime(date.year, date.month, date.day, 12), endTime: DateTime(date.year, date.month, date.day, 14), text: 'Lunch', color: Colors.grey.withOpacity(0.1), resourceIds: <Object>[_employeeCollection[i].id], recurrenceRule: 'FREQ=DAILY;INTERVAL=1'));
 
-      _specialTimeRegions.add(TimeRegion(startTime: DateTime(date.year, date.month, date.day, 08), endTime: DateTime(date.year, date.month, date.day, 8, 10), text: 'Deb', color: Colors.blue.withOpacity(0.2), resourceIds: <Object>[_employeeCollection[i].id], recurrenceRule: 'FREQ=DAILY;INTERVAL=1'));
+      _specialTimeRegions.add(TimeRegion(startTime: DateTime(date.year, date.month, date.day, 06), endTime: DateTime(date.year, date.month, date.day, 6, 10), text: 'Deb', color: Colors.blue.withOpacity(0.5), resourceIds: <Object>[_employeeCollection[i].id], recurrenceRule: 'FREQ=DAILY;INTERVAL=1'));
 
       _specialTimeRegions.add(TimeRegion(
         startTime: DateTime(date.year, date.month, date.day),
@@ -982,27 +1122,58 @@ class _PlanningState extends State<Planning> {
     CalendarDataSource wCalendarDataSource = _ShiftDataSource(<Appointment>[], <CalendarResource>[]);
     wCalendarDataSource.appointments!.addAll(calendarDataSource!.appointments!);
 
+    List<CalendarResource> wResources = [];
+
+
     if (Depot.isNotEmpty && Depot != "Tous") {
       for (int p = 0; p < calendarDataSource.resources!.length; p++) {
         CalendarResource wCalendarResource = calendarDataSource.resources![p];
-        User user = DbTools.ListUser.firstWhere((element) => element.UserID == int.parse(wCalendarResource.id.toString()));
+
+        print("wCalendarResource.id.toString() ${wCalendarResource.id.toString()}");
+        print("DbTools.ListUser ${DbTools.ListUser.length}");
+
+        User user = DbTools.ListUser.firstWhere((element) => element.User_Matricule == wCalendarResource.id.toString());
         if (user.User_Depot.compareTo(Depot) == 0) {
           Color wColor = Color(0xFF3D4FB5);
-          wCalendarDataSource.resources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
+          wResources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
         }
       }
 
       for (int p = 0; p < calendarDataSource.resources!.length; p++) {
         CalendarResource wCalendarResource = calendarDataSource.resources![p];
-        User user = DbTools.ListUser.firstWhere((element) => element.UserID == int.parse(wCalendarResource.id.toString()));
+        User user = DbTools.ListUser.firstWhere((element) => element.User_Matricule == wCalendarResource.id.toString());
         if (user.User_Depot.compareTo(Depot) != 0) {
           Color wColor = Color(0xFFB5B5B5);
-          wCalendarDataSource.resources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
+          wResources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
         }
       }
     } else {
-      wCalendarDataSource.resources!.addAll(calendarDataSource.resources!);
+      wResources!.addAll(calendarDataSource.resources!);
     }
+
+    if (selectedValueFonctionID == "*")
+      wCalendarDataSource.resources!.addAll(wResources!);
+    else
+      {
+        for (int r = 0; r < wResources.length; r++) {
+          CalendarResource wCalendarResource = wResources[r];
+
+          for (int u = 0; u < DbTools.ListUser.length; u++) {
+            User user = DbTools.ListUser[u];
+            print(" ${wCalendarResource.id} ${user.UserID}");
+            if (wCalendarResource.id.toString().compareTo(user.User_Matricule.toString()) ==0)
+              {
+                if (user.User_Fonction == selectedValueFonction){
+                  print(" ADDDDDDDDDDD");
+                  wCalendarDataSource.resources!.add(wCalendarResource!);
+                  break;
+
+                }
+              }
+          }
+        }
+      }
+
 
     print(">>>>>>>>>>> Aappointments ${wCalendarDataSource.appointments!.length}");
     print(">>>>>>>>>>> resources ${wCalendarDataSource.resources!.length}");
@@ -1042,8 +1213,8 @@ class _PlanningState extends State<Planning> {
         appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
       ),
       timeSlotViewSettings: const TimeSlotViewSettings(
-        startHour: 8,
-        endHour: 18,
+        startHour: 6,
+        endHour: 22,
         timeIntervalHeight: -1,
         timeFormat: 'HH',
         minimumAppointmentDuration: Duration(minutes: 60),
@@ -1156,6 +1327,3 @@ class _ShiftDataSource extends CalendarDataSource {
     resources = resourceColl;
   }
 }
-
-
-

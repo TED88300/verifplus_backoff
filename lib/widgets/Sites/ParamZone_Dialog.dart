@@ -5,26 +5,26 @@ import 'package:image/image.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
-class ParamSite_Dialog {
-  ParamSite_Dialog();
+class ParamZone_Dialog {
+  ParamZone_Dialog();
 
-  static Future<void> ParamSite_dialog(BuildContext context, {bool readonly = false}) async {
+  static Future<void> ParamZone_dialog(BuildContext context, {bool readonly = false}) async {
     await showDialog(
       context: context,
-      builder: (BuildContext context) => new ParamSite(readonly: readonly),
+      builder: (BuildContext context) => new ParamZone(readonly: readonly),
     );
   }
 }
 
-class ParamSite extends StatefulWidget {
+class ParamZone extends StatefulWidget {
   final bool readonly;
-  const ParamSite({Key? key, required this.readonly}) : super(key: key);
+  const ParamZone({Key? key, required this.readonly}) : super(key: key);
 
   @override
-  State<ParamSite> createState() => _ParamSiteState();
+  State<ParamZone> createState() => _ParamZoneState();
 }
 
-class _ParamSiteState extends State<ParamSite> {
+class _ParamZoneState extends State<ParamZone> {
   String wTitle = "";
 
   bool readonly = false;
@@ -65,9 +65,9 @@ class _ParamSiteState extends State<ParamSite> {
   ];
 
   void initLib() async {
-    String siteApsad = DbTools.gSite.Site_Regle!;
-    if (siteApsad.isNotEmpty) {
-      itemlistApp = json.decode(siteApsad).cast<bool>().toList();
+    String ZoneApsad = DbTools.gZone.Zone_Regle!;
+    if (ZoneApsad.isNotEmpty) {
+      itemlistApp = json.decode(ZoneApsad).cast<bool>().toList();
     }
 /*
     for (int i = itemlistApp.length; i < 15; i++) {
@@ -134,7 +134,7 @@ class _ParamSiteState extends State<ParamSite> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Paramètres Site",
+                "Paramètres Zone",
                 textAlign: TextAlign.center,
                 style: gColors.bodyTitle1_B_W,
               ),
@@ -173,8 +173,8 @@ class _ParamSiteState extends State<ParamSite> {
               readonly ? Container() :
               new ElevatedButton(
                 onPressed: () async {
-                  DbTools.gSite.Site_Regle = itemlistApp.toString();
-                  DbTools.setSite(DbTools.gSite);
+                  DbTools.gZone.Zone_Regle = itemlistApp.toString();
+                  DbTools.setZone(DbTools.gZone);
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(

@@ -719,19 +719,27 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
           Reload();
         });
       },
-      buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-      buttonDecoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.black26,
-        ),
-        color: Colors.white,
-      ),
-      buttonHeight: 30,
-      buttonWidth: 350,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+            padding: const EdgeInsets.only(left: 14, right: 14),
+            height: 30,
+            width: 350,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.black26,
+              ),
+              color: Colors.white,
+            ),
+          ),
+
+
+        ));
   }
 
   void GetDesc(String value) {
@@ -782,11 +790,18 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetFab(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 220,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
+        ));
   }
 
   void GetPrs(String value) {
@@ -815,11 +830,18 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetPrs(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 120,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
+        ));
   }
 
   void GetClf(String value) {
@@ -848,11 +870,18 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetClf(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 120,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
+        ));
   }
 
   void GetMob(String value) {
@@ -884,10 +913,16 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetMob(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 220,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
     ));
   }
 
@@ -921,10 +956,17 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetGam(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 300,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
     ));
   }
 
@@ -954,10 +996,16 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetPdt(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 220,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
     ));
   }
 
@@ -991,10 +1039,17 @@ class _Param_Gamme_screenState extends State<Param_Gamme_screen> {
       onChanged: (value) {
         GetPoids(value!);
       },
-      buttonHeight: 50,
-      buttonWidth: 100,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
     ));
   }
 

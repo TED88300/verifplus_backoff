@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
@@ -11,12 +8,14 @@ import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
+import 'package:verifplus_backoff/widgetTools/gObj.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
-import 'package:verifplus_backoff/widgets/Sites/Missions_Dialog.dart';
-import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
+import 'package:verifplus_backoff/widgets/Sites/Photos.dart';
+import 'package:verifplus_backoff/widgets/Sites/Mission.dart';
 
+import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
 DataGridController dataGridController = DataGridController();
 
@@ -44,8 +43,10 @@ class IntervInfoDataGridSource extends DataGridSource {
         DataGridCell<int>(columnName: 'organes', value: Interv.Cnt),
         DataGridCell<String>(columnName: 'status', value: Interv.Intervention_Status),
         DataGridCell<String>(columnName: 'factu', value: Interv.Intervention_Facturation),
-        DataGridCell<String>(columnName: 'RespCom', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable!)),
-        DataGridCell<String>(columnName: 'RespTech', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable2!)),
+        DataGridCell<String>(columnName: 'ComInter', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable!)),
+        DataGridCell<String>(columnName: 'ManCom', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable2!)),
+        DataGridCell<String>(columnName: 'ManTech', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable3!)),
+        DataGridCell<String>(columnName: 'RefTech', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable4!)),
         DataGridCell<String>(columnName: 'Rem', value: Interv.Intervention_Remarque!.replaceAll("\n", " - ")),
       ]);
     }).toList();
@@ -63,9 +64,10 @@ class IntervInfoDataGridSource extends DataGridSource {
     double b = 3;
 
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    bool selected = (DbTools.gIntervention.InterventionId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? selectedRowTextColor : Colors.black;
+    Color backgroundColor = selected ? gColors.backgroundColor : Colors.transparent;
 
-    Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
       FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
       FiltreTools.SfRowDate(row, 1, Alignment.centerLeft, textColor),
@@ -77,6 +79,8 @@ class IntervInfoDataGridSource extends DataGridSource {
       FiltreTools.SfRow(row, 7, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -102,10 +106,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
     80,
     110,
     130,
-    110,
+    190,
     110,
     120,
     110,
+    190,
+    190,
     190,
     190,
     193,
@@ -129,8 +135,10 @@ class _Zone_IntervState extends State<Zone_Interv> {
   var inputFormat2 = DateFormat('dd/MM/yyyy');
   DateTime Ct_Debut = DateTime.now();
   DateTime Ct_Fin = DateTime.now();
-
   DataGridRow memDataGridRow = DataGridRow(cells: []);
+
+  DateTime Du = DateTime.now();
+  DateTime Au = DateTime.now();
 
   List<GridColumn> getColumns() {
     return <GridColumn>[
@@ -141,9 +149,11 @@ class _Zone_IntervState extends State<Zone_Interv> {
       FiltreTools.SfGridColumn('organes', 'Cpt', dColumnWidth[4], dColumnWidth[4], Alignment.center),
       FiltreTools.SfGridColumn('status', 'Status', dColumnWidth[5], dColumnWidth[5], Alignment.centerLeft),
       FiltreTools.SfGridColumn('factu', 'Fact', dColumnWidth[6], dColumnWidth[6], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespCom', 'RespCom', dColumnWidth[7], dColumnWidth[7], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespTech', 'RespTech', dColumnWidth[8], dColumnWidth[8], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[9], dColumnWidth[9], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ComInter', 'Com. Inter', dColumnWidth[7], dColumnWidth[7], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ManCom', 'Man Com', dColumnWidth[8], dColumnWidth[8], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ManTech', 'Man Tecs', dColumnWidth[9], dColumnWidth[9], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RefTech', 'Ref Tech', dColumnWidth[10], dColumnWidth[10], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[11], dColumnWidth[11], Alignment.centerLeft),
     ];
   }
 
@@ -178,11 +188,15 @@ class _Zone_IntervState extends State<Zone_Interv> {
         dColumnWidth[5] = args.width;
       else if (args.column.columnName == 'factu')
         dColumnWidth[6] = args.width;
-      else if (args.column.columnName == 'RespCom')
+      else if (args.column.columnName == 'ComInter')
         dColumnWidth[7] = args.width;
-      else if (args.column.columnName == 'RespTech')
+      else if (args.column.columnName == 'ManCom')
         dColumnWidth[8] = args.width;
-      else if (args.column.columnName == 'Rem') dColumnWidth[9] = args.width;
+      else if (args.column.columnName == 'ComInter')
+        dColumnWidth[9] = args.width;
+      else if (args.column.columnName == 'ManCom')
+        dColumnWidth[10] = args.width;
+      else if (args.column.columnName == 'Rem') dColumnWidth[11] = args.width;
     });
   }
 
@@ -211,15 +225,16 @@ class _Zone_IntervState extends State<Zone_Interv> {
   String selectedUserInter4 = "";
   String selectedUserInterID4 = "";
 
+  String selectedUserInter5 = "";
+  String selectedUserInterID5 = "";
 
+  String selectedUserInter6 = "";
+  String selectedUserInterID6 = "";
 
   DateTime wDateTime = DateTime.now();
 
   Future Reload() async {
     await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-
-
-
     Ct_Debut = DateTime.now();
     Ct_Fin = DateTime(1980);
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
@@ -233,25 +248,14 @@ class _Zone_IntervState extends State<Zone_Interv> {
         if (wDT.difference(Ct_Fin).inHours > 0) {
           Ct_Fin = wDT;
         }
-      } catch (e) {
-      }
-
+      } catch (e) {}
     }
-
-
-
 
     textController_Ct_Debut.text = inputFormat2.format(Ct_Debut);
     textController_Ct_Fin.text = inputFormat2.format(Ct_Fin);
 
     await Filtre();
     AlimSaisie();
-
-
-
-    dataGridController.selectedRows.clear();
-    dataGridController.selectedRows.add(memDataGridRow);
-
   }
 
   Future initLib() async {
@@ -274,13 +278,18 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
     selectedUserInter2 = DbTools.List_UserInter[0];
     selectedUserInterID2 = DbTools.List_UserInterID[0];
-    
+
     selectedUserInter3 = DbTools.List_UserInter[0];
     selectedUserInterID3 = DbTools.List_UserInterID[0];
 
     selectedUserInter4 = DbTools.List_UserInter[0];
     selectedUserInterID4 = DbTools.List_UserInterID[0];
 
+    selectedUserInter5 = DbTools.List_UserInter[0];
+    selectedUserInterID5 = DbTools.List_UserInterID[0];
+
+    selectedUserInter6 = DbTools.List_UserInter[0];
+    selectedUserInterID6 = DbTools.List_UserInterID[0];
 
     Reload();
   }
@@ -297,8 +306,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
       if (textController_Ct_Fin.text.isNotEmpty) {
         Ct_Fin = inputFormat2.parse(textController_Ct_Fin.text);
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
@@ -308,8 +316,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
         if (wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0) {
           ListInterventionsearchresultDate.add(element);
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     if (Search_TextController.text.isEmpty) {
       DbTools.ListInterventionsearchresult.addAll(ListInterventionsearchresultDate);
@@ -327,62 +334,41 @@ class _Zone_IntervState extends State<Zone_Interv> {
     }
 
     DbTools.ListInterventionsearchresult.sort(DbTools.affSortComparisonData);
-
-
     if (DbTools.ListInterventionsearchresult.length > 0) {
       if (DbTools.gIntervention.InterventionId == -1) DbTools.gIntervention = DbTools.ListInterventionsearchresult[0];
     }
 
-    await DbTools.getInterMissionsIntervention(DbTools.gIntervention.InterventionId!);
-    print("Filtre ListInterMission LENGHT ${DbTools.ListInterMission.length}");
-
     intervInfoDataGridSource.handleRefresh();
-
     intervInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'date', sortDirection: DataGridSortDirection.descending));
     intervInfoDataGridSource.sort();
-
 
     setState(() {});
   }
 
   void AlimSaisie() async {
-    print("AlimSaisie A InterventionId ${DbTools.gIntervention.InterventionId}");
     if (DbTools.gIntervention.Intervention_Type!.isNotEmpty) {
       selectedTypeInterID = DbTools.gIntervention.Intervention_Type!;
-      print("selectedTypeInter ${selectedTypeInter}");
-      print("DbTools.List_TypeInter.indexOf(selectedTypeInter) ${DbTools.List_TypeInterID.indexOf(selectedTypeInterID)}");
-      print("DbTools.List_TypeInter ${DbTools.List_TypeInter}");
-
       selectedTypeInter = DbTools.List_TypeInter[DbTools.List_TypeInterID.indexOf(selectedTypeInterID)];
 
       _controllerPartage.clearAllSelection();
-    if(DbTools.gIntervention.Intervention_Partages!.isNotEmpty)
-        {
-          print(" DbTools.gIntervention.Intervention_Partages ${DbTools.gIntervention.Intervention_Partages}");
-
-          List<dynamic> list = json.decode(DbTools.gIntervention.Intervention_Partages!);
-          print(" list ${list.toString()}");
-          List<ValueItem> valueItems = await list.map<ValueItem>((json) {
-            print(" json ${json.toString()}");
-            return ValueItem.fromMap(json);
-          }).toList();
-
-          _controllerPartage.setSelectedOptions(valueItems);
+      if (DbTools.gIntervention.Intervention_Partages!.isNotEmpty) {
+        List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(DbTools.gIntervention.Intervention_Partages!);
+        try {
+          _controllerPartage.setSelectedOptions(wValueItem);
+        } catch (e) {
+          print(" ERROR ${e} ");
         }
+      }
+
       _controllerContrib.clearAllSelection();
-      if(DbTools.gIntervention.Intervention_Contributeurs!.isNotEmpty)
-        {
-          print("DbTools.gIntervention.Intervention_Contributeurs ${DbTools.gIntervention.Intervention_Contributeurs}");
-
-          List<dynamic> list = json.decode(DbTools.gIntervention.Intervention_Contributeurs!);
-          print(" list ${list.toString()}");
-          List<ValueItem> valueItems = await list.map<ValueItem>((json) {
-            print(" json ${json.toString()}");
-            return ValueItem.fromMap(json);
-          }).toList();
-          _controllerContrib.setSelectedOptions(valueItems);
+      if (DbTools.gIntervention.Intervention_Contributeurs!.isNotEmpty) {
+        List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(DbTools.gIntervention.Intervention_Contributeurs!);
+        try {
+          _controllerContrib.setSelectedOptions(wValueItem);
+        } catch (e) {
+          print(" ERROR ${e} ");
         }
-
+      }
     }
 
     print("AlimSaisie B");
@@ -392,15 +378,13 @@ class _Zone_IntervState extends State<Zone_Interv> {
       selectedStatusInterID = DbTools.List_StatusInterID[DbTools.List_StatusInter.indexOf(selectedStatusInter)];
     }
 
-    print("AlimSaisie C");
-
     if (DbTools.gIntervention.Intervention_Facturation!.isNotEmpty) {
       selectedFactInter = DbTools.gIntervention.Intervention_Facturation!;
       print("selectedFactInter ${selectedFactInter}");
       selectedFactInterID = DbTools.List_FactInterID[DbTools.List_FactInter.indexOf(selectedFactInter)];
     }
 
-    print("AlimSaisie D");
+    await DbTools.getInterMissionsIntervention(DbTools.gIntervention.InterventionId!);
 
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
@@ -414,40 +398,39 @@ class _Zone_IntervState extends State<Zone_Interv> {
     selectedUserInter4 = DbTools.List_UserInter[0];
     selectedUserInterID4 = DbTools.List_UserInterID[0];
 
+    selectedUserInter5 = DbTools.List_UserInter[0];
+    selectedUserInterID5 = DbTools.List_UserInterID[0];
 
+    selectedUserInter6 = DbTools.List_UserInter[0];
+    selectedUserInterID6 = DbTools.List_UserInterID[0];
 
     if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
-      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable!);
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable!);
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
       print("Zone_Interv selectedUserInter $selectedUserInter");
-      selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+      selectedUserInterID = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
     if (DbTools.gIntervention.Intervention_Responsable2!.isNotEmpty) {
-      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable2!);
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable2!);
       selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
       print("selectedUserInter2 $selectedUserInter2");
-      selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
+      selectedUserInterID2 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
-
 
     if (DbTools.gIntervention.Intervention_Responsable3!.isNotEmpty) {
-      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable3!);
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable3!);
       selectedUserInter3 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
       print("selectedUserInter3 $selectedUserInter3");
-      selectedUserInterID3 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter3)];
+      selectedUserInterID3 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
-
 
     if (DbTools.gIntervention.Intervention_Responsable4!.isNotEmpty) {
-      DbTools.getUserid(DbTools.gIntervention.Intervention_Responsable4!);
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable4!);
       selectedUserInter4 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
       print("selectedUserInter4 $selectedUserInter4");
-      selectedUserInterID4 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter4)];
+      selectedUserInterID4 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
-
-    print(" DbTools.gIntervention.Intervention_Date! ${DbTools.gIntervention.Intervention_Date!}");
-
 
     textController_Intervention_Date.text = DbTools.gIntervention.Intervention_Date!;
     textController_Intervention_Type.text = DbTools.gIntervention.Intervention_Type!;
@@ -455,6 +438,9 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
     await DbTools.getPlanning_InterventionIdRes(DbTools.gIntervention.InterventionId!);
     print("DbTools.ListUserH ${DbTools.gIntervention.InterventionId!} ${DbTools.ListUserH.length}");
+
+    await DbTools.getPlanning_InterventionId(DbTools.gIntervention.InterventionId!);
+    print("DbTools.ListPlanning ${DbTools.gIntervention.InterventionId!} ${DbTools.ListPlanning.length}");
 
     setState(() {});
   }
@@ -467,9 +453,11 @@ class _Zone_IntervState extends State<Zone_Interv> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
       padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
+//        color: Colors.red,
+
         borderRadius: BorderRadius.circular(4.0),
         border: Border.all(
           color: Colors.black26,
@@ -486,7 +474,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                  padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                   child: InterventionGridWidget(),
                 ),
               ),
@@ -495,10 +483,6 @@ class _Zone_IntervState extends State<Zone_Interv> {
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
                     child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Planning", ToolsPlanning, tooltip: "Planning"),
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(10, 220, 0, 0),
@@ -590,7 +574,6 @@ class _Zone_IntervState extends State<Zone_Interv> {
     ).show();
   }
 
-
   void ToolsBarSave() async {
     DbTools.gIntervention.Intervention_Date = textController_Intervention_Date.text;
     DbTools.gIntervention.Intervention_Type = selectedTypeInterID;
@@ -601,201 +584,365 @@ class _Zone_IntervState extends State<Zone_Interv> {
     DbTools.gIntervention.Intervention_Responsable3 = "$selectedUserInterID3";
     DbTools.gIntervention.Intervention_Responsable4 = "$selectedUserInterID4";
 
-    print("_controllerPartage.selectedOptions ${_controllerPartage.selectedOptions}");
-    List<String> selectedOptions = [];
-      _controllerPartage.selectedOptions.forEach((element) {
-      selectedOptions.add(element.toMaps());
-    });
-    print("selectedOptions ${selectedOptions})");
-    DbTools.gIntervention.Intervention_Partages = "$selectedOptions";
+    DbTools.gIntervention.Intervention_Partages = "${_controllerPartage.selectedOptions}";
+    DbTools.gIntervention.Intervention_Contributeurs = "${_controllerContrib.selectedOptions}";
 
-    selectedOptions.clear();
-    _controllerContrib.selectedOptions.forEach((element) {
-      selectedOptions.add(element.toMaps());
-    });
-    print("selectedOptions ${selectedOptions})");
-    DbTools.gIntervention.Intervention_Contributeurs = "$selectedOptions";
     DbTools.gIntervention.Intervention_Remarque = textController_Intervention_Remarque.text;
     await DbTools.setIntervention(DbTools.gIntervention);
-    await Filtre();
+
+    await Reload();
   }
 
   void ToolsBarAdd() async {
-
-
     print("Zone_Interv_Add >");
     await Zone_Interv_Add.Dialogs_Add(context, true);
     await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-    await Filtre();
+    await Reload();
   }
 
   void ToolsPlanning() async {
     print("ToolsPlanning");
-    await showDialog(context: context, builder: (BuildContext context) => new Planning(bAppBar : true));
+    await showDialog(context: context, builder: (BuildContext context) => new Planning(bAppBar: true));
     AlimSaisie();
   }
 
-
   Widget ContentInterventionCadre(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Container(
-          width: 460,
-          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
-          padding: EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            border: Border.all(color: gColors.primary, width: 1),
-            borderRadius: BorderRadius.circular(5),
-            shape: BoxShape.rectangle,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ContentIntervention(context),
-            ],
-          ),
-        ),
-        Positioned(
-          left: 50,
-          top: 12,
-          child: Container(
-            padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
-            color: Colors.white,
-            child: Text(
-              'Intervention ${DbTools.gIntervention.InterventionId}',
-              style: TextStyle(color: Colors.black, fontSize: 12),
-            ),
-          ),
-        ),
-      ],
+    return Container(
+      width: 800,
+      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+      padding: EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        border: Border.all(color: gColors.primary, width: 1),
+        borderRadius: BorderRadius.circular(5),
+        shape: BoxShape.rectangle,
+        color: gColors.LinearGradient2,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ContentIntervention(context),
+        ],
+      ),
     );
   }
 
-  void Intervenants() async {
-//    await Intervenants_Dialog.Intervenants_dialog(context);
-//    setState(() {});
+
+
+//  int selMnu = 1;
+//  String selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tous";
+
+
+  int selMnu = 4;
+  String selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tâches & Ordes de missions";
+
+
+
+  Widget selMnuIco = Container(
+    width: 30,
+    height: 30,
+    child: Image.asset("assets/images/IM1.png"),
+  );
+  void ToolsBarMnu1() async {
+    setState(() {
+      selMnu = 1;
+      selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tous";
+      selMnuIco = Container(
+        width: 30,
+        height: 30,
+        child: Image.asset("assets/images/IM$selMnu.png"),
+      );
+    });
   }
 
-  void Missions() async {
-    await Missions_Dialog.Missions_dialog(context);
-    setState(() {});
+  void ToolsBarMnu2() async {
+    setState(() {
+      selMnu = 2;
+      selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Commercial";
+      selMnuIco = Container(
+        width: 30,
+        height: 30,
+        child: Image.asset("assets/images/IM$selMnu.png"),
+      );
+    });
+  }
+
+  void ToolsBarMnu3() async {
+    setState(() {
+      selMnu = 3;
+      selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Technique";
+      selMnuIco = Container(
+        width: 30,
+        height: 30,
+        child: Image.asset("assets/images/IM$selMnu.png"),
+      );
+    });
+  }
+
+  void ToolsBarMnu4() async {
+    setState(() {
+      selMnu = 4;
+      selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tâches & Ordes de missions";
+      selMnuIco = Container(
+        width: 30,
+        height: 30,
+        child: Image.asset("assets/images/IM$selMnu.png"),
+      );
+    });
+  }
+
+  void ToolsBarMnu5() async {
+    setState(() {
+      selMnu = 5;
+      selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Habilitations";
+      selMnuIco = Container(
+        width: 30,
+        height: 30,
+        child: Image.asset("assets/images/IM$selMnu.png"),
+      );
+    });
   }
 
 
+
+  String wIntervenants = "";
   Widget ContentIntervention(BuildContext context) {
-
-    String wIntervenants = "";
+    print("selMnu $selMnu");
+    wIntervenants = "";
     for (int i = 0; i < DbTools.ListUserH.length; i++) {
       var element = DbTools.ListUserH[i];
       wIntervenants = "$wIntervenants${wIntervenants.isNotEmpty ? ", " : ""}${element.User_Nom} ${element.User_Prenom} (${element.H}h)";
     }
 
+    Du = DateTime(3000, 1, 1);
+    Au = DateTime(1900, 1, 1);
+
+    for (int i = 0; i < DbTools.ListPlanning.length; i++) {
+      var planning = DbTools.ListPlanning[i];
+      print("•••••••••• Du ${planning.Planning_InterventionstartTime} Au  ${planning.Planning_InterventionendTime}");
+      if (planning.Planning_InterventionstartTime.isBefore(Du)) Du = planning.Planning_InterventionstartTime;
+      if (planning.Planning_InterventionendTime.isAfter(Au)) Au = planning.Planning_InterventionendTime;
+    }
+
     String wMissions = "";
-    print("ContentIntervention ListInterMission LENGHT ${DbTools.ListInterMission.length}");
+    print(" ContentIntervention ListInterMission LENGHT ${DbTools.ListInterMission.length}");
     for (int i = 0; i < DbTools.ListInterMission.length; i++) {
       var element = DbTools.ListInterMission[i];
-      print("ListInterMission InterMission_Nom ${element.InterMission_Nom}");
+      print(" ListInterMission InterMission_Nom ${element.InterMission_Nom}");
       wMissions = "$wMissions${wMissions.isNotEmpty ? ", " : ""}${element.InterMission_Nom}";
     }
 
+    double wI = 380;
     return FocusTraversalGroup(
         policy: OrderedTraversalPolicy(),
         child: Expanded(
-            child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: Column(
-
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-
-                    children: [
-                  Container(
-                      padding: EdgeInsets.all(15),
-                      child: Center(
-                          child: InkWell(
-                        child: Row(
-                          children: [
-                            Icon(Icons.calendar_today, size: 20),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Text(
-                              textController_Intervention_Date.text,
-                              style: gColors.bodySaisie_B_B,
-                            ),
-                          ],
-                        ),
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(context: context, initialDate: wDateTime, firstDate: DateTime(DateTime.now().year - 10), lastDate: DateTime(DateTime.now().year + 10));
-                          if (pickedDate != null) {
-                            wDateTime = pickedDate;
-                            print("pickedDate ${pickedDate}");
-                            String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
-                            print("formattedDate ${formattedDate}");
-
-                            setState(() {
-                              textController_Intervention_Date.text = formattedDate;
-                            });
-                          } else {}
-                        },
-                      ))),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                    child: Row(
+                child: Row(
+                  children: [
+                    Row(
                       children: [
-                        gColors.Txt(100, "Organes", "${DbTools.getParam_Param_Text("Type_Organe", DbTools.gIntervention.Intervention_Parcs_Type!)}"),
+                        selMnuIco,
+                        Container(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            width: wI,
+                            child: Text(
+                              selMnuTxt,
+                              style: gColors.bodyTitle1_B_Gr,
+                            ))
                       ],
                     ),
-                  ),
-                  selectedTypeInter.isEmpty
-                      ? Container()
-                      : gColors.DropdownButtonTypeInter(100, 8, "Type", selectedTypeInter, (sts) {
-                          setState(() {
-                            selectedTypeInter = sts!;
-                            selectedTypeInterID = DbTools.List_TypeInterID[DbTools.List_TypeInter.indexOf(selectedTypeInter)];
-                            print("onCHANGE selectedTypeInter $selectedTypeInter");
-                            print("onCHANGE selectedTypeInterID $selectedTypeInterID");
-                          });
-                        }, DbTools.List_TypeInter, DbTools.List_TypeInterID),
-                  selectedStatusInter.isEmpty
-                      ? Container()
-                      : gColors.DropdownButtonTypeInter(100, 8, "Status", selectedStatusInter, (sts) {
-                          setState(() {
-                            selectedStatusInter = sts!;
-                            selectedStatusInterID = DbTools.List_StatusInterID[DbTools.List_StatusInter.indexOf(selectedStatusInter)];
-                            print("onCHANGE selectedStatusInter $selectedStatusInter");
-                            print("onCHANGE selectedStatusInterID $selectedStatusInterID");
-                          });
-                        }, DbTools.List_StatusInter, DbTools.List_StatusInterID),
-                  selectedFactInter.isEmpty
-                      ? Container()
-                      : gColors.DropdownButtonTypeInter(100, 8, "Facturation", selectedFactInter, (sts) {
-                          setState(() {
-                            selectedFactInter = sts!;
-                            selectedFactInterID = DbTools.List_FactInterID[DbTools.List_FactInter.indexOf(selectedFactInter)];
-                            print("onCHANGE selectedFactInter $selectedFactInter");
-                            print("onCHANGE selectedFactInterID $selectedFactInterID");
-                          });
-                        }, DbTools.List_FactInter, DbTools.List_FactInterID),
-                  gColors.DropdownButtonTypeInterC(180, 8, "Commercial intervention", selectedUserInter, (sts) {
-                    setState(() {
-                      selectedUserInter = sts!;
-                      selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
-                      print("onCHANGE selectedUserInter $selectedUserInter");
-                      print("onCHANGE selectedUserInterID $selectedUserInterID");
-                    });
-                  }, DbTools.List_UserInter, DbTools.List_UserInterID),
-                  gColors.DropdownButtonTypeInterC(180, 8, "Manager Commercial", selectedUserInter2, (sts) {
-                    setState(() {
-                      selectedUserInter2 = sts!;
-                      selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
-                      print("onCHANGE selectedUserInter2 $selectedUserInter2");
-                      print("onCHANGE selectedUserInterID2 $selectedUserInterID2");
-                    });
-                  }, DbTools.List_UserInter, DbTools.List_UserInterID),
+                    Spacer(),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'IM1', ToolsBarMnu1, tooltip: "tous"),
+                    ),
+                    Container(padding: EdgeInsets.fromLTRB(10, 0, 10, 0), child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'IM2', ToolsBarMnu2, tooltip: "Commercial")),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'IM3', ToolsBarMnu3, tooltip: "Technique"),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'IM4', ToolsBarMnu4, tooltip: "Tâches & Ordes de missions"),
+                    ),
 
-                      gColors.DropdownButtonTypeInterC(180, 8, "Manager Technique Intervention", selectedUserInter3, (sts) {
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, 'IM6', ToolsBarMnu5, tooltip: "Habilitations"),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                color: Colors.black,
+                height: 1,
+              ),
+              selMnu == 1
+                  ? Container(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Block_Entete(context),
+                        Container(
+                          height: 10,
+                        ),
+                        Block_Commercial(context),
+                        Block_Technique(context),
+                        Block_Mission(context),
+                      ]))
+                  : Container(),
+              selMnu == 2
+                  ? Container(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Block_Entete(context),
+                        Container(
+                          height: 10,
+                        ),
+                        Block_Commercial(context),
+                        Block_Mission(context),
+                      ]))
+                  : Container(),
+              selMnu == 3
+                  ? Container(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Block_Entete(context),
+                        Block_Technique(context),
+                        Block_Mission(context),
+                      ]))
+                  : Container(),
+              selMnu == 4
+                  ? Container(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Block_Entete(context),
+                        Mission(),
+                      ]))
+                  : Container(),
+              selMnu == 5
+                  ? Container(
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Block_Entete(context),
+                        Container(
+                          height: 10,
+                        ),
+                      ]))
+                  : Container(),
+            ],
+          ),
+        ));
+  }
+
+  double wLD = 384;
+  double wLabelD = 90;
+
+  Widget Block_Mission(BuildContext context) {
+    return Container(
+      width: 800,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+            child: Text(
+              "Ordre de mission",
+              style: gColors.bodyTitle1_B_Gr,
+            ),
+          ),
+          Container(
+            width: 800,
+            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+            decoration: BoxDecoration(
+              border: Border.all(color: gColors.primary, width: 1),
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+              color: gColors.white,
+            ),
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Image.asset("assets/images/IM4.png"),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Text(
+                      "Mission :",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: 290,
+                      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                      child: Text(
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris"
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        style: gColors.bodySaisie_B_G,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget Block_Technique(BuildContext context) {
+    return Container(
+      width: 800,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+            child: Text(
+              "Technique",
+              style: gColors.bodyTitle1_B_Gr,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: wLD,
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gColors.primary, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  shape: BoxShape.rectangle,
+                  color: gColors.white,
+                ),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Image.asset("assets/images/IM3.png"),
+                      ),
+                      gColors.DropdownButtonTypeInterC2(wLabelD, 8, "Manager Tech", selectedUserInter3, (sts) {
                         setState(() {
                           selectedUserInter3 = sts!;
                           selectedUserInterID3 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter3)];
@@ -803,9 +950,32 @@ class _Zone_IntervState extends State<Zone_Interv> {
                           print("onCHANGE selectedUserInterID3 $selectedUserInterID3");
                         });
                       }, DbTools.List_UserInter, DbTools.List_UserInterID),
-
-
-                      gColors.DropdownButtonTypeInterC(180, 8, "Référent Technique", selectedUserInter4, (sts) {
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Container(
+                width: wLD,
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gColors.primary, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  shape: BoxShape.rectangle,
+                  color: gColors.white,
+                ),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Image.asset("assets/images/IM3b.png"),
+                      ),
+                      gColors.DropdownButtonTypeInterC2(wLabelD, 8, "Pilot Projet", selectedUserInter4, (sts) {
                         setState(() {
                           selectedUserInter4 = sts!;
                           selectedUserInterID4 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter4)];
@@ -813,114 +983,616 @@ class _Zone_IntervState extends State<Zone_Interv> {
                           print("onCHANGE selectedUserInterID4 $selectedUserInterID4");
                         });
                       }, DbTools.List_UserInter, DbTools.List_UserInterID),
-
-
-
-
-                      Container(
-                    padding: EdgeInsets.fromLTRB(0, 6, 0, 10),
-                    child: Text(
-                      "Partage de l'évenènement/Intervention avec :",
-                      style: gColors.bodySaisie_N_G,
-                    ),
+                    ],
                   ),
-
-                  MultiSelectDropDown(
-                    controller: _controllerPartage,
-
-                    onOptionSelected: (List<ValueItem> selectedOptions) {},
-                    options: DbTools.List_ValueItem_User,
-                    selectionType: SelectionType.multi,
-                    chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-                    dropdownHeight: 300,
-                    optionTextStyle: gColors.bodySaisie_B_B,
-                    selectedOptionIcon: const Icon(Icons.check_circle),
-                  ),
-
-                  Container(
-                    padding: EdgeInsets.fromLTRB(0, 6, 0, 10),
-                    child: Text(
-                      "Contributeurs de l'évenènement/Intervention :",
-                      style: gColors.bodySaisie_N_G,
-                    ),
-                  ),
-
-                  MultiSelectDropDown(
-                    controller: _controllerContrib,
-
-                    onOptionSelected: (List<ValueItem> selectedOptions) {
-
-                    },
-                    options: DbTools.List_ValueItem_User,
-                    selectionType: SelectionType.multi,
-                    chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-                    dropdownHeight: 300,
-                    optionTextStyle: const TextStyle(fontSize: 16),
-                    selectedOptionIcon: const Icon(Icons.check_circle),
-                  ),
-
-
-
-                  Row(
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: wLD,
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gColors.primary, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  shape: BoxShape.rectangle,
+                  color: gColors.white,
+                ),
+                child: Container(
+                  child: Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.fromLTRB(10, 20, 20, 20),
-                        child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.red, Icons.people, Intervenants, tooltip: "Équipe d'intevention (Techniciens, TC, ...)"),
+                        width: 30,
+                        height: 30,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Image.asset("assets/images/IM3c.png"),
                       ),
+                      gColors.DropdownButtonTypeInterC2(wLabelD, 8, "Cond. travaux", selectedUserInter5, (sts) {
+                        setState(() {
+                          selectedUserInter5 = sts!;
+                          selectedUserInterID5 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter5)];
+                          print("onCHANGE selectedUserInter5 $selectedUserInter5");
+                          print("onCHANGE selectedUserInterID5 $selectedUserInterID5");
+                        });
+                      }, DbTools.List_UserInter, DbTools.List_UserInterID),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Container(
+                width: wLD,
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gColors.primary, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  shape: BoxShape.rectangle,
+                  color: gColors.white,
+                ),
+                child: Container(
+                  child: Row(
+                    children: [
                       Container(
+                        width: 30,
+                        height: 30,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Image.asset("assets/images/IM3d.png"),
+                      ),
+                      gColors.DropdownButtonTypeInterC2(wLabelD, 8, "Chef d'équipe", selectedUserInter6, (sts) {
+                        setState(() {
+                          selectedUserInter6 = sts!;
+                          selectedUserInterID6 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter6)];
+                          print("onCHANGE selectedUserInter6 $selectedUserInter6");
+                          print("onCHANGE selectedUserInterID6 $selectedUserInterID6");
+                        });
+                      }, DbTools.List_UserInter, DbTools.List_UserInterID),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 800,
+            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+            decoration: BoxDecoration(
+              border: Border.all(color: gColors.primary, width: 1),
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+              color: gColors.white,
+            ),
+            child: InkWell(
+              onTap: () async {
+
+              },
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 30,
+                      height: 30,
+                      padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                      child: Image.asset("assets/images/IM3e.png"),
+                    ),
+                    Container(
+                      width: 110,
+                      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: Text(
+                        "Techniciens :",
+                        style: gColors.bodySaisie_N_G,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
                         width: 290,
-                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
                         child: Text(
                           wIntervenants,
                           maxLines: 3,
-                          style: gColors.bodySaisie_N_G,
+                          style: gColors.bodySaisie_B_G,
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 800,
+            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+            decoration: BoxDecoration(
+              border: Border.all(color: gColors.primary, width: 1),
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+              color: gColors.white,
+            ),
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Image.asset("assets/images/IM3f.png"),
                   ),
-                  Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.fromLTRB(10, 20, 20, 20),
-                        child: CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.engineering, Missions, tooltip: "Missions"),
+                  Container(
+                    width: 110,
+                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Text(
+                      "Sous-traitants :",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: 290,
+                      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                      child: Text(
+                        wIntervenants,
+                        maxLines: 3,
+                        style: gColors.bodySaisie_B_G,
                       ),
-                      Container(
-                        width: 290,
-                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        child: Text(
-                          wMissions,
-                          maxLines: 3,
-                          style: gColors.bodySaisie_N_G,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      gColors.TxtField(100, 40, "Remarque", textController_Intervention_Remarque, Ligne: 5),
-                    ],
-                  ),
-                ]))));
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
+  Widget Block_Commercial(BuildContext context) {
+    return Container(
+      width: 800,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+            child: Text(
+              "Commercial",
+              style: gColors.bodyTitle1_B_Gr,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: wLD,
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gColors.primary, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  shape: BoxShape.rectangle,
+                  color: gColors.white,
+                ),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Image.asset("assets/images/IM2.png"),
+                      ),
+                      gColors.DropdownButtonTypeInterC2(90, 8, "Commercial", selectedUserInter, (sts) {
+                        setState(() {
+                          selectedUserInter = sts!;
+                          selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+                          print("onCHANGE selectedUserInter $selectedUserInter");
+                          print("onCHANGE selectedUserInterID $selectedUserInterID");
+                        });
+                      }, DbTools.List_UserInter, DbTools.List_UserInterID),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Container(
+                width: wLD,
+                padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gColors.primary, width: 1),
+                  borderRadius: BorderRadius.circular(5),
+                  shape: BoxShape.rectangle,
+                  color: gColors.white,
+                ),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                        child: Image.asset("assets/images/IM2b.png"),
+                      ),
+                      gColors.DropdownButtonTypeInterC2(90, 8, "Manager Com", selectedUserInter2, (sts) {
+                        setState(() {
+                          selectedUserInter2 = sts!;
+                          selectedUserInterID2 = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter2)];
+                          print("onCHANGE selectedUserInter2 $selectedUserInter2");
+                          print("onCHANGE selectedUserInterID2 $selectedUserInterID2");
+                        });
+                      }, DbTools.List_UserInter, DbTools.List_UserInterID),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 800,
+            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+            decoration: BoxDecoration(
+              border: Border.all(color: gColors.primary, width: 1),
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+              color: gColors.white,
+            ),
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Image.asset("assets/images/IM2c.png"),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Text(
+                      "Partage commercial",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                  ),
+                  Expanded(
+                    child: MultiSelectDropDown(
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      hint: "",
+                      borderWidth: 0,
+                      borderColor: Colors.transparent,
+                      controller: _controllerPartage,
+                      onOptionSelected: (List<ValueItem> selectedOptions) {
+                        print("selectedOptions ${selectedOptions.toString()}");
+                        print("selectedOptions ${_controllerPartage.selectedOptions.toString()}");
+                      },
+                      options: DbTools.List_ValueItem_User,
+                      selectionType: SelectionType.multi,
+                      chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                      dropdownHeight: 300,
+                      optionTextStyle: gColors.bodySaisie_B_B,
+                      selectedOptionIcon: const Icon(Icons.check_circle),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            width: 800,
+            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+            decoration: BoxDecoration(
+              border: Border.all(color: gColors.primary, width: 1),
+              borderRadius: BorderRadius.circular(5),
+              shape: BoxShape.rectangle,
+              color: gColors.white,
+            ),
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                    child: Image.asset("assets/images/IM2d.png"),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Text(
+                      "Contributeurs commerciaux",
+                      style: gColors.bodySaisie_N_G,
+                    ),
+                  ),
+                  Expanded(
+                    child: MultiSelectDropDown(
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      hint: "",
+                      borderWidth: 0,
+                      borderColor: Colors.transparent,
+                      controller: _controllerContrib,
+                      onOptionSelected: (List<ValueItem> selectedOptions) {
+                        print("selectedOptions ${selectedOptions.toString()}");
+                        print("selectedOptions ${_controllerContrib.selectedOptions.toString()}");
+                      },
+                      options: DbTools.List_ValueItem_User,
+                      selectionType: SelectionType.multi,
+                      chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                      dropdownHeight: 300,
+                      optionTextStyle: gColors.bodySaisie_B_B,
+                      selectedOptionIcon: const Icon(Icons.check_circle),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          selMnu == 2
+              ? Container(
+                  width: 800,
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: gColors.primary, width: 1),
+                    borderRadius: BorderRadius.circular(5),
+                    shape: BoxShape.rectangle,
+                    color: gColors.white,
+                  ),
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                          child: Image.asset("assets/images/IM3f.png"),
+                        ),
+                        Container(
+                          width: 110,
+                          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                          child: Text(
+                            "Sous-traitants :",
+                            style: gColors.bodySaisie_N_G,
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            width: 290,
+                            padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
+                            child: Text(
+                              wIntervenants,
+                              maxLines: 3,
+                              style: gColors.bodySaisie_B_G,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Container(),
+        ],
+      ),
+    );
+  }
+
+  Widget Block_Entete(BuildContext context) {
+    return Container(
+        width: 800,
+        padding: EdgeInsets.fromLTRB(4, 10, 4, 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: gColors.primary, width: 1),
+          borderRadius: BorderRadius.circular(5),
+          shape: BoxShape.rectangle,
+          color: gColors.white,
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    width: wLD,
+                    child: InkWell(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Container(
+                            width: 20,
+                            height: 20,
+                            child: Image.asset("assets/images/ico_Date.png", fit: BoxFit.cover),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "${textController_Intervention_Date.text} ( Du ${DateFormat('dd/MM/yyyy').format(Du)} au ${DateFormat('dd/MM/yyyy').format(Au)})",
+                            style: gColors.bodySaisie_B_B,
+                          ),
+                        ],
+                      ),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(context: context, initialDate: wDateTime, firstDate: DateTime(DateTime.now().year - 10), lastDate: DateTime(DateTime.now().year + 10));
+                        if (pickedDate != null) {
+                          wDateTime = pickedDate;
+                          print("pickedDate ${pickedDate}");
+                          String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+                          print("formattedDate ${formattedDate}");
+
+                          setState(() {
+                            textController_Intervention_Date.text = formattedDate;
+                          });
+                        } else {}
+                      },
+                    )),
+                Container(
+                  width: wLD,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: Row(
+                          children: [
+                            gColors.Txt(100, "Organes", "${DbTools.getParam_Param_Text("Type_Organe", DbTools.gIntervention.Intervention_Parcs_Type!)}"),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: wLD,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 5,
+                      ),
+                      selectedTypeInter.isEmpty
+                          ? Container()
+                          : gColors.DropdownButtonTypeInter(30, 8, "Type", selectedTypeInter, (sts) {
+                              setState(() {
+                                selectedTypeInter = sts!;
+                                selectedTypeInterID = DbTools.List_TypeInterID[DbTools.List_TypeInter.indexOf(selectedTypeInter)];
+                              });
+                            }, DbTools.List_TypeInter, DbTools.List_TypeInterID),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: wLD,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      selectedStatusInter.isEmpty
+                          ? Container()
+                          : gColors.DropdownButtonTypeInter(100, 8, "Status", selectedStatusInter, (sts) {
+                              setState(() {
+                                selectedStatusInter = sts!;
+                                selectedStatusInterID = DbTools.List_StatusInterID[DbTools.List_StatusInter.indexOf(selectedStatusInter)];
+                              });
+                            }, DbTools.List_StatusInter, DbTools.List_StatusInterID),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: wLD,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 5,
+                      ),
+                      (!DbTools.gClient.Client_Contrat)
+                          ? Container()
+                          : Row(
+                              children: [
+                                Text(
+                                  "Contrat ",
+                                  style: gColors.bodySaisie_N_G,
+                                ),
+                                (DbTools.gClient.Client_Contrat_No.isEmpty)
+                                    ? Container()
+                                    : Text(
+                                        "N° ${DbTools.gClient.Client_Contrat_No} - ",
+                                        style: gColors.bodySaisie_B_G,
+                                      ),
+                                Text(
+                                  "${DbTools.gClient.Client_TypeContrat}",
+                                  style: gColors.bodySaisie_B_G,
+                                )
+                              ],
+                            )
+                    ],
+                  ),
+                ),
+                Container(
+                  width: wLD,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      selectedFactInter.isEmpty
+                          ? Container()
+                          : gColors.DropdownButtonTypeInter(100, 8, "Facturation", selectedFactInter, (sts) {
+                              setState(() {
+                                selectedFactInter = sts!;
+                                selectedFactInterID = DbTools.List_FactInterID[DbTools.List_FactInter.indexOf(selectedFactInter)];
+                                print("onCHANGE selectedFactInter $selectedFactInter");
+                                print("onCHANGE selectedFactInterID $selectedFactInterID");
+                              });
+                            }, DbTools.List_FactInter, DbTools.List_FactInterID),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ));
+  }
 
   DataGridController getDataGridController() {
-
-
     return dataGridController;
   }
-
 
   Widget InterventionGridWidget() {
     return Column(children: [
       ToolsBar(context),
       Container(
           decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
-          height: MediaQuery.of(context).size.height - 280,
+          height: MediaQuery.of(context).size.height - 250,
           child: SfDataGridTheme(
               data: SfDataGridThemeData(
                 headerColor: gColors.secondary,
-                selectionColor: gColors.backgroundColor,
+                selectionColor: gColors.transparent,
               ),
               child: SfDataGrid(
                 //*********************************
@@ -942,13 +1614,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
                   AlimSaisie();
                   if (wColSel == 0) {
                     await showDialog(
-                    context: context,
-                    builder: (BuildContext context) => new Intervention_Dialog(
-                      site: DbTools.gSite,
-                    ));
-                    Reload();
-
+                        context: context,
+                        builder: (BuildContext context) => new Intervention_Dialog(
+                              site: DbTools.gSite,
+                            ));
                   }
+                  Reload();
                 },
 
                 //*********************************

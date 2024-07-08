@@ -91,9 +91,9 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
 
 
       tabs: [
-        'Description',
-        'Articles liés à la Vérif',
-        'Articles liés',
+        Text('Description'),
+        Text('Articles liés à la Vérif'),
+        Text('Articles liés'),
 
       ],
     );

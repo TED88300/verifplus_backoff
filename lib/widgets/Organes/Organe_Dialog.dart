@@ -306,13 +306,13 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
       unselectedTextStyle: gColors.bodyTitle1_B_Gr,
       tabExtent: 40,
       tabs: [
-        'Equipement',
-        'Audit',
-        'Vérification',
-        'Pièces',
-        'Mixte',
-        'Services',
-        'Synthèse',
+        Text('Equipement'),
+        Text('Audit'),
+        Text('Vérification'),
+        Text('Pièces'),
+        Text('Mixte'),
+        Text('Services'),
+        Text('Synthèse'),
       ],
     );
   }

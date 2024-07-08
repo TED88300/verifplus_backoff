@@ -50,9 +50,7 @@ class User_EditState extends State<User_Edit> {
   int selectedValueUser_NivHabID = 0;
 
   static List<String> ListParam_ParamUser_TypeUser = [];
-  static List<int> ListParam_ParamUser_TypeUserID = [];
   String selectedValueUser_TypeUser = "";
-  int selectedValueUser_TypeUserID = 0;
 
   static List<String> ListParam_ParamDepot = [];
   String selectedValueDepot = "";
@@ -74,12 +72,12 @@ class User_EditState extends State<User_Edit> {
   }
 
   Future Reload() async {
-    await DbTools.getClient_User_CSIP(widget.user.UserID);
+    await DbTools.getClient_User_CSIP(widget.user.User_Matricule);
 
     await DbTools.getParam_ParamAll();
     print("ListParam_ParamAll ${DbTools.ListParam_Param.length}");
 
-    String wUserImg = "User_${widget.user.UserID}.jpg";
+    String wUserImg = "User_${widget.user.User_Matricule}.jpg";
     pic = await gColors.getImage(wUserImg);
 
     print("pic $wUserImg"); // ${pic}");
@@ -99,13 +97,13 @@ class User_EditState extends State<User_Edit> {
 
     imgList.clear();
     for (int i = 0; i < 10; i++) {
-      String wDocImgPathDel = "User_${widget.user.UserID}_Doc_$i.pdf";
+      String wDocImgPathDel = "User_${widget.user.User_Matricule}_Doc_$i.pdf";
       final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
       Uint8List? _bytes = await gColors.getImage(wDocImgPathDel);
 
       print("_bytes length ${_bytes.length}");
       if (_bytes.length > 0) {
-        Widget wWidgetPdf = SfPdfViewer.memory(
+        SfPdfViewer wSfPdfViewer = SfPdfViewer.memory(
           _bytes,
           key: _pdfViewerKey,
           enableDocumentLinkAnnotation: false,
@@ -118,13 +116,13 @@ class User_EditState extends State<User_Edit> {
             Container(
               width: 200,
               height: 200,
-              child: wWidgetPdf,
+              child: wSfPdfViewer,
             ),
             Row(
               children: [
                 IconButton(
                   onPressed: () async {
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => PdfView(pdf: wWidgetPdf)));
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => PdfView(wSfPdfViewer: wSfPdfViewer)));
                     Reload();
                   },
                   icon: Icon(Icons.open_with, color: Colors.green),
@@ -200,22 +198,17 @@ class User_EditState extends State<User_Edit> {
     selectedValueUser_NivHabID = ListParam_ParamUser_NivHabID[0];
 
     ListParam_ParamUser_TypeUser.clear();
-    ListParam_ParamUser_TypeUserID.clear();
     DbTools.ListParam_ParamAll.forEach((element) {
       if (element.Param_Param_Type.compareTo("TypeUser") == 0) {
         ListParam_ParamUser_TypeUser.add(element.Param_Param_Text);
-        ListParam_ParamUser_TypeUserID.add(element.Param_ParamId);
       }
     });
     selectedValueUser_TypeUser = ListParam_ParamUser_TypeUser[0];
-    selectedValueUser_TypeUserID = ListParam_ParamUser_TypeUserID[0];
 
     for (int i = 0; i < ListParam_ParamUser_TypeUser.length; i++) {
-      int element = ListParam_ParamUser_TypeUserID[i];
-      print("element $element widget.user.User_TypeUserID ${widget.user.User_TypeUserID}");
-      if (element == widget.user.User_TypeUserID) {
+      String element = ListParam_ParamUser_TypeUser[i];
+      if (element == widget.user.User_TypeUser) {
         selectedValueUser_TypeUser = ListParam_ParamUser_TypeUser[i];
-        selectedValueUser_TypeUserID = ListParam_ParamUser_TypeUserID[i];
       }
     }
 
@@ -415,7 +408,7 @@ class User_EditState extends State<User_Edit> {
                             widget.user.User_Service = selectedValueService;
                             widget.user.User_Famille = selectedValueFamille;
                             widget.user.User_NivHabID = selectedValueUser_NivHabID;
-                            widget.user.User_TypeUserID = selectedValueUser_TypeUserID;
+                            widget.user.User_TypeUser = selectedValueUser_TypeUser;
                             widget.user.User_Fonction = selectedValueFonction;
                             widget.user.User_Depot = selectedValueDepot;
                             widget.user.User_Actif = User_Actif;
@@ -656,19 +649,27 @@ class User_EditState extends State<User_Edit> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 350,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+            )),
       ),
       IconButton(
         icon: Icon(Icons.settings),
@@ -712,19 +713,27 @@ class User_EditState extends State<User_Edit> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 350,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+            )),
       ),
       IconButton(
         icon: Icon(Icons.settings),
@@ -768,19 +777,27 @@ class User_EditState extends State<User_Edit> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 305,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+            )),
       ),
       IconButton(
         icon: Icon(Icons.settings),
@@ -818,25 +835,33 @@ class User_EditState extends State<User_Edit> {
           value: selectedValueUser_TypeUser,
           onChanged: (value) {
             setState(() {
-              selectedValueUser_TypeUserID = ListParam_ParamUser_TypeUserID[ListParam_ParamUser_TypeUser.indexOf(value!)];
-              selectedValueUser_TypeUser = value;
-              print("selectedValueUser_TypeUser $selectedValueUser_TypeUserID $selectedValueUser_TypeUser");
+
+              selectedValueUser_TypeUser = value!;
+              print("selectedValueUser_TypeUser $selectedValueUser_TypeUser");
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 290,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+            )),
       ),
  /*     IconButton(
         icon: Icon(Icons.settings),
@@ -880,19 +905,27 @@ class User_EditState extends State<User_Edit> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 350,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+            )),
       ),
       IconButton(
         icon: Icon(Icons.settings),
@@ -935,18 +968,24 @@ class User_EditState extends State<User_Edit> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 350,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
         )),
       ),
       IconButton(
@@ -1024,7 +1063,7 @@ class User_EditState extends State<User_Edit> {
   //**************************************************
 
   Widget Photo() {
-    String wImgPath = "${DbTools.SrvImg}User_${widget.user.UserID}.jpg";
+    String wImgPath = "${DbTools.SrvImg}User_${widget.user.User_Matricule}.jpg";
     print("wImgPath $wImgPath");
     return Container(
         padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -1055,7 +1094,7 @@ class User_EditState extends State<User_Edit> {
   //**************************************************
 
   Widget Doc() {
-    String wImgPath = "${DbTools.SrvImg}User_${widget.user.UserID}.jpg";
+    String wImgPath = "${DbTools.SrvImg}User_${widget.user.User_Matricule}.jpg";
 
     print("DOCDOCDOCDOC wImgPath $wImgPath  imgList.length ${imgList.length}");
 
@@ -1103,15 +1142,15 @@ class User_EditState extends State<User_Edit> {
   }
 
   _startFilePicker(VoidCallback onSetState) async {
-    print("UploadFilePicker > User_${widget.user.UserID}.jpg");
-    await Upload.UploadFilePicker("User_${widget.user.UserID}.jpg", onSetState);
+    print("UploadFilePicker > User_${widget.user.User_Matricule}.jpg");
+    await Upload.UploadFilePicker("User_${widget.user.User_Matricule}.jpg", onSetState);
     print("UploadFilePicker <");
     print("UploadFilePicker <<");
   }
 
   _startFileDoc(VoidCallback onSetState, int i) async {
-    print("UploadFilePicker > User_${widget.user.UserID}.jpg");
-    await Upload.UploadDocPicker("User_${widget.user.UserID}_Doc_$i.pdf", onSetState);
+    print("UploadFilePicker > User_${widget.user.User_Matricule}.jpg");
+    await Upload.UploadDocPicker("User_${widget.user.User_Matricule}_Doc_$i.pdf", onSetState);
     print("UploadFilePicker <");
     print("UploadFilePicker <<");
   }

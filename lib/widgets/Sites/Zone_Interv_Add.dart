@@ -40,6 +40,10 @@ class _Zone_IntervAddState extends State<Zone_IntervAdd> {
 
   @override
   void initLib() async {
+
+    print(" DbTools.gZone.ZoneId ${DbTools.gZone.ZoneId}");
+
+
     print("Zone_Interv_Add initLib");
     selectedTypeInter = DbTools.List_TypeInter[0];
     selectedTypeInterID = DbTools.List_TypeInterID[0];
@@ -216,7 +220,6 @@ class _Zone_IntervAddState extends State<Zone_IntervAdd> {
           new ElevatedButton(
             onPressed: () async {
 
-
               print(" selectedTypeInter ${selectedTypeInter}");
               print(" selectedParcTypeInter ${selectedParcTypeInter}");
 
@@ -226,6 +229,10 @@ class _Zone_IntervAddState extends State<Zone_IntervAdd> {
               print("addIntervention DbTools.gLastID ${DbTools.gLastID}");
               await DbTools.getInterventionIDSrv(DbTools.gLastID);
               DbTools.gIntervention.Intervention_Parcs_Type = selectedParcTypeInterID;
+
+              DbTools.gIntervention.Intervention_Status = "A programmer";
+
+
               await DbTools.setIntervention(DbTools.gIntervention);
               //await DbTools.addParc_Ent(DbTools.gIntervention.InterventionId!,selectedParcTypeInterID);
               print("addParc_Ent DbTools.gLastID ${DbTools.gLastID}");

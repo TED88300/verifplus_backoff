@@ -15,6 +15,7 @@ class Client {
   String Client_Commercial = "";
   String Client_Createur = "";
   bool Client_Contrat = false;
+  String Client_Contrat_No = "";
 
   String Client_TypeContrat = "";
   String Client_Statut = "";
@@ -32,10 +33,11 @@ class Client {
 
 
   String Client_Origine_CSIP   = "";
-
+  String Adresse_CP_Livr     = "";
+  String Adresse_Ville_Livr  = "";
 
   static ClientInit() {
-    return Client(0, "", false, "", "","", false, false, "", "", "", "", "", "", "", false, "","", "", "", "", "", "", "", "","");
+    return Client(0, "", false, "", "","", false, false, "", "", "", "", "", "", "", false, "","", "", "", "", "", "", "", "","", "", "", "");
   }
 
   Client(
@@ -55,17 +57,20 @@ class Client {
     String Client_Commercial,
       String Client_Createur,
     bool   Client_Contrat      ,
-    String Client_TypeContrat  ,
+    String Client_Contrat_No  ,
+      String Client_TypeContrat  ,
       String Client_Statut  ,
     String Client_Ct_Debut        ,
       String Client_Ct_Fin        ,
     String Client_Organes      ,
       String Users_Nom      ,
-
     String Adresse_Adr1,
       String Adresse_CP,
     String Adresse_Ville,
     String Adresse_Pays,
+
+      String Adresse_CP_Livr,
+      String Adresse_Ville_Livr,
   ) {
     this.ClientId = ClientId;
     this.Client_CodeGC = Client_CodeGC;
@@ -83,6 +88,7 @@ class Client {
     this.Client_Commercial = Client_Commercial;
     this.Client_Createur = Client_Createur;
     this.Client_Contrat     = Client_Contrat    ;
+    this.Client_Contrat_No = Client_Contrat_No;
     this.Client_TypeContrat = Client_TypeContrat;
     this.Client_Statut = Client_Statut;
     this.Client_Ct_Debut       = Client_Ct_Debut      ;
@@ -95,15 +101,20 @@ class Client {
     this.Adresse_CP      = Adresse_CP     ;
     this.Adresse_Ville   = Adresse_Ville  ;
     this.Adresse_Pays    = Adresse_Pays   ;
+
+    this.Adresse_CP_Livr      = Adresse_CP_Livr     ;
+    this.Adresse_Ville_Livr   = Adresse_Ville_Livr  ;
   }
 
   factory Client.fromJson(Map<String, dynamic> json) {
-    print("json $json");
 
     if (json['Client_Civilite'] == null) json['Client_Civilite'] ="";
     if (json['Adresse_Adr1'] == null) json['Adresse_Adr1'] ="";
     if (json['Adresse_CP'] == null) json['Adresse_CP'] ="";
     if (json['Adresse_Ville'] == null) json['Adresse_Ville'] ="";
+
+    if (json['Adresse_CP_Livr'] == null) json['Adresse_CP_Livr'] ="";
+    if (json['Adresse_Ville_Livr'] == null) json['Adresse_Ville_Livr'] ="";
     if (json['Adresse_Pays'] == null) json['Adresse_Pays'] ="";
     if (json['Client_Organes'] == null)         json['Client_Organes'] ="";
     if (json['Client_Contrat'] == null) json['Client_Contrat'] ="0";
@@ -111,9 +122,8 @@ class Client {
     if (json['Client_OK_DataPerso'] == null) json['Client_OK_DataPerso'] ="1";
     if (json['Client_CL_Pr'] == null) json['Client_CL_Pr'] ="0";
     if (json['Livr'] == null) json['Livr'] ="";
-
-
     if (json['Users_Nom'] == null) json['Users_Nom'] ="";
+
 
 
     Client wTmp = Client(
@@ -133,6 +143,7 @@ class Client {
       json['Client_Commercial'],
       json['Client_Createur'],
       int.parse(json['Client_Contrat']) == 1,
+      json['Client_Contrat_No'],
       json['Client_TypeContrat'],
       json['Client_Statut'],
       json['Client_Ct_Debut'],
@@ -143,6 +154,8 @@ class Client {
       json['Adresse_CP'],
       json['Adresse_Ville'],
       json['Adresse_Pays'],
+      json['Adresse_CP_Livr'],
+      json['Adresse_Ville_Livr'],
     );
 
     return wTmp;
@@ -168,13 +181,14 @@ class Client {
       json['Client_Commercial'],
       json['Client_Createur'],
       int.parse(json['Client_Contrat']) == 1,
-      json['Client_TypeContrat'],
+      json['Client_Contrat_No'],
+        json['Client_TypeContrat'],
         json['Client_Statut'],
       json['Client_Ct_Debut'],
       json['Client_Ct_Fin'],
       json['Client_Organes'],
       "",
-      "","","",""
+      "","","","","",""
     );
 
     return wTmp;
@@ -202,6 +216,7 @@ class Client {
         '$Client_Commercial '
         '$Client_Createur '
         '$Client_Contrat '
+        '$Client_Contrat_No '
         '$Client_TypeContrat '
         '$Client_Statut '
         '$Client_Ct_Debut '
@@ -212,6 +227,8 @@ class Client {
         '$Adresse_CP    '
         '$Adresse_Ville '
         '$Adresse_Pays  '
+        '$Adresse_CP_Livr    '
+        '$Adresse_Ville_Livr '
     ;
   }
 }

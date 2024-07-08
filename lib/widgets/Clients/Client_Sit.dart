@@ -21,6 +21,7 @@ import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamSite_Dialog.dart';
+import 'package:verifplus_backoff/widgets/Sites/ParamSite_Dialog2.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zones_Dialog.dart';
 import 'package:image/image.dart' as IMG;
 import 'package:http/http.dart' as http;
@@ -41,14 +42,19 @@ class SiteDataGridSource extends DataGridSource {
   List<DataGridRow> get rows => dataGridRows;
 
   void buildDataGridRows() {
-    dataGridRows = DbTools.ListSitesearchresult.map<DataGridRow>((Site groupe) {
+    dataGridRows = DbTools.ListSitesearchresult.map<DataGridRow>((Site site) {
       return DataGridRow(cells: <DataGridCell>[
-        DataGridCell<int>(columnName: 'id', value: groupe.SiteId),
-        DataGridCell<String>(columnName: 'nom', value: groupe.Site_Nom),
-        DataGridCell<String>(columnName: 'adresse', value: groupe.Site_Adr1),
-        DataGridCell<String>(columnName: 'cp', value: groupe.Site_CP),
-        DataGridCell<String>(columnName: 'ville', value: groupe.Site_Ville),
-        DataGridCell<String>(columnName: 'agence', value: groupe.Site_Depot),
+        DataGridCell<int>(columnName: 'id', value: site.SiteId),
+        DataGridCell<String>(columnName: 'nom', value: site.Site_Nom),
+        DataGridCell<String>(columnName: 'adresse', value: site.Site_Adr1),
+        DataGridCell<String>(columnName: 'nb', value: site.NbZone.toString()),
+        DataGridCell<String>(columnName: 'cp', value: site.Site_CP),
+        DataGridCell<String>(columnName: 'ville', value: site.Site_Ville),
+        DataGridCell<String>(columnName: 'agence', value: site.Site_Depot),
+        DataGridCell<String>(columnName: 'cprenom', value: site.Contact_Prenom),
+        DataGridCell<String>(columnName: 'cnom', value: site.Contact_Nom),
+        DataGridCell<String>(columnName: 'ctel2', value: site.Contact_Tel2),
+        DataGridCell<String>(columnName: 'cemail', value: site.Contact_eMail),
       ]);
     }).toList();
   }
@@ -65,16 +71,22 @@ class SiteDataGridSource extends DataGridSource {
     double b = 3;
 
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    bool selected = (DbTools.gSite.SiteId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? selectedRowTextColor : Colors.black;
+    Color backgroundColor = selected ? gColors.backgroundColor : Colors.transparent;
 
-    Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
       FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 3, Alignment.centerRight, textColor),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 7, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -112,6 +124,7 @@ class _Client_SitState extends State<Client_Sit> {
 
   String selectedUserInter = "";
   String selectedUserInterID = "";
+
   List<String> ListParam_ParamDepot = [];
   String selectedValueDepot = "";
   Uint8List pic = Uint8List.fromList([0]);
@@ -119,9 +132,15 @@ class _Client_SitState extends State<Client_Sit> {
   bool imageisload = false;
 
   final Search_TextController = TextEditingController();
-  int SelSite = 0;
+
   Groupe wGroupe = Groupe.GroupeInit();
   List<Groupe> List_Grp = [];
+
+  List<String> List_GrpStr = [];
+  List<String> List_GrpID = [];
+
+  String selectedGrp = "";
+  int selectedGrpID = 0;
 
   String Grp = "Tous";
   int GrpID = 0;
@@ -133,43 +152,53 @@ class _Client_SitState extends State<Client_Sit> {
 
   int wColSel = -1;
   int wRowSel = -1;
-  int Selindex = -1;
+  int Selindex = 0;
   int countfilterConditions = -1;
 
   DataGridRow memDataGridRow = DataGridRow(cells: []);
 
   bool isDC = false;
 
-
   Future Reload() async {
-    print("••••• initLib Client_Site getGroupesClient");
+    print("••••• Reload Selindex ${Selindex}");
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-    print("initLib getGroupesClient ${DbTools.ListGroupe.length}");
-    print("initLib DbTools.ListGroupe[0].GroupeId ${DbTools.ListGroupe[0].GroupeId}");
+    print("Reload getGroupesClient ${DbTools.ListGroupe.length}");
+    print("Reload DbTools.ListGroupe[0].GroupeId ${DbTools.ListGroupe[0].GroupeId}");
 
     await DbTools.initListFam();
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
 
+    print(" Reload  selectedUserInter ${selectedUserInter} ${selectedUserInterID}");
+
+
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
 
     List_Grp.clear();
-
     Groupe wGroupe = Groupe.GroupeInit();
     wGroupe.Groupe_Nom = "Tous";
     List_Grp.add(wGroupe);
     Grp = wGroupe.Groupe_Nom;
     GrpID = wGroupe.GroupeId;
 
+    List_GrpStr.clear();
+    List_GrpID.clear();
+
     for (int i = 0; i < DbTools.ListGroupe.length; i++) {
       var Elt = DbTools.ListGroupe[i];
       List_Grp.add(Elt);
+      List_GrpID.add("${Elt.GroupeId}");
+      List_GrpStr.add(Elt.Groupe_Nom);
     }
 
-//    await DbTools.getSitesGroupe(DbTools.ListGroupe[0].GroupeId);
+
     await DbTools.getSitesClient(DbTools.gClient.ClientId);
-    print("initLib getSitesClient ${DbTools.ListSite.length}");
+    print("Reload getSitesClient ${DbTools.ListSite.length}");
+
+    if (DbTools.ListSite.length > 0)
+        DbTools.gSite = DbTools.ListSite[0];
+
 
     await Filtre();
   }
@@ -191,6 +220,9 @@ class _Client_SitState extends State<Client_Sit> {
     List<Site> ListSitesearchresultTmp = [];
     ListSitesearchresultTmp.clear();
 
+    print("DbTools.ListSite liste ${DbTools.ListSite.length}");
+
+
     print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
 
     if (Search_TextController.text.isEmpty) {
@@ -207,26 +239,16 @@ class _Client_SitState extends State<Client_Sit> {
 
     DbTools.ListSitesearchresult.clear();
     DbTools.ListSitesearchresult.addAll(ListSitesearchresultTmp);
-    if (DbTools.ListSitesearchresult.length > 0) DbTools.gSite = DbTools.ListSitesearchresult[0];
-
-    SelSite = 0;
-    DbTools.gSite = DbTools.ListSitesearchresult[0];
+//    if (DbTools.ListSitesearchresult.length > 0) DbTools.gSite = DbTools.ListSitesearchresult[0];
 
     await siteDataGridSource.handleRefresh();
-
-
-    print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
-    dataGridController.selectedRows.clear();
-    dataGridController.selectedRows.add(memDataGridRow);
-
-
     AlimSaisie();
 
     setState(() {});
   }
 
   Future AlimSaisie() async {
-    print("AlimSaisie ${DbTools.gSite.Desc()}");
+    print(" AlimSaisie Desc ${DbTools.gSite.Desc()}");
 
     textController_Adresse_Geo.text = "${DbTools.gSite.Site_Adr1} ${DbTools.gSite.Site_CP} ${DbTools.gSite.Site_Ville}";
     textController_Site_Code.text = DbTools.gSite.Site_Code;
@@ -248,6 +270,7 @@ class _Client_SitState extends State<Client_Sit> {
       if (Elt.GroupeId == DbTools.gSite.Site_GroupeId) {
         Grp = Elt.Groupe_Nom;
         GrpID = Elt.GroupeId;
+
         break;
       }
     }
@@ -260,15 +283,13 @@ class _Client_SitState extends State<Client_Sit> {
       }
     }
 
-    print("AlimSaisie ${DbTools.gSite.SiteId} -----> $GrpID $Grp");
+
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
-
     if (DbTools.gSite.Site_ResourceId > 0) {
-      DbTools.getUserid("${DbTools.gSite.Site_ResourceId!}");
+      DbTools.getUserMat("${DbTools.gSite.Site_ResourceId!}");
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
-      print("selectedUserInter $selectedUserInter");
-      selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+      selectedUserInterID = DbTools.gUser.User_Matricule;
     }
 
     imageisload = false;
@@ -289,15 +310,7 @@ class _Client_SitState extends State<Client_Sit> {
       );
     }
     imageisload = true;
-
-    print("Fin AlimSaisie 1");
-
-
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
-
-    print("Fin AlimSaisie 2");
-
-
     setState(() {});
   }
 
@@ -364,9 +377,7 @@ class _Client_SitState extends State<Client_Sit> {
                     padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
-                  SelSite == 0
-                      ? Container()
-                      : Container(
+                  Container(
                           padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                           child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter site"),
                         ),
@@ -447,7 +458,6 @@ class _Client_SitState extends State<Client_Sit> {
                   child: TextFormField(
                     controller: Search_TextController,
                     decoration: gColors.wRechInputDecoration,
-
                     onChanged: (String? value) async {
                       print("_buildFieldTextSearch search ${Search_TextController.text}");
                       await Filtre();
@@ -471,11 +481,8 @@ class _Client_SitState extends State<Client_Sit> {
                 Container(
                   width: 10,
                 ),
-
               ],
             ),
-
-
           ],
         ));
   }
@@ -555,6 +562,14 @@ class _Client_SitState extends State<Client_Sit> {
     setState(() {});
   }
 
+
+  void Tools2() async {
+    await ParamSite_Dialog2.ParamSite_Dialog(context);
+    setState(() {});
+  }
+
+
+
   void ToolsBarSave() async {
     print("ToolsBarSave");
 
@@ -572,20 +587,18 @@ class _Client_SitState extends State<Client_Sit> {
 //    DbTools.gSite.Site_GroupeId = GrpID;
     DbTools.gSite.Site_ResourceId = int.parse(selectedUserInterID);
     DbTools.gSite.Site_Depot = selectedValueDepot;
-
     DbTools.gSite.Site_DecConf = isDC;
-
+    DbTools.gSite.Site_GroupeId = GrpID;
 
     print("ToolsBarSave ${DbTools.gSite.SiteId} $GrpID $Grp");
-
     await DbTools.setSite(DbTools.gSite);
 
-    await DbTools.getSitesGroupe(DbTools.gSite.Site_GroupeId);
-    SelSite = List_Grp.indexWhere((element) => element.GroupeId == DbTools.gSite.Site_GroupeId);
 
-    print("initLib getSitesClient ${DbTools.ListSite.length}  ${DbTools.gSite.Site_GroupeId} ${SelSite}");
-    await Filtre();
+    print("ToolsBarSave getSitesClient ${DbTools.ListSite.length}  ${DbTools.gSite.Site_GroupeId} ${Selindex}");
 
+
+
+    Reload();
     setState(() {});
   }
 
@@ -734,7 +747,7 @@ class _Client_SitState extends State<Client_Sit> {
             padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
             color: Colors.white,
             child: Text(
-              'Site',
+              'Site #${DbTools.gSite.SiteId}',
               style: gColors.bodySaisie_B_G,
             ),
           ),
@@ -806,7 +819,7 @@ class _Client_SitState extends State<Client_Sit> {
             padding: EdgeInsets.only(left: 10, right: 10),
             color: Colors.white,
             child: Text(
-              'Règlementation',
+              'Règlementations',
               style: gColors.bodySaisie_B_G,
             ),
           ),
@@ -816,9 +829,10 @@ class _Client_SitState extends State<Client_Sit> {
   }
 
   Widget Regles() {
-    String wMes = "";
+    String wRegl = "";
+    String wAPSAD = "";
 
-    List<String> listMes = [
+    List<String> listRegl = [
       "Règle APSAD R1 / Sprinkleurs",
       "Règle APSAD D2 / Brouillard d'eau",
       "Règle APSAD R3 / Maintenance colonnes incendies",
@@ -836,34 +850,59 @@ class _Client_SitState extends State<Client_Sit> {
       "Autres",
     ];
     List<bool> itemlistApp = [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
+
+
     ];
 
-    String siteApsad = DbTools.gSite.Site_APSAD!;
-    if (siteApsad.isNotEmpty) {
-      itemlistApp = json.decode(siteApsad).cast<bool>().toList();
+
+    print("Regles A");
+
+    String siteRegl = DbTools.gSite.Site_Regle!;
+    if (siteRegl.isNotEmpty) {
+      itemlistApp = json.decode(siteRegl).cast<bool>().toList();
 
       for (int i = 0; i < itemlistApp.length; i++) {
         var element = itemlistApp[i];
         if (element) {
-          wMes = "$wMes${wMes.isNotEmpty ? ", " : ""}${listMes[i]}";
+          wRegl = "$wRegl${wRegl.isNotEmpty ? ", " : ""}${listRegl[i]}";
         }
       }
     }
+
+    print("Regles B");
+
+
+    List<String> listAPSAD = [
+      "APSAD N1 / Sprinkleurs",
+      "APSAD N2 / Brouillard d'eau",
+      "APSAD N3 / Maintenance colonnes incendies",
+      "APSAD N4 / Extincteurs portatifs et mobiles",
+      "APSAD N5 / RIA et PIA",
+      "APSAD N7  / Détection incendie",
+      "APSAD N12 / Extinction mousse à haut foisonnement",
+      "APSAD N13 / Extinction automatique à gaz",
+      "APSAD N16 / Compartimentage",
+      "APSAD N17 / Désenfumage naturel",
+
+    ];
+
+    List<bool> itemlistAPSAD = [
+    ];
+
+
+
+    String siteAPSAD = DbTools.gSite.Site_APSAD!;
+    if (siteAPSAD.isNotEmpty) {
+      itemlistAPSAD = json.decode(siteAPSAD).cast<bool>().toList();
+      for (int i = 0; i < itemlistAPSAD.length; i++) {
+        var element = itemlistAPSAD[i];
+        if (element) {
+          wAPSAD = "$wAPSAD${wAPSAD.isNotEmpty ? ", " : ""}${listAPSAD[i]}";
+        }
+      }
+    }
+
+
 
     return FocusTraversalGroup(
         policy: OrderedTraversalPolicy(),
@@ -872,26 +911,58 @@ class _Client_SitState extends State<Client_Sit> {
                 child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
             padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-            child:
-
-            Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Regl", Tools, tooltip: "Réglementation"),
-              Container(width: 10,),
-              gColors.CheckBoxField(180, 8, "Site bénéficiant d'une déclaration de conformité", isDC, (sts) => setState(() => isDC = sts!)),
-            ],),
-
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Regl", Tools, tooltip: "Réglementation"),
+                Container(
+                  width: 10,
+                ),
+                Text(
+                  "Règlementations applicables\nà l'établissement du client",
+                  style: gColors.bodySaisie_N_G,
+                ),
+              ],
+            ),
           ),
           Container(
             width: 280,
-            height: 175,
+            height: 75,
             padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
             child: Text(
-              wMes,
+              wRegl,
               style: gColors.bodySaisie_N_G,
-              maxLines: 10,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              softWrap: true,
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "apsad", Tools2, tooltip: "APSAD"),
+                Container(
+                  width: 10,
+                ),
+                Text(
+                  "APSAD",
+                  style: gColors.bodySaisie_N_G,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 280,
+            height: 75,
+            padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+            child: Text(
+              wAPSAD,
+              style: gColors.bodySaisie_N_G,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               softWrap: true,
             ),
@@ -1010,6 +1081,12 @@ class _Client_SitState extends State<Client_Sit> {
   }
 
   Widget ContentSite(BuildContext context) {
+
+
+
+
+    print(" ContentSite  selectedUserInter ${selectedUserInter} ${selectedUserInterID}");
+
     return FocusTraversalGroup(
         policy: OrderedTraversalPolicy(),
         child: Expanded(
@@ -1024,10 +1101,23 @@ class _Client_SitState extends State<Client_Sit> {
                   ),
                   Row(
                     children: [
-                      gColors.DropdownButtonTypeInter(100, 8, "Collaborateur", selectedUserInter, (sts) {
+                      gColors.DropdownButtonTypeInterC(100, 8, "Groupe", "$Grp", (sts) {
+                        setState(() {
+                          Grp = sts!;
+                          GrpID = int.parse(List_GrpID[List_GrpStr.indexOf(Grp)]);
+                          print("onCHANGE Groupe $sts $GrpID");
+                        });
+                      }, List_GrpStr, List_GrpID),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      gColors.DropdownButtonTypeInterC(100, 8, "Collaborateur", selectedUserInter, (sts) {
                         setState(() {
                           selectedUserInter = sts!;
                           selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+                          print("onCHANGE selectedUserInter4 $selectedUserInter");
+                          print("onCHANGE selectedUserInterID4 $selectedUserInterID");
                         });
                       }, DbTools.List_UserInter, DbTools.List_UserInterID),
                     ],
@@ -1090,47 +1180,50 @@ class _Client_SitState extends State<Client_Sit> {
 
     DaviModel<Groupe>? _model;
     _model = DaviModel<Groupe>(rows: List_Grp, columns: wColumns);
-    return  Container(
-        decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
-    height: MediaQuery.of(context).size.height - 450,
-    child:
-      DaviTheme(
-        child: new Davi<Groupe>(visibleRowsCount: 17, _model, onRowTap: (aGroupe) async {
-          DbTools.gGroupe = aGroupe;
-          SelSite = List_Grp.indexOf(aGroupe);
-
-          if (DbTools.gGroupe.Groupe_Nom == "Tous")
-            await DbTools.getSitesClient(DbTools.gClient.ClientId);
-          else
-            await DbTools.getSitesGroupe(aGroupe.GroupeId);
-          await Filtre();
-          DbTools.gSite = Site.SiteInit();
-          if (DbTools.ListSitesearchresult.length > 0) {
-            DbTools.gSite = DbTools.ListSitesearchresult[0];
-          }
-          AlimSaisie();
-          setState(() {});
-        }),
-        data: DaviThemeData(
-          header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
-          headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
-          row: RowThemeData(color: (rowIndex) {
-            return SelSite == rowIndex ? gColors.secondarytxt : Colors.white;
-          }),
-          cell: CellThemeData(
-            contentHeight: 26,
-            textStyle: gColors.bodySaisie_N_G,
-          ),
-        )));
+    return Container(
+        decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
+        height: MediaQuery.of(context).size.height - 450,
+        child: DaviTheme(
+            child: new Davi<Groupe>(visibleRowsCount: 17, _model, onRowTap: (aGroupe) async {
+              DbTools.gGroupe = aGroupe;
+              selectedGrpID = List_Grp.indexOf(aGroupe);
+              if (DbTools.gGroupe.Groupe_Nom == "Tous")
+                await DbTools.getSitesClient(DbTools.gClient.ClientId);
+              else
+                await DbTools.getSitesGroupe(aGroupe.GroupeId);
+              await Filtre();
+              DbTools.gSite = Site.SiteInit();
+              if (DbTools.ListSitesearchresult.length > 0) {
+                DbTools.gSite = DbTools.ListSitesearchresult[0];
+              }
+              AlimSaisie();
+              setState(() {});
+            }),
+            data: DaviThemeData(
+              header: HeaderThemeData(color: gColors.secondary, bottomBorderHeight: 2, bottomBorderColor: gColors.LinearGradient3),
+              headerCell: HeaderCellThemeData(height: 24, alignment: Alignment.center, textStyle: gColors.bodySaisie_B_B, resizeAreaWidth: 3, resizeAreaHoverColor: Colors.black, sortIconColors: SortIconColors.all(Colors.black), expandableName: false),
+              row: RowThemeData(color: (rowIndex) {
+                return selectedGrpID == rowIndex ? gColors.secondarytxt : Colors.white;
+              }),
+              cell: CellThemeData(
+                contentHeight: 26,
+                textStyle: gColors.bodySaisie_N_G,
+              ),
+            )));
   }
 
   List<double> dColumnWidth = [
     80,
-    350,
-    350,
+    300,
+    300,
+    100,
     120,
     160,
-    160,
+    260,
+    260,
+    260,
+    260,
+    260,
   ];
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
@@ -1140,9 +1233,21 @@ class _Client_SitState extends State<Client_Sit> {
         dColumnWidth[1] = args.width;
       else if (args.column.columnName == 'adresse')
         dColumnWidth[2] = args.width;
-      else if (args.column.columnName == 'cp')
+      else if (args.column.columnName == 'nb')
         dColumnWidth[3] = args.width;
-      else if (args.column.columnName == 'ville') dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'cp')
+        dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'ville')
+        dColumnWidth[5] = args.width;
+      else if (args.column.columnName == 'agence')
+        dColumnWidth[6] = args.width;
+      else if (args.column.columnName == 'cprenom')
+        dColumnWidth[7] = args.width;
+      else if (args.column.columnName == 'cnom')
+        dColumnWidth[8] = args.width;
+      else if (args.column.columnName == 'ctel2')
+        dColumnWidth[9] = args.width;
+      else if (args.column.columnName == 'cemail') dColumnWidth[10] = args.width;
     });
   }
 
@@ -1153,7 +1258,12 @@ class _Client_SitState extends State<Client_Sit> {
       FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nb', 'Nb', dColumnWidth[5], 160, Alignment.centerRight),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[6], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cprenom', 'Prenom', dColumnWidth[7], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cnom', 'Nom', dColumnWidth[8], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ctel2', 'Portable', dColumnWidth[9], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cemail', 'eMail', dColumnWidth[10], 160, Alignment.centerLeft),
     ];
   }
 
@@ -1176,45 +1286,39 @@ class _Client_SitState extends State<Client_Sit> {
       child: Column(children: [
 //        ToolsBargrid(context),
         Container(
-            decoration: BoxDecoration( border: Border.all(color: Colors.black12)),
+            decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
             height: MediaQuery.of(context).size.height - 450,
             child: SfDataGridTheme(
                 data: SfDataGridThemeData(
                   headerColor: gColors.secondary,
-                  selectionColor: gColors.backgroundColor,
+                  selectionColor: gColors.transparent,
                 ),
                 child: SfDataGrid(
                   //*********************************
-
-
                   onFilterChanged: (DataGridFilterChangeDetails details) {
-
                     countfilterConditions = siteDataGridSource.filterConditions.length;
                     print("onFilterChanged  countfilterConditions ${countfilterConditions}");
                     setState(() {});
                   },
-                  onCellTap: (DataGridCellTapDetails details) async{
+                  onCellTap: (DataGridCellTapDetails details) async {
                     wColSel = details.rowColumnIndex.columnIndex;
-                   wRowSel = details.rowColumnIndex.rowIndex;
-                if (wRowSel == 0) return;
+                    wRowSel = details.rowColumnIndex.rowIndex;
+                    if (wRowSel == 0) return;
                     DataGridRow wDataGridRow = siteDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
                     Selindex = siteDataGridSource.dataGridRows.indexOf(wDataGridRow);
-                    print(" onSelectionChanged  B SelSite ${SelSite}");
-                    DbTools.gSite  = DbTools.ListSitesearchresult[Selindex];
+                    DbTools.gSite = DbTools.ListSitesearchresult[Selindex];
+
+                    //selectedGrpID = List_GrpID.indexOf("${DbTools.gSite.Site_GroupeId}") + 1;
+
                     AlimSaisie();
-                    if (wColSel == 0)
-                    {
-                      print(" onSelectionChanged C SelSite ${SelSite}");
+                    if (wColSel == 0) {
                       await showDialog(
-                      context: context,
-                      builder: (BuildContext context) => new Zones_Dialog(
-                        site: DbTools.gSite,
-                      ));
+                          context: context,
+                          builder: (BuildContext context) => new Zones_Dialog(
+                                site: DbTools.gSite,
+                              ));
                       Reload();
-
                     }
-
-
                   },
 
                   //*********************************
@@ -1240,7 +1344,7 @@ class _Client_SitState extends State<Client_Sit> {
                   gridLinesVisibility: GridLinesVisibility.both,
                   headerGridLinesVisibility: GridLinesVisibility.both,
                   columnWidthMode: ColumnWidthMode.fill,
-                    isScrollbarAlwaysShown : true,
+                  isScrollbarAlwaysShown: true,
                 ))),
         Container(
           height: 10,
@@ -1288,20 +1392,28 @@ class _Client_SitState extends State<Client_Sit> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 4, right: 4),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
+          buttonStyleData: const ButtonStyleData(
+            padding: const EdgeInsets.only(left: 4, right: 4),
+            height: 30,
+            width: 250,
           ),
-          buttonHeight: 30,
-          buttonWidth: 250,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.black26,
+              ),
+              color: Colors.white,
+            ),
+          ),
         )),
       ),
     ]);
   }
+
+
 }

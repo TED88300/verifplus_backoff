@@ -14,7 +14,7 @@ class WebFilePicker implements PlatformFilePicker {
     print("startWebFilePicker");
 
     htmlfile.FileUploadInputElement uploadInput = htmlfile.FileUploadInputElement();
-    uploadInput.accept = '.png,.jpg';
+    uploadInput.accept = '.pdf,.png,.jpg,.webp';
     uploadInput.click();
 
     uploadInput.onChange.listen((e) {
@@ -50,7 +50,7 @@ class WebFilePicker implements PlatformFilePicker {
     print("startWebFilePicker");
 
     htmlfile.FileUploadInputElement uploadInput = htmlfile.FileUploadInputElement();
-    uploadInput.accept = '.pdf';
+    uploadInput.accept = '.pdf,.png,.jpg,.webp';
     uploadInput.click();
 
     uploadInput.onChange.listen((e) {

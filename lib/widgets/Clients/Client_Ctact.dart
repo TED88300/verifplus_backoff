@@ -497,19 +497,27 @@ class _Client_CtactState extends State<Client_Ctact> {
               Filtre();
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 230,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                height: 30,
+                width: 350,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+            )),
       ),
     ]);
   }

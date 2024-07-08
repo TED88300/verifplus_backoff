@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -35,7 +33,6 @@ class IntervInfoDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     dataGridRows = DbTools.ListInterventionsearchresult.map<DataGridRow>((Intervention Interv) {
-
       return DataGridRow(cells: <DataGridCell>[
         DataGridCell<int>(columnName: 'id', value: Interv.InterventionId),
         DataGridCell<String>(columnName: 'status', value: Interv.Intervention_Status),
@@ -48,8 +45,10 @@ class IntervInfoDataGridSource extends DataGridSource {
         DataGridCell<String>(columnName: 'org', value: DbTools.getParam_Param_Text("Type_Organe", Interv.Intervention_Parcs_Type!)),
         DataGridCell<int>(columnName: 'organes', value: Interv.Cnt),
         DataGridCell<String>(columnName: 'factu', value: Interv.Intervention_Facturation),
-        DataGridCell<String>(columnName: 'RespCom', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable!)),
-        DataGridCell<String>(columnName: 'RespTech', value: DbTools.getUserid_Nom(Interv.Intervention_Responsable2!)),
+        DataGridCell<String>(columnName: 'ComInter', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable!)),
+        DataGridCell<String>(columnName: 'ManCom', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable2!)),
+        DataGridCell<String>(columnName: 'ManTech', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable3!)),
+        DataGridCell<String>(columnName: 'RefTech', value: DbTools.getUserMat_Nom(Interv.Intervention_Responsable4!)),
         DataGridCell<String>(columnName: 'Rem', value: Interv.Intervention_Remarque!.replaceAll("\n", " - ")),
       ]);
     }).toList();
@@ -69,16 +68,12 @@ class IntervInfoDataGridSource extends DataGridSource {
     double b = 3;
 
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    bool selected = (DbTools.gIntervention.InterventionId.toString() == row.getCells()[1].value.toString());
+    Color textColor = selected ? selectedRowTextColor : Colors.black;
+    Color backgroundColor = selected ? gColors.backgroundColor : Colors.transparent;
 
-    Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
-      FiltreTools.SfRowSel(
-        row,
-        0,
-        Alignment.centerLeft,
-        textColor,
-      ), // bCircle : true),
+      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor,), // bCircle : true),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor, bCircle: true),
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
@@ -92,6 +87,8 @@ class IntervInfoDataGridSource extends DataGridSource {
       FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 13, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 14, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 15, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -113,7 +110,7 @@ class Interventions extends StatefulWidget {
 class _InterventionsState extends State<Interventions> {
   List<double> dColumnWidth = [
     80,
-    125,
+    135,
     200,
     150,
     300,
@@ -123,6 +120,8 @@ class _InterventionsState extends State<Interventions> {
     110,
     80,
     110,
+    190,
+    190,
     190,
     190,
     273,
@@ -147,20 +146,22 @@ class _InterventionsState extends State<Interventions> {
 
   List<GridColumn> getColumns() {
     return <GridColumn>[
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
       FiltreTools.SfGridColumn('status', 'Status', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('groupe', 'Client', dColumnWidth[2], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('groupe', 'Groupe', dColumnWidth[3], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('site', 'Site', dColumnWidth[4], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('zone', 'Zone', dColumnWidth[5], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('date', 'Date', dColumnWidth[6], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('org', 'Organes', dColumnWidth[7], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('type', 'Type', dColumnWidth[8], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('organes', 'Cpt', dColumnWidth[9], dColumnWidth[1], Alignment.center),
-      FiltreTools.SfGridColumn('factu', 'Fact', dColumnWidth[10], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespCom', 'RespCom', dColumnWidth[11], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('RespTech', 'RespTech', dColumnWidth[12], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[13], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('client', 'Client', dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('groupe', 'Groupe', dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('site', 'Site', dColumnWidth[4], dColumnWidth[4], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('zone', 'Zone', dColumnWidth[5], dColumnWidth[5], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('date', 'Date', dColumnWidth[6], dColumnWidth[6], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('type', 'Type', dColumnWidth[7], dColumnWidth[7], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('org', 'Organes', dColumnWidth[8], dColumnWidth[8], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('organes', 'Cpt', dColumnWidth[9], dColumnWidth[9], Alignment.center),
+      FiltreTools.SfGridColumn('factu', 'Fact', dColumnWidth[10], dColumnWidth[10], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ComInter', 'Com. Inter', dColumnWidth[11], dColumnWidth[11], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ManCom', 'Man Com', dColumnWidth[12], dColumnWidth[12], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ManTech', 'Man Tecs', dColumnWidth[13], dColumnWidth[13], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('RefTech', 'Ref Tech', dColumnWidth[14], dColumnWidth[14], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('Rem', 'Remarques', dColumnWidth[15], dColumnWidth[15], Alignment.centerLeft),
     ];
   }
 
@@ -199,13 +200,19 @@ class _InterventionsState extends State<Interventions> {
         dColumnWidth[7] = args.width;
       else if (args.column.columnName == 'status')
         dColumnWidth[8] = args.width;
-      else if (args.column.columnName == 'factu')
+      else if (args.column.columnName == 'cpt')
         dColumnWidth[9] = args.width;
-      else if (args.column.columnName == 'RespCom')
+      else if (args.column.columnName == 'factu')
         dColumnWidth[10] = args.width;
-      else if (args.column.columnName == 'RespTech')
+      else if (args.column.columnName == 'ComInter')
         dColumnWidth[11] = args.width;
-      else if (args.column.columnName == 'Rem') dColumnWidth[12] = args.width;
+      else if (args.column.columnName == 'ManCom')
+        dColumnWidth[12] = args.width;
+      else if (args.column.columnName == 'ComInter')
+        dColumnWidth[13] = args.width;
+      else if (args.column.columnName == 'ManCom')
+        dColumnWidth[14] = args.width;
+      else if (args.column.columnName == 'Rem') dColumnWidth[15] = args.width;
     });
   }
 
@@ -252,12 +259,13 @@ class _InterventionsState extends State<Interventions> {
       }
     } catch (e) {}
 
-    print("Ct_Debut < ${Ct_Debut}");
-    print("Ct_Fin <>> ${Ct_Fin}");
+    print("Ct_Debut > ${Ct_Debut}");
+    print("Ct_Fin   < ${Ct_Fin}");
+
+    print("DbTools.ListIntervention.length ${DbTools.ListIntervention.length}");
 
     for (int i = 0; i < DbTools.ListIntervention.length; i++) {
       var element = DbTools.ListIntervention[i];
-
       try {
         DateTime wDT = inputFormat2.parse(element.Intervention_Date!);
         if (wDT.difference(Ct_Debut).inHours >= 0 && wDT.difference(Ct_Fin).inHours <= 0) {
@@ -279,6 +287,8 @@ class _InterventionsState extends State<Interventions> {
         }
       });
     }
+
+    print("DbTools.ListInterventionsearchresult.length ${DbTools.ListInterventionsearchresult.length}");
 
     intervInfoDataGridSource.handleRefresh();
     setState(() {});
@@ -315,23 +325,24 @@ class _InterventionsState extends State<Interventions> {
     );
   }
 
-  Future Open_Intervention() async
-  {
-    DbTools.gIntervention = DbTools.ListIntervention[Selindex];
+  Future Open_Intervention() async {
+    DbTools.gIntervention = DbTools.ListInterventionsearchresult[Selindex];
+
+    print("DbTools.gIntervention.ClientId ${DbTools.gIntervention.ClientId} ${DbTools.gIntervention.InterventionId}");
+
     await DbTools.getClient(DbTools.gIntervention.ClientId!);
+    print("DbTools.gClient.Client_Nom ${DbTools.gClient.Client_Nom}");
     await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
     await DbTools.getSite(DbTools.gIntervention.SiteId!);
     await DbTools.getZone(DbTools.gIntervention.ZoneId!);
 
     await showDialog(
-    context: context,
-    builder: (BuildContext context) => new Intervention_Dialog(
-      site: DbTools.gSite,
-    ));
+        context: context,
+        builder: (BuildContext context) => new Intervention_Dialog(
+              site: DbTools.gSite,
+            ));
     Reload();
-
   }
-
 
   Widget InterventionGridWidget() {
     return SizedBox(
@@ -340,32 +351,31 @@ class _InterventionsState extends State<Interventions> {
             data: SfDataGridThemeData(
               headerColor: gColors.secondary,
               selectionColor: gColors.backgroundColor,
-              //rowHoverColor: gColors.white,
-              //rowHoverTextStyle : TextStyle(color: gColors.tks),
             ),
             child: SfDataGrid(
               //*********************************
-
               onFilterChanged: (DataGridFilterChangeDetails details) {
                 countfilterConditions = intervInfoDataGridSource.filterConditions.length;
                 setState(() {});
               },
-
-
               onCellTap: (DataGridCellTapDetails details) {
                 wColSel = details.rowColumnIndex.columnIndex;
-               wRowSel = details.rowColumnIndex.rowIndex;
+                wRowSel = details.rowColumnIndex.rowIndex;
                 if (wRowSel == 0) return;
-                DataGridRow wDataGridRow = intervInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                print("wRowSel ${wRowSel}");
+                DataGridRow wDataGridRow = intervInfoDataGridSource.effectiveRows[wRowSel - 1];
+                print("wRowSel ${wDataGridRow.toString()}");
                 Selindex = intervInfoDataGridSource.dataGridRows.indexOf(wDataGridRow);
-                if (wColSel == 0) {
+                print("Selindex ${Selindex}");
+                if (wColSel == 1) {
                   Open_Intervention();
                 }
-
               },
 
               //*********************************
-
+              showCheckboxColumn: true,
+              selectionMode: SelectionMode.multiple,
+              //*********************************
               allowSorting: true,
               allowFiltering: true,
               source: intervInfoDataGridSource,
@@ -376,7 +386,7 @@ class _InterventionsState extends State<Interventions> {
               rowHeight: 28,
               allowColumnsResizing: true,
               columnResizeMode: ColumnResizeMode.onResize,
-              selectionMode: SelectionMode.single,
+
               controller: dataGridController,
               onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
                 Resize(args);
@@ -640,7 +650,6 @@ class _InterventionsState extends State<Interventions> {
               if (selectedDate.difference(Ct_Fin).inHours >= 0) return;
               countfilterConditions = 999;
               textController_Ct_Debut.text = DateFormat('dd/MM/yyyy').format(selectedDate);
-
               await Filtre();
             },
           ),

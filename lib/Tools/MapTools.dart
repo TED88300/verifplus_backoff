@@ -2,7 +2,7 @@ import 'dart:ui';
 
 
 import 'package:flutter/material.dart';
-import 'package:google_geocoding/google_geocoding.dart';
+import 'package:google_geocoding_plus/google_geocoding_plus.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
@@ -35,7 +35,7 @@ class MapTools {
 
     var googleGeocoding = GoogleGeocoding(apiKeyMap);
     List<Component> components = [];
-    var result = await googleGeocoding.geocoding.get(Adresse, components);
+    var result = await googleGeocoding.geocoding.get(Adresse);
     if (result!.status!.contains("OK")) {
       if (result.results!.length > 0) {
         var element = result.results![0];

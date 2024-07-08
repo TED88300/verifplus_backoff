@@ -10,33 +10,29 @@ import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
+import 'package:verifplus_backoff/widgets/Planning/SelectInterv.dart';
+import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
 typedef selChanged = void Function(selChangedDetails pickerChangedDetails);
 
-class selChangedDetails {
-  selChangedDetails({this.depot, this.client, this.groupe, this.site, this.zone, this.intervention});
-  final String? depot;
-  final Client? client;
-  final Groupe? groupe;
-  final Site? site;
-  final Zone? zone;
-  final Intervention? intervention;
-}
 
-class SelectInter extends StatefulWidget {
-  const SelectInter({required this.onChanged});
+
+class SelectInterAdd extends StatefulWidget {
+  const SelectInterAdd({required this.onChanged});
   final selChanged onChanged;
 
   @override
-  State<StatefulWidget> createState() => SelectInterState();
+  State<StatefulWidget> createState() => SelectInterAddState();
 }
 
-class SelectInterState extends State<SelectInter> {
+class SelectInterAddState extends State<SelectInterAdd> {
   final Search_Client_TextController = TextEditingController();
   final Search_Site_TextController = TextEditingController();
 
   String selDepot = "";
   List<String> ListDepot = [];
+
+
 
   Client selClient = Client.ClientInit();
   List<Client> ListClient = [];
@@ -92,36 +88,36 @@ class SelectInterState extends State<SelectInter> {
 
     if (selDepot.isNotEmpty) {
       await DbTools.getClientDepotp(selDepot);
-      print(">>>>>> ListClient ${DbTools.ListClient.length}");
+      print(">>>>>> ${DbTools.ListClient.length}");
       ListClient.addAll(DbTools.ListClient);
 
-      if (selClient.ClientId == 0 && selClient.ClientId == 0 && ListClient.length == 1) selClient = ListClient[0];
+      if (selClient.ClientId == 0 && ListClient.length == 1) selClient = ListClient[0];
 
       if (selClient.ClientId > 0) {
         await DbTools.getGroupesClient(selClient.ClientId);
-        print(">>>>>> ListGroupe ${DbTools.ListGroupe.length}");
+        print(">>>>>> ${DbTools.ListGroupe.length}");
         ListGroupe.addAll(DbTools.ListGroupe);
 
         if (selGroupe.GroupeId == 0 && ListGroupe.length == 1) selGroupe = ListGroupe[0];
 
         if (selGroupe.GroupeId > 0) {
           await DbTools.getSitesGroupe(selGroupe.GroupeId);
-          print(">>>>>> ListSite ${DbTools.ListSite.length}");
+          print(">>>>>> ${DbTools.ListSite.length}");
           ListSite.addAll(DbTools.ListSite);
+
           if (selSite.SiteId == 0 && ListSite.length == 1) selSite = ListSite[0];
 
           if (selSite.SiteId > 0) {
             await DbTools.getZonesSite(selSite.SiteId);
-            print(">>>>>> ListZone ${DbTools.ListZone.length}");
+            print(">>>>>> ${DbTools.ListZone.length}");
             ListZone.addAll(DbTools.ListZone);
 
             if (selZone.ZoneId == 0 && ListZone.length == 1) selZone = ListZone[0];
 
             if (selZone.ZoneId > 0) {
-              await DbTools.getInterventionsZone(selZone.ZoneId);
-              print(">>>>>> ListIntervention ${DbTools.ListIntervention.length}");
+              await DbTools.getInterventionsZone(selSite.SiteId);
+              print(">>>>>> ${DbTools.ListIntervention.length}");
               ListIntervention.addAll(DbTools.ListIntervention);
-              if (selIntervention.InterventionId == 0 && ListIntervention.length == 1) selIntervention = ListIntervention[0];
             }
           }
         }
@@ -138,7 +134,7 @@ class SelectInterState extends State<SelectInter> {
       ListDepot.add(wAdresse.Adresse_Nom);
     });
 
-    selDepot = "";
+
 
     if (DbTools.gClient.ClientId > 0) {
       selClient = DbTools.gClient;
@@ -148,6 +144,9 @@ class SelectInterState extends State<SelectInter> {
     if (DbTools.gSite.SiteId > 0) selSite = DbTools.gSite;
     if (DbTools.gZone.ZoneId > 0) selZone = DbTools.gZone;
     if (DbTools.gIntervention.InterventionId! > 0) selIntervention = DbTools.gIntervention;
+
+
+
     await Relaod();
   }
 
@@ -162,7 +161,7 @@ class SelectInterState extends State<SelectInter> {
         data: gColors.wTheme,
         child: AlertDialog(
           title: Container(
-            width: 400,
+            width: 50,
             color: gColors.primary,
             child: Row(
               children: [
@@ -181,7 +180,7 @@ class SelectInterState extends State<SelectInter> {
                 ),
                 Spacer(),
                 Text(
-                  "Recherche Intervention",
+                  "Ajout Intervention",
                   textAlign: TextAlign.center,
                   style: gColors.bodyTitle1_B_W,
                 ),
@@ -193,7 +192,7 @@ class SelectInterState extends State<SelectInter> {
             ),
           ),
           content: Container(
-              width: 2000,
+              width: 1380,
               height: 500,
               child: Row(
                 children: [
@@ -214,24 +213,27 @@ class SelectInterState extends State<SelectInter> {
                     width: 10,
                   ),
                   listZones(),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  listInterventions(),
                 ],
               )),
           actions: <Widget>[
+            selZone.ZoneId <= 0 ? Container(height:28) :
             new ElevatedButton(
-              onPressed: () {
-                setState(() {
+              onPressed: () async{
+
+                DbTools.gZone = selZone!;
+                await Zone_Interv_Add.Dialogs_Add(context, true);
+                await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
+                Navigator.pop(context);
+
+                setState(() async{
                   widget.onChanged(selChangedDetails(depot: selDepot, client: selClient, groupe: selGroupe, site: selSite, zone: selZone, intervention: selIntervention));
+
                 });
 
-                // ignore: always_specify_types
-                Future.delayed(const Duration(milliseconds: 200), () {
-                  // When task is over, close the dialog
-                  Navigator.pop(context);
-                });
+
+
+
+
               },
               style: ElevatedButton.styleFrom(
                 foregroundColor: gColors.primaryGreen,
@@ -297,6 +299,9 @@ class SelectInterState extends State<SelectInter> {
                               selDepot = wDepot;
                             else
                               selDepot = "";
+
+                            selClient = Client.ClientInit();
+
                             await Relaod();
                           },
                         ),
@@ -369,16 +374,9 @@ class SelectInterState extends State<SelectInter> {
                           selDepot = selClient.Client_Depot;
                         } else
                           selClient = Client.ClientInit();
-
-                        ListGroupe.clear();
-                        ListSite.clear();
-                        ListZone.clear();
-                        ListIntervention.clear();
-
                         selGroupe = Groupe.GroupeInit();
                         selSite = Site.SiteInit();
                         selZone = Zone.ZoneInit();
-                        selIntervention =Intervention.InterventionInit();
 
                         await Relaod();
                       },
@@ -442,16 +440,8 @@ class SelectInterState extends State<SelectInter> {
                               selGroupe = wGroupe;
                             else
                               selGroupe = Groupe.GroupeInit();
-
-                            ListSite.clear();
-                            ListZone.clear();
-                            ListIntervention.clear();
-
-
                             selSite = Site.SiteInit();
                             selZone = Zone.ZoneInit();
-                            selIntervention =Intervention.InterventionInit();
-
                             await Relaod();
                           },
                         ),
@@ -530,12 +520,6 @@ class SelectInterState extends State<SelectInter> {
                         } else
                           selSite = Site.SiteInit();
 
-
-                        ListZone.clear();
-                        ListIntervention.clear();
-                        selZone = Zone.ZoneInit();
-                        selIntervention =Intervention.InterventionInit();
-
                         await Relaod();
                       },
                     ),
@@ -598,11 +582,6 @@ class SelectInterState extends State<SelectInter> {
                               selZone = wZone;
                             else
                               selZone = Zone.ZoneInit();
-
-
-                            ListIntervention.clear();
-                            selIntervention =Intervention.InterventionInit();
-
                             await Relaod();
                           },
                         ),
@@ -671,8 +650,6 @@ class SelectInterState extends State<SelectInter> {
                               selIntervention = wIntervention;
                             else
                               selIntervention = Intervention.InterventionInit();
-                            ListIntervention.clear();
-
                             await Relaod();
                           },
                         ),

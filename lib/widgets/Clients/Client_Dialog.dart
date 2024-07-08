@@ -51,6 +51,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   TextEditingController textController_Createur = TextEditingController();
   TextEditingController textController_Ct_Debut = TextEditingController();
   TextEditingController textController_Ct_Fin = TextEditingController();
+  TextEditingController textController_CtNo = TextEditingController();
   TextEditingController textController_Organes = TextEditingController();
 
   bool isClient_CL_Pr = false;
@@ -95,12 +96,14 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
   String selectedUserInter = "";
   String selectedUserInterID = "";
 
-  late  TabContainerController? tabContainerController;
+  late  TabController? tabContainerController;
 
   String wRep = "";
   Future initLib() async {
 
     await DbTools.initListFam();
+
+
     wClient = widget.client;
 
     HoverMenus = gColors.makeMenus(context);
@@ -137,9 +140,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ListParam_ParamStatutID.clear();
     ListParam_ParamStatutID.addAll(DbTools.ListParam_ParamFamID);
 
-
-
-
     selectedValueStatut = ListParam_ParamStatut[0];
     for (int i = 0; i < ListParam_ParamStatut.length; i++) {
       String element = ListParam_ParamStatut[i];
@@ -164,24 +164,31 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     ListParam_Saisie_ParamType.addAll(DbTools.ListParam_Saisie_Param);
     if (ListParam_Saisie_ParamType.length > 0) selectedType = ListParam_Saisie_ParamType[0].Param_Saisie_Param_Label;
 
+
+
+    print("initLib B");
     await DbTools.getParam_ParamFam("FamClient");
     ListParam_ParamFam.clear();
     ListParam_ParamFam.addAll(DbTools.ListParam_ParamFam);
     ListParam_ParamFamID.clear();
     ListParam_ParamFamID.addAll(DbTools.ListParam_ParamFamID);
 
-    DbTools.gClient = wClient;
 
+
+    DbTools.gClient = wClient;
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
 
+    print("initLib D");
+
+    print(" wClient.Client_Commercial > ${wClient.Client_Commercial}");
     if (wClient.Client_Commercial.isNotEmpty) {
       DbTools.getUserid("${wClient.Client_Commercial}");
       if (DbTools.gUser.UserID > 0 )
         {
           selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
           print("selectedUserInter $selectedUserInter");
-          selectedUserInterID = DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+          selectedUserInterID = DbTools.gUser.User_Matricule ;//DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
         }
     }
 
@@ -202,7 +209,6 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "FACT");
     await DbTools.getContactClientAdrType(DbTools.gClient.ClientId, DbTools.gAdresse.AdresseId, "FACT");
 
-
     isClient_CL_Pr = wClient.Client_CL_Pr;
     isCt = wClient.Client_Contrat;
 
@@ -213,6 +219,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     textController_CodeGC.text = wClient.Client_CodeGC;
     textController_Siret.text = wClient.Client_Siret;
     textController_NAF.text = wClient.Client_NAF;
+    textController_CtNo.text = wClient.Client_Contrat_No;
     textController_TVA.text = wClient.Client_TVA;
     textController_Createur.text = wClient.Client_Createur;
     textController_Ct_Debut.text = wClient.Client_Ct_Debut;
@@ -260,7 +267,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       Client_Map(),
     ];
 
-    tabContainerController = TabContainerController(length: widgetChildren.length,initialIndex: 2);
+    tabContainerController = TabController(length: widgetChildren.length,initialIndex: 2, vsync: this);
 
 
     print("initState >");
@@ -389,16 +396,16 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
       unselectedTextStyle: gColors.bodyTitle1_B_Gr,
       tabExtent: 40,
       tabs: [
-        'Fact. / Livr.',
-        'Groupes',
-        'Sites',
-        'Historique',
-        'Docs ventes',
-        'Articles/parc',
-        'Stat',
-        'Fichiers',
-        'Notes',
-        'Carte',
+       Text('Fact. / Livr.'),
+       Text('Groupes'),
+       Text('Sites'),
+       Text('Historique'),
+       Text('Docs ventes'),
+       Text('Articles/parc'),
+       Text('Stat'),
+       Text('Fichiers'),
+       Text('Notes'),
+       Text('Carte'),
       ],
     );
   }
@@ -533,6 +540,11 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                         Container(
                           width: 40,
                         ),
+                        gColors.TxtField(-1, 16, "No", textController_CtNo),
+                        Container(
+                          width: 40,
+                        ),
+
                         InkWell(
                           child: Row(
                             children: [
@@ -767,6 +779,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
     wClient.Client_CodeGC = textController_CodeGC.text;
     wClient.Client_Siret = textController_Siret.text;
     wClient.Client_NAF = textController_NAF.text;
+    wClient.Client_Contrat_No = textController_CtNo.text;
     wClient.Client_TVA = textController_TVA.text;
     wClient.Client_Commercial = selectedUserInterID;
     wClient.Client_Createur = textController_Createur.text;
@@ -923,11 +936,18 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
               setState(() {});
             });
           },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),
+
+            )),
       ),
     ]);
   }
@@ -966,10 +986,16 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),
             )),
       ),
     ]);
@@ -1006,12 +1032,29 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                   setState(() {});
                 });
               },
-              dropdownWidth : 90,
-              buttonWidth: 120,
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
+
+
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+                width: 120,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+
+
             )),
       ),
     ]);
@@ -1049,10 +1092,16 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),
             )),
       ),
     ]);

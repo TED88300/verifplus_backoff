@@ -14,6 +14,7 @@ import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Organes/Organe_Dialog.dart';
+import 'package:verifplus_backoff/xls/Xls.dart';
 
 DataGridController dataGridController_BL = DataGridController();
 int Subindex = 0;
@@ -33,7 +34,7 @@ class Parc_ArtInfoDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     FiltreTools.dataGridRows_CR = DbTools.ListParc_Art.map<DataGridRow>((Parc_Art Parc_Art) {
-      print("Parc_Art ${Parc_Art.Desc()}");
+
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'id', value: Parc_Art.ParcsArtId),
         DataGridCell<String>(columnName: 'code', value: Parc_Art.ParcsArt_Id),
@@ -154,8 +155,6 @@ class _Intervention_BLState extends State<Intervention_BL> {
   }
 
   Future Reload() async {
-
-
     await DbTools.getParcs_ArtInterSum(DbTools.gIntervention.InterventionId!);
     print (" Reload buildDataGridRows dataGridRows_BL ${FiltreTools.dataGridRows_CR.length}");
     Filtre();
@@ -380,6 +379,10 @@ class _Intervention_BLState extends State<Intervention_BL> {
                   Container(
                     width: 20,
                   ),
+                  CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_excel", ToolsBarXls , tooltip : "Excel"),
+                  Container(
+                    width: 20,
+                  ),
                 ],
 
 
@@ -388,6 +391,8 @@ class _Intervention_BLState extends State<Intervention_BL> {
             ],
           ));
   }
+
+
 
   void ToolsBarSupprFilter() async {
     parc_ArtInfoDataGridSource.clearFilters();
@@ -401,6 +406,11 @@ class _Intervention_BLState extends State<Intervention_BL> {
     setState(() {});
   }
 
+  void ToolsBarXls() async {
+    await HapticFeedback.vibrate();
+    await Excel.CrtExcelPat("BL_Int_${DbTools.gIntervention.InterventionId} ${DbTools.gClient.Client_Nom} ${DbTools.gSite.Site_Nom}.xlsx");
+    setState(() {});
+  }
 
 
 

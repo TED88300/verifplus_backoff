@@ -105,8 +105,27 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
   }
 
+
   void initLib() async {
     await DbTools.getParam_ParamAll();
+
+    String wTmpA ='{"data":[{"l":"a","v":"1"},{"l":"b","v":"2"}]}';
+    String wTmp ='[ValueItem(label: CATHAUD Frédéric, value: 116), ValueItem(label: COMBE Lionel, value: 62)]';
+
+    List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(wTmp);
+
+    print(" wValueItem $wValueItem");
+
+    for (int i = 0; i < wValueItem.length; i++) {
+      var element = wValueItem[i];
+
+      print(" wValueItem ${element.label} ${element.value}");
+    }
+
+
+
+
+
 
     String ColParams = "";
     DbTools.getParam_ParamMemDet("Param_Div", "Ext_Col");

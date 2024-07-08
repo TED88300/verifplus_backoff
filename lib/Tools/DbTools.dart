@@ -51,10 +51,9 @@ class Notif with ChangeNotifier {
     notifyListeners();
   }
 }
-
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.124";
+  static var gVersion = "v1.0.131";
   static bool gTED = false;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -138,10 +137,9 @@ class DbTools {
     "Ria",
   ];
 
-  static Future<String?> networkImageToBase64(String imageUrl) async {
+  static Future<Uint8List?> networkImageToBase64(String imageUrl) async {
     http.Response response = await http.get(Uri.parse(imageUrl));
-    final bytes = response.bodyBytes;
-    return (bytes != null ? base64Encode(bytes) : null);
+    return  response.bodyBytes;
   }
 
   static Future<bool> Login(String user, String pw, String userAuthid, bool gIsRememberLogin) async {
@@ -167,6 +165,22 @@ class DbTools {
   //************************  USERS  *******************
   //****************************************************
 
+  static List<ValueItem> ValueItem_parseStringToArray(String wTmp) {
+
+    RegExp regExp = RegExp(r"ValueItem\(label: ([^,]+), value: (\d+)\)");
+
+    Iterable<Match> matches = regExp.allMatches(wTmp);
+    List<ValueItem> items = matches.map((match) {
+      String label = match.group(1)!.trim().toString();
+      String value = match.group(2)!.toString();
+      return ValueItem(label: label, value: value);
+    }).toList();
+
+    return items;
+  }
+
+
+
   static List<User> ListUser = [];
   static List<User> ListUsersearchresult = [];
   static User gUser = User.UserInit();
@@ -180,17 +194,18 @@ class DbTools {
   static late ImageProvider wImage;
   static Uint8List pic = Uint8List.fromList([0]);
   static Future<bool> getUserLogin(String aMail, String aPW) async {
-    print(" getUserLogin ");
-    List<User> ListUser = await getUser_API_Post("select", "select * from Users where User_Mail = '$aMail' AND User_PassWord = '$aPW'");
+    String wSql = "select * from Users where User_Mail = '$aMail' AND User_PassWord = '$aPW'";
+    print(" getUserLogin $wSql");
+    List<User> ListUser = await getUser_API_Post("select", wSql);
     if (ListUser == null) return false;
     if (ListUser.length == 1) {
-      print(" getUserLogin ${ListUser[0].toString()}");
-      if (ListUser[0].User_TypeUserID < 156 || ListUser[0].User_TypeUserID > 159) return false;
+      print(" getUserLogin ${ListUser[0].User_Nom}");
+//      if (ListUser[0].User_TypeUserID < 156 || ListUser[0].User_TypeUserID > 159) return false;
       if (!ListUser[0].User_Actif) return false;
 
       gUserLogin = ListUser[0];
       gLoginID = gUserLogin.UserID;
-      String wUserImg = "User_${gLoginID}.jpg";
+      String wUserImg = "User_${gUserLogin.User_Matricule}.jpg";
       pic = await gColors.getImage(wUserImg);
 
       if (pic.length > 0) {
@@ -201,14 +216,7 @@ class DbTools {
         wImage = AssetImage('assets/images/Avatar.png');
       }
 
-      gUserLoginTypeUser = "";
-      DbTools.ListParam_ParamAll.forEach((element) {
-        if (element.Param_Param_Type.compareTo("TypeUser") == 0) {
-          if (element.Param_ParamId == DbTools.gUserLogin.User_TypeUserID) {
-            gUserLoginTypeUser = element.Param_Param_Text;
-          }
-        }
-      });
+      gUserLoginTypeUser =  DbTools.gUserLogin.User_TypeUser;
       return true;
     }
 
@@ -245,11 +253,11 @@ class DbTools {
   }
 
   static Future<bool> getUserAll() async {
-    ListUser = await getUser_API_Post("select", "select * from Users ORDER BY User_Nom");
+    ListUser = await getUser_API_Post("select", "select * from Users ORDER BY User_Nom ");
 
     if (ListUser == null) return false;
 
-    print("getUserAll ${ListUser.length}");
+//    print("getUserAll ${ListUser.length}");
 
     if (ListUser.length > 0) {
       return true;
@@ -257,6 +265,23 @@ class DbTools {
 
     return false;
   }
+
+
+
+  static Future<bool> getUserAllN0() async {
+    ListUser = await getUser_API_Post("select", "select * from Users WHERE User_Matricule  > 0 ORDER BY User_Nom ");
+
+    if (ListUser == null) return false;
+
+//    print("getUserAll ${ListUser.length}");
+
+    if (ListUser.length > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
 
   static bool getUserid(String id) {
     gUser = User.UserInit();
@@ -273,6 +298,24 @@ class DbTools {
     return false;
   }
 
+  static bool getUserMat(String id) {
+    gUser = User.UserInit();
+    if (ListUser == null) return false;
+    if (ListUser.length > 0) {
+      for (int i = 0; i < ListUser.length; i++) {
+        var element = ListUser[i];
+        if (element.User_Matricule.toString().compareTo(id) == 0) {
+          gUser = element;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+
+
+
   static String getUserid_Nom(String id) {
     if (ListUser == null) return "";
     if (ListUser.length > 0) {
@@ -286,19 +329,40 @@ class DbTools {
     return "";
   }
 
+  static String getUserMat_Nom(String id) {
+    if (ListUser == null) return "";
+    if (ListUser.length > 0) {
+      for (int i = 0; i < ListUser.length; i++) {
+        var element = ListUser[i];
+        if (element.User_Matricule.toString().compareTo(id) == 0) {
+          return "${element.User_Nom} ${element.User_Prenom}";
+        }
+      }
+    }
+    return "";
+  }
+
+
+
+
   static Future<List<User>> getUser_API_Post(String aType, String aSQL) async {
+
+
+
+
+
     setSrvToken();
     String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
 
-    print("getUser_API_Post $aSQL");
-    print("getUser_API_Post $SrvUrl");
+
 
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
-    print("fields ${request.fields}");
+    //print("fields ${request.fields}");
+    //print("fields ${request.fields}");
 
     http.StreamedResponse response = await request.send();
-    print("response.statusCode ${response.statusCode}");
+    //print("response.statusCode ${response.statusCode}");
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
@@ -324,7 +388,7 @@ class DbTools {
     String wSlq = 'UPDATE Users SET ' +
         'User_Actif = ${User.User_Actif} ,' +
         'User_Matricule = "${User.User_Matricule}" ,' +
-        'User_TypeUserID = ${User.User_TypeUserID} ,' +
+        'User_TypeUser = "${User.User_TypeUser}" ,' +
         'User_NivHabID = ${User.User_NivHabID} ,' +
         'User_Niv_Isole = ${User.User_Niv_Isole} ,' +
         'User_Nom = "${User.User_Nom}" ,' +
@@ -341,18 +405,18 @@ class DbTools {
         'User_Famille  = "${User.User_Famille}" ,' +
         'User_Depot  = "${User.User_Depot}" ' +
         ' WHERE UserID = ${User.UserID}';
-    print("setUser " + wSlq);
+//    print("setUser " + wSlq);
     bool ret = await add_API_Post("upddel", wSlq);
-    print("setUser ret " + ret.toString());
+//    print("setUser ret " + ret.toString());
     return ret;
   }
 
   static Future<bool> addUser(User User) async {
     print("User.User_Token_FBM " + DbTools.Token_FBM);
 
-    String wValue = 'NULL,' + User.User_Actif.toString() + ' ,"' + User.User_Matricule + '", ${User.User_TypeUserID}, ${User.User_NivHabID}, ${User.User_Niv_Isole},"' + DbTools.Token_FBM + '", "' + User.User_Nom + '", "' + User.User_Prenom + ' ", "' + User.User_Adresse1 + '", "' + User.User_Adresse2 + '", "' + User.User_Cp + '", "' + User.User_Ville + ' ", "${User.User_Tel}", "${User.User_Mail}", "${User.User_PassWord}", "${User.User_Service}", "${User.User_Fonction}", "${User.User_Famille}", "${User.User_Depot}"';
+    String wValue = 'NULL,' + User.User_Actif.toString() + ' ,"' + User.User_Matricule + '",  \"${User.User_TypeUser}\", ${User.User_NivHabID}, ${User.User_Niv_Isole},"' + DbTools.Token_FBM + '", "' + User.User_Nom + '", "' + User.User_Prenom + ' ", "' + User.User_Adresse1 + '", "' + User.User_Adresse2 + '", "' + User.User_Cp + '", "' + User.User_Ville + ' ", "${User.User_Tel}", "${User.User_Mail}", "${User.User_PassWord}", "${User.User_Service}", "${User.User_Fonction}", "${User.User_Famille}", "${User.User_Depot}"';
     String wSlq = "INSERT INTO Users ("
-        "UserID,User_Actif, User_Matricule, User_TypeUserID, User_NivHabID,User_Niv_Isole,User_Token_FBM, User_Nom, User_Prenom,User_Adresse1,User_Adresse2,User_Cp,User_Ville,User_Tel,User_Mail,User_PassWord,User_Service ,User_Fonction ,User_Famille, User_Depot) "
+        "UserID,User_Actif, User_Matricule, User_TypeUser, User_NivHabID,User_Niv_Isole,User_Token_FBM, User_Nom, User_Prenom,User_Adresse1,User_Adresse2,User_Cp,User_Ville,User_Tel,User_Mail,User_PassWord,User_Service ,User_Fonction ,User_Famille, User_Depot) "
         "VALUES ($wValue)";
     print("addUser " + wSlq);
     bool ret = await add_API_Post("insert", wSlq);
@@ -590,6 +654,7 @@ class DbTools {
 
   static Future initListFam() async {
     await DbTools.getUserAll();
+
     await DbTools.getParam_ParamFam("Type_Interv");
     DbTools.List_TypeInter.clear();
     DbTools.List_TypeInter.addAll(DbTools.ListParam_ParamFam);
@@ -618,11 +683,12 @@ class DbTools {
     List_UserInterID.clear();
     List_ValueItem_User.clear();
 
+
     for (int i = 0; i < DbTools.ListUser.length; i++) {
       var element = DbTools.ListUser[i];
       List_UserInter.add("${element.User_Nom} ${element.User_Prenom}");
-      List_UserInterID.add("${element.UserID}");
-      List_ValueItem_User.add(ValueItem(label: "${element.User_Nom} ${element.User_Prenom}", value: "${element.UserID}"));
+      List_UserInterID.add("${element.User_Matricule}");
+      List_ValueItem_User.add(ValueItem(label: "${element.User_Nom} ${element.User_Prenom}", value: "${element.User_Matricule}"));
     }
   }
 
@@ -746,11 +812,14 @@ class DbTools {
     String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+    print("getParam_Param_API_Post $aSQL");
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
+      print("parsedJson $parsedJson");
+
       final items = parsedJson['data'];
 
       if (items != null) {
@@ -1636,37 +1705,50 @@ class DbTools {
     return true;
   }
 
-  static Future<bool> getClient_User_CSIP(int wUserID) async {
+  static Future<bool> getClient_User_CSIP(String User_Matricule) async {
     ListClient_CSIP_Total.clear();
-    await getClient_User_C(wUserID);
+    await getClient_User_C(User_Matricule);
     print("  ••••••••• getClient_User_CSIP ${ListClient_CSIP.length}");
     ListClient_CSIP.forEach((wClient) {
       wClient.Client_Origine_CSIP = "C";
       ListClient_CSIP_Total_Insert(wClient);
     });
 
-    await getClient_User_S(wUserID);
+    await getClient_User_S(User_Matricule);
     ListClient_CSIP.forEach((wClient) {
       print("getClient_User_S ${wClient.Client_Nom}");
       wClient.Client_Origine_CSIP = "S";
       ListClient_CSIP_Total_Insert(wClient);
     });
 
-    await getClient_User_I(wUserID);
+    await getClient_User_I(User_Matricule);
     ListClient_CSIP.forEach((wClient) {
       print("getClient_User_I ${wClient.Client_Nom}");
       wClient.Client_Origine_CSIP = "I";
       ListClient_CSIP_Total_Insert(wClient);
     });
 
-    await getClient_User_I2(wUserID);
+    await getClient_User_I2(User_Matricule);
     ListClient_CSIP.forEach((wClient) {
       print("getClient_User_I2 ${wClient.Client_Nom}");
       wClient.Client_Origine_CSIP = "I2";
       ListClient_CSIP_Total_Insert(wClient);
     });
 
-    await getClient_User_P(wUserID);
+    await getClient_User_I3(User_Matricule);
+    ListClient_CSIP.forEach((wClient) {
+      print("getClient_User_I3 ${wClient.Client_Nom}");
+      wClient.Client_Origine_CSIP = "I3";
+      ListClient_CSIP_Total_Insert(wClient);
+    });
+
+    await getClient_User_I4(User_Matricule);
+    ListClient_CSIP.forEach((wClient) {
+      print("getClient_User_I4 ${wClient.Client_Nom}");
+      wClient.Client_Origine_CSIP = "I4";
+      ListClient_CSIP_Total_Insert(wClient);
+    });
+    await getClient_User_P(User_Matricule);
     ListClient_CSIP.forEach((wClient) {
       print("getClient_User_P ${wClient.Client_Nom}");
       wClient.Client_Origine_CSIP = "P";
@@ -1693,9 +1775,13 @@ class DbTools {
   SELECT Clients.* FROM Clients, Groupes, Sites, Zones, Interventions, Planning where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = 11;
 */
 
-  static Future<bool> getClient_User_C(int wUserID) async {
-//    String wSlq = "SELECT Clients.* FROM Clients Where Clients.Client_Commercial = $wUserID";
-    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID  Where Clients.Client_Commercial = $wUserID ORDER BY Client_Nom;";
+  static Future<bool> getClient_User_C(String User_Matricule) async {
+
+//    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID Where Clients.Client_Commercial = $wUserID ORDER BY Client_Nom;";
+
+    String wSlq = "SELECT Clients.*, Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' LEFT JOIN Users ON Clients.Client_Commercial = Users.User_Matricule  Where Clients.Client_Commercial = \"${User_Matricule}\" ORDER BY Client_Nom;";
+
+
 
     print("  ••••••••• getClient_User_C ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
@@ -1708,9 +1794,8 @@ class DbTools {
     return false;
   }
 
-  static Future<bool> getClient_User_S(int wUserID) async {
-    String wSlq = "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites JOIN Users ON Sites.Site_ResourceId = Users.UserID where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId AND Sites.Site_ResourceId = $wUserID";
-
+  static Future<bool> getClient_User_S(String User_Matricule) async {
+    String wSlq = "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_S ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1722,9 +1807,9 @@ class DbTools {
     return false;
   }
 
-  static Future<bool> getClient_User_I(int wUserID) async {
+  static Future<bool> getClient_User_I(String User_Matricule) async {
     String wSlq =
-        "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID  where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable = $wUserID";
+        "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_I ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1736,9 +1821,9 @@ class DbTools {
     return false;
   }
 
-  static Future<bool> getClient_User_I2(int wUserID) async {
+  static Future<bool> getClient_User_I2(String User_Matricule) async {
     String wSlq =
-        "SELECT Clients.* , Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable2 = Users.UserID  where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 = $wUserID";
+        "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_I2 ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1750,9 +1835,39 @@ class DbTools {
     return false;
   }
 
-  static Future<bool> getClient_User_P(int wUserID) async {
+  static Future<bool> getClient_User_I3(String User_Matricule) async {
     String wSlq =
-        "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' , Groupes, Sites, Zones, Interventions, Planning JOIN Users ON Planning.Planning_ResourceId = Users.UserID   where  Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId = $wUserID";
+        "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable3 =  \"${User_Matricule}\"";
+    print("  ••••••••• getClient_User_I2 ${wSlq}");
+    ListClient_CSIP = await getClient_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    print("  ••••••••• getClient_User_I2  ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_S return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> getClient_User_I4(String User_Matricule) async {
+    String wSlq =
+        "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable4 =  \"${User_Matricule}\"";
+    print("  ••••••••• getClient_User_I2 ${wSlq}");
+    ListClient_CSIP = await getClient_API_Post("select", wSlq);
+    if (ListClient_CSIP == null) return false;
+    print("  ••••••••• getClient_User_I2  ${ListClient_CSIP.length}");
+    if (ListClient_CSIP.length > 0) {
+      //print("getClient_User_S return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+
+  static Future<bool> getClient_User_P(String User_Matricule) async {
+    String wSlq =
+        "SELECT Clients.*, Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions, Planning JOIN Users ON Planning.Planning_ResourceId = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_P ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
     if (ListClient_CSIP == null) return false;
@@ -1794,7 +1909,11 @@ class DbTools {
   //*****************************
 
   static Future<bool> getClientAll() async {
-    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID ORDER BY Client_Nom;";
+
+    String wSlq = "SELECT Clients.*, Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' LEFT JOIN Users ON Clients.Client_Commercial = Users.User_Matricule ORDER BY Client_Nom;";
+
+
+    print("getClientAll ${wSlq}");
     ListClient = await getClient_API_Post("select", wSlq);
     if (ListClient == null) return false;
     if (ListClient.length > 0) {
@@ -1804,7 +1923,7 @@ class DbTools {
   }
 
   static Future<bool> getClient(int ID) async {
-    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.UserID  WHERE Clients.ClientId = $ID ORDER BY Client_Nom;";
+    String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.User_Matricule  WHERE Clients.ClientId = $ID ORDER BY Client_Nom;";
     print("getClient wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
     if (ListClient == null) return false;
@@ -1816,7 +1935,7 @@ class DbTools {
   }
 
   static Future<bool> getClientRech(String wRech) async {
-    String wSlq = 'SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, " " , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = "FACT" JOIN Users ON Clients.Client_Commercial = Users.UserID'
+    String wSlq = 'SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, " " , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = "FACT" JOIN Users ON Clients.Client_Commercial = Users.User_Matricule'
             ' WHERE Clients.Client_Nom LIKE "%' +
         '${wRech}' +
         '%" OR Adresse_CP LIKE "%' +
@@ -1850,7 +1969,7 @@ class DbTools {
 
   static Future<bool> getClientDepotp(String wDepot) async {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT'  WHERE Clients.Client_Depot = '$wDepot'  ORDER BY Client_Nom;";
-    print("getClientDepot wSlq $wSlq");
+
     ListClient = await getClient_API_Post("select", wSlq);
 
     if (ListClient == null) return false;
@@ -1891,6 +2010,7 @@ class DbTools {
         "Client_Commercial = \"${Client.Client_Commercial}\", " +
         "Client_Createur    = \"${Client.Client_Createur}\", " +
         "Client_Contrat      = ${Client.Client_Contrat}, " +
+        "Client_Contrat_No      = \"${Client.Client_Contrat_No}\", " +
         "Client_TypeContrat      = \"${Client.Client_TypeContrat}\", " +
         "Client_Statut      = \"${Client.Client_Statut}\", " +
         "Client_Ct_Debut      = \"${Client.Client_Ct_Debut}\", " +
@@ -2150,8 +2270,10 @@ class DbTools {
   static Future<bool> getGroupesClient(int ID) async {
     String wTmp = "select * from Groupes WHERE Groupe_ClientId = $ID ORDER BY Groupe_Nom";
 
-    print("wTmp getGroupesClient ${wTmp}");
-    ListGroupe = await getGroupe_API_Post("select", wTmp);
+    String wSql = "select Groupes.*, Count(GroupeId) as NbSite, SiteId from Groupes Left JOIN Sites ON Site_GroupeId = GroupeId WHERE Groupe_ClientId = $ID Group BY GroupeId;";
+
+    print("wTmp getGroupesClient ${wSql}");
+    ListGroupe = await getGroupe_API_Post("select", wSql);
 
     if (ListGroupe == null) return false;
 //    print("getGroupesClient ${ListGroupe.length}");
@@ -2304,9 +2426,9 @@ class DbTools {
 
   static Future<bool> getSitesClient(int ID) async {
     String wTmp = "SELECT Sites.* FROM  Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId WHERE Groupes.Groupe_ClientId = $ID ORDER BY Site_Nom";
-
-    print("wTmp getSitesSite ${wTmp}");
-    ListSite = await getSite_API_Post("select", wTmp);
+    String wSql = "SELECT Sites.*, Count(SiteId) as NbZone, ZoneId, Contacts.ContactId, Contacts.Contact_Prenom, Contacts.Contact_Nom, Contacts.Contact_Tel2, Contacts.Contact_eMail FROM Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId Left JOIN Zones ON Zone_SiteId = SiteId Left JOIN Contacts ON Contact_AdresseId = SiteId AND Contact_ClientId = Groupe_ClientId AND Contact_Type = 'SITE' WHERE Groupes.Groupe_ClientId = $ID GROUP BY SiteId ORDER BY Site_Nom;";
+    print("wSql getSitesSite ${wSql}");
+    ListSite = await getSite_API_Post("select", wSql);
 
     if (ListSite == null) return false;
     print("getSitesSite ${ListSite.length}");
@@ -2342,6 +2464,8 @@ class DbTools {
         "Site_Acces     = \"${Site.Site_Acces}\", " +
         "Site_RT        = \"${Site.Site_RT}\", " +
         "Site_APSAD     = \"${Site.Site_APSAD}\", " +
+        "Site_APSAD_Date     = \"${Site.Site_APSAD_Date}\", " +
+        "Site_Regle     = \"${Site.Site_Regle}\", " +
         "Site_DecConf     = ${Site.Site_DecConf}, " +
         "Site_ResourceId     =   ${Site.Site_ResourceId}, " +
         "Site_Rem       = \"${Site.Site_Rem}\" " +
@@ -2471,7 +2595,10 @@ class DbTools {
         "Zone_Ville     = \"${Zone.Zone_Ville}\", " +
         "Zone_Pays      = \"${Zone.Zone_Pays}\", " +
         "Zone_Acces      = \"${Zone.Zone_Acces}\", " +
-        "Zone_Rem       = \"${Zone.Zone_Rem}\" " +
+        "Zone_Rem       = \"${Zone.Zone_Rem}\", " +
+        "Zone_APSAD       = \"${Zone.Zone_APSAD}\", " +
+        "Zone_APSAD_Date       = \"${Zone.Zone_APSAD_Date}\", " +
+        "Zone_Regle       = \"${Zone.Zone_Regle}\" " +
         "WHERE ZoneId      = ${Zone.ZoneId.toString()}";
     gColors.printWrapped("setZone " + wSlq);
     bool ret = await add_API_Post("upddel", wSlq);
@@ -2859,7 +2986,7 @@ class DbTools {
   }
 
   static Future getPlanning_InterventionIdRes(int InterventionId) async {
-    ListUserH = await getPlanningH_API_Post("select", "SELECT Users.User_Nom , Users.User_Prenom, SUM(TIMEDIFF( Planning.Planning_InterventionendTime,Planning.Planning_InterventionstartTime) / 10000) as H FROM Planning , Users where Planning_ResourceId = Users.UserID AND   Planning_InterventionId = $InterventionId GROUP BY Planning.Planning_ResourceId ORDER BY H DESC;");
+    ListUserH = await getPlanningH_API_Post("select", "SELECT Users.User_Nom , Users.User_Prenom, SUM(TIMEDIFF( Planning.Planning_InterventionendTime,Planning.Planning_InterventionstartTime) / 10000) as H FROM Planning , Users where Planning_ResourceId = Users.User_Matricule AND   Planning_InterventionId = $InterventionId GROUP BY Planning.Planning_ResourceId ORDER BY H DESC;");
     if (ListUserH == null) return false;
     if (ListUserH.length > 0) {
       return true;
@@ -3087,7 +3214,7 @@ class DbTools {
   }
 
   static Future<bool> getInterMissionsIntervention(int ID) async {
-    String wTmp = "SELECT * FROM InterMissions WHERE InterMission_InterventionId = $ID ORDER BY InterMission_Nom";
+    String wTmp = "SELECT * FROM InterMissions WHERE InterMission_InterventionId = $ID ORDER BY InterMissionId";
     print("wTmp $wTmp");
 
     ListInterMission = await getInterMission_API_Post("select", wTmp);
@@ -3203,9 +3330,6 @@ class DbTools {
     await DbTools.getParam_Saisie_Base("Desc");
     DbTools.ListParam_Saisie_Base.sort(DbTools.affSortComparison);
     DbTools.ListParam_Saisie.sort(DbTools.affSort2Comparison);
-
-
-
 
 
   }
@@ -4371,7 +4495,7 @@ class DbTools {
   static Future<bool> getParam_Saisie_Param(String paramSaisieParamId) async {
     String wSql = "select * from Param_Saisie_Param WHERE Param_Saisie_Param_Id = '$paramSaisieParamId' ORDER BY Param_Saisie_Param_Id,Param_Saisie_Param_Ordre,Param_Saisie_Param_Label";
 
-//    print("getParam_Saisie_Param ${wSql}");
+    print("getParam_Saisie_Param ${wSql}");
 
     ListParam_Saisie_Param = await getParam_Saisie_Param_API_Post("select", wSql);
 
@@ -4672,14 +4796,14 @@ class DbTools {
     gLastID = -1;
     String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
 
-    print("aSQL  " + aSQL);
+//    print("aSQL  " + aSQL);
 //    print("aType " + aType);
 
     var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
     request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL});
 
     http.StreamedResponse response = await request.send();
-    print("add_API_Post " + response.statusCode.toString());
+//    print("add_API_Post " + response.statusCode.toString());
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
 

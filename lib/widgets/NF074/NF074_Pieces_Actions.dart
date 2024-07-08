@@ -139,7 +139,7 @@ class _NF074_Pieces_Actions_screenState extends State<NF074_Pieces_Actions_scree
 
 
                           String wTable = "Pieces_Actions";
-                          await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
+                          await Upload.UploadSrvCsvPickerNF74(wTable, onSetStateOn, onSetStateOff);
 
                           print("iStrfExp B ${iStrfExp}");
                         }

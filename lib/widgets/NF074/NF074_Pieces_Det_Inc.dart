@@ -139,7 +139,7 @@ class _NF074_Pieces_Det_Inc_screenState extends State<NF074_Pieces_Det_Inc_scree
 
 
                           String wTable = "Pieces_Det_Inc";
-                          await Upload.UploadSrvCsvPicker(wTable, onSetStateOn, onSetStateOff);
+                          await Upload.UploadSrvCsvPickerNF74(wTable, onSetStateOn, onSetStateOff);
 
                           print("iStrfExp B ${iStrfExp}");
                         }

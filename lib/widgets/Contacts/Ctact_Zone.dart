@@ -294,9 +294,13 @@ class _Ctact_ZoneState extends State<Ctact_Zone> {
     print("ToolsBarAdd");
     await DbTools.addContactAdrType(DbTools.gClient.ClientId, DbTools.gZone.ZoneId, "ZONE");
     await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gZone.ZoneId, "ZONE");
+
+    await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
+
+
     DbTools.getContactID(DbTools.gLastID);
 
-    DbTools.gContact.Contact_Civilite = "M";
+    DbTools.gContact.Contact_Civilite = "${DbTools.ListParam_ParamCiv[0]}";
     DbTools.gContact.Contact_Prenom = "John";
     DbTools.gContact.Contact_Nom = "Doe";
     await DbTools.setContact(DbTools.gContact);
@@ -452,6 +456,13 @@ class _Ctact_ZoneState extends State<Ctact_Zone> {
   }
 
   Widget DropdownButtonCiv() {
+
+    if (!DbTools.ListParam_ParamCiv.contains(textController_Contact_Civilite.text))
+    {
+    textController_Contact_Civilite.text = "";
+    }
+
+
     return Row(children: [
       Container(
         width: 84,
@@ -488,10 +499,16 @@ class _Ctact_ZoneState extends State<Ctact_Zone> {
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                height: 30,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 800,
+              ),
             )),
       ),
     ]);

@@ -31,7 +31,6 @@ class User {
   bool User_Actif = true;
   String User_Token_FBM = "";
   String User_Matricule = "";
-  int User_TypeUserID = 0;
   String User_TypeUser = "";
   int User_NivHabID = 0;
   bool User_Niv_Isole = true;
@@ -53,7 +52,7 @@ class User {
 
 
   static UserInit() {
-    return User(0, false, "", "", 0,"",0, "", false, "", "", "", "", "", "", "", "", "", "", "", "", "");
+    return User(0, false, "", "", "",0, "", false, "", "", "", "", "", "", "", "", "", "", "", "", "");
   }
 
   User(
@@ -61,7 +60,6 @@ class User {
     bool User_Actif,
     String User_Token_FBM,
     String User_Matricule,
-      int User_TypeUserID,
       String User_TypeUser,
       int User_NivHabID,
       String User_NivHab,
@@ -85,7 +83,6 @@ class User {
     this.User_Token_FBM = User_Token_FBM;
     this.User_Matricule = User_Matricule;
     this.User_TypeUser = User_TypeUser;
-    this.User_TypeUserID = User_TypeUserID;
     this.User_NivHab = User_NivHab;
     this.User_NivHabID = User_NivHabID;
     this.User_Niv_Isole = User_Niv_Isole;
@@ -117,8 +114,7 @@ class User {
       buserActif,
       json['User_Token_FBM'],
       json['User_Matricule'],
-      int.parse(json['User_TypeUserID']),
-      "",
+      json['User_TypeUser'],
       int.parse(json['User_NivHabID']),
       "",
       buserNivIsole,
@@ -141,6 +137,6 @@ class User {
   }
 
   String Desc() {
-    return '$UserID $User_Matricule $User_Nom $User_Prenom $User_Adresse1 $User_Adresse2 $User_Cp $User_Ville $User_Mail $User_Service $User_Fonction $User_Famille $User_Depot $User_NivHabID $User_TypeUserID $User_Niv_Isole';
+    return '$UserID $User_Matricule $User_Nom $User_Prenom $User_Adresse1 $User_Adresse2 $User_Cp $User_Ville $User_Mail $User_Service $User_Fonction $User_Famille $User_Depot $User_NivHabID $User_TypeUser $User_Niv_Isole';
   }
 }

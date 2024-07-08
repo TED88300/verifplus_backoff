@@ -36,6 +36,7 @@ class GroupeDataGridSource extends DataGridSource {
         DataGridCell<String>(columnName: 'adresse', value: groupe.Groupe_Adr1),
         DataGridCell<String>(columnName: 'cp', value: groupe.Groupe_CP),
         DataGridCell<String>(columnName: 'ville', value: groupe.Groupe_Ville),
+        DataGridCell<String>(columnName: 'nb', value: groupe.NbSite.toString()),
         DataGridCell<String>(columnName: 'agence', value: groupe.Groupe_Depot),
       ]);
     }).toList();
@@ -53,16 +54,18 @@ class GroupeDataGridSource extends DataGridSource {
     double b = 3;
 
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    bool selected = (DbTools.gGroupe.GroupeId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? selectedRowTextColor : Colors.black;
+    Color backgroundColor = selected ? gColors.backgroundColor : Colors.transparent;
 
-    Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
       FiltreTools.SfRow(row, 0, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 5, Alignment.centerRight, textColor),
+      FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -95,6 +98,7 @@ class _Client_GrpState extends State<Client_Grp> {
     350,
     120,
     210,
+    100,
     210,
   ];
 
@@ -116,6 +120,7 @@ class _Client_GrpState extends State<Client_Grp> {
   List<GrdBtnGrp> lGrdBtnGrp = [];
   List<Param_Param> ListParam_ParamTypeOg = [];
 
+
   List<GridColumn> getColumns() {
     return <GridColumn>[
       FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[0], Alignment.centerLeft),
@@ -123,7 +128,8 @@ class _Client_GrpState extends State<Client_Grp> {
       FiltreTools.SfGridColumn('adresse', 'Adresse', dColumnWidth[2], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[3], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[4], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nb', 'Nb', dColumnWidth[5], 160, Alignment.centerRight),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[6], 160, Alignment.centerLeft),
     ];
   }
 
@@ -185,13 +191,14 @@ class _Client_GrpState extends State<Client_Grp> {
 
   int SelGroupe = 0;
 
-  late DataGridRow selectedRow;
+
 
   Future Reload() async {
+    Groupe wGroupe = DbTools.gGroupe;
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
+    if (wGroupe.GroupeId >=0 ) DbTools.gGroupe = wGroupe;
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
-
     await Filtre();
     AlimSaisie();
   }
@@ -201,8 +208,8 @@ class _Client_GrpState extends State<Client_Grp> {
     DbTools.ListGroupesearchresult.addAll(DbTools.ListGroupe);
     await groupeDataGridSource.handleRefresh();
 
+
     setState(() {});
-    print(" SelGroupe ${SelGroupe}");
   }
 
   void initLib() async {
@@ -214,7 +221,6 @@ class _Client_GrpState extends State<Client_Grp> {
     DbTools.gGroupe = Groupe.GroupeInit();
     await Reload();
     await AlimSaisie();
-    selectedRow = groupeDataGridSource.dataGridRows[0];
   }
 
   Future AlimSaisie() async {
@@ -357,8 +363,7 @@ class _Client_GrpState extends State<Client_Grp> {
     DbTools.gGroupe.Groupe_Depot = selectedValueDepot;
     await DbTools.setGroupe(DbTools.gGroupe);
 
-    SelGroupe = dataGridController.selectedIndex;
-    selectedRow = dataGridController.selectedRow!;
+
 
     await Reload();
   }
@@ -666,7 +671,7 @@ class _Client_GrpState extends State<Client_Grp> {
             child: SfDataGridTheme(
                 data: SfDataGridThemeData(
                   headerColor: gColors.secondary,
-                  selectionColor: gColors.backgroundColor,
+                  selectionColor: gColors.transparent,
                 ),
                 child: SfDataGrid(
                   //*********************************
@@ -685,7 +690,7 @@ class _Client_GrpState extends State<Client_Grp> {
                     SelGroupe = dataGridController.selectedIndex;
                     print(" onSelectionChanged  SelGroupe ${SelGroupe}");
                     DbTools.gGroupe = DbTools.ListGroupesearchresult[Selindex];
-                    AlimSaisie();
+                    Reload();
                   },
 
                   //*********************************
@@ -778,19 +783,26 @@ class _Client_GrpState extends State<Client_Grp> {
               setState(() {});
             });
           },
-          buttonPadding: const EdgeInsets.only(left: 4, right: 4),
-          buttonDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.black26,
-            ),
-            color: Colors.white,
-          ),
-          buttonHeight: 30,
-          buttonWidth: 250,
-          dropdownMaxHeight: 250,
-          itemHeight: 32,
-        )),
+              buttonStyleData: const ButtonStyleData(
+                padding: const EdgeInsets.only(left: 4, right: 4),
+                height: 30,
+                width: 290,
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 250,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.black26,
+                  ),
+                  color: Colors.white,
+                ),
+              ),
+
+            )),
       ),
     ]);
   }

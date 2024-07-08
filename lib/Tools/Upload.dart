@@ -79,7 +79,6 @@ class Upload {
       FlutterWebFile file = files[0];
       print("file " + file.file.name);
       var stream = file.fileBytes;
-
       String wPath = DbTools.SrvUrl;
       var uri = Uri.parse(wPath.toString());
       var request = new http.MultipartRequest("POST", uri);
@@ -101,6 +100,110 @@ class Upload {
         onSetState();
       });
     });
+  }
+
+  static Future<void> UploadCsvPicker(String tableName, VoidCallback onSetStateOn, VoidCallback onSetStateOff) async {
+    print("UploadSrvCsvPicker >>>>>>");
+
+
+    String imagepath = tableName + ".csv";
+    await PlatformFilePicker().startWebCsvPicker((files) async {
+      onSetStateOn();
+
+      print("uploadcsv ${files.length}");
+
+
+      });
+
+
+
+
+
+
+
+
+    print("UploadSrvCsvPicker <<<<<<");
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  static Future<void> UploadSrvCsvPickerNF74(String tableName, VoidCallback onSetStateOn, VoidCallback onSetStateOff) async {
+    print("UploadSrvCsvPicker >>>>>>");
+
+
+    String imagepath = tableName + ".csv";
+    await PlatformFilePicker().startWebCsvPicker((files) async {
+      onSetStateOn();
+
+      print("uploadcsv");
+
+      DbTools.setSrvToken();
+      print("Deb");
+      print("imagepath $imagepath");
+      FlutterWebFile file = files[0];
+      print("file " + file.file.name);
+      var stream = file.fileBytes;
+
+      String wPath = DbTools.SrvUrl;
+      var uri = Uri.parse(wPath.toString());
+      var request = new http.MultipartRequest("POST", uri);
+      request.fields.addAll({
+        'tic12z': DbTools.SrvToken,
+        'zasq': 'uploadcsv',
+        'imagepath': imagepath,
+      });
+
+      var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream, filename: basename("xxx.csv"));
+      request.files.add(multipartFile);
+      var response = await request.send();
+      print(response.statusCode);
+      response.stream.transform(utf8.decoder).listen((value) async{
+        print("uploadcsv OK " + value);
+        print("importcsv");
+
+        var request2 = new http.MultipartRequest("POST", uri);
+        request2.fields.addAll({
+          'tic12z': DbTools.SrvToken,
+          'zasq': 'importcsvNF74',
+          'tableName': tableName,
+        });
+
+        print("importcsv A ${request2.fields}");
+        http.StreamedResponse response2 = await request2.send();
+        print("importcsv B ${response2.statusCode}");
+
+        if (response2.statusCode == 200) {
+          response2.stream.transform(utf8.decoder).listen((value) async{
+            print("importcsv OK " + value);
+          });
+        } else {
+          print("importcsv error  ${response2.statusCode}");
+        }
+        onSetStateOff();
+
+
+      });
+
+//      onSetStateOff();
+
+
+
+    });
+
+    print("UploadSrvCsvPicker <<<<<<");
+
+
   }
 
 
@@ -177,8 +280,6 @@ class Upload {
 
 
 
-
-
   static Future<void> UploadCSVPicker(String wTable, VoidCallback onSetState) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
@@ -217,6 +318,61 @@ class Upload {
 
     }
   }
+
+
+
+/*
+wImage.length 100421
+Deb
+wInterMission 13 DbTools.gInterMission 13
+200
+SaveFile Intervention_130_13_4.jpg
+value {"success":1,"name":"Intervention_130_13_3.jpg","uploadfilename":"\/tmp\/phpOcKOF0","is_uploaded_file":"OK","size":100421,"werror":"Move  OK = '1'"}
+
+* */
+
+  static Future<void> SaveFile(String imagepath, Uint8List wImage) async {
+    print("SaveFile $imagepath");
+
+    String wImgPath = DbTools.SrvImg + imagepath;
+    PaintingBinding.instance.imageCache.clear();
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    await DefaultCacheManager().emptyCache(); //clears all data in cache.
+    await DefaultCacheManager().removeFile(wImgPath);
+
+    print("wImage.length ${wImage.length}");
+
+
+    DbTools.setSrvToken();
+    print("Deb");
+    var stream = wImage;
+    String wPath = DbTools.SrvUrl;
+    var uri = Uri.parse(wPath.toString());
+    var request = new http.MultipartRequest("POST", uri);
+    request.fields.addAll({
+      'tic12z': DbTools.SrvToken,
+      'zasq': 'uploadphoto',
+      'imagepath': imagepath,
+    });
+
+    var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream, filename: basename("xxx.jpg"));
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response.statusCode);
+    response.stream.transform(utf8.decoder).listen((value) {
+      print("value " + value);
+      print("Fin");
+
+
+    });
+
+  }
+
+
+
+
+
 
 
 

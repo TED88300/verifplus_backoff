@@ -90,12 +90,12 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
     selectedValueOrgane = ListParam_ParamOrgane[0];
     selectedValueOrganeID = ListParam_ParamOrganeID[0];
 
-    print(
-        "selectedValueOrgane $selectedValueOrganeID $selectedValueOrgane");
+    print("selectedValueOrgane $selectedValueOrganeID $selectedValueOrgane");
 
     ListParam_ParamType.clear();
     ListParam_ParamTypeID.clear();
     DbTools.ListParam_ParamAll.forEach((element) {
+
       if (element.Param_Param_Type.compareTo("Type_Saisie") == 0) {
         ListParam_ParamType.add(element.Param_Param_Text);
         ListParam_ParamTypeID.add(element.Param_Param_ID);
@@ -103,12 +103,10 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
     });
 
     print("ListParam_ParamType ${ListParam_ParamType.length}");
-
     selectedValueType = ListParam_ParamType[0];
     selectedValueTypeID = ListParam_ParamTypeID[0];
 
     print("selectedValueType $selectedValueTypeID $selectedValueType");
-
     ListParam_ParamCtrl.clear();
     ListParam_ParamCtrlID.clear();
     DbTools.ListParam_ParamAll.forEach((element) {
@@ -838,19 +836,27 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
           Reload();
         });
       },
-      buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-      buttonDecoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.black26,
-        ),
-        color: Colors.white,
-      ),
-      buttonHeight: 30,
-      buttonWidth: 350,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+            padding: const EdgeInsets.only(left: 14, right: 14),
+            height: 30,
+            width: 350,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.black26,
+              ),
+              color: Colors.white,
+            ),
+          ),
+
+
+        ));
   }
 
   Widget DropdownButtonType() {
@@ -878,19 +884,27 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
           Reload();
         });
       },
-      buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-      buttonDecoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.black26,
-        ),
-        color: Colors.white,
-      ),
-      buttonHeight: 30,
-      buttonWidth: 350,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+            padding: const EdgeInsets.only(left: 14, right: 14),
+            height: 30,
+            width: 350,
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Colors.black26,
+              ),
+              color: Colors.white,
+            ),
+          ),
+
+
+        ));
   }
 
   Widget DropdownButtonCtrl() {
@@ -917,10 +931,16 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
               "selectedValueCtrl $selectedValueCtrlID $selectedValueCtrl");
         });
       },
-      buttonHeight: 50,
-      buttonWidth: 200,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
     ));
   }
 
@@ -947,11 +967,18 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
           print("selectedValueAff $selectedValueAffID $selectedValueAff");
         });
       },
-      buttonHeight: 50,
-      buttonWidth: 150,
-      dropdownMaxHeight: 250,
-      itemHeight: 32,
-    ));
+          buttonStyleData: const ButtonStyleData(
+              height: 50,
+              width: 150
+          ),
+          menuItemStyleData: const MenuItemStyleData(
+            height: 32,
+          ),
+          dropdownStyleData: DropdownStyleData(
+            maxHeight: 250,
+          ),
+
+        ));
   }
 
 

@@ -14,6 +14,8 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
   String Title = "";
   double screenWidth = 0;
   Future initLib() async {
+    await DbTools.getContactClientAdrType(DbTools.gClient.ClientId, DbTools.gZone.ZoneId, "ZONE");
+
     setState(() {});
   }
 
@@ -81,11 +83,9 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
     );
   }
 
-
   int sel = 0;
 
   Widget Content(BuildContext context) {
-
     return Container(
       color: Colors.white,
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -103,9 +103,6 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
       ]),
     );
   }
-
-
-
 
   Widget ContentDetailCadre(BuildContext context) {
     return Stack(
@@ -181,31 +178,76 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
   }
 
   Widget ContentDetail(BuildContext context) {
+    double colWidth = 500;
     return
 
 //      Expanded(child:
         FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
             child: Container(
-                padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
-                child: Column(
+                padding: const EdgeInsets.fromLTRB(10, 25, 10, 0),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        gColors.Txt(80, "Zone", "#${DbTools.gZone.ZoneId} ${DbTools.gZone.Zone_Nom}"),
-                      ],
+                    Container(
+                      width: colWidth,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              gColors.Txt(80, "Zone", "#${DbTools.gZone.ZoneId} ${DbTools.gZone.Zone_Nom}"),
+                            ],
+                          ),
+                          Container(height: 10),
+                          Row(
+                            children: [
+                              gColors.Txt(80, "Adresse", "${DbTools.gZone.Zone_Adr1} ${DbTools.gZone.Zone_CP} ${DbTools.gZone.Zone_Ville}"),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Container(height: 10),
-                    Row(
-                      children: [
-                        gColors.Txt(80, "Adresse", "${DbTools.gZone.Zone_Adr1} ${DbTools.gZone.Zone_CP} ${DbTools.gZone.Zone_Ville}"),
-                      ],
+                    Container(width: 50),
+                    Container(
+                      width: colWidth,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              gColors.Txt(80, "Contact", "${DbTools.gContact.Contact_Prenom} ${DbTools.gContact.Contact_Nom}"),
+                            ],
+                          ),
+                          Container(height: 10),
+                          Row(
+                            children: [
+                              gColors.Txt(80, "Portable", "${DbTools.gContact.Contact_Tel2}"),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
+                    Container(width: 50),
+                    Container(
+                        width: colWidth,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                gColors.Txt(80, "eMail", "${DbTools.gContact.Contact_eMail}"),
+                              ],
+                            ),
+                          ],
+                        )),
                   ],
-                )
-                //)
-                ));
+                )));
   }
 }

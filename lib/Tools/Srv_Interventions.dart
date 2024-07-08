@@ -22,6 +22,7 @@ class Intervention {
   String? Intervention_Signataire_Tech = "";
   String? Intervention_Signataire_Date = "";
 
+
   String? Client_Nom = "";
   String? Groupe_Nom = "";
   String? Site_Nom = "";
@@ -44,12 +45,27 @@ class Intervention {
     return Intervention(-1, 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","","", 0, 0,Uint8List.fromList([]),Uint8List.fromList([]) ,"");
   }
 
-  Intervention(int InterventionId, int Intervention_ZoneId, String Intervention_Date, String Intervention_Type, String Intervention_Parcs_Type, String Intervention_Status, String Intervention_Histo_Status, String Intervention_Facturation, String Intervention_Histo_Facturation, String Intervention_Responsable,
+  Intervention(int InterventionId,
+      int Intervention_ZoneId,
+      String Intervention_Date,
+      String Intervention_Type,
+      String Intervention_Parcs_Type,
+      String Intervention_Status,
+      String Intervention_Histo_Status,
+      String Intervention_Facturation,
+      String Intervention_Histo_Facturation,
+      String Intervention_Responsable,
       String Intervention_Responsable2,
       String Intervention_Responsable3,
       String Intervention_Responsable4,
-      String Intervention_Partages, String Intervention_Contributeurs, String Intervention_Intervenants, String Intervention_Reglementation, String Intervention_Signataire_Client, String Intervention_Signataire_Tech,
-      String Intervention_Signataire_Date, String Intervention_Remarque,
+      String Intervention_Partages,
+      String Intervention_Contributeurs,
+      String Intervention_Intervenants,
+      String Intervention_Reglementation,
+      String Intervention_Signataire_Client,
+      String Intervention_Signataire_Tech,
+      String Intervention_Signataire_Date,
+      String Intervention_Remarque,
       int Cnt,
       int Intervention_Sat,
       Uint8List Intervention_Signature_Client,

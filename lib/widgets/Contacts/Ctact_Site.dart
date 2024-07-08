@@ -64,6 +64,12 @@ class _Ctact_SiteState extends State<Ctact_Site> {
   }
 
   void AlimSaisie() {
+
+
+    print("DbTools.gContact.Contact_Civilite ${DbTools.gContact.ContactId}");
+    print("DbTools.gContact.Contact_Civilite ${DbTools.gContact.Contact_Civilite}");
+
+
     textController_Contact_Civilite.text = DbTools.gContact.Contact_Civilite;
     textController_Contact_Prenom.text = DbTools.gContact.Contact_Prenom;
     textController_Contact_Nom.text = DbTools.gContact.Contact_Nom;
@@ -300,9 +306,9 @@ class _Ctact_SiteState extends State<Ctact_Site> {
     await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
     DbTools.getContactID(DbTools.gLastID);
 
-    DbTools.gContact.Contact_Civilite = "M";
-    DbTools.gContact.Contact_Prenom = "John";
-    DbTools.gContact.Contact_Nom = "Doe";
+    DbTools.gContact.Contact_Civilite = "";
+    DbTools.gContact.Contact_Prenom = "";
+    DbTools.gContact.Contact_Nom = "";
     await DbTools.setContact(DbTools.gContact);
 
     print("ToolsBarAdd");
@@ -493,11 +499,17 @@ class _Ctact_SiteState extends State<Ctact_Site> {
                   setState(() {});
                 });
               },
-              buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-              buttonHeight: 30,
-              dropdownMaxHeight: 800,
-              itemHeight: 32,
-            )),
+              buttonStyleData: const ButtonStyleData(
+                  padding: const EdgeInsets.only(left: 5, right: 5),
+                  height: 50,
+                  width: 250
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                height: 32,
+              ),
+              dropdownStyleData: DropdownStyleData(
+                maxHeight: 210,
+              ),            )),
       ),
     ]);
   }
