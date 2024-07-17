@@ -248,7 +248,8 @@ class _Client_GrpState extends State<Client_Grp> {
       }
     }
 
-    await DbTools.getSitesGroupe(DbTools.ListGroupe[0].GroupeId);
+    if(DbTools.ListGroupe.length > 0)
+      await DbTools.getSitesGroupe(DbTools.ListGroupe[0].GroupeId);
 
     setState(() {});
   }

@@ -4,10 +4,11 @@ import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Interv.dart';
 
 class Zone_Dialog extends StatefulWidget {
-  const Zone_Dialog({Key? key}) : super(key: key);
 
+  final bool isPar;
+  const Zone_Dialog({Key? key, required this.isPar}) : super(key: key);
   @override
-  State<Zone_Dialog> createState() => _Zone_DialogState();
+  _Zone_DialogState createState() => _Zone_DialogState();
 }
 
 class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStateMixin {
@@ -96,7 +97,7 @@ class _Zone_DialogState extends State<Zone_Dialog> with SingleTickerProviderStat
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ContentDetailCadre(context),
-              Zone_Interv(),
+              Zone_Interv(isPar: widget.isPar,),
             ],
           )),
         ),

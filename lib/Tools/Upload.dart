@@ -371,7 +371,43 @@ value {"success":1,"name":"Intervention_130_13_3.jpg","uploadfilename":"\/tmp\/p
 
 
 
+  static Future<void> SaveDoc(String imagepath, Uint8List wImage) async {
+    print("SaveFile $imagepath");
 
+    String wImgPath = DbTools.SrvImg + imagepath;
+    PaintingBinding.instance.imageCache.clear();
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    await DefaultCacheManager().emptyCache(); //clears all data in cache.
+    await DefaultCacheManager().removeFile(wImgPath);
+
+    print("wImage.length ${wImage.length}");
+
+
+    DbTools.setSrvToken();
+    print("Deb");
+    var stream = wImage;
+    String wPath = DbTools.SrvUrl;
+    var uri = Uri.parse(wPath.toString());
+    var request = new http.MultipartRequest("POST", uri);
+    request.fields.addAll({
+      'tic12z': DbTools.SrvToken,
+      'zasq': 'uploaddoc',
+      'imagepath': imagepath,
+    });
+
+    var multipartFile = new http.MultipartFile.fromBytes('uploadfile', stream, filename: basename("xxx.jpg"));
+    request.files.add(multipartFile);
+    var response = await request.send();
+    print(response.statusCode);
+    response.stream.transform(utf8.decoder).listen((value) {
+      print("value " + value);
+      print("Fin");
+
+
+    });
+
+  }
 
 
 

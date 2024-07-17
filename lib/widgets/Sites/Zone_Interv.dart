@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
@@ -8,13 +10,10 @@ import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-import 'package:verifplus_backoff/widgetTools/gObj.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
-import 'package:verifplus_backoff/widgets/Sites/Photos.dart';
 import 'package:verifplus_backoff/widgets/Sites/Mission.dart';
-
 import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
 DataGridController dataGridController = DataGridController();
@@ -24,6 +23,8 @@ DataGridController dataGridController = DataGridController();
 //*********************************************************************
 
 class IntervInfoDataGridSource extends DataGridSource {
+  bool isPar = true;
+
   IntervInfoDataGridSource() {
     buildDataGridRows();
   }
@@ -69,8 +70,12 @@ class IntervInfoDataGridSource extends DataGridSource {
     Color backgroundColor = selected ? gColors.backgroundColor : Colors.transparent;
 
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
-      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
-      FiltreTools.SfRowDate(row, 1, Alignment.centerLeft, textColor),
+
+      !isPar ?
+      FiltreTools.SfRow(row, 0, Alignment.centerLeft, textColor)
+    :
+    FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
+    FiltreTools.SfRowDate(row, 1, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 4, Alignment.center, textColor),
@@ -95,10 +100,11 @@ class IntervInfoDataGridSource extends DataGridSource {
 //*********************************************************************
 
 class Zone_Interv extends StatefulWidget {
-  const Zone_Interv({Key? key}) : super(key: key);
+  final bool isPar;
+  const Zone_Interv({Key? key, required this.isPar}) : super(key: key);
 
   @override
-  State<Zone_Interv> createState() => _Zone_IntervState();
+  _Zone_IntervState createState() => _Zone_IntervState();
 }
 
 class _Zone_IntervState extends State<Zone_Interv> {
@@ -119,8 +125,11 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
   final MultiSelectController _controllerPartage = MultiSelectController();
   final MultiSelectController _controllerContrib = MultiSelectController();
+  final MultiSelectController controllerSsT = MultiSelectController();
 
   IntervInfoDataGridSource intervInfoDataGridSource = IntervInfoDataGridSource();
+
+
 
   final Search_TextController = TextEditingController();
   TextEditingController textController_Ct_Debut = TextEditingController();
@@ -350,26 +359,78 @@ class _Zone_IntervState extends State<Zone_Interv> {
       selectedTypeInterID = DbTools.gIntervention.Intervention_Type!;
       selectedTypeInter = DbTools.List_TypeInter[DbTools.List_TypeInterID.indexOf(selectedTypeInterID)];
 
+
+      _controllerPartage.setOptions(DbTools.List_ValueItem_User);
       _controllerPartage.clearAllSelection();
       if (DbTools.gIntervention.Intervention_Partages!.isNotEmpty) {
         List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(DbTools.gIntervention.Intervention_Partages!);
-        try {
-          _controllerPartage.setSelectedOptions(wValueItem);
-        } catch (e) {
-          print(" ERROR ${e} ");
+        List<ValueItem> wValueItemA = [];
+        for (int j = 0; j < wValueItem.length; j++) {
+          var valueItemS = wValueItem[j];
+          for (int i = 0; i < DbTools.List_ValueItem_User.length; i++) {
+            var valueItemU = DbTools.List_ValueItem_User[i];
+            if (valueItemS.value == valueItemU.value) {
+              wValueItemA.add(valueItemU);
+            }
+          }
         }
+        _controllerPartage.setSelectedOptions(wValueItemA);
       }
 
+      _controllerContrib.setOptions(DbTools.List_ValueItem_User);
       _controllerContrib.clearAllSelection();
+
+      print("DbTools.gIntervention.Intervention_Contributeurs ${DbTools.gIntervention.Intervention_Contributeurs}");
+
+
       if (DbTools.gIntervention.Intervention_Contributeurs!.isNotEmpty) {
         List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(DbTools.gIntervention.Intervention_Contributeurs!);
-        try {
-          _controllerContrib.setSelectedOptions(wValueItem);
-        } catch (e) {
-          print(" ERROR ${e} ");
+        print("wValueItem ${wValueItem.toString()}");
+        List<ValueItem> wValueItemA = [];
+        for (int j = 0; j < wValueItem.length; j++) {
+          var valueItemS = wValueItem[j];
+          for (int i = 0; i < DbTools.List_ValueItem_User.length; i++) {
+            var valueItemU = DbTools.List_ValueItem_User[i];
+            if (valueItemS.value == valueItemU.value) {
+              wValueItemA.add(valueItemU);
+            }
+          }
         }
+
+        _controllerContrib.setSelectedOptions(wValueItemA);
       }
+      await DbTools.getFournAll();
+      controllerSsT.setOptions(DbTools.List_ValueItem_Fourn);
+      controllerSsT.clearAllSelection();
+
+      print("DbTools.gIntervention.Intervention_Ssts ${DbTools.gIntervention.Intervention_Ssts}");
+
+    if (DbTools.gIntervention.Intervention_Ssts!.isNotEmpty) {
+        List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(DbTools.gIntervention.Intervention_Ssts!);
+        print("wValueItem ${wValueItem.toString()}");
+        List<ValueItem> wValueItemA = [];
+        for (int j = 0; j < wValueItem.length; j++) {
+          var valueItemS = wValueItem[j];
+          for (int i = 0; i < DbTools.List_ValueItem_Fourn.length; i++) {
+            var valueItemU = DbTools.List_ValueItem_Fourn[i];
+            if (valueItemS.value == valueItemU.value) {
+              wValueItemA.add(valueItemU);
+            }
+          }
+        }
+print("wValueItemA ${wValueItemA.toString()}");
+        controllerSsT.setSelectedOptions(wValueItemA);
+      }
+
+
+
     }
+
+
+
+
+
+
 
     print("AlimSaisie B");
     if (DbTools.gIntervention.Intervention_Status!.isNotEmpty) {
@@ -432,6 +493,20 @@ class _Zone_IntervState extends State<Zone_Interv> {
       selectedUserInterID4 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
+    if (DbTools.gIntervention.Intervention_Responsable5!.isNotEmpty) {
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable5!);
+      selectedUserInter5 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter5 $selectedUserInter5");
+      selectedUserInterID5 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+    }
+
+    if (DbTools.gIntervention.Intervention_Responsable6!.isNotEmpty) {
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable6!);
+      selectedUserInter6 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      print("selectedUserInter6 $selectedUserInter6");
+      selectedUserInterID6 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+    }
+
     textController_Intervention_Date.text = DbTools.gIntervention.Intervention_Date!;
     textController_Intervention_Type.text = DbTools.gIntervention.Intervention_Type!;
     textController_Intervention_Remarque.text = "${DbTools.gIntervention.Intervention_Remarque!}";
@@ -446,6 +521,8 @@ class _Zone_IntervState extends State<Zone_Interv> {
   }
 
   void initState() {
+    intervInfoDataGridSource.isPar = widget.isPar;
+
     initLib();
     super.initState();
   }
@@ -583,9 +660,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
     DbTools.gIntervention.Intervention_Responsable2 = "$selectedUserInterID2";
     DbTools.gIntervention.Intervention_Responsable3 = "$selectedUserInterID3";
     DbTools.gIntervention.Intervention_Responsable4 = "$selectedUserInterID4";
+    DbTools.gIntervention.Intervention_Responsable5 = "$selectedUserInterID5";
+    DbTools.gIntervention.Intervention_Responsable6 = "$selectedUserInterID6";
 
     DbTools.gIntervention.Intervention_Partages = "${_controllerPartage.selectedOptions}";
     DbTools.gIntervention.Intervention_Contributeurs = "${_controllerContrib.selectedOptions}";
+    DbTools.gIntervention.Intervention_Ssts = "${controllerSsT.selectedOptions}";
 
     DbTools.gIntervention.Intervention_Remarque = textController_Intervention_Remarque.text;
     await DbTools.setIntervention(DbTools.gIntervention);
@@ -629,12 +709,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
 
 
-//  int selMnu = 1;
-//  String selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tous";
+  int selMnu = 1;
+  String selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tous";
 
 
-  int selMnu = 4;
-  String selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tâches & Ordes de missions";
+//  int selMnu = 4;
+//  String selMnuTxt = "Intervention ${DbTools.gIntervention.InterventionId} /// Tâches & Ordes de missions";
 
 
 
@@ -719,16 +799,13 @@ class _Zone_IntervState extends State<Zone_Interv> {
 
     for (int i = 0; i < DbTools.ListPlanning.length; i++) {
       var planning = DbTools.ListPlanning[i];
-      print("•••••••••• Du ${planning.Planning_InterventionstartTime} Au  ${planning.Planning_InterventionendTime}");
       if (planning.Planning_InterventionstartTime.isBefore(Du)) Du = planning.Planning_InterventionstartTime;
       if (planning.Planning_InterventionendTime.isAfter(Au)) Au = planning.Planning_InterventionendTime;
     }
 
     String wMissions = "";
-    print(" ContentIntervention ListInterMission LENGHT ${DbTools.ListInterMission.length}");
     for (int i = 0; i < DbTools.ListInterMission.length; i++) {
       var element = DbTools.ListInterMission[i];
-      print(" ListInterMission InterMission_Nom ${element.InterMission_Nom}");
       wMissions = "$wMissions${wMissions.isNotEmpty ? ", " : ""}${element.InterMission_Nom}";
     }
 
@@ -907,6 +984,12 @@ class _Zone_IntervState extends State<Zone_Interv> {
   }
 
   Widget Block_Technique(BuildContext context) {
+
+    print(" Block_Technique ${selectedUserInter6}");
+
+
+
+
     return Container(
       width: 800,
       child: Column(
@@ -1075,6 +1158,8 @@ class _Zone_IntervState extends State<Zone_Interv> {
             ),
             child: InkWell(
               onTap: () async {
+                await showDialog(context: context, builder: (BuildContext context) => new Planning(bAppBar: true));
+                setState(() {});
 
               },
               child: Container(
@@ -1144,14 +1229,22 @@ class _Zone_IntervState extends State<Zone_Interv> {
                     ),
                   ),
                   Expanded(
-                    child: Container(
-                      width: 290,
-                      padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                      child: Text(
-                        wIntervenants,
-                        maxLines: 3,
-                        style: gColors.bodySaisie_B_G,
-                      ),
+                    child: MultiSelectDropDown(
+                      padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      hint: "",
+                      borderWidth: 0,
+                      borderColor: Colors.transparent,
+                      controller: controllerSsT,
+                      onOptionSelected: (List<ValueItem> selectedOptions) {
+                        print("selectedOptions ${selectedOptions.toString()}");
+                        print("selectedOptions ${controllerSsT.selectedOptions.toString()}");
+                      },
+                      options: DbTools.List_ValueItem_Fourn,
+                      selectionType: SelectionType.multi,
+                      chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                      dropdownHeight: 300,
+                      optionTextStyle: gColors.bodySaisie_B_B,
+                      selectedOptionIcon: const Icon(Icons.check_circle),
                     ),
                   ),
                 ],
@@ -1346,6 +1439,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
                       dropdownHeight: 300,
                       optionTextStyle: gColors.bodySaisie_B_B,
                       selectedOptionIcon: const Icon(Icons.check_circle),
+//                      selectedOptions: _controllerContrib.selectedOptions,
                     ),
                   ),
                 ],
@@ -1383,14 +1477,22 @@ class _Zone_IntervState extends State<Zone_Interv> {
                           ),
                         ),
                         Expanded(
-                          child: Container(
-                            width: 290,
-                            padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
-                            child: Text(
-                              wIntervenants,
-                              maxLines: 3,
-                              style: gColors.bodySaisie_B_G,
-                            ),
+                          child: MultiSelectDropDown(
+                            padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                            hint: "",
+                            borderWidth: 0,
+                            borderColor: Colors.transparent,
+                            controller: controllerSsT,
+                            onOptionSelected: (List<ValueItem> selectedOptions) {
+                              print("selectedOptions ${selectedOptions.toString()}");
+                              print("selectedOptions ${controllerSsT.selectedOptions.toString()}");
+                            },
+                            options: DbTools.List_ValueItem_Fourn,
+                            selectionType: SelectionType.multi,
+                            chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                            dropdownHeight: 300,
+                            optionTextStyle: gColors.bodySaisie_B_B,
+                            selectedOptionIcon: const Icon(Icons.check_circle),
                           ),
                         ),
                       ],
@@ -1612,7 +1714,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
                   await DbTools.getSite(DbTools.gIntervention.SiteId!);
                   await DbTools.getZone(DbTools.gIntervention.ZoneId!);
                   AlimSaisie();
-                  if (wColSel == 0) {
+                  if (wColSel == 0 && widget.isPar) {
                     await showDialog(
                         context: context,
                         builder: (BuildContext context) => new Intervention_Dialog(

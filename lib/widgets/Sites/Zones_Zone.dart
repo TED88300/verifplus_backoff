@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as IMG;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -15,16 +17,11 @@ import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/Tools/Upload.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
-
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamZone_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Sites/ParamZone_Dialog2.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Dialog.dart';
-
-import 'package:image/image.dart' as IMG;
-import 'package:http/http.dart' as http;
-import 'package:cross_file/cross_file.dart';
 
 
 DataGridController dataGridController = DataGridController();
@@ -133,19 +130,11 @@ class _Zones_ZoneState extends State<Zones_Zone> {
   bool imageisload = false;
   Uint8List pic = Uint8List.fromList([0]);
 
-
-
   ZoneDataGridSource zoneDataGridSource = ZoneDataGridSource();
-
   DataGridRow memDataGridRow = DataGridRow(cells: []);
 
   Future Reload() async {
-    await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-
-    Zone wZone = DbTools.gZone;
     await DbTools.getZonesSite(DbTools.gSite.SiteId);
-    if (wZone.ZoneId >=0 ) DbTools.gZone = wZone;
-    print("initLib getZonesClient ${DbTools.ListZone.length}");
     await Filtre();
   }
 
@@ -777,10 +766,12 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                     Selindex = zoneDataGridSource.dataGridRows.indexOf(wDataGridRow);
                     DbTools.gZone  = DbTools.ListZonesearchresult[Selindex];
 
+
                     AlimSaisie();
                     if (wColSel == 0) {
                       DbTools.gIntervention = Intervention.InterventionInit();
-                      await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+
+                      await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog(isPar: true,));
                     }
                     Reload();
                   },

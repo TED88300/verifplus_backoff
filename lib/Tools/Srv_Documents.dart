@@ -1,36 +1,36 @@
-class Documents {
-  String? docID;
-  String? docNom;
-  String? docDate;
-  String? docLength;
-  String? docCRC;
-  String? docUserMat;
+class Document {
+  int? DocID = 0;
+  String? DocNom= "";
+  String? DocDate= "";
+  int? DocLength= 0;
+  String? DocCRC= "";
+  String? DocUserMat= "";
 
-  Documents(
-      {this.docID,
-        this.docNom,
-        this.docDate,
-        this.docLength,
-        this.docCRC,
-        this.docUserMat});
+  Document(
+      {this.DocID,
+        this.DocNom,
+        this.DocDate,
+        this.DocLength,
+        this.DocCRC,
+        this.DocUserMat});
 
-  Documents.fromJson(Map<String, dynamic> json) {
-    docID = json['DocID'];
-    docNom = json['Doc_Nom'];
-    docDate = json['Doc_Date'];
-    docLength = json['Doc_Length'];
-    docCRC = json['Doc_++CRC'];
-    docUserMat = json['Doc_User_Mat'];
+  Document.fromJson(Map<String, dynamic> json) {
+    DocID =int.parse(json['DocID']);
+    DocNom = json['DocNom'];
+    DocDate = json['DocDate'];
+    DocLength =  int.parse(json['DocLength']);
+    DocCRC = json['DocCRC'];
+    DocUserMat = json['DocUserMat'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['DocID'] = this.docID;
-    data['Doc_Nom'] = this.docNom;
-    data['Doc_Date'] = this.docDate;
-    data['Doc_Length'] = this.docLength;
-    data['Doc_++CRC'] = this.docCRC;
-    data['Doc_User_Mat'] = this.docUserMat;
+    data['DocID'] = this.DocID;
+    data['DocNom'] = this.DocNom;
+    data['DocDate'] = this.DocDate;
+    data['DocLength'] = this.DocLength;
+    data['DocCRC'] = this.DocCRC;
+    data['DocUserMat'] = this.DocUserMat;
     return data;
   }
 }

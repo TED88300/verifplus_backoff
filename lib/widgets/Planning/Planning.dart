@@ -360,10 +360,17 @@ class _PlanningState extends State<Planning> {
     }
 
     print("build isload $isload");
-
     int wMargeBasse = 35;
-
-    if (isLegendVisible) wMargeBasse += 160;
+    if (widget.bAppBar)
+      {
+        wMargeBasse = 124;
+        if (isLegendVisible) wMargeBasse += 24;
+      }
+    else
+      {
+        wMargeBasse = 35;
+        if (isLegendVisible) wMargeBasse += 160;
+      }
 
     return Material(
         child: Container(
@@ -1129,8 +1136,6 @@ class _PlanningState extends State<Planning> {
       for (int p = 0; p < calendarDataSource.resources!.length; p++) {
         CalendarResource wCalendarResource = calendarDataSource.resources![p];
 
-        print("wCalendarResource.id.toString() ${wCalendarResource.id.toString()}");
-        print("DbTools.ListUser ${DbTools.ListUser.length}");
 
         User user = DbTools.ListUser.firstWhere((element) => element.User_Matricule == wCalendarResource.id.toString());
         if (user.User_Depot.compareTo(Depot) == 0) {
@@ -1160,11 +1165,9 @@ class _PlanningState extends State<Planning> {
 
           for (int u = 0; u < DbTools.ListUser.length; u++) {
             User user = DbTools.ListUser[u];
-            print(" ${wCalendarResource.id} ${user.UserID}");
             if (wCalendarResource.id.toString().compareTo(user.User_Matricule.toString()) ==0)
               {
                 if (user.User_Fonction == selectedValueFonction){
-                  print(" ADDDDDDDDDDD");
                   wCalendarDataSource.resources!.add(wCalendarResource!);
                   break;
 
@@ -1175,9 +1178,7 @@ class _PlanningState extends State<Planning> {
       }
 
 
-    print(">>>>>>>>>>> Aappointments ${wCalendarDataSource.appointments!.length}");
-    print(">>>>>>>>>>> resources ${wCalendarDataSource.resources!.length}");
-    int IntevId = 0;
+   int IntevId = 0;
 
     double widthCall = MediaQuery.of(context).size.width - 200;
     int wNbCol = 7;
@@ -1252,10 +1253,6 @@ class _PlanningState extends State<Planning> {
           Color wcolorb = appointment.color;
           double borderSize = 0;
 
-          if (IntevId == -1) {
-//            print("wAppointment 22222222 $IntevId ${appointment.subject} ${appointment.startTime} ${appointment.endTime} ${appointment.recurrenceId} ${appointment.resourceIds}  ${appointment.color}");
-            //          print("Planning_Interv_Client_Nom $IntevId ${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom}");
-          }
 
           if (DbTools.gIntervention.InterventionId != -1 && DbTools.gIntervention.InterventionId != DbTools.gPlanning_Interv.Planning_Interv_InterventionId) {
             {
@@ -1267,9 +1264,7 @@ class _PlanningState extends State<Planning> {
             wcolor = Color(0xFFf3a9dd); //Libre
           }
 
-          print("••••• wAppointment  $IntevId ${appointment.subject} ${appointment.startTime} ${appointment.endTime} ${appointment.recurrenceId} ${appointment.resourceIds}  ${appointment.color}");
 
-          print("••••• appointmentBuilder $IntevId ${DbTools.gPlanning_Interv.Planning_Interv_Client_Nom} ${wcolor}");
 
           return _currentView == CalendarView.timelineMonth
               ? Container(

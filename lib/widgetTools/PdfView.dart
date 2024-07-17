@@ -26,7 +26,7 @@ class _PdfViewState extends State<PdfView> {
   }
 
   double width = 0;
-  bool isZoom = false;
+  int isZoom = 0;
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
@@ -53,6 +53,9 @@ class _PdfViewState extends State<PdfView> {
                     Navigator.pop(context);
                   },
                 ),
+                Container(
+                  width: 200,
+                ),
                 Spacer(),
                 Text(
                   "Documents",
@@ -75,32 +78,28 @@ class _PdfViewState extends State<PdfView> {
       body: Container(
           width: width,
           padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-          color: gColors.white,
+          color: gColors.LinearGradient2,
           child: Stack(
             children: <Widget>[
               Column(
                 children: <Widget>[
-                  isZoom ?
+                  isZoom == 2
+                      ? Container(
+                          width: width,
+                          height: height,
+                          child: wSfPdfViewer,
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
                             Container(
-                              width: width,
+                              width: isZoom == 0 ?  300 : 500,
                               height: height,
                               child: wSfPdfViewer,
-                            )
-                      :
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                    Container(
-                      width: 500,
-                      height: height,
-                      child:
-                      wSfPdfViewer,
-                    ),
-
-                  ],)
-
-
+                            ),
+                          ],
+                        )
                 ],
               ),
               Positioned(
@@ -119,9 +118,11 @@ class _PdfViewState extends State<PdfView> {
                           ),
                           onTap: () async {
                             if (wSfPdfViewer.controller!.zoomLevel > 1)
-                              wSfPdfViewer.controller!.zoomLevel = wSfPdfViewer.controller!.zoomLevel - 1;
-                            else {
-                              isZoom = false;
+                              wSfPdfViewer.controller!.zoomLevel = wSfPdfViewer.controller!.zoomLevel - 0.5;
+                            else if (isZoom > 0) {
+                              wSfPdfViewer.controller!.zoomLevel = 2;
+                              isZoom--;
+                              wSfPdfViewer.controller!.zoomLevel = 1;
                             }
                             setState(() {});
                           },
@@ -133,10 +134,10 @@ class _PdfViewState extends State<PdfView> {
                             size: 48.0,
                           ),
                           onTap: () async {
-                            if (isZoom)
-                              wSfPdfViewer.controller!.zoomLevel = wSfPdfViewer.controller!.zoomLevel + 1;
-                            else {
-                              isZoom = true;
+                            if (isZoom == 2) wSfPdfViewer.controller!.zoomLevel = wSfPdfViewer.controller!.zoomLevel + 0.5;
+                            else  {
+                              wSfPdfViewer.controller!.zoomLevel = 2;
+                              isZoom++;
                               wSfPdfViewer.controller!.zoomLevel = 1;
                             }
 

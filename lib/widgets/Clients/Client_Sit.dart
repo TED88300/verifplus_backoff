@@ -160,11 +160,7 @@ class _Client_SitState extends State<Client_Sit> {
   bool isDC = false;
 
   Future Reload() async {
-    print("••••• Reload Selindex ${Selindex}");
     await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-    print("Reload getGroupesClient ${DbTools.ListGroupe.length}");
-    print("Reload DbTools.ListGroupe[0].GroupeId ${DbTools.ListGroupe[0].GroupeId}");
-
     await DbTools.initListFam();
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
@@ -194,7 +190,7 @@ class _Client_SitState extends State<Client_Sit> {
 
 
     await DbTools.getSitesClient(DbTools.gClient.ClientId);
-    print("Reload getSitesClient ${DbTools.ListSite.length}");
+    print(" Reload  getSitesClient ${DbTools.ListSite.length}");
 
     if (DbTools.ListSite.length > 0)
         DbTools.gSite = DbTools.ListSite[0];
@@ -221,8 +217,6 @@ class _Client_SitState extends State<Client_Sit> {
     ListSitesearchresultTmp.clear();
 
     print("DbTools.ListSite liste ${DbTools.ListSite.length}");
-
-
     print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
 
     if (Search_TextController.text.isEmpty) {

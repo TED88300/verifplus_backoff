@@ -40,6 +40,13 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   String selectedUserInter4 = "";
   String selectedUserInterID4 = "";
 
+  String selectedUserInter5 = "";
+  String selectedUserInterID5 = "";
+
+  String selectedUserInter6 = "";
+  String selectedUserInterID6 = "";
+
+
   double screenWidth = 0;
   double screenHeight = 0;
 
@@ -47,7 +54,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   late Image wImage;
   bool imageisload = false;
 
-  String wMes = "";
+  String wRegl = "";
 
   bool isDC = false;
 
@@ -72,6 +79,10 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
   final MultiSelectController _controllerContrib = MultiSelectController();
 
   Future initLib() async {
+
+    print(" initLib DbTools.gSite ${DbTools.gSite.SiteId}");
+
+
     await DbTools.getAll4Intervention();
 
     imageisload = false;
@@ -88,7 +99,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     } else {
       wImage = Image(
         image: AssetImage('assets/images/ico_Photo.png'),
-        height: 50,
+        height: 100,
       );
     }
     imageisload = true;
@@ -110,39 +121,47 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
     if (DbTools.gIntervention.Intervention_Responsable!.isNotEmpty) {
       DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable!);
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
-      print("selectedUserInter $selectedUserInter");
       selectedUserInterID = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
     if (DbTools.gIntervention.Intervention_Responsable2!.isNotEmpty) {
       DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable2!);
       selectedUserInter2 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
-      print("selectedUserInter2 $selectedUserInter2");
       selectedUserInterID2 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
     if (DbTools.gIntervention.Intervention_Responsable3!.isNotEmpty) {
       DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable3!);
       selectedUserInter3 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
-      print("selectedUserInter3 $selectedUserInter3");
       selectedUserInterID3 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
     if (DbTools.gIntervention.Intervention_Responsable4!.isNotEmpty) {
       DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable4!);
       selectedUserInter4 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
-      print("selectedUserInter4 $selectedUserInter4");
       selectedUserInterID4 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
     }
 
-    print("selectedUserInter  ${DbTools.gIntervention.Intervention_Responsable} $selectedUserInter $selectedUserInterID");
-    print("selectedUserInter2 ${DbTools.gIntervention.Intervention_Responsable2} $selectedUserInter2 $selectedUserInterID2");
-    print("selectedUserInter3 ${DbTools.gIntervention.Intervention_Responsable3} $selectedUserInter3 $selectedUserInterID3");
-    print("selectedUserInter4 ${DbTools.gIntervention.Intervention_Responsable4} $selectedUserInter4 $selectedUserInterID4");
+
+    if (DbTools.gIntervention.Intervention_Responsable5!.isNotEmpty) {
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable5!);
+      selectedUserInter5 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      selectedUserInterID5 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+    }
+    if (DbTools.gIntervention.Intervention_Responsable6!.isNotEmpty) {
+      DbTools.getUserMat(DbTools.gIntervention.Intervention_Responsable6!);
+      selectedUserInter6 = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
+      selectedUserInterID6 = DbTools.gUser.User_Matricule; //DbTools.List_UserInterID[DbTools.List_UserInter.indexOf(selectedUserInter)];
+    }
+
 
     await DbTools.getContactType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
 
-    List<String> listMes = [
+
+     wRegl = "";
+    String wAPSAD = "";
+
+    List<String> listRegl = [
       "Règle APSAD R1 / Sprinkleurs",
       "Règle APSAD D2 / Brouillard d'eau",
       "Règle APSAD R3 / Maintenance colonnes incendies",
@@ -164,18 +183,60 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
 
     ];
 
-    String siteApsad = DbTools.gSite.Site_APSAD!;
-    print("  DESC ${DbTools.gSite.Desc()}");
-    if (siteApsad.isNotEmpty) {
-      itemlistApp = json.decode(siteApsad).cast<bool>().toList();
+    print(" initLib2 DbTools.gSite ${DbTools.gSite.Site_Regle}");
+
+
+    print(" Regles A");
+
+    String siteRegl = widget.site.Site_Regle!;
+    if (siteRegl.isNotEmpty) {
+      itemlistApp = json.decode(siteRegl).cast<bool>().toList();
+
       for (int i = 0; i < itemlistApp.length; i++) {
         var element = itemlistApp[i];
         if (element) {
-          wMes = "$wMes${wMes.isNotEmpty ? ", " : ""}${listMes[i]}";
+          wRegl = "$wRegl${wRegl.isNotEmpty ? ", " : ""}${listRegl[i]}";
         }
       }
     }
-    isDC = DbTools.gSite.Site_DecConf!;
+    print(" Regles A siteRegl ${siteRegl} wRegl ${wRegl}");
+
+    print(" Regles B");
+
+
+    List<String> listAPSAD = [
+      "APSAD N1 / Sprinkleurs",
+      "APSAD N2 / Brouillard d'eau",
+      "APSAD N3 / Maintenance colonnes incendies",
+      "APSAD N4 / Extincteurs portatifs et mobiles",
+      "APSAD N5 / RIA et PIA",
+      "APSAD N7  / Détection incendie",
+      "APSAD N12 / Extinction mousse à haut foisonnement",
+      "APSAD N13 / Extinction automatique à gaz",
+      "APSAD N16 / Compartimentage",
+      "APSAD N17 / Désenfumage naturel",
+
+    ];
+
+    List<bool> itemlistAPSAD = [
+    ];
+
+
+
+    String siteAPSAD = widget.site.Site_APSAD!;
+    if (siteAPSAD.isNotEmpty) {
+      itemlistAPSAD = json.decode(siteAPSAD).cast<bool>().toList();
+      for (int i = 0; i < itemlistAPSAD.length; i++) {
+        var element = itemlistAPSAD[i];
+        if (element) {
+          wAPSAD = "$wAPSAD${wAPSAD.isNotEmpty ? ", " : ""}${listAPSAD[i]}";
+        }
+      }
+    }
+
+
+
+    isDC = wAPSAD.length > 0;
 
     Title = "Intervention :  INT${DbTools.gIntervention.InterventionId.toString().padLeft(6, "0")} du ${DbTools.gIntervention.Intervention_Date}";
 
@@ -226,23 +287,11 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       }
     }
 
-    print("Intervention_Partages  OK");
 
     _controllerContrib.clearAllSelection();
     if (DbTools.gIntervention.Intervention_Contributeurs!.isNotEmpty) {
       List<ValueItem> wValueItem = DbTools.ValueItem_parseStringToArray(DbTools.gIntervention.Intervention_Contributeurs!);
 
-/*
-      for (int i = 0; i < wValueItem.length; i++) {
-        ValueItem valueItem = wValueItem[i];
-
-        for (int j = 0; j < DbTools.List_ValueItem_User.length; j++) {
-          ValueItem valueItem2 = DbTools.List_ValueItem_User[j];
-//          print(" valueItem Label ${valueItem.label} ${valueItem2.label} ${valueItem.label.toString() == valueItem2.label.toString()}       |${valueItem.value}| |${valueItem2.value}| ${valueItem.value.toString() == valueItem2.value.toString()}");
-          print(" valueItem Label |${valueItem.label}| |${valueItem2.label}| ${valueItem.label == valueItem2.label} ");
-        }
-      }
-*/
 
       try {
         _controllerContrib.setSelectedOptions(wValueItem);
@@ -250,16 +299,20 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
         print(" ERROR ${e} ");
       }
     }
-    print("Intervention_Contributeurs  OK");
+
 
     isLoad = true;
+
+
+    print(" DbTools.gSite.Site_Regle! ${widget.site.Site_Regle!}");
+
     setState(() {});
   }
 
   void initState() {
     wImage = Image(
-      image: AssetImage('assets/images/ico_Photo.png'),
-      height: 50,
+      image: AssetImage('assets/images/Blank.png'),
+      height: 100,
     );
     initLib();
     super.initState();
@@ -417,6 +470,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                 children: [
                   ContentPartageCadre(context),
                   ContentContributeurCadre(context),
+                  ContentTechniciensCadre(context),
                 ],
               ),
               Container(
@@ -592,7 +646,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           Container(
                             width: 10,
                           ),
-                          gColors.Txt(190, "Règlementations applicables", "${wMes}", tWidth: 268),
+                          gColors.Txt(190, "Règlementations applicables", "${wRegl}", tWidth: 268),
                         ],
                       ),
                       Container(height: 10),
@@ -615,11 +669,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           ),
                           fillColor: gColors.GrdBtn_Colors4sel,
                           onPressed: () async {
-                            await DbTools.getGroupesClient(DbTools.gClient.ClientId);
-                            await DbTools.getSitesGroupe(DbTools.gGroupe.GroupeId);
-                            await DbTools.getZonesSite(DbTools.gSite.SiteId);
-                            await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-                            await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+                            await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog(isPar: false,));
                             setState(() {});
                           },
                           child: const Text(
@@ -741,9 +791,9 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                   Container(height: 10),
                   Row(
                     children: [
-                      gColors.Txt(120, "Type d'intervention", "${DbTools.gIntervention.Intervention_Type} ${DbTools.gIntervention.Intervention_Parcs_Type}"),
+                      gColors.Txt(40, "Type", "${DbTools.gIntervention.Intervention_Type} ${DbTools.gIntervention.Intervention_Parcs_Type}"),
                       Container(width: 10),
-                      gColors.Txt(50, "Statut", "${DbTools.gIntervention.Intervention_Status}"),
+                      gColors.Txt(45, "Statut", "${DbTools.gIntervention.Intervention_Status}"),
                       Container(width: 10),
                       gColors.gCircle(wColor),
                     ],
@@ -906,57 +956,98 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           Container(height: 10),
                           Row(
                             children: [
-                              gColors.Txt(160, "Commercial intervention", "${selectedUserInter}"),
+                              gColors.Txt(160, "Commercial", "${selectedUserInter}"),
                             ],
                           ),
                           Container(height: 10),
                           Row(
                             children: [
-                              gColors.Txt(160, "Manager commercial", "${selectedUserInter2}"),
+                              gColors.Txt(160, "Manager com", "${selectedUserInter2}"),
                             ],
                           ),
                           Container(height: 10),
                           Row(
                             children: [
-                              gColors.Txt(160, "Manager Technique", "${selectedUserInter3}"),
+                              gColors.Txt(160, "Manager Tech", "${selectedUserInter3}"),
                             ],
                           ),
                           Container(height: 10),
                           Row(
                             children: [
-                              gColors.Txt(160, "Référent technique", "${selectedUserInter4}"),
+                              gColors.Txt(160, "Pilot Projet", "${selectedUserInter4}"),
                             ],
                           ),
                           Container(height: 10),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    child: Text(
-                                      "Ressources Techniques : ",
-                                      style: gColors.bodySaisie_N_G,
-                                    ),
-                                  ),
-                                  Container(height: 5),
-                                  CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Planning", ToolsPlanning, tooltip: "Planning"),
-                                ],
-                              ),
-                              Container(width: 10),
-                              Container(
-                                width: 290,
-                                child: Text(
-                                  wIntervenants,
-                                  style: gColors.bodySaisie_B_G,
-                                ),
-                              ),
+                              gColors.Txt(160, "Cond. travaux", "${selectedUserInter5}"),
                             ],
                           ),
+                          Container(height: 10),
+                          Row(
+                            children: [
+                              gColors.Txt(160, "Chef d'équipe", "${selectedUserInter6}"),
+                            ],
+                          ),
+
+
                         ],
                       )),
                 ]))));
+  }
+
+  // *******************************************************************************
+  // *******************************************************************************
+  // *******************************************************************************
+  // TECHNICIENS
+  // *******************************************************************************
+  // *******************************************************************************
+  // *******************************************************************************
+
+  Widget ContentTechniciensCadre(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Container(
+          width: 380,
+          height: 140,
+
+          margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: gColors.primary, width: 1),
+            borderRadius: BorderRadius.circular(5),
+            shape: BoxShape.rectangle,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            Container(
+            width: 350,
+            child:Text(
+            wIntervenants,
+
+            style: gColors.bodySaisie_B_G,
+          ),),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 50,
+          top: 12,
+          child: Container(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            color: Colors.white,
+            child: Text(
+              'Techniciens',
+              style: gColors.bodySaisie_B_G,
+            ),
+          ),
+        ),
+
+
+      ],
+    );
   }
 
   // *******************************************************************************
@@ -972,7 +1063,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       children: <Widget>[
         Container(
           width: 380,
-          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
+          margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
           padding: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             border: Border.all(color: gColors.primary, width: 1),
@@ -1050,7 +1141,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
       children: <Widget>[
         Container(
           width: 380,
-          margin: EdgeInsets.fromLTRB(10, 20, 20, 10),
+          margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
           padding: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             border: Border.all(color: gColors.primary, width: 1),

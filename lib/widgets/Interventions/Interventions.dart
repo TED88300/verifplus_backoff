@@ -328,14 +328,15 @@ class _InterventionsState extends State<Interventions> {
   Future Open_Intervention() async {
     DbTools.gIntervention = DbTools.ListInterventionsearchresult[Selindex];
 
-    print("DbTools.gIntervention.ClientId ${DbTools.gIntervention.ClientId} ${DbTools.gIntervention.InterventionId}");
 
     await DbTools.getClient(DbTools.gIntervention.ClientId!);
-    print("DbTools.gClient.Client_Nom ${DbTools.gClient.Client_Nom}");
     await DbTools.getGroupe(DbTools.gIntervention.GroupeId!);
-    await DbTools.getSite(DbTools.gIntervention.SiteId!);
-    await DbTools.getZone(DbTools.gIntervention.ZoneId!);
 
+
+    await DbTools.getSite(DbTools.gIntervention.SiteId!);
+
+
+    await DbTools.getZone(DbTools.gIntervention.ZoneId!);
     await showDialog(
         context: context,
         builder: (BuildContext context) => new Intervention_Dialog(

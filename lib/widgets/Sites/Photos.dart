@@ -5,9 +5,12 @@ import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/date_time_patterns.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_InterMissions.dart';
 import 'package:verifplus_backoff/Tools/Upload.dart';
+import 'package:verifplus_backoff/widgetTools/PhotoView.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 
@@ -35,9 +38,13 @@ class _PhotosState extends State<Photos> {
       final reader = html.FileReader();
       reader.readAsArrayBuffer(files[0]);
       reader.onLoadEnd.listen((e) {
-        setState(() {
-          _images.add(reader.result as Uint8List);
-        });
+        Uint8List pic = reader.result as Uint8List;
+
+        if (pic.length > 0 && pic.length < (3 * 1024 * 1024)) {
+          setState(() {
+            _images.add(pic);
+          });
+        }
       });
     });
   }
@@ -56,14 +63,11 @@ class _PhotosState extends State<Photos> {
 
   Future<void> Reload() async {
     if (wInterMission == DbTools.gInterMission) return;
-
     _images.clear();
     wInterMission = DbTools.gInterMission;
     for (int i = 0; i < 5; i++) {
       String wUserImg = "Intervention_${DbTools.gIntervention.InterventionId}_${DbTools.gInterMission.InterMissionId}_$i.jpg";
-
       try {
-//        Uint8List? pic = await DbTools.networkImageToBase64(wUserImg);
         Uint8List? pic = await gColors.getImage(wUserImg);
         if (pic.length > 0) {
           print("pic ${pic.length}");
@@ -73,8 +77,6 @@ class _PhotosState extends State<Photos> {
         print("ERROR ${wUserImg}");
       }
     }
-
-    return;
   }
 
   @override
@@ -162,9 +164,23 @@ class _PhotosState extends State<Photos> {
                     return Stack(
                       key: ValueKey(index),
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                          child: Image.memory(_images[index], width: wSize, height: wSize, fit: BoxFit.contain),
+                        InkWell(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                            child: Image.memory(_images[index], width: wSize, height: wSize, fit: BoxFit.contain, errorBuilder: (_, __, ___) {
+                              return Image.asset("assets/images/error-image.png");
+                            }),
+                          ),
+                          onTap: () {
+                            print("onTap");
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PhotosView(imageProvider: MemoryImage(_images[index])),
+                              ),
+                            );
+                          },
                         ),
                         Positioned(
                           bottom: 0,
@@ -196,18 +212,18 @@ class _PhotosState extends State<Photos> {
                         child: DropTarget(
                           onDragDone: (detail) async {
 //                              _list.addAll(detail.files);
-                              for (int i = 0; i < detail.files.length; i++) {
-                                var file = detail.files[i];
-                                print('onDragDone ${file.path} - ${file.name}');
+                            for (int i = 0; i < detail.files.length; i++) {
+                              var file = detail.files[i];
+                              print('onDragDone ${file.path} - ${file.name} - ${file.mimeType}');
+                              if (file.mimeType!.contains("image")) {
                                 Uint8List pic = await file.readAsBytes();
-                                if (pic.length > 0) {
+                                if (pic.length > 0 && pic.length < (3 * 1024 * 1024)) {
                                   print("pic ${pic.length}");
-                                  if (_images.length < 5)
-                                  _images.add(pic!);
+                                  if (_images.length < 5) _images.add(pic);
                                 }
                               }
-                              setState(() {
-                            });
+                            }
+                            setState(() {});
                           },
                           onDragEntered: (detail) {
                             setState(() {
@@ -227,7 +243,7 @@ class _PhotosState extends State<Photos> {
                           ),
                         ),
                       ),
-                      CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", _pickImage, tooltip: "Ajouter Interventions"),
+                      CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", _pickImage, tooltip: "Ajouter Photo"),
                     ],
                   ),
             Spacer(),
@@ -243,7 +259,6 @@ class _PhotosState extends State<Photos> {
       ],
     ));
   }
-
 
   //value {"success":1,"name":"Intervention_130_34_0.jpg","uploadfilename":"","is_uploaded_file":"Erreur Nom du fichier : ''."}
   //value {"success":1,"name":"Intervention_130_13_3.jpg","uploadfilename":"\/tmp\/phpjNUmcl","is_uploaded_file":"OK","size":100421,"werror":"Move  OK = '1'"}
@@ -261,9 +276,6 @@ class _PhotosState extends State<Photos> {
 
     for (iSave = 0; iSave < _images.length; iSave++) {
       Uint8List wImage = _images[iSave];
-
-
-
       String wUserImg = "Intervention_${DbTools.gIntervention.InterventionId}_${DbTools.gInterMission.InterMissionId}_$iSave.jpg";
       await Upload.SaveFile(wUserImg, wImage);
       setState(() {});

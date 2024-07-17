@@ -103,16 +103,17 @@ class FiltreTools {
               : Container(
                   width: 5,
                 ),
-          Container(
-              alignment: alignment,
-              child: Text(
-                wTmp,
-                style: wTextStyle.copyWith(color: txtColor),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                softWrap: false,
-                textAlign: wTextAlign,
-              ))
+          Expanded(
+              child: Container(
+                  alignment: alignment,
+                  child: Text(
+                    wTmp,
+                    style: wTextStyle.copyWith(color: txtColor),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    softWrap: false,
+                    textAlign: wTextAlign,
+                  ))),
         ],
       ),
     );

@@ -20,8 +20,6 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
   Future initLib() async {
     await DbTools.getGroupeID(widget.site.Site_GroupeId);
     await DbTools.getContactClientAdrType(DbTools.gClient.ClientId, DbTools.gSite.SiteId, "SITE");
-
-
     setState(() {});
   }
 
@@ -116,8 +114,6 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
     );
   }
 
-
-  
   Widget ContentDetailCadre(BuildContext context) {
     return Stack(
       children: <Widget>[
@@ -184,7 +180,6 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
   Widget ContentDetail(BuildContext context) {
     return
 
-//      Expanded(child:
         FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
             child: Container(
@@ -238,10 +233,6 @@ class _Zones_DialogState extends State<Zones_Dialog> with SingleTickerProviderSt
                   )
 
                 ],)
-
-
-
-                //)
                 ));
   }
 }

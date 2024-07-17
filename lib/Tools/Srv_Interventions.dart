@@ -14,8 +14,11 @@ class Intervention {
   String? Intervention_Responsable2 = "";
   String? Intervention_Responsable3 = "";
   String? Intervention_Responsable4 = "";
+  String? Intervention_Responsable5 = "";
+  String? Intervention_Responsable6 = "";
   String? Intervention_Partages = "";
   String? Intervention_Contributeurs = "";
+  String? Intervention_Ssts = "";
   String? Intervention_Intervenants = "";
   String? Intervention_Reglementation = "";
   String? Intervention_Signataire_Client = "";
@@ -42,7 +45,7 @@ class Intervention {
   String Intervention_Signataire_Date_Client	 = "";
 
   static InterventionInit() {
-    return Intervention(-1, 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","","", 0, 0,Uint8List.fromList([]),Uint8List.fromList([]) ,"");
+    return Intervention(-1, 0, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "","","","", 0, 0,Uint8List.fromList([]),Uint8List.fromList([]) ,"");
   }
 
   Intervention(int InterventionId,
@@ -58,8 +61,11 @@ class Intervention {
       String Intervention_Responsable2,
       String Intervention_Responsable3,
       String Intervention_Responsable4,
+      String Intervention_Responsable5,
+      String Intervention_Responsable6,
       String Intervention_Partages,
       String Intervention_Contributeurs,
+      String Intervention_Ssts,
       String Intervention_Intervenants,
       String Intervention_Reglementation,
       String Intervention_Signataire_Client,
@@ -85,8 +91,11 @@ class Intervention {
     this.Intervention_Responsable2 = Intervention_Responsable2;
     this.Intervention_Responsable3 = Intervention_Responsable3;
     this.Intervention_Responsable4 = Intervention_Responsable4;
+    this.Intervention_Responsable5 = Intervention_Responsable5;
+    this.Intervention_Responsable6 = Intervention_Responsable6;
     this.Intervention_Partages = Intervention_Partages;
     this.Intervention_Contributeurs = Intervention_Contributeurs;
+    this.Intervention_Ssts = Intervention_Ssts;
     this.Intervention_Intervenants = Intervention_Intervenants;
     this.Intervention_Reglementation = Intervention_Reglementation;
     this.Intervention_Signataire_Client = Intervention_Signataire_Client;
@@ -137,8 +146,11 @@ class Intervention {
         json['Intervention_Responsable2'],
         json['Intervention_Responsable3'],
         json['Intervention_Responsable4'],
+      json['Intervention_Responsable5'],
+      json['Intervention_Responsable6'],
         json['Intervention_Partages'],
       json['Intervention_Contributeurs'],
+      json['Intervention_Ssts'],
       json['Intervention_Intervenants'],
       json['Intervention_Reglementation'],
         json['Intervention_Signataire_Client'],
@@ -192,7 +204,12 @@ class Intervention {
         json['Intervention_Responsable2'],
         json['Intervention_Responsable3'],
         json['Intervention_Responsable4'],
-        json['Intervention_Partages'], json['Intervention_Contributeurs'], json['Intervention_Intervenants'], json['Intervention_Reglementation'],
+      json['Intervention_Responsable5'],
+      json['Intervention_Responsable6'],
+        json['Intervention_Partages'],
+      json['Intervention_Contributeurs'],
+      json['Intervention_Ssts'],
+      json['Intervention_Intervenants'], json['Intervention_Reglementation'],
         json['Intervention_Signataire_Client'], json['Intervention_Signataire_Tech'], json['Intervention_Signataire_Date'], json['Intervention_Remarque']
         , int.parse(wCnt)
   , int.parse(wIntervention_Sat),wUint8ListTech,
@@ -232,8 +249,11 @@ class Intervention {
         '$Intervention_Responsable2        '
         '$Intervention_Responsable3        '
         '$Intervention_Responsable4        '
+        '$Intervention_Responsable5        '
+        '$Intervention_Responsable6        '
         '$Intervention_Partages        '
         '$Intervention_Contributeurs        '
+        '$Intervention_Ssts        '
         '$Intervention_Intervenants       '
         '$Intervention_Reglementation     '
         '$Intervention_Signataire_Client  '

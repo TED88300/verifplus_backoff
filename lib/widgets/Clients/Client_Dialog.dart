@@ -1014,6 +1014,7 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
         child: Text("Statut : ",
           style: gColors.bodySaisie_N_G,),
       ),
+
       Container(
         child: DropdownButtonHideUnderline(
             child: DropdownButton2(
@@ -1057,6 +1058,9 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
 
             )),
       ),
+
+
+
     ]);
   }
 

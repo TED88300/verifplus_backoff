@@ -17,9 +17,13 @@ import 'package:verifplus_backoff/Tools/Srv_Articles_Fam_Ebp.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Link_Ebp.dart';
 import 'package:verifplus_backoff/Tools/Srv_Articles_Link_Verif_Ebp.dart';
 import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
+import 'package:verifplus_backoff/Tools/Srv_Fourns.dart';
 import 'package:verifplus_backoff/Tools/Srv_Contacts.dart';
+import 'package:verifplus_backoff/Tools/Srv_Documents.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
 import 'package:verifplus_backoff/Tools/Srv_InterMissions.dart';
+import 'package:verifplus_backoff/Tools/Srv_InterMissions_Doc.dart';
+import 'package:verifplus_backoff/Tools/Srv_InterMissions_Document.dart';
 import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_Niveau_Desc.dart';
@@ -53,7 +57,7 @@ class Notif with ChangeNotifier {
 }
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.131";
+  static var gVersion = "v1.0.135";
   static bool gTED = false;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -89,6 +93,7 @@ class DbTools {
   static List<String> List_UserInter = [];
   static List<String> List_UserInterID = [];
   static List<ValueItem> List_ValueItem_User = [];
+  static List<ValueItem> List_ValueItem_Fourn = [];
 
   static PackageInfo packageInfo = PackageInfo(
     appName: '',
@@ -136,6 +141,15 @@ class DbTools {
     "Ext",
     "Ria",
   ];
+
+
+  static Future<bool> networktest(String imageUrl) async {
+    http.Response response = await http.get(Uri.parse(imageUrl));
+
+  print("networktest response ${response.statusCode}  ${response.reasonPhrase}");
+    return  true;
+  }
+
 
   static Future<Uint8List?> networkImageToBase64(String imageUrl) async {
     http.Response response = await http.get(Uri.parse(imageUrl));
@@ -640,7 +654,6 @@ class DbTools {
 
     if (ListParam_ParamAll.length > 0) {
       print("getParam_ParamAll return TRUE");
-
       return true;
     }
 
@@ -689,6 +702,13 @@ class DbTools {
       List_UserInter.add("${element.User_Nom} ${element.User_Prenom}");
       List_UserInterID.add("${element.User_Matricule}");
       List_ValueItem_User.add(ValueItem(label: "${element.User_Nom} ${element.User_Prenom}", value: "${element.User_Matricule}"));
+    }
+
+    await DbTools.getFournAll();
+    List_ValueItem_Fourn.clear();
+    for (int i = 0; i < DbTools.ListFourn.length; i++) {
+      var element = DbTools.ListFourn[i];
+      List_ValueItem_Fourn.add(ValueItem(label: "${element.fournNom}", value: "${element.fournId}"));
     }
   }
 
@@ -1670,6 +1690,92 @@ class DbTools {
     return -1;
   }
 
+  //*********************************
+  //********** FOURNS  ********
+  //*********************************
+
+  static List<Fourn> ListFourn = [];
+  static List<Fourn> ListFournsearchresult = [];
+  static Fourn gFourn = Fourn.FournInit();
+
+  static Future<bool> getFournAll() async {
+
+    String wSlq = "SELECT * from Fourns ORDER BY Fourn_Nom;";
+
+
+    print("getFournAll ${wSlq}");
+    ListFourn = await getFourn_API_Post("select", wSlq);
+    if (ListFourn == null) return false;
+    if (ListFourn.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  static Future<List<Fourn>> getFourn_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+    http.StreamedResponse response = await request.send();
+    print("getFournAll response.statusCode ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      if (items != null) {
+        List<Fourn> FournList = await items.map<Fourn>((json) {
+          print("getFournAll json ${json}");
+
+          return Fourn.fromJson(json);
+        }).toList();
+        return FournList;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+
+  static Future<bool> setFourn(Fourn fourn) async {
+    String wSlq = "UPDATE Fourns SET "
+        "Fourn_CodeGC = \"${fourn.fournCodeGC}\", " +
+        "Fourn_Nom        = \"${fourn.fournNom}\", " +
+        "Fourn_Statut        = \"${fourn.Fourn_Statut}\", " +
+        "Fourn_F_SST        = ${fourn.Fourn_F_SST}, " +
+        "Fourn_Siret      = \"${fourn.fournSiret}\", " +
+        "Fourn_NAF        = \"${fourn.fournNAF}\", " +
+        "Fourn_TVA        = \"${fourn.fournTVA}\", " +
+        "Fourn_Adr1       = \"${fourn.fournAdr1}\", " +
+        "Fourn_Adr2       = \"${fourn.fournAdr2}\", " +
+        "Fourn_Adr3       = \"${fourn.fournAdr3}\", " +
+        "Fourn_Adr4       = \"${fourn.fournAdr4}\", " +
+        "Fourn_CP         = \"${fourn.fournCP}\", " +
+        "Fourn_Ville      = \"${fourn.fournVille}\", " +
+        "Fourn_Pays       = \"${fourn.fournPays}\", " +
+        "Fourn_Tel1       = \"${fourn.fournTel1}\", " +
+        "Fourn_Tel2       = \"${fourn.fournTel2}\", " +
+        "Fourn_eMail      = \"${fourn.fournEMail}\", " +
+        "Fourn_Rem      = \"${fourn.fournRem}\" " +
+    "WHERE FournId = ${fourn.fournId.toString()}";
+    gColors.printWrapped("setfourn " + wSlq);
+    bool ret = await add_API_Post("upddel", wSlq);
+    print("setfourn ret " + ret.toString());
+    return ret;
+  }
+
+  static Future<bool> addFourn(Fourn Fourn) async {
+    String wValue = "NULL,'???'";
+    String wSlq = "INSERT INTO Fourns (FournId, Fourn_Nom) VALUES ($wValue)";
+    print("addFourn " + wSlq);
+    bool ret = await add_API_Post("insert", wSlq);
+    print("addFourn ret " + ret.toString());
+    return ret;
+  }
+
   //*****************************
   //*****************************
   //*****************************
@@ -2425,9 +2531,8 @@ class DbTools {
   }
 
   static Future<bool> getSitesClient(int ID) async {
-    String wTmp = "SELECT Sites.* FROM  Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId WHERE Groupes.Groupe_ClientId = $ID ORDER BY Site_Nom";
     String wSql = "SELECT Sites.*, Count(SiteId) as NbZone, ZoneId, Contacts.ContactId, Contacts.Contact_Prenom, Contacts.Contact_Nom, Contacts.Contact_Tel2, Contacts.Contact_eMail FROM Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId Left JOIN Zones ON Zone_SiteId = SiteId Left JOIN Contacts ON Contact_AdresseId = SiteId AND Contact_ClientId = Groupe_ClientId AND Contact_Type = 'SITE' WHERE Groupes.Groupe_ClientId = $ID GROUP BY SiteId ORDER BY Site_Nom;";
-    print("wSql getSitesSite ${wSql}");
+    print("  wSql getSitesSite ${wSql}");
     ListSite = await getSite_API_Post("select", wSql);
 
     if (ListSite == null) return false;
@@ -2692,9 +2797,10 @@ class DbTools {
         "Intervention_Responsable, "
         "Intervention_Responsable2, "
         "Intervention_Responsable3,"
-        " Intervention_Responsable4, "
+        "Intervention_Responsable4, "
         "Intervention_Partages,     "
         "Intervention_Contributeurs, "
+        "Intervention_Ssts, "
         "Intervention_Intervenants, "
         "Intervention_Reglementation, "
         "Intervention_Signataire_Client, "
@@ -2726,6 +2832,7 @@ class DbTools {
         " Intervention_Responsable4,"
         " Intervention_Partages,"
         " Intervention_Contributeurs,"
+        " Intervention_Ssts,"
         " Intervention_Intervenants,"
         " Intervention_Reglementation,"
         " Intervention_Signataire_Client,"
@@ -2875,8 +2982,11 @@ class DbTools {
         "Intervention_Responsable2            = \"${Intervention.Intervention_Responsable2}\", " +
         "Intervention_Responsable3            = \"${Intervention.Intervention_Responsable3}\", " +
         "Intervention_Responsable4            = \"${Intervention.Intervention_Responsable4}\", " +
+        "Intervention_Responsable5            = \"${Intervention.Intervention_Responsable5}\", " +
+        "Intervention_Responsable6            = \"${Intervention.Intervention_Responsable6}\", " +
         "Intervention_Partages                  = '${Intervention.Intervention_Partages}', " +
         "Intervention_Contributeurs            = '${Intervention.Intervention_Contributeurs}', " +
+        "Intervention_Ssts            = '${Intervention.Intervention_Ssts}', " +
         "Intervention_Intervenants           = \"${Intervention.Intervention_Intervenants}\", " +
         "Intervention_Reglementation         = \"${Intervention.Intervention_Reglementation}\", " +
         "Intervention_Signataire_Client      = \"${Intervention.Intervention_Signataire_Client}\", " +
@@ -3177,6 +3287,217 @@ class DbTools {
     return [];
   }
 
+
+  //******************************************
+  //***************   DOCUMENTS   ************
+  //******************************************
+
+  static List<Document> ListDocument = [];
+  static List<Document> ListDocumentsearchresult = [];
+  static Document gDocument = Document();
+
+  static Future<bool> getDocumentID(int ID) async {
+    String wTmp = "SELECT * FROM Documents where DocID = $ID";
+    print("wTmp $wTmp");
+
+    ListDocument = await getDocument_API_Post("select", wTmp);
+
+    if (ListDocument == null) return false;
+    //  print("getDocumentsSite ${ListDocument.length}");
+    if (ListDocument.length > 0) {
+      //  print("getDocumentsSite return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> getDocumentName(String aName) async {
+    String wTmp = "SELECT * FROM Documents where DocNom = '$aName'";
+    print("wTmp $wTmp");
+
+    ListDocument = await getDocument_API_Post("select", wTmp);
+
+    if (ListDocument == null) return false;
+    //  print("getDocumentsSite ${ListDocument.length}");
+    if (ListDocument.length > 0) {
+      //  print("getDocumentsSite return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<List<Document>> getDocument_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+//    print("getDocument_API_Post " + aSQL);
+
+    http.StreamedResponse response = await request.send();
+    //  print("getDocument_API_Post response ${response.statusCode}" );
+
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      if (items != null) {
+        List<Document> DocumentList = await items.map<Document>((json) {
+          return Document.fromJson(json);
+        }).toList();
+        return DocumentList;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+  static Future<bool> addDocument(Document document) async {
+    String wValue = "NULL, '${document.DocNom}', ${document.DocLength} , '${gUserLogin.User_Matricule}' ";
+    String wSlq = "INSERT INTO Documents (DocID, DocNom, DocLength, DocUserMat) VALUES ($wValue)";
+    print("addDocument " + wSlq);
+    bool ret = await add_API_Post("insert", wSlq);
+    print("addInterMission ret " + ret.toString());
+    return ret;
+  }
+
+
+
+
+  //******************************************
+  //***************   InterMissions_Doc   *****
+  //******************************************
+
+  static List<InterMissions_Doc> ListInterMissions_Doc = [];
+  static List<InterMissions_Doc> ListInterMissions_Docsearchresult = [];
+  static InterMissions_Doc gInterMissions_Doc = InterMissions_Doc();
+
+  static Future<bool> getInterMissions_DocID(int ID) async {
+    String wTmp = "SELECT * FROM InterMissions_Docs where interMissionsDocID = $ID";
+    print("wTmp $wTmp");
+
+    ListInterMissions_Doc = await getInterMissions_Doc_API_Post("select", wTmp);
+    if (ListInterMissions_Doc == null) return false;
+    //  print("getInterMissions_DocsSite ${ListInterMissions_Doc.length}");
+    if (ListInterMissions_Doc.length > 0) {
+      //  print("getInterMissions_DocsSite return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+  static Future<List<InterMissions_Doc>> getInterMissions_Doc_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+//    print("getInterMissions_Doc_API_Post " + aSQL);
+
+    http.StreamedResponse response = await request.send();
+    //  print("getInterMissions_Doc_API_Post response ${response.statusCode}" );
+
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      if (items != null) {
+        List<InterMissions_Doc> InterMissions_DocList = await items.map<InterMissions_Doc>((json) {
+          return InterMissions_Doc.fromJson(json);
+        }).toList();
+        return InterMissions_DocList;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+  static Future<bool> addInterMissions_Doc(InterMissions_Doc interMissions_Doc) async {
+    String wValue = "NULL, ${interMissions_Doc.InterMissionsDocInterMissionId}, ${interMissions_Doc.InterMissionsDocDocID} ";
+    String wSlq = "INSERT INTO InterMissions_Doc (InterMissionsDocID, InterMissionsDocInterMissionId, InterMissionsDocDocID) VALUES ($wValue)";
+    print("addDocument " + wSlq);
+    bool ret = await add_API_Post("insert", wSlq);
+    print("addInterMission ret " + ret.toString());
+    return ret;
+  }
+
+  static Future<bool> delInterMissions_Doc(int interMissionId, int ID) async {
+    String aSQL = "DELETE FROM InterMissions_Doc WHERE InterMissionsDocInterMissionId = $interMissionId AND InterMissionsDocDocID = ${ID}";
+    print("delInterMissions_Doc " + aSQL);
+    bool ret = await add_API_Post("upddel", aSQL);
+    print("delParam_Hab ret " + ret.toString());
+    return ret;
+  }
+
+
+
+//  INSERT INTO `InterMissions_Doc` (`InterMissions_DocID`, `InterMissions_Doc_InterMissionId`, `InterMissions_Doc_DocID`) VALUES (NULL, '36', '3');
+
+
+
+  //******************************************
+  //***************   InterMissions_Document   *****
+  //******************************************
+
+  static List<InterMissions_Document> ListInterMissions_Document = [];
+  static List<InterMissions_Document> ListInterMissions_Documentsearchresult = [];
+  static InterMissions_Document gInterMissions_Document = InterMissions_Document();
+
+
+
+  static Future<bool> getInterMissions_Document_MissonID(int ID) async {
+    String wTmp = "select InterMissionsDocInterMissionId ,Documents.* from InterMissions_Doc join Documents where InterMissions_Doc.InterMissionsDocDocID = DocID AND InterMissionsDocInterMissionId = $ID";
+    print("wTmp $wTmp");
+
+    ListInterMissions_Document = await getInterMissions_Document_API_Post("select", wTmp);
+    if (ListInterMissions_Document == null) return false;
+      print("getInterMissions_Document_MissonID ListInterMissions_Document.length ${ListInterMissions_Document.length}");
+    if (ListInterMissions_Document.length > 0) {
+
+      gInterMissions_Document = ListInterMissions_Document[0];
+      print("gInterMissions_Document ${gInterMissions_Document.DocID}");
+      print("ListInterMissions_Document return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+
+
+  static Future<List<InterMissions_Document>> getInterMissions_Document_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+
+
+    http.StreamedResponse response = await request.send();
+      print("getInterMissions_Document_API_Post response ${response.statusCode}" );
+
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      print("getInterMissions_Document_API_Post items ${items}" );
+
+      if (items != null) {
+        List<InterMissions_Document> InterMissions_DocumentList = await items.map<InterMissions_Document>((json) {
+          return InterMissions_Document.fromJson(json);
+        }).toList();
+        return InterMissions_DocumentList;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
+
+
   //******************************************
   //************   InterMissionS   ***********
   //******************************************
@@ -3207,6 +3528,7 @@ class DbTools {
     if (ListInterMission == null) return false;
     print("getInterMissionAll ${ListInterMission.length}");
     if (ListInterMission.length > 0) {
+      gInterMission = ListInterMission[0];
       print("getInterMissionAll return TRUE");
       return true;
     }
@@ -3222,6 +3544,7 @@ class DbTools {
     if (ListInterMission == null) return false;
     //  print("getInterMissionsSite ${ListInterMission.length}");
     if (ListInterMission.length > 0) {
+      gInterMission = ListInterMission[0];
       //  print("getInterMissionsSite return TRUE");
       return true;
     }
@@ -3602,7 +3925,7 @@ class DbTools {
 
   static Future<bool> getParcs_ArtInterSum(int Parcs_InterventionId) async {
     try {
-      String wTmp = "SELECT Parcs_Art.*, SUM(`ParcsArt_Qte`) as Qte FROM Parcs_Art, Parcs_Ent WHERE ParcsArt_ParcsId = ParcsId AND Parcs_InterventionId = ${Parcs_InterventionId} GROUP BY ParcsArt_Id,ParcsArt_Fact,ParcsArt_Livr ORDER BY `Parcs_Art`.`ParcsArt_Id` ASC;";
+      String wTmp = "SELECT Parcs_Art.*, SUM(ParcsArt_Qte) as Qte FROM Parcs_Art, Parcs_Ent WHERE ParcsArt_ParcsId = ParcsId AND Parcs_InterventionId = ${Parcs_InterventionId} GROUP BY ParcsArt_Id,ParcsArt_Fact,ParcsArt_Livr ORDER BY Parcs_Art.ParcsArt_Id ASC;";
 
       ListParc_Art = await getParc_Art_API_Post("select", wTmp);
       if (ListParc_Art == null) return false;
@@ -3661,15 +3984,15 @@ class DbTools {
 
   static Future<bool> getContactClientAdrType(int ClientID, int AdresseId, String Type) async {
     String wSlq = "select * from Contacts  where Contact_ClientId = $ClientID AND Contact_AdresseId = $AdresseId AND Contact_Type = '$Type' ORDER BY Contact_Type";
-    print("getContactClientType $wSlq");
+    print("getContactClientAdrType $wSlq");
 
     ListContact = await getContact_API_Post("select", wSlq);
 
     if (ListContact == null) return false;
-    print("getContactClientType ${ListContact.length}");
+    print("getContactClientAdrType ${ListContact.length}");
     if (ListContact.length > 0) {
       gContact = ListContact[0];
-      print("getContactClientType return TRUE");
+      print("getContactClientAdrType return TRUE");
       return true;
     } else {
       await addContactAdrType(ClientID, AdresseId, Type);
@@ -3680,15 +4003,13 @@ class DbTools {
 
   static Future<bool> getContactClient(int ClientID) async {
     String wSlq = "select * from Contacts  where Contact_ClientId = $ClientID ORDER BY Contact_Type";
-//    print("getContactClientType ${wSlq}");
+
 
     ListContact = await getContact_API_Post("select", wSlq);
 
     if (ListContact == null) return false;
-    //  print("getContactClientType ${ListContact.length}");
     if (ListContact.length > 0) {
       gContact = ListContact[0];
-      //  print("getContactClientType return TRUE");
       return true;
     } else {}
     return false;
@@ -3700,10 +4021,8 @@ class DbTools {
     ListContact = await getContact_API_Post("select", wSlq);
 
     if (ListContact == null) return false;
-    //  print("getContactClientType ${ListContact.length}");
     if (ListContact.length > 0) {
       gContact = ListContact[0];
-      //  print("getContactClientType return TRUE");
       return true;
     } else {}
     return false;
@@ -3715,10 +4034,8 @@ class DbTools {
     ListContact = await getContact_API_Post("select", wSlq);
 
     if (ListContact == null) return false;
-    //  print("getContactClientType ${ListContact.length}");
     if (ListContact.length > 0) {
       gContact = ListContact[0];
-      //  print("getContactClientType return TRUE");
       return true;
     } else {}
     return false;
@@ -3732,10 +4049,8 @@ class DbTools {
     gContact = Contact.ContactInit();
 
     if (ListContact == null) return false;
-    //  print("getContactClientType ${ListContact.length}");
     if (ListContact.length > 0) {
       gContact = ListContact[0];
-      //  print("getContactClientType return TRUE");
       return true;
     } else {}
     return false;

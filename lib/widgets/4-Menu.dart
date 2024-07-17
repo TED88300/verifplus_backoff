@@ -13,6 +13,7 @@ import 'package:verifplus_backoff/widgets/Articles/Articles_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Articles/Articles_Fam_Ebp.dart';
 import 'package:verifplus_backoff/widgets/Clients/Clients.dart';
 import 'package:verifplus_backoff/widgets/DashBoard.dart';
+import 'package:verifplus_backoff/widgets/Fourns/Fourns.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Interventions.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Ctrl.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Ctrl2.dart';
@@ -49,7 +50,8 @@ class _MenuState extends State<Menu> {
 
 //  Widget wAff = Planning(bAppBar : false);
 Widget wAff = Interventions();
-//  Widget wAff = Clients_screen();
+//  Widget wAff = Clients_screen();//
+//  Widget wAff = fourns_screen();
 //  Widget wAff = User_Liste();
 
   Future initLib() async {
@@ -290,6 +292,19 @@ Widget wAff = Interventions();
           ),
         ],
       ),
+
+      PlutoMenuItem(
+        title: 'Fournisseurs',
+        icon: Icons.list_outlined,
+        onTap: () {
+          wTitre = "Fournisseurs";
+          setState(() {
+            wAff = fourns_screen();
+          });
+        },
+      ),
+
+
       PlutoMenuItem(
         title: 'Articles',
         icon: Icons.widgets,

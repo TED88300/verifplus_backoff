@@ -52,7 +52,6 @@ class Contact {
   }
 
   factory Contact.fromJson(Map<String, dynamic> json) {
-//    print("json $json");
     Contact wUser = Contact(
       int.parse(json['ContactId']),
       int.parse(json['Contact_ClientId']),

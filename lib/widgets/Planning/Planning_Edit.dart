@@ -643,7 +643,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                         await DbTools.getZonesSite(DbTools.gSite.SiteId);
                         DbTools.gZone.ZoneId = DbTools.gPlanning_Interv.Planning_Interv_ZoneId!;
                         await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
-                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog());
+                        await showDialog(context: context, builder: (BuildContext context) => new Zone_Dialog(isPar: false,));
 
 //                        Navigator.pop(context);
                       },

@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:photo_view/photo_view.dart';
 import 'package:pluto_menu_bar/pluto_menu_bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
@@ -949,10 +950,44 @@ class gColors {
     pattern.allMatches(text).forEach((match) => print(match.group(0)));
   }
 
+  static Future<bool> fileExist(String url) async {
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(DbTools.SrvUrl.toString()));
+      request.fields.addAll({'zasq': 'fileExist', 'file': '$url'});
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        Uint8List r = await response.stream.toBytes();
+
+        return r.length > 0;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   static Future<Uint8List> getImage(String url) async {
     try {
       var request = http.MultipartRequest('POST', Uri.parse(DbTools.SrvUrl.toString()));
       request.fields.addAll({'zasq': 'getImage', 'img': '$url'});
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        return await response.stream.toBytes();
+      } else {
+        return new Uint8List(0);
+      }
+    } catch (e) {
+      return new Uint8List(0);
+    }
+  }
+
+  static Future<Uint8List> getDoc(String url) async {
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(DbTools.SrvUrl.toString()));
+      request.fields.addAll({'zasq': 'getDoc', 'doc': '$url'});
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
@@ -1186,12 +1221,12 @@ class gColors {
           ),
         ),
         Text(
-          " : ",
+          ":",
           style: gColors.bodySaisie_N_B,
         ),
         Container(
           width: tWidth > 0 ? tWidth : null,
-          padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           child: Text(
             "$wValue",
             style: gColors.bodySaisie_B_B,
@@ -1507,7 +1542,7 @@ class gColors {
         .toList();
 
     if (wlistTypeinter.indexOf(initValue) < 0) {
-      print("initValue Not in");
+      print("DropdownButtonTypeInterC initValue Not in");
 
       return Container();
     }
@@ -1562,18 +1597,38 @@ class gColors {
   }
 
   static Widget DropdownButtonTypeInterC2(double lWidth, double wWidth, String wLabel, String initValue, Function(String? Value) onChanged, List<String> wlistTypeinter, List<String> wlistTypeinterid) {
-    if (wlistTypeinter.length == 0) return Container();
+    print(" $wLabel |$initValue| ${initValue.isEmpty}");
 
-    print("$wLabel |$initValue| ${initValue.isEmpty}");
+    if (wlistTypeinter.length == 0) return Container();
 
     List<DropdownMenuItem> dropdownlist = wlistTypeinter
         .map((item) => DropdownMenuItem<String>(
-              value: item,
-              child: Text(
-                "$item",
-                style: gColors.bodySaisie_B_B,
-              ),
-            ))
+            value: item,
+            child: item == initValue
+                ? Padding(
+                    padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                    child: Container(
+                        width: 220,
+                        padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: gColors.primary, width: 1),
+                          borderRadius: BorderRadius.circular(16),
+                          shape: BoxShape.rectangle,
+                          color: gColors.primary,
+                        ),
+                        child: Text(
+                          "$item",
+                          style: gColors.bodySaisie_B_W,
+                        )),
+                  )
+                : Container(
+                    width: 220,
+                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    child: Text(
+                      "$item",
+                      style: gColors.bodySaisie_N_B,
+                    ),
+                  )))
         .toList();
 
     List<DropdownMenuItem> selectedlist = wlistTypeinter
@@ -1583,7 +1638,7 @@ class gColors {
                   ? Container(width: 220)
                   : Container(
                       width: 220,
-                      padding: EdgeInsets.fromLTRB(8, 3, 8, 3),
+                      padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
                       decoration: BoxDecoration(
                         border: Border.all(color: gColors.primary, width: 1),
                         borderRadius: BorderRadius.circular(16),
@@ -1592,19 +1647,19 @@ class gColors {
                       ),
                       child: Text(
                         "$item",
-                        style: gColors.bodySaisie_B_W,
+                        style: gColors.bodySaisie_N_W,
                       ),
                     ),
             ))
         .toList();
 
     if (wlistTypeinter.indexOf(initValue) < 0) {
-      print("initValue Not in");
-
+      print("DropdownButtonTypeInterC2 initValue Not in");
       return Container();
     }
 
     String wID = wlistTypeinterid[wlistTypeinter.indexOf(initValue)];
+    print("  wID ${wID}");
 
     double wPad = 15;
     return Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -1632,7 +1687,11 @@ class gColors {
             items: dropdownlist,
             value: initValue,
             selectedItemBuilder: (BuildContext context) {
+              print("  selectedItemBuilder ");
               return selectedlist;
+            },
+            onMenuStateChange: (value) {
+              print("  onMenuStateChange ${value}");
             },
             onChanged: (value) {
               String wID = wlistTypeinterid[wlistTypeinter.indexOf(value!)];
@@ -1901,5 +1960,24 @@ class DecimalTextInputFormatter extends TextInputFormatter {
     );
 
     return newValue;
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final ImageProvider? imageProvider;
+  const FullScreenImage({Key? key, required this.imageProvider}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    print("FullScreenImage build");
+
+    return Scaffold(
+      body: Container(
+        padding: EdgeInsets.fromLTRB(50, 50, 50, 50),
+        child: PhotoView(
+          imageProvider: imageProvider,
+        ),
+      ),
+    );
   }
 }

@@ -4,18 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
+import 'package:verifplus_backoff/Tools/Srv_Fourns.dart';
+
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
-import 'package:verifplus_backoff/widgets/Clients/Client_Dialog.dart';
+import 'package:verifplus_backoff/widgets/Fourns/Fourn_Dialog.dart';
 
-class ClientDataSource extends DataGridSource {
+
+
+class fournDataSource extends DataGridSource {
   List<String> ListParam_FiltreFam = [];
   List<String> ListParam_FiltreFamID = [];
 
-  ClientDataSource() {
-    DbTools.getParam_ParamFam("FamClient");
+  fournDataSource() {
+    DbTools.getParam_ParamFam("Famfourn");
 
     ListParam_FiltreFam.clear();
     ListParam_FiltreFam.addAll(DbTools.ListParam_FiltreFam);
@@ -25,25 +28,20 @@ class ClientDataSource extends DataGridSource {
   }
 
   void buildDataGridRow() {
-    dataGridRow = DbTools.ListClientsearchresult.map<DataGridRow>((client) {
+    dataGridRow = DbTools.ListFournsearchresult.map<DataGridRow>((fourn) {
 
-//      print("ListParam_FiltreFam ${ListParam_FiltreFam.toString()}");
-//print("ListParam_FiltreFamID ${ListParam_FiltreFamID.toString()}");
+print("& buildDataGridRow ${fourn.fournCP} ${fourn.fournVille} ${fourn.fournPays}");
 
       return DataGridRow(cells: [
-        DataGridCell<int>(columnName: 'id', value: client.ClientId),
-        DataGridCell<String>(columnName: 'code', value: client.Client_CodeGC),
-        DataGridCell<bool>(columnName: 'contrat', value: client.Client_Contrat),
-        DataGridCell<String>(columnName: 'statut', value: client.Client_Statut),
-        DataGridCell<String>(columnName: 'nom', value: client.Client_Nom),
-        DataGridCell<String>(columnName: 'agence', value: client.Client_Depot),
-        DataGridCell<String>(columnName: 'famille', value: "${(client.Client_Famille.isEmpty || ListParam_FiltreFamID.indexOf(client.Client_Famille) == -1) ? '' : ListParam_FiltreFam[ListParam_FiltreFamID.indexOf(client.Client_Famille)]}"),
-        DataGridCell<String>(columnName: 'commercial', value: client.Users_Nom),
-        DataGridCell<String>(columnName: 'cp', value: client.Adresse_CP),
-        DataGridCell<String>(columnName: 'ville', value: client.Adresse_Ville),
-        DataGridCell<String>(columnName: 'pays', value: client.Adresse_Pays),
-        DataGridCell<String>(columnName: 'cpL', value: client.Adresse_CP_Livr),
-        DataGridCell<String>(columnName: 'villeL', value: client.Adresse_Ville_Livr),
+        DataGridCell<int>(columnName: 'id', value: fourn.fournId),
+        DataGridCell<String>(columnName: 'code', value: fourn.fournCodeGC),
+        DataGridCell<bool>(columnName: 'sst', value: fourn.Fourn_F_SST == 1),
+        DataGridCell<String>(columnName: 'statut', value: fourn.Fourn_Statut),
+        DataGridCell<String>(columnName: 'nom', value: fourn.fournNom),
+        DataGridCell<String>(columnName: 'cp', value: fourn.fournCP),
+        DataGridCell<String>(columnName: 'ville', value: fourn.fournVille),
+        DataGridCell<String>(columnName: 'pays', value: fourn.fournPays),
+
       ]);
     }).toList();
   }
@@ -63,19 +61,14 @@ class ClientDataSource extends DataGridSource {
 
     Color backgroundColor = Colors.transparent;
     return DataGridRowAdapter(color: backgroundColor, cells: <Widget>[
-      FiltreTools.SfRowSel(row, 0, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 1, Alignment.center, textColor),
+      FiltreTools.SfRow(row, 0, Alignment.center, textColor),
+      FiltreTools.SfRow(row, 1, Alignment.centerLeft, textColor),
       FiltreTools.SfRowBool(row, 2, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 3, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 4, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 5, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 6, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 7, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 8, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
-      FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -96,33 +89,28 @@ DataGridController dataGridController = DataGridController();
 //*********************************************************************
 //*********************************************************************
 //*********************************************************************
-class Clients_screen extends StatefulWidget {
-  const Clients_screen({Key? key}) : super(key: key);
+class fourns_screen extends StatefulWidget {
+  const fourns_screen({Key? key}) : super(key: key);
 
   @override
-  Clients_screenState createState() => Clients_screenState();
+  fourns_screenState createState() => fourns_screenState();
 }
 
-class Clients_screenState extends State<Clients_screen> {
-  ClientDataSource clientInfoDataGridSource = ClientDataSource();
+class fourns_screenState extends State<fourns_screen> {
+  fournDataSource fournInfoDataGridSource = fournDataSource();
 
   List<double> dColumnWidth = [
     80,
-    110,
+    100,
+    100,
     90,
-    115,
+    500,
+    90,
     400,
-    180,
-    250,
-    200,
-    95,
-    250,
-    120,
-    95,
-    250,
+    400,
   ];
 
-//  ClientInfoDataGridSource clientInfoDataGridSource = ClientInfoDataGridSource();
+//  fournInfoDataGridSource fournInfoDataGridSource = fournInfoDataGridSource();
 
   final Search_TextController = TextEditingController();
   int wColSel = -1;
@@ -136,17 +124,12 @@ class Clients_screenState extends State<Clients_screen> {
     return <GridColumn>[
       FiltreTools.SfGridColumn('id', 'ID',                  dColumnWidth[0], 15, Alignment.centerLeft),
       FiltreTools.SfGridColumn('code', 'Cd',                dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('contrat', 'Ct',             dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('sst', 'S/t',                dColumnWidth[2], dColumnWidth[2], Alignment.centerLeft),
       FiltreTools.SfGridColumn('statut', 'St',              dColumnWidth[3], dColumnWidth[3], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('nom', 'Raison Social',      dColumnWidth[4], dColumnWidth[5], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence', 'Agence',          dColumnWidth[5], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('famille', 'Famille',        dColumnWidth[6], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('commercial', 'Collaborateur',  dColumnWidth[7], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('cp', 'Cp',                  dColumnWidth[8], dColumnWidth[9], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ville', 'Ville Fact',            dColumnWidth[9], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('pays', 'Pays',              dColumnWidth[10], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('cpL', 'Cp',                  dColumnWidth[8], dColumnWidth[9], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('villeL', 'Ville Livr',            dColumnWidth[9], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Raison Social',      dColumnWidth[4], dColumnWidth[4], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp',                  dColumnWidth[5], dColumnWidth[5], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville',            dColumnWidth[6], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('pays', 'Pays',              dColumnWidth[7], 160, Alignment.centerLeft),
     ];
   }
 
@@ -170,54 +153,45 @@ class Clients_screenState extends State<Clients_screen> {
     setState(() {
       if (args.column.columnName == 'id')               dColumnWidth[0] = args.width;
       else if (args.column.columnName == 'code')        dColumnWidth[1] = args.width;
-      else if (args.column.columnName == 'contrat')     dColumnWidth[2] = args.width;
+      else if (args.column.columnName == 'sst')         dColumnWidth[2] = args.width;
       else if (args.column.columnName == 'statut')      dColumnWidth[3] = args.width;
-      else if (args.column.columnName == 'nom')         dColumnWidth[5] = args.width;
-      else if (args.column.columnName == 'agence')      dColumnWidth[6] = args.width;
-      else if (args.column.columnName == 'famille')     dColumnWidth[7] = args.width;
-      else if (args.column.columnName == 'commercial')  dColumnWidth[8] = args.width;
-      else if (args.column.columnName == 'cp')          dColumnWidth[9] = args.width;
-      else if (args.column.columnName == 'ville')       dColumnWidth[10] = args.width;
-      else if (args.column.columnName == 'pays')        dColumnWidth[11] = args.width;
-      else if (args.column.columnName == 'cpL')          dColumnWidth[9] = args.width;
-      else if (args.column.columnName == 'villeL')       dColumnWidth[10] = args.width;
+      else if (args.column.columnName == 'nom')         dColumnWidth[4] = args.width;
+      else if (args.column.columnName == 'cp')          dColumnWidth[5] = args.width;
+      else if (args.column.columnName == 'ville')       dColumnWidth[6] = args.width;
+      else if (args.column.columnName == 'pays')        dColumnWidth[7] = args.width;
     });
   }
 
+
   Future Reload() async {
-    await DbTools.getParam_ParamFam("FamClient");
+    await DbTools.getParam_ParamFam("Famfourn");
 
     print("gUserLoginTypeUser ${DbTools.gUserLoginTypeUser}");
 
-
-
-    if (DbTools.gUserLoginTypeUser.contains("Admin"))
-      await DbTools.getClientAll();
-    else
-      await DbTools.getClient_User_CSIP(DbTools.gUserLogin.User_Matricule);
+      await DbTools.getFournAll();
 
     await Filtre();
   }
 
   Future Filtre() async {
-    DbTools.ListClientsearchresult.clear();
+    DbTools.ListFournsearchresult.clear();
 
     print("_buildFieldTextSearch Filtre ${Search_TextController.text}");
 
     if (Search_TextController.text.isEmpty) {
-      print("_buildFieldTextSearch Filtre ${DbTools.ListClient.length}");
-      DbTools.ListClientsearchresult.addAll(DbTools.ListClient);
+      print("_buildFieldTextSearch Filtre ${DbTools.ListFourn.length}");
+      DbTools.ListFournsearchresult.addAll(DbTools.ListFourn);
     } else {
       print("_buildFieldTextSearch liste ${Search_TextController.text}");
-      DbTools.ListClient.forEach((element) {
+      DbTools.ListFourn.forEach((element) {
         print("_buildFieldTextSearch element ${element.Desc()}");
         if (element.Desc().toLowerCase().contains(Search_TextController.text.toLowerCase())) {
-          DbTools.ListClientsearchresult.add(element);
+          DbTools.ListFournsearchresult.add(element);
         }
       });
     }
 
-    clientInfoDataGridSource.handleRefresh();
+    fournInfoDataGridSource.handleRefresh();
     isLoad = true;
 
     print("🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢🁢 memDataGridRow ${memDataGridRow.getCells()}");
@@ -255,16 +229,16 @@ class Clients_screenState extends State<Clients_screen> {
                     selectionColor: gColors.backgroundColor,
                   ),
                   child: SfDataGrid(
-                    source: clientInfoDataGridSource,
+                    source: fournInfoDataGridSource,
                     columns: getColumns(),
                     columnWidthMode: ColumnWidthMode.fill,
-                    tableSummaryRows: getGridTableSummaryRow(),
+//                    tableSummaryRows: getGridTableSummaryRow(),
 
                     controller: dataGridController,
 
 
                     onFilterChanged: (DataGridFilterChangeDetails details) {
-                      countfilterConditions = clientInfoDataGridSource.filterConditions.length;
+                      countfilterConditions = fournInfoDataGridSource.filterConditions.length;
                       setState(() {});
                     },
                     onCellTap: (DataGridCellTapDetails details) async {
@@ -272,12 +246,14 @@ class Clients_screenState extends State<Clients_screen> {
                       if (wRowSel == 0) return;
 
                       wColSel = details.rowColumnIndex.columnIndex;
-                      DataGridRow wDataGridRow = clientInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
-                      Selindex = clientInfoDataGridSource.dataGridRow.indexOf(wDataGridRow);
+                      DataGridRow wDataGridRow = fournInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                      Selindex = fournInfoDataGridSource.dataGridRow.indexOf(wDataGridRow);
                       if (wColSel == 0) {
-                        Client wClient = DbTools.ListClientsearchresult[Selindex];
-                        print(" ADD onSelectionChanging Add ${Selindex} wClient ${wClient.ClientId} ${wClient.Client_Nom}");
-                        await showDialog(context: context, builder: (BuildContext context) => new Client_Dialog(client: wClient));
+
+                        Fourn wfourn = DbTools.ListFournsearchresult[Selindex];
+                        print(" ADD onSelectionChanging Add ${Selindex} wfourn ${wfourn.fournId} ${wfourn.fournNom}");
+                        await showDialog(context: context, builder: (BuildContext context) => new Fourn_Dialog(fourn: wfourn));
+
                         Reload();
                       }
                     },
@@ -315,7 +291,7 @@ class Clients_screenState extends State<Clients_screen> {
           children: [
             Row(
               children: [
-                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter un client"),
+                CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter un fourn"),
                 Container(
                   width: 10,
                 ),
@@ -385,7 +361,7 @@ class Clients_screenState extends State<Clients_screen> {
   }
 
   void ToolsBarSupprFilter() async {
-    clientInfoDataGridSource.clearFilters();
+    fournInfoDataGridSource.clearFilters();
     countfilterConditions = 0;
     Search_TextController.clear();
     await Filtre();
@@ -393,17 +369,14 @@ class Clients_screenState extends State<Clients_screen> {
   }
 
   void ToolsBarAdd() async {
+
     print("ToolsBarAdd");
-    Client wClient = await Client.ClientInit();
-    await DbTools.addClient(wClient);
-    wClient.ClientId = DbTools.gLastID;
-    await DbTools.getAdresseClientType(wClient.ClientId, "FACT");
-    await DbTools.getAdresseClientType(wClient.ClientId, "LIVR");
-    wClient.Client_Nom = "???";
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) => new Client_Dialog(client: wClient),
-    );
+    Fourn wfourn = await Fourn.FournInit();
+    await DbTools.addFourn(wfourn);
+    wfourn.fournId = DbTools.gLastID;
+    wfourn.fournNom = "???";
+    await showDialog(context: context, builder: (BuildContext context) => new Fourn_Dialog(fourn: wfourn));
     await Reload();
+
   }
 }
