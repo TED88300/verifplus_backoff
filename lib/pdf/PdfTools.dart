@@ -551,7 +551,7 @@ class PdfTools {
                   : pw.Container(
                       width: 160,
                       padding: const pw.EdgeInsets.only(left: 10, top: 1, bottom: 1),
-                      child: pw.Image(pw.MemoryImage(DbTools.gIntervention.Intervention_Signature_Tech!)),
+                      child: pw.Image(pw.MemoryImage(DbTools.gIntervention.Intervention_Signature_Tech)),
                     ),
             ]),
           ),
@@ -639,7 +639,7 @@ class PdfTools {
                   : pw.Container(
                       width: 160,
                       padding: const pw.EdgeInsets.only(left: 10, top: 1, bottom: 1),
-                      child: pw.Image(pw.MemoryImage(DbTools.gIntervention.Intervention_Signature_Client!)),
+                      child: pw.Image(pw.MemoryImage(DbTools.gIntervention.Intervention_Signature_Client)),
                     ),
 
 /*

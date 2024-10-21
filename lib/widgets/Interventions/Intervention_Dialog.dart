@@ -570,7 +570,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           Container(
                             width: 10,
                           ),
-                          gColors.Txt(50, "Site", "${widget.site.Site_Code} ${widget.site.Site_Nom}\n${widget.site.Site_Adr1} ${widget.site.Site_CP} ${widget.site.Site_Ville}"),
+                          gColors.Txt(50, "Site", "${widget.site.Site_Code} ${widget.site.Site_Nom}\n${widget.site.Site_Adr1}\n${widget.site.Site_CP} ${widget.site.Site_Ville}"),
                         ],
                       ),
                       Container(height: 10),
@@ -603,7 +603,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                                     "Programmer",
                                     style: gColors.bodySaisie_N_B,
                                   ),
-                                  style: ButtonStyle(padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)), foregroundColor: MaterialStateProperty.all<Color>(Colors.black), shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0), side: BorderSide(color: Colors.black)))),
+                                  style: ButtonStyle(padding: WidgetStateProperty.all<EdgeInsets>(EdgeInsets.all(10)), foregroundColor: WidgetStateProperty.all<Color>(Colors.black), shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0), side: BorderSide(color: Colors.black)))),
                                   onPressed: () async {
                                     await DbTools.copyInterventionAll(DbTools.gIntervention.InterventionId!);
 
@@ -649,7 +649,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           gColors.Txt(190, "Règlementations applicables", "${wRegl}", tWidth: 268),
                         ],
                       ),
-                      Container(height: 10),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -678,7 +678,6 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                           ),
                         ),
                       ),
-                      Container(height: 10),
                     ],
                   ),
                 ),
@@ -803,7 +802,7 @@ class _Intervention_DialogState extends State<Intervention_Dialog> with SingleTi
                     children: [
                       Container(
                         child: Text(
-                          "Plannifier du ",
+                          "Plannifiée du ",
                           style: gColors.bodySaisie_N_G,
                         ),
                       ),

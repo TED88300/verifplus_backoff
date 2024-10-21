@@ -2,21 +2,16 @@ import 'package:davi/davi.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Upload.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/PdfView.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Param_Dialog.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import 'package:flutter/services.dart';
-import 'package:verifplus_backoff/widgets/User/User_Edit_Desc.dart';
-import 'package:verifplus_backoff/widgets/User/User_Edit_Hab.dart';
 
 class User_Edit extends StatefulWidget {
   final User user;
@@ -376,7 +371,7 @@ class User_EditState extends State<User_Edit> {
                         ),
                         Checkbox(
                           checkColor: Colors.white,
-                          fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+                          fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                             return gColors.primary;
                           }),
                           value: User_Actif,

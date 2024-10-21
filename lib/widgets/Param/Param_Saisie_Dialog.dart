@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Saisie_Param_Dialog.dart';
+
+
+
+
 
 class Param_Saisie_Dialog {
   Param_Saisie_Dialog();
@@ -56,15 +59,12 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
   String selectedValueAff = "";
   String selectedValueAffID = "";
 
-
-
   bool isChecked_L1 = false;
   bool isChecked_L2 = false;
 
   Future Reload() async {
     await DbTools.getParam_Saisie(selectedValueOrganeID, selectedValueTypeID);
     print("getParam_Saisie ${DbTools.ListParam_Saisie.length}");
-
     await Filtre();
     setState(() {});
   }
@@ -81,12 +81,20 @@ class _Param_Saisie_screenState extends State<Param_Saisie_screen> {
 
     ListParam_ParamOrgane.clear();
     ListParam_ParamOrganeID.clear();
+
+    ListParam_ParamOrgane.add("Base");
+    ListParam_ParamOrganeID.add("Base");
+
+
     DbTools.ListParam_ParamAll.forEach((element) {
       if (element.Param_Param_Type.compareTo("Type_Organe") == 0) {
         ListParam_ParamOrgane.add(element.Param_Param_Text);
         ListParam_ParamOrganeID.add(element.Param_Param_ID);
       }
     });
+
+
+
     selectedValueOrgane = ListParam_ParamOrgane[0];
     selectedValueOrganeID = ListParam_ParamOrganeID[0];
 

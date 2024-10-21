@@ -1,5 +1,4 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -483,8 +482,8 @@ class _Client_GrpState extends State<Client_Grp> {
         Container(
             width: wWidth,
             child: TypeAheadField(
-              animationStart: 0,
               animationDuration: Duration.zero,
+/*
               textFieldConfiguration: TextFieldConfiguration(
                 controller: textEditingController,
                 decoration: InputDecoration(
@@ -494,6 +493,7 @@ class _Client_GrpState extends State<Client_Grp> {
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 color: Colors.white,
               ),
+*/
               suggestionsCallback: (pattern) async {
                 await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
                 List<String> matches = <String>[];
@@ -509,7 +509,7 @@ class _Client_GrpState extends State<Client_Grp> {
                   child: Text(sone.toString()),
                 ));
               },
-              onSuggestionSelected: (suggestion) {
+              onSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
                   if (propertie.label!.compareTo(suggestion) == 0) {
                     Api_Gouv.gProperties = propertie;
@@ -787,7 +787,7 @@ class _Client_GrpState extends State<Client_Grp> {
               buttonStyleData: const ButtonStyleData(
                 padding: const EdgeInsets.only(left: 4, right: 4),
                 height: 30,
-                width: 290,
+                width: 250,
               ),
               menuItemStyleData: const MenuItemStyleData(
                 height: 32,

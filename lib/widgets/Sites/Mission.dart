@@ -54,14 +54,9 @@ class _MissionState extends State<Mission> {
       }
     }
 
-    await DbTools.getInterMissions_Document_MissonID(DbTools.gInterMission.InterMissionId!);
+    await DbTools.getInterMissions_Document_MissonID(DbTools.gInterMission.InterMissionId);
     pastilleDoc = DbTools.ListInterMissions_Document.length;
-
-    print(" getPastille pastillePhoto ${pastillePhoto} pastilleDoc ${pastilleDoc}");
-
-
-
-  }
+ }
 
 
   Future Filtre() async {
@@ -147,6 +142,7 @@ class _MissionState extends State<Mission> {
     setState(() {});
   }
 
+
   @override
   Widget build(BuildContext context) {
     double width = 800;
@@ -216,7 +212,6 @@ class _MissionState extends State<Mission> {
                 child: Stack(
                   children: <Widget>[
                     CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "IM5", selDocs, tooltip: "Documents"),
-
                     if (pastilleDoc > 0)
                       Positioned(
                         right: 0,
@@ -248,7 +243,8 @@ class _MissionState extends State<Mission> {
 
             ],
           ),
-          Container(
+          Container
+            (
             height: 10,
           ),
           Container(
@@ -325,31 +321,31 @@ class _MissionState extends State<Mission> {
                               width: 1,
                             ),
                             InkWell(
-                              child: Icon(
-                                Icons.check,
-                                color: wInterMission.InterMissionId > 0 ? Colors.blue : Colors.black12,
-                                size: 24.0,
-                              ),
+                              child:
+                              Image.asset("assets/images/ico_Save.png",
+                                width: 24.0,),
+
                               onTap: () async {
+                                print("setInterMission A ${wInterMission.InterMissionId}");
                                 if (wInterMission.InterMissionId > 0) {
+
+
                                   wInterMission.InterMission_Nom = InterMission_TextController.text;
                                   wInterMission.InterMission_Note = InterMission_NoteController.text;
                                   await DbTools.setInterMission(wInterMission);
                                   await Reload();
-                                  wInterMission = InterMission.InterMissionInit();
+//                                  wInterMission = InterMission.InterMissionInit();
                                   DbTools.gInterMission = wInterMission;
                                 }
                               },
                             ),
                             Container(
-                              width: 1,
+                              width: 5,
                             ),
                             InkWell(
-                              child: Icon(
-                                Icons.delete,
-                                color: wInterMission.InterMissionId > 0 ? Colors.red : Colors.black12,
-                                size: 24.0,
-                              ),
+                              child:                               Image.asset("assets/images/ico_Del.png",
+                                width: 24.0,),
+
                               onTap: () async {
                                 if (wInterMission.InterMissionId > 0) {
                                   await DbTools.delInterMission(wInterMission);
@@ -359,12 +355,15 @@ class _MissionState extends State<Mission> {
                                 }
                               },
                             ),
+                            Container(
+                              width: 5,
+                            ),
                             InkWell(
-                              child: Icon(
-                                Icons.add_circle,
-                                color: Colors.green,
-                                size: 24.0,
-                              ),
+                              child:
+
+                              Image.asset("assets/images/ico_Add.png",
+                                width: 24.0,),
+
                               onTap: () async {
                                 InterMission interMission = await InterMission.InterMissionInit();
                                 interMission.InterMission_InterventionId = DbTools.gIntervention.InterventionId!;
@@ -429,6 +428,7 @@ class _MissionState extends State<Mission> {
                 ),
           selVue != 2 ? Container() : Photos(),
           selVue != 3 ? Container() : Documents(),
+          selVue != 4 ? Container() : Documents(),
 
 
         ],
@@ -472,7 +472,7 @@ class _MissionState extends State<Mission> {
           cellBuilder: (BuildContext context, DaviRow<InterMission> aInterMission) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: aInterMission.data.InterMission_Exec,

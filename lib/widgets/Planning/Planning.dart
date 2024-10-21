@@ -20,7 +20,6 @@ import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning_Edit.dart';
 import 'package:verifplus_backoff/widgets/Planning/SelectInterv.dart';
 import 'package:verifplus_backoff/widgets/Planning/SelectIntervAdd.dart';
-import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
 class Planning extends StatefulWidget {
   final bool bAppBar;
@@ -91,7 +90,10 @@ class _PlanningState extends State<Planning> {
   }
 
   Future Reload() async {
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload A");
+
+
+
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload A : ${DbTools.gClient.Client_Depot}");
     await DbTools.getParam_Saisie_Param("Status");
     print(">>>>>>>>>>>>>>>>>>>>>>>>>> Reload B");
     await DbTools.getPlanning_IntervAll();
@@ -103,6 +105,7 @@ class _PlanningState extends State<Planning> {
   }
 
   void initLib() async {
+
 
     ListParam_ParamFonction.clear();
     ListParam_ParamFonctionID.clear();
@@ -280,6 +283,12 @@ class _PlanningState extends State<Planning> {
       child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: wDets),
     );
 
+    Depot = DbTools.gClient.Client_Depot;
+    String wDate = "----/----/-------";
+    if (DbTools.gIntervention.Intervention_Date!.isNotEmpty) wDate = DbTools.gIntervention.Intervention_Date!;
+
+    interventionNom = "[${DbTools.gIntervention.InterventionId}] ${wDate} ${DbTools.gIntervention.Intervention_Type} ${DbTools.gIntervention!.Intervention_Parcs_Type} ${DbTools.gIntervention!.Intervention_Status}";
+
     setState(() {});
   }
 
@@ -329,8 +338,17 @@ class _PlanningState extends State<Planning> {
             ));
   }
 
+
+  double wDifHD = 0;
   @override
   Widget build(BuildContext context) {
+
+    double wWidth = MediaQuery.of(context).size.width;
+     wDifHD = wWidth - 1920;
+    if (wDifHD < 10) wDifHD == 0;
+    print("wDifHD ${wDifHD}");
+
+
     gColors.wTheme = Theme.of(context);
     double screenHeight = MediaQuery.of(context).size.height;
     Color wColor = gColors.GrdBtn_Colors3sel;
@@ -386,7 +404,6 @@ class _PlanningState extends State<Planning> {
                             ),
                             Container(
                               padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              width: 1881,
                               child: AffSelIntervention(),
                             ),
                           ],
@@ -408,7 +425,7 @@ class _PlanningState extends State<Planning> {
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            width: 1881,
+                            width: 1881 + wDifHD,
                             child: AffSelIntervention(),
                           ),
                         ],
@@ -514,10 +531,13 @@ class _PlanningState extends State<Planning> {
 
   Widget AffSelIntervention() {
     double w = 200;
+
+    print("wDifHD $wDifHD");
+
     return Container(
 //        color: Colors.greenAccent,
         padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-        width: 1680,
+        width: 1680 + wDifHD,
         child: InkWell(
           child: Row(
             children: [
@@ -553,7 +573,7 @@ class _PlanningState extends State<Planning> {
               Container(
                 width: 5,
               ),
-              gColors.Txt2(90, 'Intervention', '${interventionNom}', tWidth: w + 110),
+              gColors.Txt2(90, 'Intervention', '${interventionNom}', tWidth: w + 110 + wDifHD ),
             ],
           ),
           onTap: () async {
@@ -617,8 +637,8 @@ class _PlanningState extends State<Planning> {
             if (zoneNom.isNotEmpty) DbTools.gZone = details.zone!;
 
             String wDate = "----/----/-------";
-            if (DbTools.gIntervention!.Intervention_Date!.isNotEmpty) wDate = DbTools.gIntervention!.Intervention_Date!;
-            interventionNom = "[${DbTools.gIntervention!.InterventionId}] ${wDate} ${DbTools.gIntervention!.Intervention_Type} ${DbTools.gIntervention!.Intervention_Parcs_Type} ${DbTools.gIntervention!.Intervention_Status}";
+            if (DbTools.gIntervention.Intervention_Date!.isNotEmpty) wDate = DbTools.gIntervention.Intervention_Date!;
+            interventionNom = "[${DbTools.gIntervention.InterventionId}] ${wDate} ${DbTools.gIntervention.Intervention_Type} ${DbTools.gIntervention.Intervention_Parcs_Type} ${DbTools.gIntervention.Intervention_Status}";
 
           },
         );
@@ -1140,7 +1160,7 @@ class _PlanningState extends State<Planning> {
         User user = DbTools.ListUser.firstWhere((element) => element.User_Matricule == wCalendarResource.id.toString());
         if (user.User_Depot.compareTo(Depot) == 0) {
           Color wColor = Color(0xFF3D4FB5);
-          wResources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
+          wResources.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
         }
       }
 
@@ -1149,15 +1169,15 @@ class _PlanningState extends State<Planning> {
         User user = DbTools.ListUser.firstWhere((element) => element.User_Matricule == wCalendarResource.id.toString());
         if (user.User_Depot.compareTo(Depot) != 0) {
           Color wColor = Color(0xFFB5B5B5);
-          wResources!.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
+          wResources.add(CalendarResource(displayName: "${wCalendarResource.displayName}", id: "${wCalendarResource.id}", color: wColor, image: wCalendarResource.image));
         }
       }
     } else {
-      wResources!.addAll(calendarDataSource.resources!);
+      wResources.addAll(calendarDataSource.resources!);
     }
 
     if (selectedValueFonctionID == "*")
-      wCalendarDataSource.resources!.addAll(wResources!);
+      wCalendarDataSource.resources!.addAll(wResources);
     else
       {
         for (int r = 0; r < wResources.length; r++) {
@@ -1168,7 +1188,7 @@ class _PlanningState extends State<Planning> {
             if (wCalendarResource.id.toString().compareTo(user.User_Matricule.toString()) ==0)
               {
                 if (user.User_Fonction == selectedValueFonction){
-                  wCalendarDataSource.resources!.add(wCalendarResource!);
+                  wCalendarDataSource.resources!.add(wCalendarResource);
                   break;
 
                 }

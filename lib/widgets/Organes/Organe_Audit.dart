@@ -34,7 +34,8 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
 
-    Color textColor = FiltreTools.dataGridController_CR.selectedRows.contains(row) ? Colors.white : Colors.black;
+    bool selected = (DbTools.gParc_Ent.ParcsId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? Colors.white : Colors.black;
     Color backgroundColor = Colors.transparent;
 
     List<Widget> DataGridCells = [

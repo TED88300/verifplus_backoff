@@ -38,7 +38,7 @@ class _DocumentsState extends State<Documents> {
   late SfPdfViewer wSfPdfViewer;
   PdfViewerController wPdfViewerController = PdfViewerController();
   Widget wWidgetPdf = Container();
-  Widget wPdf = Container();
+
 
   Future<void> AddDoc(Uint8List wUint8List, String name) async {
     print("files NAME ${name}");
@@ -108,11 +108,11 @@ class _DocumentsState extends State<Documents> {
     wWidgetPdf = Container();
     print("Reload getInterMissions_Document_MissonID ${wInterMission.InterMissionId} ${DbTools.gInterMission.InterMissionId}");
 
-    await DbTools.getInterMissions_Document_MissonID(DbTools.gInterMission.InterMissionId!);
+    await DbTools.getInterMissions_Document_MissonID(DbTools.gInterMission.InterMissionId);
+    print("Reload gInterMissions_Document ${DbTools.ListInterMissions_Document.length}");
     if (DbTools.ListInterMissions_Document.length > 0) {
       print("Reload gInterMissions_Document ${DbTools.gInterMissions_Document.DocID}");
       wInterMissions_Document = DbTools.gInterMissions_Document;
-
       await getDdoc();
     } else {
       wInterMissions_Document.DocID = -1;
@@ -203,10 +203,21 @@ class _DocumentsState extends State<Documents> {
                                           style: gColors.bodyTitle1_N_Gr,
                                         ),
                                       ),
-                                      Text(
-                                        "${wInterMissions_Document.DocNom}",
-                                        style: gColors.bodyTitle1_B_Gr,
-                                      )
+                                      Container(
+
+                                          width: 310,
+                                          child:
+                                          Text(
+                                            "${wInterMissions_Document.DocNom}",
+                                            style: gColors.bodyTitle1_B_Gr,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: true,
+                                          )
+
+                                      ),
+
+
+
                                     ],
                                   ),
                                   Row(
@@ -218,10 +229,16 @@ class _DocumentsState extends State<Documents> {
                                           style: gColors.bodyTitle1_N_Gr,
                                         ),
                                       ),
-                                      Text(
-                                        "${wTailleStr}",
-                                        style: gColors.bodyTitle1_B_Gr,
-                                      )
+                                      Container(
+
+                                        width: 250,
+                                        child:
+                                        Text(
+                                          "${wTailleStr}",
+                                          style: gColors.bodyTitle1_B_Gr,
+                                        )
+
+                                      ),
                                     ],
                                   ),
                                   Row(
@@ -369,6 +386,9 @@ class _DocumentsState extends State<Documents> {
   Future getDdoc() async {
     wWidgetPdf = Container();
     String wDocPath = "${wInterMissions_Document.DocNom}";
+
+    print("getDdoc $wDocPath ");
+
     if (wDocPath.toLowerCase().contains(".txt")) {
       Uint8List? _bytes = await gColors.getDoc(wDocPath);
 
@@ -401,7 +421,7 @@ class _DocumentsState extends State<Documents> {
         wSfPdfViewer = await SfPdfViewer.memory(
           controller: wPdfViewerController,
           initialZoomLevel: 1,
-          maxZoomLevel: 12,
+          maxZoomLevel: 5,
           _bytes,
           key: _pdfViewerKey,
           enableDocumentLinkAnnotation: false,
@@ -420,9 +440,15 @@ class _DocumentsState extends State<Documents> {
               children: [
                 IconButton(
                   onPressed: () async {
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => PdfView(wSfPdfViewer: wSfPdfViewer)));
 
-                    setState(() {});
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => PdfView(wSfPdfViewer: wSfPdfViewer)));
+//                    Reload();
+                    wSfPdfViewer.controller!.jumpTo(xOffset : 10, yOffset: 0);
+                    setState(() {
+                      wSfPdfViewer.controller!.jumpTo(xOffset : 0, yOffset: 0);
+
+
+                    });
                   },
                   icon: Icon(Icons.open_with, color: Colors.green),
                 ),

@@ -39,6 +39,7 @@ class UserDataGridSource extends DataGridSource {
         DataGridCell<int>(columnName: 'actif', value: wActif),
         DataGridCell<String>(columnName: 'matricule', value: user.User_Matricule),
         DataGridCell<String>(columnName: 'fam', value: user.User_Famille),
+        DataGridCell<String>(columnName: 'serv', value: user.User_Service),
         DataGridCell<String>(columnName: 'fonc', value: user.User_Fonction),
         DataGridCell<String>(columnName: 'agence', value: user.User_Depot),
         DataGridCell<String>(columnName: 'nom', value: user.User_Nom),
@@ -79,6 +80,7 @@ class UserDataGridSource extends DataGridSource {
       FiltreTools.SfRow(row, 9, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 10, Alignment.centerLeft, textColor),
       FiltreTools.SfRow(row, 11, Alignment.centerLeft, textColor),
+      FiltreTools.SfRow(row, 12, Alignment.centerLeft, textColor),
     ]);
   }
 
@@ -109,11 +111,12 @@ class User_ListeState extends State<User_Liste> with TickerProviderStateMixin {
     190,
     200,
     200,
-    160,
+    300,
+    300,
     100,
-    240,
+    340,
     120,
-    230,
+    330,
   ];
 
   UserDataGridSource userDataGridSource = UserDataGridSource();
@@ -130,14 +133,15 @@ class User_ListeState extends State<User_Liste> with TickerProviderStateMixin {
       FiltreTools.SfGridColumn('actif', 'Actif', dColumnWidth[1], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('matricule', 'Matricule', dColumnWidth[2], 160, Alignment.centerLeft),
       FiltreTools.SfGridColumn('fam', 'Famille', dColumnWidth[3], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('fonc', 'Fonction', dColumnWidth[4], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[5], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('nom', 'Nom', dColumnWidth[6], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('prenom', 'Prenom', dColumnWidth[7], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[8], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[9], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('tel', 'Tel', dColumnWidth[10], 160, Alignment.centerLeft),
-      FiltreTools.SfGridColumn('mail', 'Mail', dColumnWidth[11], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('serv', 'Service', dColumnWidth[4], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('fonc', 'Fonction', dColumnWidth[5], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('agence', 'Agence', dColumnWidth[6], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('nom', 'Nom', dColumnWidth[7], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('prenom', 'Prenom', dColumnWidth[8], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('cp', 'Cp', dColumnWidth[9], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ville', 'Ville', dColumnWidth[10], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('tel', 'Tel', dColumnWidth[11], 160, Alignment.centerLeft),
+      FiltreTools.SfGridColumn('mail', 'Mail', dColumnWidth[12], 160, Alignment.centerLeft),
     ];
   }
 
@@ -165,21 +169,23 @@ class User_ListeState extends State<User_Liste> with TickerProviderStateMixin {
         dColumnWidth[2] = args.width;
       else if (args.column.columnName == 'fam')
         dColumnWidth[3] = args.width;
-      else if (args.column.columnName == 'fonc')
+      else if (args.column.columnName == 'serv')
         dColumnWidth[4] = args.width;
-      else if (args.column.columnName == 'agence')
+      else if (args.column.columnName == 'fonc')
         dColumnWidth[5] = args.width;
-      else if (args.column.columnName == 'nom')
+      else if (args.column.columnName == 'agence')
         dColumnWidth[6] = args.width;
-      else if (args.column.columnName == 'prenom')
+      else if (args.column.columnName == 'nom')
         dColumnWidth[7] = args.width;
-      else if (args.column.columnName == 'cp')
+      else if (args.column.columnName == 'prenom')
         dColumnWidth[8] = args.width;
-      else if (args.column.columnName == 'ville')
+      else if (args.column.columnName == 'cp')
         dColumnWidth[9] = args.width;
-      else if (args.column.columnName == 'tel')
+      else if (args.column.columnName == 'ville')
         dColumnWidth[10] = args.width;
-      else if (args.column.columnName == 'mail') dColumnWidth[11] = args.width;
+      else if (args.column.columnName == 'tel')
+        dColumnWidth[11] = args.width;
+      else if (args.column.columnName == 'mail') dColumnWidth[12] = args.width;
     });
   }
 

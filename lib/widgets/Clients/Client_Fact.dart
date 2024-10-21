@@ -469,8 +469,9 @@ class _Client_FactState extends State<Client_Fact> {
         Container(
             width: wWidth,
             child: TypeAheadField(
-              animationStart: 0,
+
               animationDuration: Duration.zero,
+/*
               textFieldConfiguration: TextFieldConfiguration(
                 controller: textEditingController,
                 decoration: InputDecoration(
@@ -480,6 +481,7 @@ class _Client_FactState extends State<Client_Fact> {
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 color: Colors.white,
               ),
+*/
               suggestionsCallback: (pattern) async {
                 await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
                 List<String> matches = <String>[];
@@ -495,7 +497,7 @@ class _Client_FactState extends State<Client_Fact> {
                   child: Text(sone.toString()),
                 ));
               },
-              onSuggestionSelected: (suggestion) {
+              onSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
                   if (propertie.label!.compareTo(suggestion) == 0) {
                     Api_Gouv.gProperties = propertie;
@@ -538,8 +540,6 @@ class _Client_FactState extends State<Client_Fact> {
                   ),
                   CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.question_mark, CpVillmeSearch, tooltip: "Recherche Adresse"),
                   CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.black, Icons.map_outlined, MapDialog, tooltip: "Carte"),
-
-
                 ],
               ),
               Row(
@@ -961,8 +961,9 @@ class _Client_FactState extends State<Client_Fact> {
         Container(
             width: wWidth * 6,
             child: TypeAheadField(
-              animationStart: 0,
+
               animationDuration: Duration.zero,
+/*
               textFieldConfiguration: TextFieldConfiguration(
                 controller: textEditingController,
                 decoration: InputDecoration(
@@ -972,6 +973,7 @@ class _Client_FactState extends State<Client_Fact> {
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 color: Colors.white,
               ),
+*/
               suggestionsCallback: (pattern) async {
                 await Api_Gouv.ApiAdresse(textController_Livr_Adresse_Geo.text);
                 List<String> matches = <String>[];
@@ -987,7 +989,7 @@ class _Client_FactState extends State<Client_Fact> {
                   child: Text(sone.toString()),
                 ));
               },
-              onSuggestionSelected: (suggestion) {
+              onSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
                   if (propertie.label!.compareTo(suggestion) == 0) {
                     Api_Gouv.gProperties = propertie;

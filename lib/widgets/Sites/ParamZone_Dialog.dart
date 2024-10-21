@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 
@@ -65,7 +64,7 @@ class _ParamZoneState extends State<ParamZone> {
   ];
 
   void initLib() async {
-    String ZoneApsad = DbTools.gZone.Zone_Regle!;
+    String ZoneApsad = DbTools.gZone.Zone_Regle;
     if (ZoneApsad.isNotEmpty) {
       itemlistApp = json.decode(ZoneApsad).cast<bool>().toList();
     }

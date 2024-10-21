@@ -14,7 +14,7 @@ class WebFilePicker implements PlatformFilePicker {
     print("startWebFilePicker");
 
     htmlfile.FileUploadInputElement uploadInput = htmlfile.FileUploadInputElement();
-    uploadInput.accept = '.pdf,.png,.jpg,.webp';
+    uploadInput.accept = '.pdf,.png,.jpg,.jpeg,.webp';
     uploadInput.click();
 
     uploadInput.onChange.listen((e) {

@@ -101,7 +101,7 @@ class gObj {
         width: IcoWidth,
         height: IcoWidth,
       );
-      return gObj.wImage!;
+      return gObj.wImage;
     }
 
     return Image.asset(

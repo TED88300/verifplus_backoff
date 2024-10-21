@@ -59,7 +59,7 @@ class Pdf_BL {
 
     if (pic.length == 0) {
       ByteData _logo_a = await rootBundle.load('assets/images/Blank.png');
-      pic = (_logo_a)!.buffer.asUint8List();
+      pic = (_logo_a).buffer.asUint8List();
     }
 
     pw.MemoryImage wMemoryImage = pw.MemoryImage(
@@ -91,16 +91,16 @@ class Pdf_BL {
     final doc = pw.Document(theme: fontTheme,);
 
     ByteData _logo_1 = await rootBundle.load('assets/BL_Header.jpg');
-    imageData_1 = (_logo_1)!.buffer.asUint8List();
+    imageData_1 = (_logo_1).buffer.asUint8List();
 
     ByteData _logo_Logo_Pied = await rootBundle.load('assets/BL_Footer.png');
-    imageData_Logo_Pied = (_logo_Logo_Pied)!.buffer.asUint8List();
+    imageData_Logo_Pied = (_logo_Logo_Pied).buffer.asUint8List();
 
     ByteData _logo_Logo_Pied2 = await rootBundle.load('assets/BL_Footer2.jpg');
-    imageData_Footer2 = (_logo_Logo_Pied2)!.buffer.asUint8List();
+    imageData_Footer2 = (_logo_Logo_Pied2).buffer.asUint8List();
 
     ByteData _logo_Logo_Fili = await rootBundle.load('assets/Fond_MONDIALFEU.jpg');
-    imageData_Fili = (_logo_Logo_Fili)!.buffer.asUint8List();
+    imageData_Fili = (_logo_Logo_Fili).buffer.asUint8List();
 
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "FACT");
     wAdresseFact = DbTools.gAdresse;

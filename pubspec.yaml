@@ -13,7 +13,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  file_picker: ^5.2.10
   cupertino_icons: ^1.0.2
   multi_dropdown: ^2.0.0
   package_info: ^2.0.2
@@ -32,14 +31,14 @@ dependencies:
   latlong2: ^0.9.1
   google_maps_flutter_web: ^0.4.0+9
   google_maps_flutter: ^2.2.8
-  pointer_interceptor: ^0.9.3+4
+
   rnd: ^0.2.0
   geocode: 1.0.3
   provider: ^6.0.5
   dio: ^5.4.0
   flutter_riverpod: ^1.0.4
   davi: ^3.4.1
-  flutter_typeahead: ^4.6.1
+
   intl: ^0.19.0
   uuid: ^4.1.0
   http: ^1.2.1
@@ -69,6 +68,21 @@ dependencies:
   photo_view: ^0.15.0
 
 
+  flutter_cache_manager: any
+  path: any
+  printing: any
+  pdf: any
+  cross_file: any
+
+
+  pointer_interceptor: ^0.10.1+1
+  file_picker: ^8.0.3
+  flutter_typeahead: ^5.2.0
+
+
+
+
+  
 dependency_overrides:
   pdf:
     path: ./pdf
@@ -80,9 +94,10 @@ flutter:
   assets:
     - assets/
     - assets/images/
-
     - assets/fonts/OpenSans-Regular.ttf
     - assets/fonts/OpenSans-Bold.ttf
     - assets/fonts/OpenSans-Italic.ttf
     - assets/fonts/OpenSans-BoldItalic.ttf
+dev_dependencies:
+  flutter_quill_test: ^10.0.0
 

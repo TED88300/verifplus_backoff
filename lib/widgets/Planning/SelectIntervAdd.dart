@@ -1,7 +1,6 @@
 // SELECTION INTERVENTION
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Clients.dart';
 import 'package:verifplus_backoff/Tools/Srv_Groupes.dart';
@@ -9,7 +8,6 @@ import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/Tools/Srv_Sites.dart';
 import 'package:verifplus_backoff/Tools/Srv_Zones.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Planning/SelectInterv.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
@@ -220,7 +218,7 @@ class SelectInterAddState extends State<SelectInterAdd> {
             new ElevatedButton(
               onPressed: () async{
 
-                DbTools.gZone = selZone!;
+                DbTools.gZone = selZone;
                 await Zone_Interv_Add.Dialogs_Add(context, true);
                 await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
                 Navigator.pop(context);

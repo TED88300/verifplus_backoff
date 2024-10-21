@@ -3,7 +3,6 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Saisie.dart';
-import 'package:verifplus_backoff/Tools/Srv_Parcs_Ent.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
@@ -35,7 +34,8 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
 
-    Color textColor = FiltreTools.dataGridController_CR.selectedRows.contains(row) ? Colors.white : Colors.black;
+    bool selected = (DbTools.gParc_Ent.ParcsId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? Colors.white : Colors.black;
     Color backgroundColor = Colors.transparent;
 
     List<Widget> DataGridCells = [

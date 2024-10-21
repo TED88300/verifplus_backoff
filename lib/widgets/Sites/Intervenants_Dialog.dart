@@ -139,7 +139,7 @@ class _IntervenantsState extends State<Intervenants> {
           cellBuilder: (BuildContext context, DaviRow<UserSelected> aInterUser) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: aInterUser.data.Sel,

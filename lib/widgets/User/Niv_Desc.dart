@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Niveau_Desc.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Srv_User_Desc.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -200,7 +199,7 @@ class Niv_DescState extends State<Niv_Desc> {
           cellBuilder: (BuildContext context, DaviRow<Niveau_Desc> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.Niveau_Desc_MaintPrev,
@@ -221,7 +220,7 @@ class Niv_DescState extends State<Niv_Desc> {
           cellBuilder: (BuildContext context, DaviRow<Niveau_Desc> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.Niveau_Desc_MaintCorrect,
@@ -242,7 +241,7 @@ class Niv_DescState extends State<Niv_Desc> {
           cellBuilder: (BuildContext context, DaviRow<Niveau_Desc> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.Niveau_Desc_Install,
@@ -427,7 +426,7 @@ class Niv_DescState extends State<Niv_Desc> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selPrev,
@@ -441,7 +440,7 @@ class Niv_DescState extends State<Niv_Desc> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selCor,
@@ -456,7 +455,7 @@ class Niv_DescState extends State<Niv_Desc> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selInstall,

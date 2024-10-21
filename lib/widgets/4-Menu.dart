@@ -23,6 +23,7 @@ import 'package:verifplus_backoff/widgets/NF074/NF074_Mixte_Produit.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Pieces_Actions.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Pieces_Det.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Pieces_Det_Inc.dart';
+import 'package:verifplus_backoff/widgets/Param/Param_Av.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Fam_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Hab.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
@@ -31,6 +32,7 @@ import 'package:verifplus_backoff/widgets/User/Niv_Hab.dart';
 import 'package:verifplus_backoff/widgets/User/User_Liste.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Gamme_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Param_Abrev_Dialog.dart';
+import 'package:flutter_quill_test/flutter_quill_test.dart';
 
 import 'Param/Param_Param_Dialog.dart';
 import 'Param/Param_Saisie_Dialog.dart';
@@ -49,8 +51,8 @@ class _MenuState extends State<Menu> {
   String wTitre = "Back-Office";
 
 //  Widget wAff = Planning(bAppBar : false);
-Widget wAff = Interventions();
-//  Widget wAff = Clients_screen();//
+ Widget wAff = Interventions();
+//  Widget wAff = Clients_screen();
 //  Widget wAff = fourns_screen();
 //  Widget wAff = User_Liste();
 
@@ -588,11 +590,25 @@ Widget wAff = Interventions();
             icon: Icons.settings,
             onTap: () {
               wTitre = "Habilitations";
-              setState(() {
+              setState(()  {
                 wAff = Param_Hab_screen();
               });
             },
           ),
+
+
+          PlutoMenuItem(
+            title: "Avertissements",
+            icon: Icons.settings,
+            onTap: () {
+              wTitre = "Avertissements";
+              setState(() {
+                wAff = Param_Av_screen();
+              });
+            },
+          ),
+
+
           PlutoMenuItem.divider(height: 10, color: Colors.white),
           PlutoMenuItem(title: 'NF074',
               icon: Icons.logo_dev,

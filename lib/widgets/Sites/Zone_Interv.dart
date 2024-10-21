@@ -13,6 +13,7 @@ import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
 import 'package:verifplus_backoff/widgets/Interventions/Intervention_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
+import 'package:verifplus_backoff/widgets/Sites/Habilitations.dart';
 import 'package:verifplus_backoff/widgets/Sites/Mission.dart';
 import 'package:verifplus_backoff/widgets/Sites/Zone_Interv_Add.dart';
 
@@ -128,9 +129,6 @@ class _Zone_IntervState extends State<Zone_Interv> {
   final MultiSelectController controllerSsT = MultiSelectController();
 
   IntervInfoDataGridSource intervInfoDataGridSource = IntervInfoDataGridSource();
-
-
-
   final Search_TextController = TextEditingController();
   TextEditingController textController_Ct_Debut = TextEditingController();
   TextEditingController textController_Ct_Fin = TextEditingController();
@@ -243,6 +241,8 @@ class _Zone_IntervState extends State<Zone_Interv> {
   DateTime wDateTime = DateTime.now();
 
   Future Reload() async {
+
+
     await DbTools.getInterventionsZone(DbTools.gZone.ZoneId);
     Ct_Debut = DateTime.now();
     Ct_Fin = DateTime(1980);
@@ -355,6 +355,9 @@ class _Zone_IntervState extends State<Zone_Interv> {
   }
 
   void AlimSaisie() async {
+
+    if (DbTools.gIntervention.InterventionId == -1) return;
+
     if (DbTools.gIntervention.Intervention_Type!.isNotEmpty) {
       selectedTypeInterID = DbTools.gIntervention.Intervention_Type!;
       selectedTypeInter = DbTools.List_TypeInter[DbTools.List_TypeInterID.indexOf(selectedTypeInterID)];
@@ -421,17 +424,7 @@ class _Zone_IntervState extends State<Zone_Interv> {
 print("wValueItemA ${wValueItemA.toString()}");
         controllerSsT.setSelectedOptions(wValueItemA);
       }
-
-
-
     }
-
-
-
-
-
-
-
     print("AlimSaisie B");
     if (DbTools.gIntervention.Intervention_Status!.isNotEmpty) {
       selectedStatusInter = DbTools.gIntervention.Intervention_Status!;
@@ -786,6 +779,8 @@ print("wValueItemA ${wValueItemA.toString()}");
 
 
   String wIntervenants = "";
+  String wMissions = "";
+
   Widget ContentIntervention(BuildContext context) {
     print("selMnu $selMnu");
     wIntervenants = "";
@@ -803,7 +798,7 @@ print("wValueItemA ${wValueItemA.toString()}");
       if (planning.Planning_InterventionendTime.isAfter(Au)) Au = planning.Planning_InterventionendTime;
     }
 
-    String wMissions = "";
+    wMissions = "";
     for (int i = 0; i < DbTools.ListInterMission.length; i++) {
       var element = DbTools.ListInterMission[i];
       wMissions = "$wMissions${wMissions.isNotEmpty ? ", " : ""}${element.InterMission_Nom}";
@@ -903,12 +898,10 @@ print("wValueItemA ${wValueItemA.toString()}");
                   : Container(),
               selMnu == 5
                   ? Container(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                       child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Block_Entete(context),
-                        Container(
-                          height: 10,
-                        ),
+                        Habilitations(),
                       ]))
                   : Container(),
             ],
@@ -965,8 +958,7 @@ print("wValueItemA ${wValueItemA.toString()}");
                       width: 290,
                       padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
                       child: Text(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris"
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris",
+                        wMissions,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
@@ -986,9 +978,6 @@ print("wValueItemA ${wValueItemA.toString()}");
   Widget Block_Technique(BuildContext context) {
 
     print(" Block_Technique ${selectedUserInter6}");
-
-
-
 
     return Container(
       width: 800,
@@ -1159,8 +1148,7 @@ print("wValueItemA ${wValueItemA.toString()}");
             child: InkWell(
               onTap: () async {
                 await showDialog(context: context, builder: (BuildContext context) => new Planning(bAppBar: true));
-                setState(() {});
-
+                AlimSaisie();
               },
               child: Container(
                 child: Row(

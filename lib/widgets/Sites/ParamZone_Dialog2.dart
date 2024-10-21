@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart';
 import 'package:intl/intl.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -72,7 +71,7 @@ class _ParamZone2State extends State<ParamZone2> {
 
 
   void initLib() async {
-    String ZoneApsad = DbTools.gZone.Zone_APSAD!;
+    String ZoneApsad = DbTools.gZone.Zone_APSAD;
     if (ZoneApsad.isNotEmpty) {
       itemlistApp = json.decode(ZoneApsad).cast<bool>().toList();
     }
@@ -80,7 +79,7 @@ class _ParamZone2State extends State<ParamZone2> {
       itemlistApp.add(false);
     }
 
-    String ZoneApsadDate = DbTools.gZone.Zone_APSAD_Date!;
+    String ZoneApsadDate = DbTools.gZone.Zone_APSAD_Date;
     if (ZoneApsadDate.isNotEmpty) {
       String cleanedString = ZoneApsadDate.replaceAll("[", "").replaceAll("]", "").trim();
       itemlistDate= cleanedString.split(',').map((e) => e.trim()).toList();

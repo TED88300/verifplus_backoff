@@ -30,25 +30,6 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
 
   Future initLib() async {
 
-  /*  await DbTools.getContactSite(DbTools.gSite.SiteId);
-    await DbTools.getParc_EntID(DbTools.gIntervention.InterventionId!);
-    await DbTools.getParc_DescID(DbTools.gIntervention.InterventionId!);
-
-    await DbTools.getParam_Saisie_Base("Audit");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
-    DbTools.ListParam_Audit_Base.clear();
-    DbTools.ListParam_Audit_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    await DbTools.getParam_Saisie_Base("Verif");
-    DbTools.ListParam_Verif_Base.sort(DbTools.affSort2Comparison);
-    DbTools.ListParam_Verif_Base.clear();
-    DbTools.ListParam_Verif_Base.addAll(DbTools.ListParam_Saisie_Base);
-
-    await DbTools.getParam_Saisie_Base("Desc");
-    DbTools.ListParam_Saisie_Base.sort(DbTools.affSort2Comparison);
-*/
-
-
 
     DescAff = "";
     int countCol = 0;
@@ -127,8 +108,6 @@ class _Organe_DialogState extends State<Organe_Dialog> with SingleTickerProvider
     DbTools.listparamSaisieEquip.clear();
     for (int i = 0; i < listparamSaisieTmp.length; i++) {
       Param_Saisie element = listparamSaisieTmp[i];
-
-
       if (element.Param_Saisie_Controle != "Group" && element.Param_Saisie_Organe == "Base" )
           {
             DbTools.listparamSaisieEquip.add(element);

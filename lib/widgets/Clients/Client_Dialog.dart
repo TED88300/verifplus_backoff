@@ -38,7 +38,7 @@ class Client_Dialog extends StatefulWidget {
 
 class _Client_DialogState extends State<Client_Dialog> with SingleTickerProviderStateMixin {
   final Client_Fact_Controller client_Fact_Controller = Client_Fact_Controller();
-//  final Client_Fact client_Fact = Client_Fact( client_Fact_Controller: client_Fact_Controller,);
+
 
   String Title = "";
   Client wClient = Client.ClientInit();
@@ -715,7 +715,24 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                 textController_Nom.text = Api_Gouv.siret_Nom;
                 textController_NAF.text = Api_Gouv.siret_NAF;
                 textController_TVA.text = NoTVA;
+
+                textController_Createur.text = "${DbTools.gUserLogin.User_Prenom} ${DbTools.gUserLogin.User_Nom}";
+                selectedValueDepot = "${DbTools.gUserLogin.User_Depot}";
+                selectedUserInterID = "${DbTools.gUserLogin.User_Matricule}";
+
                 await ToolsBarSave();
+
+
+                await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
+
+                DbTools.gAdresse.Adresse_Adr1 = Api_Gouv.siret_Rue;
+                DbTools.gAdresse.Adresse_CP = Api_Gouv.siret_Cp;
+                DbTools.gAdresse.Adresse_Ville = Api_Gouv.siret_Ville;
+                DbTools.gAdresse.Adresse_Pays = "France";
+                await DbTools.setAdresse(DbTools.gAdresse);
+
+
+
                 await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "FACT");
 
                 DbTools.gAdresse.Adresse_Adr1 = Api_Gouv.siret_Rue;
@@ -724,9 +741,17 @@ class _Client_DialogState extends State<Client_Dialog> with SingleTickerProvider
                 DbTools.gAdresse.Adresse_Pays = "France";
                 await DbTools.setAdresse(DbTools.gAdresse);
 
+                bool wIs_Hierarchie = await DbTools.Count_Hierarchie(DbTools.gClient.ClientId);
+                if (!wIs_Hierarchie)
+                  await DbTools.Add_Hierarchie(wClient.ClientId);
+
+
+                tabContainerController!.index = 0;
+
                 await initLib();
 
                 client_Fact_Controller.AlimSaisie();
+
 
                 setState(() {});
                 Navigator.pop(context);

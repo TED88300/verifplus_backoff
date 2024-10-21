@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_Articles_Ebp.dart';
 import 'package:verifplus_backoff/Tools/Srv_Parcs_Art.dart';
 import 'package:verifplus_backoff/widgetTools/Filtre.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
-import 'package:verifplus_backoff/widgetTools/gObj.dart';
 
 DataGridController dataGridController = DataGridController();
 int Subindex = 0;
@@ -45,8 +43,11 @@ class ArticleDataGridSource extends DataGridSource {
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
-    Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+
+    bool selected = (DbTools.gParc_Ent.ParcsId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? Colors.white : Colors.black;
+
+
     Color backgroundColor = Colors.transparent;
     List<Widget> DataGridCells = [
       FiltreTools.SfRowImage(row, 0, Alignment.centerLeft, textColor, fBold: true),

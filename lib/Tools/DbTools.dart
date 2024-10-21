@@ -28,6 +28,7 @@ import 'package:verifplus_backoff/Tools/Srv_Interventions.dart';
 import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_Niveau_Desc.dart';
 import 'package:verifplus_backoff/Tools/Srv_Niveau_Hab.dart';
+import 'package:verifplus_backoff/Tools/Srv_Param_Av.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Gamme.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Hab.dart';
 import 'package:verifplus_backoff/Tools/Srv_Param_Param.dart';
@@ -57,7 +58,7 @@ class Notif with ChangeNotifier {
 }
 class DbTools {
   DbTools();
-  static var gVersion = "v1.0.135";
+  static var gVersion = "v1.0.161";
   static bool gTED = false;
   static var notif = Notif();
   static bool EdtTicket = false;
@@ -211,7 +212,6 @@ class DbTools {
     String wSql = "select * from Users where User_Mail = '$aMail' AND User_PassWord = '$aPW'";
     print(" getUserLogin $wSql");
     List<User> ListUser = await getUser_API_Post("select", wSql);
-    if (ListUser == null) return false;
     if (ListUser.length == 1) {
       print(" getUserLogin ${ListUser[0].User_Nom}");
 //      if (ListUser[0].User_TypeUserID < 156 || ListUser[0].User_TypeUserID > 159) return false;
@@ -253,8 +253,6 @@ class DbTools {
   static Future<bool> getUserName(String aName) async {
     List<User> ListUser = await getUser_API_Post("select", "select * from Users where User_Nom = '$aName'");
 
-    if (ListUser == null) return false;
-
     print("getUserName ${ListUser.length}");
 
     if (ListUser.length > 0) {
@@ -268,8 +266,6 @@ class DbTools {
 
   static Future<bool> getUserAll() async {
     ListUser = await getUser_API_Post("select", "select * from Users ORDER BY User_Nom ");
-
-    if (ListUser == null) return false;
 
 //    print("getUserAll ${ListUser.length}");
 
@@ -285,8 +281,6 @@ class DbTools {
   static Future<bool> getUserAllN0() async {
     ListUser = await getUser_API_Post("select", "select * from Users WHERE User_Matricule  > 0 ORDER BY User_Nom ");
 
-    if (ListUser == null) return false;
-
 //    print("getUserAll ${ListUser.length}");
 
     if (ListUser.length > 0) {
@@ -299,7 +293,6 @@ class DbTools {
 
   static bool getUserid(String id) {
     gUser = User.UserInit();
-    if (ListUser == null) return false;
     if (ListUser.length > 0) {
       for (int i = 0; i < ListUser.length; i++) {
         var element = ListUser[i];
@@ -314,7 +307,6 @@ class DbTools {
 
   static bool getUserMat(String id) {
     gUser = User.UserInit();
-    if (ListUser == null) return false;
     if (ListUser.length > 0) {
       for (int i = 0; i < ListUser.length; i++) {
         var element = ListUser[i];
@@ -331,7 +323,6 @@ class DbTools {
 
 
   static String getUserid_Nom(String id) {
-    if (ListUser == null) return "";
     if (ListUser.length > 0) {
       for (int i = 0; i < ListUser.length; i++) {
         var element = ListUser[i];
@@ -344,7 +335,6 @@ class DbTools {
   }
 
   static String getUserMat_Nom(String id) {
-    if (ListUser == null) return "";
     if (ListUser.length > 0) {
       for (int i = 0; i < ListUser.length; i++) {
         var element = ListUser[i];
@@ -507,8 +497,6 @@ class DbTools {
 
     print("getParam_SaisieAll aSQL select * from Param_Saisie ORDER BY Param_Saisie_ID");
 
-    if (ListParam_Saisie == null) return false;
-
     print("getParam_SaisieAll ${ListParam_Saisie.length}");
 
     if (ListParam_Saisie.length > 0) {
@@ -525,8 +513,6 @@ class DbTools {
 
     print("getParam_Saisie select * from Param_Saisie WHERE Param_Saisie_Organe = '$paramSaisieOrgane' AND Param_Saisie_Type = '$paramSaisieType'  ORDER BY Param_Saisie_Organe, Param_Saisie_Type, Param_Saisie_Ordre,Param_Saisie_ID");
 
-    if (ListParam_Saisie == null) return false;
-
     print("getParam_Saisie ${ListParam_Saisie.length}");
     if (ListParam_Saisie.length > 0) {
       print("getParam_Saisie return TRUE");
@@ -535,7 +521,7 @@ class DbTools {
       for (int i = 0; i < DbTools.ListParam_Saisie.length; i++) {
         Param_Saisie element = DbTools.ListParam_Saisie[i];
         element.Param_Saisie_Ordre = i++;
-        await setParam_Saisie(element);
+        //await setParam_Saisie(element);
       }
       return true;
     }
@@ -545,7 +531,6 @@ class DbTools {
 
   static Future<bool> getParam_Saisie_Base(String paramSaisieType) async {
     ListParam_Saisie_Base = await getParam_Saisie_API_Post("select", "select * from Param_Saisie WHERE Param_Saisie_Organe = 'Base' AND Param_Saisie_Type = '$paramSaisieType'  ORDER BY Param_Saisie_Organe, Param_Saisie_Type, Param_Saisie_Ordre,Param_Saisie_ID");
-    if (ListParam_Saisie_Base == null) return false;
     if (ListParam_Saisie_Base.length > 0) {
       int i = 1;
       for (int i = 0; i < ListParam_Saisie_Base.length; i++) {
@@ -645,11 +630,6 @@ class DbTools {
 
   static Future<bool> getParam_ParamAll() async {
     ListParam_ParamAll = await getParam_Param_API_Post("select", "select * from Param_Param ORDER BY Param_Param_Ordre,Param_Param_ID");
-
-    print("getParam_ParamAll aSQL select * from Param_Param ORDER BY Param_Param_ID");
-
-    if (ListParam_ParamAll == null) return false;
-
     print("getParam_ParamAll ${ListParam_ParamAll.length}");
 
     if (ListParam_ParamAll.length > 0) {
@@ -760,8 +740,6 @@ class DbTools {
     ListParam_Param = await getParam_Param_API_Post("select", "select * from Param_Param WHERE Param_Param_Type = '$paramParamType' ORDER BY Param_Param_Ordre,Param_Param_ID");
 
     if (!sort) return true;
-//    print("getParam_Param aSQL select * from Param_Param WHERE Param_Param_Type = '${Param_Param_Type}' ORDER BY Param_Param_Ordre,Param_Param_ID");
-    if (ListParam_Param == null) return false;
 
 //    print("getParam_Param ${ListParam_Param.length}");
     if (ListParam_Param.length > 0) {
@@ -779,7 +757,6 @@ class DbTools {
 
   static Future<Param_Param> getParam_ParamID(int ID) async {
     ListParam_Param = await getParam_Param_API_Post("select", "select * from Param_Param WHERE Param_ParamId = '$ID' ORDER BY Param_Param_Ordre,Param_Param_ID");
-    if (ListParam_Param == null) return Param_Param.Param_ParamInit();
     return ListParam_Param[0];
   }
 
@@ -838,7 +815,7 @@ class DbTools {
 
     if (response.statusCode == 200) {
       var parsedJson = json.decode(await response.stream.bytesToString());
-      print("parsedJson $parsedJson");
+
 
       final items = parsedJson['data'];
 
@@ -864,7 +841,6 @@ class DbTools {
 
   static Future<bool> getNF074_GammesAll() async {
     ListNF074_Gammes = await getNF074_Gammes_API_Post("select", "select * from NF074_Gammes ORDER BY NF074_GammesID");
-    if (ListNF074_Gammes == null) return false;
     print("getNF074_GammesAll ${ListNF074_Gammes.length}");
     if (ListNF074_Gammes.length > 0) {
       print("getNF074_GammesAll return TRUE");
@@ -877,7 +853,6 @@ class DbTools {
     String wSql = 'select * from NF074_Gammes WHERE NF074_Gammes_DESC = "${wDesc}"';
 //    print("getNF074_GammesDesc response $wSql");
     ListNF074_Gammes = await getNF074_Gammes_API_Post("select", wSql);
-    if (ListNF074_Gammes == null) return false;
 //    print("getNF074_GammesDesc ${ListNF074_Gammes.length}");
     if (ListNF074_Gammes.length > 0) {
       return true;
@@ -889,7 +864,6 @@ class DbTools {
     String wSql = 'select * from NF074_Gammes WHERE NF074_Gammes_CLF = "${wCLF}"';
 //    print("getNF074_GammesCLF response $wSql");
     ListNF074_Gammes = await getNF074_Gammes_API_Post("select", wSql);
-    if (ListNF074_Gammes == null) return false;
     if (ListNF074_Gammes.length > 0) {
       //print("getNF074_GammesCLF ${ListNF074_Gammes.length}");
 
@@ -902,7 +876,6 @@ class DbTools {
     String wSql = "SELECT NF074_Gammes.* FROM NF074_Gammes WHERE  NF074_Gammes_REF != '' AND NF074_Gammes_REF NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Gammes_REF;";
 //    print("getNF074_CtrlGammesArticles wSql $wSql");
     ListNF074_Gammes = await getNF074_Gammes_API_Post("select", wSql);
-    if (ListNF074_Gammes == null) return false;
     print("getNF074_CtrlGammesArticles ${ListNF074_Gammes.length}");
     if (ListNF074_Gammes.length > 0) {
       List<Map<String, dynamic>> associateList = [];
@@ -968,7 +941,6 @@ class DbTools {
 
   static Future<bool> getNF074_Histo_NormesAll() async {
     ListNF074_Histo_Normes = await getNF074_Histo_Normes_API_Post("select", "select * from NF074_Histo_Normes ORDER BY NF074_Histo_NormesId");
-    if (ListNF074_Histo_Normes == null) return false;
     print("getNF074_Histo_NormesAll ${ListNF074_Histo_Normes.length}");
     if (ListNF074_Histo_Normes.length > 0) {
       print("getNF074_Histo_NormesAll return TRUE");
@@ -1020,7 +992,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE  NF074_Pieces_Actions_PDT NOT IN (SELECT NF074_Gammes_PDT FROM NF074_Gammes) GROUP BY NF074_Pieces_Actions_PDT;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       return true;
@@ -1032,7 +1003,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE  NF074_Pieces_Actions_POIDS NOT IN (SELECT NF074_Gammes_POIDS FROM NF074_Gammes) GROUP BY NF074_Pieces_Actions_POIDS;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       return true;
@@ -1044,7 +1014,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE  NF074_Pieces_Actions_PRS NOT IN (SELECT NF074_Gammes_PRS FROM NF074_Gammes) GROUP BY NF074_Pieces_Actions_PRS;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       return true;
@@ -1054,7 +1023,6 @@ class DbTools {
 
   static Future<bool> getNF074_Pieces_ActionsAll() async {
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", "select * from NF074_Pieces_Actions ORDER BY NF074_Pieces_ActionsId");
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_Pieces_ActionsAll ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_Pieces_ActionsAll return TRUE");
@@ -1066,7 +1034,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPiecesActionsArticles1() async {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE NF074_Pieces_Actions_Code_article_PD1 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Actions_Code_article_PD1;";
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_CtrlPiecesActionsArticles1 ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_CtrlPiecesActionsArticles1 return TRUE");
@@ -1096,7 +1063,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPiecesActionsArticles2() async {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE NF074_Pieces_Actions_Code_article_PD2 != '' AND NF074_Pieces_Actions_Code_article_PD2 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Actions_Code_article_PD2;";
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_CtrlPiecesActionsArticles2 ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_CtrlPiecesActionsArticles2 return TRUE");
@@ -1115,7 +1081,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPiecesActionsArticles3() async {
     String wSql = "SELECT NF074_Pieces_Actions.* FROM NF074_Pieces_Actions WHERE NF074_Pieces_Actions_Code_article_PD3 != '' AND  F074_Pieces_Actions_Code_article_PD3 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Actions_Code_article_PD3;";
     ListNF074_Pieces_Actions = await getNF074_Pieces_Actions_API_Post("select", wSql);
-    if (ListNF074_Pieces_Actions == null) return false;
     print("getNF074_CtrlPiecesActionsArticles3 ${ListNF074_Pieces_Actions.length}");
     if (ListNF074_Pieces_Actions.length > 0) {
       print("getNF074_CtrlPiecesActionsArticles3 return TRUE");
@@ -1166,7 +1131,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Det.* FROM NF074_Pieces_Det WHERE  NF074_Pieces_Det_CODF NOT IN (SELECT NF074_Gammes_CODF FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_CODF;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Det = await getNF074_Pieces_Det_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       return true;
@@ -1176,7 +1140,6 @@ class DbTools {
 
   static Future<bool> getNF074_Pieces_DetAll() async {
     ListNF074_Pieces_Det = await getNF074_Pieces_Det_API_Post("select", "select * from NF074_Pieces_Det ORDER BY NF074_Pieces_DetId");
-    if (ListNF074_Pieces_Det == null) return false;
     print("getNF074_Pieces_DetAll ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_Pieces_DetAll return TRUE");
@@ -1188,7 +1151,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPieceDetArticles1() async {
     String wSql = "SELECT NF074_Pieces_Det.* FROM NF074_Pieces_Det WHERE  NF074_Pieces_Det_Code_article_PD1 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Det_Code_article_PD1;";
     ListNF074_Pieces_Det = await getNF074_Pieces_Det_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det == null) return false;
     print("getNF074_CtrlPieceDetArticles1 ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_CtrlPieceDetArticles1 return TRUE");
@@ -1206,7 +1168,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPieceDetArticles2() async {
     String wSql = "SELECT NF074_Pieces_Det.* FROM NF074_Pieces_Det WHERE NF074_Pieces_Det_Code_article_PD2 != '' AND  NF074_Pieces_Det_Code_article_PD2 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Det_Code_article_PD2;";
     ListNF074_Pieces_Det = await getNF074_Pieces_Det_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det == null) return false;
     print("getNF074_CtrlPieceDetArticles2 ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_CtrlPieceDetArticles2 return TRUE");
@@ -1224,7 +1185,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPieceDetArticles3() async {
     String wSql = "SELECT NF074_Pieces_Det.* FROM NF074_Pieces_Det WHERE NF074_Pieces_Det_Code_article_PD3 != '' AND  NF074_Pieces_Det_Code_article_PD3 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Det_Code_article_PD3;";
     ListNF074_Pieces_Det = await getNF074_Pieces_Det_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det == null) return false;
     print("getNF074_CtrlPieceDetArticles3 ${ListNF074_Pieces_Det.length}");
     if (ListNF074_Pieces_Det.length > 0) {
       print("getNF074_CtrlPieceDetArticles3 return TRUE");
@@ -1274,7 +1234,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_PDT NOT IN (SELECT NF074_Gammes_PDT FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_Inc_PDT;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       return true;
@@ -1286,7 +1245,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_POIDS NOT IN (SELECT NF074_Gammes_POIDS FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_Inc_POIDS;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       return true;
@@ -1298,7 +1256,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_PRS NOT IN (SELECT NF074_Gammes_PRS FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_Inc_PRS;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       return true;
@@ -1310,7 +1267,6 @@ class DbTools {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_CLF NOT IN (SELECT NF074_Gammes_CLF FROM NF074_Gammes) GROUP BY NF074_Pieces_Det_Inc_CLF;";
     print("getNF074_CtrlGammesPiecesDet wSql $wSql");
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlGammesPiecesDet ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       return true;
@@ -1320,7 +1276,6 @@ class DbTools {
 
   static Future<bool> getNF074_Pieces_Det_IncAll() async {
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", "select * from NF074_Pieces_Det_Inc ORDER BY NF074_Pieces_Det_IncId");
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_Pieces_Det_IncAll ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_Pieces_Det_IncAll return TRUE");
@@ -1332,7 +1287,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPieceDetIncArticles1() async {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_Code_article_PD1 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Det_Inc_Code_article_PD1;";
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlPieceDetIncArticles1 ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_CtrlPieceDetIncArticles1 return TRUE");
@@ -1350,7 +1304,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPieceDetIncArticles2() async {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_Code_article_PD2 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Det_Inc_Code_article_PD2;";
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlPieceDetIncArticles2 ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_CtrlPieceDetIncArticles2 return TRUE");
@@ -1368,7 +1321,6 @@ class DbTools {
   static Future<bool> getNF074_CtrlPieceDetIncArticles3() async {
     String wSql = "SELECT NF074_Pieces_Det_Inc.* FROM NF074_Pieces_Det_Inc WHERE  NF074_Pieces_Det_Inc_Code_article_PD3 NOT IN (SELECT Article_codeArticle FROM Articles_Ebp) GROUP BY NF074_Pieces_Det_Inc_Code_article_PD3;";
     ListNF074_Pieces_Det_Inc = await getNF074_Pieces_Det_Inc_API_Post("select", wSql);
-    if (ListNF074_Pieces_Det_Inc == null) return false;
     print("getNF074_CtrlPieceDetIncArticles3 ${ListNF074_Pieces_Det_Inc.length}");
     if (ListNF074_Pieces_Det_Inc.length > 0) {
       print("getNF074_CtrlPieceDetIncArticles3 return TRUE");
@@ -1418,7 +1370,6 @@ class DbTools {
     String wSql = "SELECT NF074_Mixte_Produit.* FROM NF074_Mixte_Produit WHERE  NF074_Mixte_Produit_PDT NOT IN (SELECT NF074_Gammes_PDT FROM NF074_Gammes) GROUP BY NF074_Mixte_Produit_PDT;";
     print("getNF074_CtrlGammesMixte_Produit_PDT wSql $wSql");
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_CtrlGammesMixte_Produit_PDT ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       return true;
@@ -1430,7 +1381,6 @@ class DbTools {
     String wSql = "SELECT NF074_Mixte_Produit.* FROM NF074_Mixte_Produit WHERE  NF074_Mixte_Produit_POIDS NOT IN (SELECT NF074_Gammes_POIDS FROM NF074_Gammes) GROUP BY NF074_Mixte_Produit_POIDS;";
     print("getNF074_CtrlGammesMixte_Produit_POIDS wSql $wSql");
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_CtrlGammesMixte_Produit_POIDS ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       return true;
@@ -1442,7 +1392,6 @@ class DbTools {
     String wSql = "SELECT NF074_Mixte_Produit.* FROM NF074_Mixte_Produit WHERE  NF074_Mixte_Produit_CLF NOT IN (SELECT NF074_Gammes_CLF FROM NF074_Gammes) GROUP BY NF074_Mixte_Produit_CLF;";
     print("getNF074_CtrlGammesMixte_Produit_CLF wSql $wSql");
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_CtrlGammesMixte_Produit_CLF ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       return true;
@@ -1452,7 +1401,6 @@ class DbTools {
 
   static Future<bool> getNF074_Mixte_ProduitAll() async {
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", "select * from NF074_Mixte_Produit ORDER BY NF074_Mixte_ProduitId");
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_Mixte_ProduitAll ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_Mixte_ProduitAll return TRUE");
@@ -1466,7 +1414,6 @@ class DbTools {
     print("getNF074_CtrlMixteProduitArticles1 wSql ${wSql}");
 
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_CtrlMixteProduitArticles1 ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_CtrlMixteProduitArticles1 return TRUE");
@@ -1487,7 +1434,6 @@ class DbTools {
     print("getNF074_CtrlMixteProduitArticles2 wSql ${wSql}");
 
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_CtrlMixteProduitArticles2 ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_CtrlMixteProduitArticles2 return TRUE");
@@ -1508,7 +1454,6 @@ class DbTools {
     print("getNF074_CtrlMixteProduitArticles3 wSql ${wSql}");
 
     ListNF074_Mixte_Produit = await getNF074_Mixte_Produit_API_Post("select", wSql);
-    if (ListNF074_Mixte_Produit == null) return false;
     print("getNF074_CtrlMixteProduitArticles3 ${ListNF074_Mixte_Produit.length}");
     if (ListNF074_Mixte_Produit.length > 0) {
       print("getNF074_CtrlMixteProduitArticles3 return TRUE");
@@ -1546,6 +1491,7 @@ class DbTools {
     }
     return [];
   }
+
   //*****************************
   //*****************************
   //*****************************
@@ -1556,8 +1502,6 @@ class DbTools {
 
   static Future<bool> getParam_HabAll() async {
     ListParam_Hab = await getParam_Hab_API_Post("select", "select * from Param_Hab ORDER BY Param_Hab_Ordre,Param_HabID");
-
-    if (ListParam_Hab == null) return false;
     print("getParam_HabAll ${ListParam_Hab.length}");
     if (ListParam_Hab.length > 0) {
       print("getParam_HabAll return TRUE");
@@ -1621,6 +1565,80 @@ class DbTools {
     }
     return [];
   }
+
+  //*****************************
+  //*****************************
+  //*****************************
+
+  static List<Param_Av> ListParam_Av = [];
+  static List<Param_Av> ListParam_Avsearchresult = [];
+  static Param_Av gParam_Av = Param_Av();
+
+  static Future<bool> getParam_AvAll() async {
+    ListParam_Av = await getParam_Av_API_Post("select", "select * from Param_Av ORDER BY Param_AvID");
+    print("getParam_AvAll lenght ${ListParam_Av.length}");
+    if (ListParam_Av.length > 0) {
+      print("getParam_AvAll return TRUE");
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> setParam_Av(Param_Av paramAv) async {
+    String wSlq = "UPDATE Param_Av SET "
+
+        "Param_Av_No = \"${paramAv.Param_Av_No}\", " +
+        "Param_Av_Det = \"${paramAv.Param_Av_Det}\", " +
+        "Param_Av_Proc = \"${paramAv.Param_Av_Proc}\", " +
+        "Param_Av_Lnk = \"${paramAv.Param_Av_Lnk}\" " +
+            "WHERE Param_AvId = ${paramAv.Param_AvID}";
+    gColors.printWrapped("setParam_Av " + wSlq);
+    bool ret = await add_API_Post("upddel", wSlq);
+    print("setParam_Av ret " + ret.toString());
+    return ret;
+  }
+
+  static Future<bool> addParam_Av(Param_Av paramAv) async {
+    String wValue = "NULL,'???','???','---', ''";
+    String wSlq = "INSERT INTO Param_Av (Param_AvId,Param_Av_No, Param_Av_Det, Param_Av_Proc, Param_Av_Lnk) VALUES ($wValue)";
+    print("addParam_Av " + wSlq);
+    bool ret = await add_API_Post("insert", wSlq);
+    print("addParam_Av ret " + ret.toString());
+    return ret;
+  }
+
+  static Future<bool> delParam_Av(Param_Av paramAv) async {
+    String aSQL = "DELETE FROM Param_Av WHERE Param_AvId = ${paramAv.Param_AvID} ";
+    print("delParam_Av " + aSQL);
+    bool ret = await add_API_Post("upddel", aSQL);
+    print("delParam_Av ret " + ret.toString());
+    return ret;
+  }
+
+  static Future<List<Param_Av>> getParam_Av_API_Post(String aType, String aSQL) async {
+    setSrvToken();
+    String eSQL = base64.encode(utf8.encode(aSQL)); // dXNlcm5hbWU6cGFzc3dvcmQ=
+    var request = http.MultipartRequest('POST', Uri.parse(SrvUrl.toString()));
+    request.fields.addAll({'tic12z': SrvToken, 'zasq': aType, 'resza12': eSQL, 'uid': "${DbTools.gUserLogin.UserID}"});
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      var parsedJson = json.decode(await response.stream.bytesToString());
+      final items = parsedJson['data'];
+
+      if (items != null) {
+        List<Param_Av> paramAvlist = await items.map<Param_Av>((json) {
+          return Param_Av.fromJson(json);
+        }).toList();
+        return paramAvlist;
+      }
+    } else {
+      print(response.reasonPhrase);
+    }
+    return [];
+  }
+
 
   //*****************************
   //*****************************
@@ -1705,7 +1723,6 @@ class DbTools {
 
     print("getFournAll ${wSlq}");
     ListFourn = await getFourn_API_Post("select", wSlq);
-    if (ListFourn == null) return false;
     if (ListFourn.length > 0) {
       return true;
     }
@@ -1891,7 +1908,6 @@ class DbTools {
 
     print("  ••••••••• getClient_User_C ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_C ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_C return TRUE");
@@ -1904,7 +1920,6 @@ class DbTools {
     String wSlq = "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_S ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_S  ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_S return TRUE");
@@ -1918,7 +1933,6 @@ class DbTools {
         "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_I ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_I  ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_S return TRUE");
@@ -1932,7 +1946,6 @@ class DbTools {
         "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable2 =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_I2 ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_I2  ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_S return TRUE");
@@ -1946,7 +1959,6 @@ class DbTools {
         "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable3 =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_I2 ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_I2  ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_S return TRUE");
@@ -1960,7 +1972,6 @@ class DbTools {
         "SELECT Clients.* , Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions JOIN Users ON Interventions.Intervention_Responsable = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Interventions.Intervention_Responsable4 =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_I2 ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_I2  ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_S return TRUE");
@@ -1976,7 +1987,6 @@ class DbTools {
         "SELECT Clients.*, Adresses1.Adresse_Adr1, Adresses1.Adresse_CP,Adresses1.Adresse_Ville,Adresses1.Adresse_Pays, Adresses2.Adresse_CP as Adresse_CP_Livr,Adresses2.Adresse_Ville as Adresse_Ville_Livr, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses as Adresses1 ON Clients.ClientId = Adresses1.Adresse_ClientId AND Adresses1.Adresse_Type = 'FACT' LEFT JOIN Adresses as Adresses2 ON Clients.ClientId = Adresses2.Adresse_ClientId AND Adresses2.Adresse_Type = 'LIVR' , Groupes, Sites, Zones, Interventions, Planning JOIN Users ON Planning.Planning_ResourceId = Users.UserID where Groupe_ClientId = ClientId And Site_GroupeId = GroupeId And Zones.Zone_SiteId = Sites.SiteId AND Interventions.Intervention_ZoneId = Zones.ZoneId AND Planning.Planning_InterventionId = Interventions.InterventionId AND Planning.Planning_ResourceId =  \"${User_Matricule}\"";
     print("  ••••••••• getClient_User_P ${wSlq}");
     ListClient_CSIP = await getClient_API_Post("select", wSlq);
-    if (ListClient_CSIP == null) return false;
     print("  ••••••••• getClient_User_P  ${ListClient_CSIP.length}");
     if (ListClient_CSIP.length > 0) {
       //print("getClient_User_S return TRUE");
@@ -2021,7 +2031,6 @@ class DbTools {
 
     print("getClientAll ${wSlq}");
     ListClient = await getClient_API_Post("select", wSlq);
-    if (ListClient == null) return false;
     if (ListClient.length > 0) {
       return true;
     }
@@ -2032,7 +2041,6 @@ class DbTools {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays, CONCAT(Users.User_Nom, ' ' , Users.User_Prenom) as Users_Nom FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT' JOIN Users ON Clients.Client_Commercial = Users.User_Matricule  WHERE Clients.ClientId = $ID ORDER BY Client_Nom;";
     print("getClient wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
-    if (ListClient == null) return false;
     if (ListClient.length > 0) {
       DbTools.gClient = ListClient[0];
       return true;
@@ -2051,7 +2059,6 @@ class DbTools {
         '%" ORDER BY Client_Nom;';
     print("getClient wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
-    if (ListClient == null) return false;
     if (ListClient.length > 0) {
       DbTools.gClient = ListClient[0];
       return true;
@@ -2063,8 +2070,6 @@ class DbTools {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT'  WHERE Clients.Client_Depot = '$gDepot'  ORDER BY Client_Nom;";
     print("getClientDepot wSlq $wSlq");
     ListClient = await getClient_API_Post("select", wSlq);
-
-    if (ListClient == null) return false;
     print("getClientDepot ${ListClient.length}");
     if (ListClient.length > 0) {
       print("getClientDepot return TRUE");
@@ -2077,8 +2082,6 @@ class DbTools {
     String wSlq = "SELECT Clients.*, Adresse_Adr1, Adresse_CP,Adresse_Ville,Adresse_Pays FROM Clients LEFT JOIN Adresses ON Clients.ClientId = Adresses.Adresse_ClientId AND Adresses.Adresse_Type = 'FACT'  WHERE Clients.Client_Depot = '$wDepot'  ORDER BY Client_Nom;";
 
     ListClient = await getClient_API_Post("select", wSlq);
-
-    if (ListClient == null) return false;
     print("getClientDepot ${ListClient.length}");
     if (ListClient.length > 0) {
       print("getClientDepot return TRUE");
@@ -2181,8 +2184,6 @@ class DbTools {
 
   static Future<bool> getAdresseAll() async {
     ListAdresse = await getAdresse_API_Post("select", "select * from Adresses ORDER BY Adresse_Type");
-
-    if (ListAdresse == null) return false;
     print("getAdresseAll ${ListAdresse.length}");
     if (ListAdresse.length > 0) {
       print("getAdresseAll return TRUE");
@@ -2205,8 +2206,6 @@ class DbTools {
     print("getAdresseClientType  Type $Type SQL ${wSlq}");
 
     ListAdresse = await getAdresse_API_Post("select", wSlq);
-
-    if (ListAdresse == null) return false;
     //  print("getAdresseClientType ${ListAdresse.length}");
     if (ListAdresse.length > 0) {
       gAdresse = ListAdresse[0];
@@ -2227,8 +2226,6 @@ class DbTools {
 //    print("getAdresseClientType SQL ${wSlq}");
 
     ListAdresse = await getAdresse_API_Post("select", wSlq);
-
-    if (ListAdresse == null) return false;
     //  print("getAdresseClientType ${ListAdresse.length}");
     if (ListAdresse.length > 0) {
       gAdresse = ListAdresse[0];
@@ -2244,8 +2241,6 @@ class DbTools {
     print("getAdresseClientType SQL $wSlq");
 
     ListAdresse = await getAdresse_API_Post("select", wSlq);
-
-    if (ListAdresse == null) return false;
     //  print("getAdresseClientType ${ListAdresse.length}");
     if (ListAdresse.length > 0) {
       gAdresse = ListAdresse[0];
@@ -2347,8 +2342,6 @@ class DbTools {
     String wTmp = "select * from Groupes ORDER BY Groupe_Nom";
     print("wTmp getGroupeAll ${wTmp}");
     ListGroupe = await getGroupe_API_Post("select", wTmp);
-
-    if (ListGroupe == null) return false;
     print("getGroupeAll ${ListGroupe.length}");
     if (ListGroupe.length > 0) {
       print("getGroupeAll return TRUE");
@@ -2362,8 +2355,6 @@ class DbTools {
 
 //    print("wTmp getGroupe ${wTmp}");
     ListGroupe = await getGroupe_API_Post("select", wTmp);
-
-    if (ListGroupe == null) return false;
 //    print("getGroupesClient ${ListGroupe.length}");
     if (ListGroupe.length > 0) {
       DbTools.gGroupe = ListGroupe[0];
@@ -2380,8 +2371,6 @@ class DbTools {
 
     print("wTmp getGroupesClient ${wSql}");
     ListGroupe = await getGroupe_API_Post("select", wSql);
-
-    if (ListGroupe == null) return false;
 //    print("getGroupesClient ${ListGroupe.length}");
     if (ListGroupe.length > 0) {
       DbTools.gGroupe = ListGroupe[0];
@@ -2477,8 +2466,6 @@ class DbTools {
 
   static Future<bool> getSiteAll() async {
     ListSite = await getSite_API_Post("select", "select * from Sites ORDER BY Site_Nom");
-
-    if (ListSite == null) return false;
     //print("getSiteAll ${ListSite.length}");
     if (ListSite.length > 0) {
       //  print("getSiteAll return TRUE");
@@ -2491,7 +2478,6 @@ class DbTools {
     String wSlq = 'select * from Sites WHERE Site_Nom LIKE "%' + '${wRech}' + '%" OR Site_CP LIKE "%' + '${wRech}' + '%" OR Site_Ville LIKE "%' + '${wRech}' + '%" ORDER BY Site_Nom;';
     print("getSiteRech wSlq $wSlq");
     ListSite = await getSite_API_Post("select", wSlq);
-    if (ListSite == null) return false;
     if (ListSite.length > 0) {
       gSite = ListSite[0];
       return true;
@@ -2504,8 +2490,6 @@ class DbTools {
 
 //    print("wTmp getSite ${wTmp}");
     ListSite = await getSite_API_Post("select", wTmp);
-
-    if (ListSite == null) return false;
 //    print("getSitesSite ${ListSite.length}");
     if (ListSite.length > 0) {
       gSite = ListSite[0];
@@ -2520,8 +2504,6 @@ class DbTools {
 
 //    print("wTmp getSitesSite ${wTmp}");
     ListSite = await getSite_API_Post("select", wTmp);
-
-    if (ListSite == null) return false;
 //    print("getSitesSite ${ListSite.length}");
     if (ListSite.length > 0) {
       //    print("getSitesSite return TRUE");
@@ -2534,8 +2516,6 @@ class DbTools {
     String wSql = "SELECT Sites.*, Count(SiteId) as NbZone, ZoneId, Contacts.ContactId, Contacts.Contact_Prenom, Contacts.Contact_Nom, Contacts.Contact_Tel2, Contacts.Contact_eMail FROM Sites LEFT JOIN Groupes ON Groupes.GroupeId = Sites.Site_GroupeId Left JOIN Zones ON Zone_SiteId = SiteId Left JOIN Contacts ON Contact_AdresseId = SiteId AND Contact_ClientId = Groupe_ClientId AND Contact_Type = 'SITE' WHERE Groupes.Groupe_ClientId = $ID GROUP BY SiteId ORDER BY Site_Nom;";
     print("  wSql getSitesSite ${wSql}");
     ListSite = await getSite_API_Post("select", wSql);
-
-    if (ListSite == null) return false;
     print("getSitesSite ${ListSite.length}");
     if (ListSite.length > 0) {
       //    print("getSitesSite return TRUE");
@@ -2635,8 +2615,6 @@ class DbTools {
 
   static Future<bool> getZoneAll() async {
     ListZone = await getZone_API_Post("select", "select * from Zones ORDER BY Zone_Nom");
-
-    if (ListZone == null) return false;
     print("getZoneAll ${ListZone.length}");
     if (ListZone.length > 0) {
       print("getZoneAll return TRUE");
@@ -2650,8 +2628,6 @@ class DbTools {
 
     print("wTmp getZone ${wTmp}");
     ListZone = await getZone_API_Post("select", wTmp);
-
-    if (ListZone == null) return false;
 //    print("getZonesClient ${ListZone.length}");
     if (ListZone.length > 0) {
       gZone = ListZone[0];
@@ -2666,8 +2642,6 @@ class DbTools {
 
     print("wTmp getZonesClient ${wTmp}");
     ListZone = await getZone_API_Post("select", wTmp);
-
-    if (ListZone == null) return false;
     print("getZonesClient ${ListZone.length}");
     if (ListZone.length > 0) {
       gZone = ListZone[0];
@@ -2891,7 +2865,6 @@ class DbTools {
     String wTmp = "SELECT Clients.ClientId, Clients.Client_Nom, Groupes.GroupeId ,Groupes.Groupe_Nom, Sites.SiteId,Sites.Site_Nom, Zones.ZoneID, Zones.Zone_Nom,a.*, IFNULL(c.Cnt,0) as Cnt FROM Interventions a LEFT JOIN (SELECT Parcs_InterventionId, count(1) Cnt FROM Parcs_Ent GROUP BY Parcs_InterventionId) as c ON c.Parcs_InterventionId=a.InterventionId LEFT JOIN Zones ON ZoneId = Intervention_ZoneId LEFT JOIN Sites ON SiteId = Zone_SiteId LEFT JOIN Groupes ON GroupeId = Site_GroupeId LEFT JOIN Clients ON ClientId = Groupe_ClientId";
 
     ListIntervention = await getIntervention_API_Post_Client("select", wTmp);
-    if (ListIntervention == null) return false;
     print("getInterventionAll ${ListIntervention.length}");
     if (ListIntervention.length > 0) {
       print("getInterventionAll return TRUE");
@@ -2912,8 +2885,6 @@ class DbTools {
     print("••••• ••••• ••••• ••••• ••••• ••••• wTmp $wTmp");
 
     ListIntervention = await getIntervention_API_Post_Client("select", wTmp);
-
-    if (ListIntervention == null) return false;
     //  print("getInterventionsSite ${ListIntervention.length}");
     if (ListIntervention.length > 0) {
       //  print("getInterventionsSite return TRUE");
@@ -2934,8 +2905,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListIntervention = await getIntervention_API_Post("select", wTmp);
-
-    if (ListIntervention == null) return false;
     //  print("getInterventionsSite ${ListIntervention.length}");
     if (ListIntervention.length > 0) {
       //  print("getInterventionsSite return TRUE");
@@ -2946,7 +2915,6 @@ class DbTools {
 
   static Future<bool> getInterventionIDSrv(int ID) async {
     ListIntervention = await getIntervention_API_Post("select", "select * from Interventions WHERE InterventionId = $ID");
-    if (ListIntervention == null) return false;
     print("getInterventionAll ${ListIntervention.length}");
     if (ListIntervention.length > 0) {
       gIntervention = ListIntervention[0];
@@ -3079,7 +3047,6 @@ class DbTools {
 
   static Future getPlanning_All() async {
     ListPlanning = await getPlanning_API_Post("select", "select * from Planning");
-    if (ListPlanning == null) return false;
     if (ListPlanning.length > 0) {
       return true;
     }
@@ -3088,7 +3055,6 @@ class DbTools {
 
   static Future getPlanning_InterventionId(int InterventionId) async {
     ListPlanning = await getPlanning_API_Post("select", "select * from Planning where Planning_InterventionId = $InterventionId");
-    if (ListPlanning == null) return false;
     if (ListPlanning.length > 0) {
       return true;
     }
@@ -3097,7 +3063,6 @@ class DbTools {
 
   static Future getPlanning_InterventionIdRes(int InterventionId) async {
     ListUserH = await getPlanningH_API_Post("select", "SELECT Users.User_Nom , Users.User_Prenom, SUM(TIMEDIFF( Planning.Planning_InterventionendTime,Planning.Planning_InterventionstartTime) / 10000) as H FROM Planning , Users where Planning_ResourceId = Users.User_Matricule AND   Planning_InterventionId = $InterventionId GROUP BY Planning.Planning_ResourceId ORDER BY H DESC;");
-    if (ListUserH == null) return false;
     if (ListUserH.length > 0) {
       return true;
     }
@@ -3106,7 +3071,6 @@ class DbTools {
 
   static Future getPlanning_ResourceId(int ResourceId) async {
     ListPlanning = await getPlanning_API_Post("select", "select * from Planning where Planning_ResourceId = $ResourceId");
-    if (ListPlanning == null) return false;
     if (ListPlanning.length > 0) {
       return true;
     }
@@ -3227,8 +3191,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListPlanning_Interv = await getPlanning_Interv_API_Post("select", wTmp);
-
-    if (ListPlanning_Interv == null) return false;
     if (ListPlanning_Interv.length > 0) {
       return true;
     }
@@ -3240,8 +3202,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListPlanning_Interv = await getPlanning_Interv_API_Post("select", wTmp);
-
-    if (ListPlanning_Interv == null) return false;
     if (ListPlanning_Interv.length > 0) {
       return true;
     }
@@ -3301,8 +3261,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListDocument = await getDocument_API_Post("select", wTmp);
-
-    if (ListDocument == null) return false;
     //  print("getDocumentsSite ${ListDocument.length}");
     if (ListDocument.length > 0) {
       //  print("getDocumentsSite return TRUE");
@@ -3316,8 +3274,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListDocument = await getDocument_API_Post("select", wTmp);
-
-    if (ListDocument == null) return false;
     //  print("getDocumentsSite ${ListDocument.length}");
     if (ListDocument.length > 0) {
       //  print("getDocumentsSite return TRUE");
@@ -3378,7 +3334,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListInterMissions_Doc = await getInterMissions_Doc_API_Post("select", wTmp);
-    if (ListInterMissions_Doc == null) return false;
     //  print("getInterMissions_DocsSite ${ListInterMissions_Doc.length}");
     if (ListInterMissions_Doc.length > 0) {
       //  print("getInterMissions_DocsSite return TRUE");
@@ -3453,7 +3408,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListInterMissions_Document = await getInterMissions_Document_API_Post("select", wTmp);
-    if (ListInterMissions_Document == null) return false;
       print("getInterMissions_Document_MissonID ListInterMissions_Document.length ${ListInterMissions_Document.length}");
     if (ListInterMissions_Document.length > 0) {
 
@@ -3525,7 +3479,6 @@ class DbTools {
 
   static Future<bool> getInterMissionAll() async {
     ListInterMission = await getInterMission_API_Post("select", "select * from InterMissions ORDER BY InterMission_Nom");
-    if (ListInterMission == null) return false;
     print("getInterMissionAll ${ListInterMission.length}");
     if (ListInterMission.length > 0) {
       gInterMission = ListInterMission[0];
@@ -3540,8 +3493,6 @@ class DbTools {
     print("wTmp $wTmp");
 
     ListInterMission = await getInterMission_API_Post("select", wTmp);
-
-    if (ListInterMission == null) return false;
     //  print("getInterMissionsSite ${ListInterMission.length}");
     if (ListInterMission.length > 0) {
       gInterMission = ListInterMission[0];
@@ -3668,8 +3619,6 @@ class DbTools {
 
   static Future<bool> getParc_EntAll() async {
     ListParc_Ent = await getParc_Ent_API_Post("select", "select * from Parc_Ent ORDER BY Parcs_Type");
-
-    if (ListParc_Ent == null) return false;
     print("getParc_EntAll ${ListParc_Ent.length}");
     if (ListParc_Ent.length > 0) {
       print("getParc_EntAll return TRUE");
@@ -3681,8 +3630,6 @@ class DbTools {
   static Future getParc_EntID(int ID) async {
     String wSql = "select * from Parcs_Ent WHERE Parcs_InterventionId = $ID ORDER BY Parcs_Type";
     ListParc_Ent = await getParc_Ent_API_Post("select", wSql);
-
-    if (ListParc_Ent == null) return false;
 //    print("getParc_EntID ${ListParc_Ent.length} $wSql");
     if (ListParc_Ent.length > 0) {
       //    print("getParc_EntID return TRUE");
@@ -3781,8 +3728,6 @@ class DbTools {
 
   static Future<bool> getParc_DescAll() async {
     ListParc_Desc = await getParc_Desc_API_Post("select", "select * from Parc_Desc ORDER BY ParcsDescId");
-
-    if (ListParc_Desc == null) return false;
     print("getParc_DescAll ${ListParc_Desc.length}");
     if (ListParc_Desc.length > 0) {
       print("getParc_DescAll return TRUE");
@@ -3794,8 +3739,6 @@ class DbTools {
   static Future getParc_DescID(int ID) async {
     String wSql = "SELECT Parcs_Desc.* FROM Parcs_Desc, Parcs_Ent  WHERE ParcsDesc_ParcsId = ParcsId AND Parcs_InterventionId =  $ID ORDER BY Parcs_Type";
     ListParc_Desc = await getParc_Desc_API_Post("select", wSql);
-
-    if (ListParc_Desc == null) return false;
     print("getParc_DescID ${ListParc_Desc.length} $wSql");
     if (ListParc_Desc.length > 0) {
       print("getParc_DescID return TRUE");
@@ -3888,8 +3831,6 @@ class DbTools {
 
   static Future<bool> getParc_ArtAll() async {
     ListParc_Art = await getParc_Art_API_Post("select", "select * from Parc_Art ORDER BY ParcsDescId");
-
-    if (ListParc_Art == null) return false;
     print("getParc_ArtAll ${ListParc_Art.length}");
     if (ListParc_Art.length > 0) {
       print("getParc_ArtAll return TRUE");
@@ -3901,7 +3842,6 @@ class DbTools {
   static Future<bool> getParc_Art(int ID) async {
     String wTmp = "select * from Parcs_Art WHERE  ParcsArt_ParcsId = $ID ORDER BY ParcsArt_Id";
     ListParc_Art = await getParc_Art_API_Post("select", wTmp);
-    if (ListParc_Art == null) return false;
     if (ListParc_Art.length > 0) {
       return true;
     }
@@ -3913,7 +3853,6 @@ class DbTools {
   static Future<bool> getParcs_ArtInter(int Parcs_InterventionId) async {
     try {
       ListParc_Art = await getParc_Art_API_Post("select", "SELECT Parcs_Art.* FROM Parcs_Art, Parcs_Ent  WHERE ParcsArt_ParcsId = ParcsId AND Parcs_InterventionId = $Parcs_InterventionId");
-      if (ListParc_Art == null) return false;
       if (ListParc_Art.length > 0) {
         return true;
       }
@@ -3928,7 +3867,6 @@ class DbTools {
       String wTmp = "SELECT Parcs_Art.*, SUM(ParcsArt_Qte) as Qte FROM Parcs_Art, Parcs_Ent WHERE ParcsArt_ParcsId = ParcsId AND Parcs_InterventionId = ${Parcs_InterventionId} GROUP BY ParcsArt_Id,ParcsArt_Fact,ParcsArt_Livr ORDER BY Parcs_Art.ParcsArt_Id ASC;";
 
       ListParc_Art = await getParc_Art_API_Post("select", wTmp);
-      if (ListParc_Art == null) return false;
       if (ListParc_Art.length > 0) {
         return true;
       }
@@ -3972,8 +3910,6 @@ class DbTools {
 
   static Future<bool> getContactAll() async {
     ListContact = await getContact_API_Post("select", "select * from Contacts ORDER BY Contact_Type");
-
-    if (ListContact == null) return false;
     print("getContactAll ${ListContact.length}");
     if (ListContact.length > 0) {
       print("getContactAll return TRUE");
@@ -3987,8 +3923,6 @@ class DbTools {
     print("getContactClientAdrType $wSlq");
 
     ListContact = await getContact_API_Post("select", wSlq);
-
-    if (ListContact == null) return false;
     print("getContactClientAdrType ${ListContact.length}");
     if (ListContact.length > 0) {
       gContact = ListContact[0];
@@ -4006,8 +3940,6 @@ class DbTools {
 
 
     ListContact = await getContact_API_Post("select", wSlq);
-
-    if (ListContact == null) return false;
     if (ListContact.length > 0) {
       gContact = ListContact[0];
       return true;
@@ -4019,8 +3951,6 @@ class DbTools {
     String wSlq = "select * from Contacts  where Contact_AdresseId = $SiteID AND Contact_Type = 'SITE' ORDER BY Contact_Type";
 
     ListContact = await getContact_API_Post("select", wSlq);
-
-    if (ListContact == null) return false;
     if (ListContact.length > 0) {
       gContact = ListContact[0];
       return true;
@@ -4032,8 +3962,6 @@ class DbTools {
     String wSlq = "select * from Contacts  where Contact_ClientId = $contactClientid AND Contact_AdresseId = $contactAdresseid AND Contact_Type = 'GRP' ORDER BY Contact_Type";
 
     ListContact = await getContact_API_Post("select", wSlq);
-
-    if (ListContact == null) return false;
     if (ListContact.length > 0) {
       gContact = ListContact[0];
       return true;
@@ -4047,8 +3975,6 @@ class DbTools {
     ListContact = await getContact_API_Post("select", wSlq);
 
     gContact = Contact.ContactInit();
-
-    if (ListContact == null) return false;
     if (ListContact.length > 0) {
       gContact = ListContact[0];
       return true;
@@ -4149,8 +4075,6 @@ class DbTools {
 
   static Future<bool> getArtAll() async {
     ListArt = await getArt_API_Post("select", "select * from Articles ORDER BY Art_Lib");
-
-    if (ListArt == null) return false;
     print("getArtAll ${ListArt.length}");
     if (ListArt.length > 0) {
       print("getArtAll return TRUE");
@@ -4225,8 +4149,6 @@ class DbTools {
 
   static Future<bool> getArticle_EbpAll() async {
     ListArticle_Ebp = await getArticle_Ebp_API_Post("select", "select * from Articles_Ebp ORDER BY Article_codeArticle");
-
-    if (ListArticle_Ebp == null) return false;
 //    print("getArticle_EbpAll ${ListArticle_Ebp.length}");
     if (ListArticle_Ebp.length > 0) {
       //    print("getArticle_EbpAll return TRUE");
@@ -4305,7 +4227,6 @@ class DbTools {
     print("aSQL $aSQL");
 
     ListArticles_Link_Ebp = await getArticles_Link_Ebp_API_Post("select", aSQL);
-    if (ListArticles_Link_Ebp == null) return false;
     if (ListArticles_Link_Ebp.length > 0) {
       return true;
     }
@@ -4350,7 +4271,6 @@ class DbTools {
     print("aSQL $aSQL");
 
     ListArticles_Link_Verif_Ebp = await getArticles_Link_Verif_Ebp_API_Post("select", aSQL);
-    if (ListArticles_Link_Verif_Ebp == null) return false;
     if (ListArticles_Link_Verif_Ebp.length > 0) {
       return true;
     }
@@ -4391,8 +4311,6 @@ class DbTools {
 
   static Future<bool> getArticle_Fam_EbpAll() async {
     ListArticle_Fam_Ebp = await getArticle_Fam_Ebp_API_Post("select", "select * from Articles_Fam_Ebp ORDER BY Article_Fam_Description");
-
-    if (ListArticle_Fam_Ebp == null) return false;
 //    print("getArticle_Fam_EbpAll ${ListArticle_Fam_Ebp.length}");
     if (ListArticle_Fam_Ebp.length > 0) {
       for (int i = 0; i < ListArticle_Fam_Ebp.length; i++) {
@@ -4483,7 +4401,6 @@ class DbTools {
 
   static Future<bool> getUser_Hab(int userHabUserid) async {
     ListUser_Hab = await getUser_Hab_API_Post("select", "select Users_Hab.*, Param_Hab_PDT, Param_Hab_Grp from Users_Hab, Param_Hab where User_Hab_Param_HabID = Param_HabID AND User_Hab_UserID = $userHabUserid ORDER BY User_Hab_Ordre,User_HabID");
-    if (ListUser_Hab == null) return false;
     print("getUser_HabAll ${ListUser_Hab.length}");
     if (ListUser_Hab.length > 0) {
       int i = 1;
@@ -4558,7 +4475,6 @@ class DbTools {
 
   static Future<bool> getUser_Desc(int userDescUserid) async {
     ListUser_Desc = await getUser_Desc_API_Post("select", "SELECT Users_Desc.*, Param_Saisie_Param_Label FROM Users_Desc, Param_Saisie_Param WHERE User_Desc_Param_DescID = Param_Saisie_ParamId AND Param_Saisie_Param_Id = 'DESC' AND User_Desc_UserID = $userDescUserid");
-    if (ListUser_Desc == null) return false;
     print("getUser_DescAll ${ListUser_Desc.length}");
     if (ListUser_Desc.length > 0) {
       int i = 1;
@@ -4639,7 +4555,6 @@ class DbTools {
     String wSql = "select *, Param_Hab_PDT, Param_Hab_Grp from Niveaux_Hab, Param_Hab where Niveau_Hab_Param_HabID = Param_HabID AND Niveau_Hab_NiveauID = $niveauHabUserid ORDER BY Niveau_Hab_Ordre,Niveau_HabID;";
 
     ListNiveau_Hab = await getNiveau_Hab_API_Post("select", wSql);
-    if (ListNiveau_Hab == null) return false;
     print("getNiveau_Hab ${ListNiveau_Hab.length}");
     if (ListNiveau_Hab.length > 0) {
       int i = 1;
@@ -4717,7 +4632,6 @@ class DbTools {
     String wSql = "select Niveaux_Desc.*, Param_Saisie_Param_Label from Niveaux_Desc, Param_Saisie_Param where Param_Saisie_Param_Id = 'DESC' AND Niveau_Desc_Param_DescID = Param_Saisie_ParamId AND Niveau_Desc_NiveauID = $niveauDescUserid ORDER BY Niveau_Desc_Ordre,Niveau_DescID";
     gColors.printWrapped("getNiveau_Desc $wSql");
     ListNiveau_Desc = await getNiveau_Desc_API_Post("select", wSql);
-    if (ListNiveau_Desc == null) return false;
     print("getNiveau_Desc ${ListNiveau_Desc.length}");
     if (ListNiveau_Desc.length > 0) {
       int i = 1;
@@ -4796,7 +4710,6 @@ class DbTools {
     ListParam_Saisie_Param = await getParam_Saisie_Param_API_Post("select", "select * from Param_Saisie_Param ORDER BY Param_Saisie_Param_Id,Param_Saisie_Param_Ordre");
 
     ListParam_Saisie_ParamAll.clear();
-    if (ListParam_Saisie_Param == null) return false;
 
     ListParam_Saisie_ParamAll.addAll(ListParam_Saisie_Param);
     print("getParam_Saisie_ParamAll ${ListParam_Saisie_Param.length}");
@@ -4934,8 +4847,6 @@ class DbTools {
 
     print("getParam_GammeAll aSQL select * from Param_Gamme ORDER BY Param_Gamme_ID");
 
-    if (ListParam_Gamme == null) return false;
-
     print("getParam_GammeAll ${ListParam_Gamme.length}");
 
     if (ListParam_Gamme.length > 0) {
@@ -4952,8 +4863,6 @@ class DbTools {
 //    print("getParam_Gamme ${wSql}");
 
     ListParam_Gamme = await getParam_Gamme_API_Post("select", wSql);
-
-    if (ListParam_Gamme == null) return false;
     //  print("getParam_GammeAll ${ListParam_Gamme.length}");
     if (ListParam_Gamme.length > 0) {
       //  print("getParam_GammeAll return TRUE");

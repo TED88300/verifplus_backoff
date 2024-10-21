@@ -1,10 +1,7 @@
-import 'dart:convert';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hand_signature/signature.dart';
-import 'package:intl/intl.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/pdf/Aff_CR.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -41,7 +38,7 @@ class Intervention_SignatureState extends State<Intervention_Signature> {
   int SatClient = 0;
 
   void initState() {
-    SatClient = DbTools.gIntervention.Intervention_Sat!;
+    SatClient = DbTools.gIntervention.Intervention_Sat;
 
     initLib();
     super.initState();

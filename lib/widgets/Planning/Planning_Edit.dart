@@ -6,7 +6,6 @@ import 'package:verifplus_backoff/Tools/Api_Gouv.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning.dart';
 import 'package:verifplus_backoff/Tools/Srv_Planning_Interv.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
 import 'package:verifplus_backoff/widgetTools/toolbar.dart';
@@ -55,7 +54,7 @@ class _Planning_EditState extends State<Planning_Edit> {
 
 
   void initLib() async {
-    await DbTools.getPlanning_InterventionIdRes(IntevId!);
+    await DbTools.getPlanning_InterventionIdRes(IntevId);
     ResourceId = int.parse(widget.wAppointment!.resourceIds![0].toString());
     for (int u = 0; u < DbTools.ListUser.length; u++) {
       User user = DbTools.ListUser[u];
@@ -152,8 +151,8 @@ class _Planning_EditState extends State<Planning_Edit> {
         Container(
             width: wWidth,
             child: TypeAheadField(
-              animationStart: 0,
               animationDuration: Duration.zero,
+/*
               textFieldConfiguration: TextFieldConfiguration(
                 controller: textEditingController,
                 decoration: InputDecoration(
@@ -163,6 +162,7 @@ class _Planning_EditState extends State<Planning_Edit> {
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 color: Colors.white,
               ),
+*/
               suggestionsCallback: (pattern) async {
                 await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
                 List<String> matches = <String>[];
@@ -178,7 +178,7 @@ class _Planning_EditState extends State<Planning_Edit> {
                       child: Text(sone.toString()),
                     ));
               },
-              onSuggestionSelected: (suggestion) {
+              onSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
                   if (propertie.label!.compareTo(suggestion) == 0) {
                     Api_Gouv.gProperties = propertie;

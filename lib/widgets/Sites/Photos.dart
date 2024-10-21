@@ -5,8 +5,6 @@ import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:intl/date_time_patterns.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
 import 'package:verifplus_backoff/Tools/Srv_InterMissions.dart';
 import 'package:verifplus_backoff/Tools/Upload.dart';
@@ -71,7 +69,7 @@ class _PhotosState extends State<Photos> {
         Uint8List? pic = await gColors.getImage(wUserImg);
         if (pic.length > 0) {
           print("pic ${pic.length}");
-          _images.add(pic!);
+          _images.add(pic);
         }
       } catch (e) {
         print("ERROR ${wUserImg}");

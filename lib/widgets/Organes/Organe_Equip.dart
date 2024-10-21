@@ -16,12 +16,10 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
     buildDataGridRows();
   }
 
-
   @override
   List<DataGridRow> get rows => FiltreTools.dataGridRows_CR_Filtre;
 
-  void buildDataGridRows() {
-  }
+  void buildDataGridRows() {}
 
   @override
   Future<void> handleRefresh() async {
@@ -31,8 +29,9 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
+    bool selected = (DbTools.gParc_Ent.ParcsId.toString() == row.getCells()[0].value.toString());
+    Color textColor = selected ? Colors.white : Colors.black;
 
-    Color textColor = FiltreTools.dataGridController_CR.selectedRows.contains(row) ? Colors.white : Colors.black;
     Color backgroundColor = Colors.transparent;
 
     List<Widget> DataGridCells = [
@@ -45,12 +44,15 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
     for (int i = 0; i < DbTools.lColParams.length; i++) {
       String ColParam = DbTools.lColParams[i];
       if (ColParam == "DATE") {
-        DataGridCells.add(FiltreTools.SfRowDate(row, n++, Alignment.centerLeft, textColor));
+        DataGridCells.add(
+            FiltreTools.SfRowDate(row, n++, Alignment.centerLeft, textColor));
       } else {
         if (ColParam == "ACTION") {
-          DataGridCells.add(FiltreTools.SfRow(row, n++, Alignment.center, textColor));
+          DataGridCells.add(
+              FiltreTools.SfRow(row, n++, Alignment.center, textColor));
         } else
-          DataGridCells.add(FiltreTools.SfRow(row, n++, Alignment.centerLeft, textColor));
+          DataGridCells.add(
+              FiltreTools.SfRow(row, n++, Alignment.centerLeft, textColor));
       }
     }
 
@@ -58,18 +60,23 @@ class Parc_EntInfoDataGridSource extends DataGridSource {
   }
 
   @override
-  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
-    return Container(color: gColors.secondary, alignment: Alignment.center, child: Text(summaryValue));
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    return Container(
+        color: gColors.secondary,
+        alignment: Alignment.center,
+        child: Text(summaryValue));
   }
 }
-
 
 //***************************************************************
 //***************************************************************
 //***************************************************************
 
 DataGridController dataGridController = DataGridController();
-
 
 class Param_SaisieDataGridSource extends DataGridSource {
   Param_SaisieDataGridSource() {
@@ -83,11 +90,12 @@ class Param_SaisieDataGridSource extends DataGridSource {
 
   void buildDataGridRows() {
     int i = 0;
-    dataGridRows = DbTools.listparamSaisieEquip.map<DataGridRow>((Param_Saisie param_Saisie) {
-
+    dataGridRows = DbTools.listparamSaisieEquip
+        .map<DataGridRow>((Param_Saisie param_Saisie) {
       List<DataGridCell> DataGridCells = [
         DataGridCell<int>(columnName: 'label', value: i),
-        DataGridCell<String>(columnName: 'value', value: param_Saisie.Param_Saisie_Value),
+        DataGridCell<String>(
+            columnName: 'value', value: param_Saisie.Param_Saisie_Value),
       ];
       i++;
       return DataGridRow(cells: DataGridCells);
@@ -103,10 +111,12 @@ class Param_SaisieDataGridSource extends DataGridSource {
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     Color selectedRowTextColor = Colors.white;
-    Color textColor = dataGridController.selectedRows.contains(row) ? selectedRowTextColor : Colors.black;
+    Color textColor = dataGridController.selectedRows.contains(row)
+        ? selectedRowTextColor
+        : Colors.black;
     Color backgroundColor = Colors.transparent;
 
-    int i =  row.getCells()[0].value;
+    int i = row.getCells()[0].value;
     String wIco = DbTools.listparamSaisieEquip[i].Param_Saisie_Icon;
     String wTxt = DbTools.listparamSaisieEquip[i].Param_Saisie_Label;
 
@@ -119,8 +129,15 @@ class Param_SaisieDataGridSource extends DataGridSource {
   }
 
   @override
-  Widget? buildTableSummaryCellWidget(GridTableSummaryRow summaryRow, GridSummaryColumn? summaryColumn, RowColumnIndex rowColumnIndex, String summaryValue) {
-    return Container(color: gColors.secondary, alignment: Alignment.center, child: Text(summaryValue));
+  Widget? buildTableSummaryCellWidget(
+      GridTableSummaryRow summaryRow,
+      GridSummaryColumn? summaryColumn,
+      RowColumnIndex rowColumnIndex,
+      String summaryValue) {
+    return Container(
+        color: gColors.secondary,
+        alignment: Alignment.center,
+        child: Text(summaryValue));
   }
 }
 
@@ -136,7 +153,8 @@ class Organe_EquipDialog extends StatefulWidget {
   State<Organe_EquipDialog> createState() => _Organe_EquipDialogState();
 }
 
-class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTickerProviderStateMixin {
+class _Organe_EquipDialogState extends State<Organe_EquipDialog>
+    with SingleTickerProviderStateMixin {
   String Title = "";
   double screenWidth = 0;
   double screenHeight = 0;
@@ -148,24 +166,29 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
     80,
     60,
   ];
-  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource = Parc_EntInfoDataGridSource();
+  Parc_EntInfoDataGridSource parc_EntInfoDataGridSource =
+      Parc_EntInfoDataGridSource();
   int countfilterConditions = -1;
 
   int wColSel = -1;
 
   List<GridColumn> getColumns_CR() {
     List<GridColumn> wGridColumn = [
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth_CR[0], dColumnWidth_CR[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth_CR[1], dColumnWidth_CR[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth_CR[0],
+          dColumnWidth_CR[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth_CR[1],
+          dColumnWidth_CR[1], Alignment.centerLeft),
     ];
 
     int n = 3;
     for (int i = 0; i < DbTools.lColParams.length; i++) {
       String ColParam = DbTools.lColParams[i];
       if (ColParam == "ACTION")
-        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth_CR[i+2], dColumnWidth_CR[1], Alignment.center));
+        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam,
+            dColumnWidth_CR[i + 2], dColumnWidth_CR[1], Alignment.center));
       else
-        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam, dColumnWidth_CR[i+2], dColumnWidth_CR[1], Alignment.centerLeft));
+        wGridColumn.add(FiltreTools.SfGridColumn(ColParam, ColParam,
+            dColumnWidth_CR[i + 2], dColumnWidth_CR[1], Alignment.centerLeft));
     }
 
     return wGridColumn;
@@ -179,7 +202,10 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
           title: 'Cpt: {Count}',
           titleColumnSpan: 1,
           columns: [
-            GridSummaryColumn(name: 'Count', columnName: 'id', summaryType: GridSummaryType.count),
+            GridSummaryColumn(
+                name: 'Count',
+                columnName: 'id',
+                summaryType: GridSummaryType.count),
           ],
           position: GridTableSummaryRowPosition.bottom),
     ];
@@ -189,15 +215,14 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
     setState(() {
       if (args.column.columnName == 'id')
         dColumnWidth_CR[0] = args.width;
-      else if (args.column.columnName == 'ordre') dColumnWidth_CR[1] = args.width;
-      else
-      {
+      else if (args.column.columnName == 'ordre')
+        dColumnWidth_CR[1] = args.width;
+      else {
         for (int i = 0; i < DbTools.lColParams.length; i++) {
           String ColParam = DbTools.lColParams[i];
-          if (args.column.columnName == ColParam)
-          {
+          if (args.column.columnName == ColParam) {
             print("🁢🁢🁢🁢🁢🁢🁢  Resize ${args.width}");
-            dColumnWidth_CR[i+2] = args.width;
+            dColumnWidth_CR[i + 2] = args.width;
           }
         }
       }
@@ -208,7 +233,8 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
   //***************************************************
   //***************************************************
 
-  Param_SaisieDataGridSource param_SaisieDataGridSource = Param_SaisieDataGridSource();
+  Param_SaisieDataGridSource param_SaisieDataGridSource =
+      Param_SaisieDataGridSource();
 
   List<double> dColumnWidth = [
     200,
@@ -235,46 +261,47 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
   }
 
   Future Filtre() async {
-
     FiltreTools.dataGridRows_CR_Filtre.clear();
     if (Search_TextController.text.isEmpty)
       FiltreTools.dataGridRows_CR_Filtre.addAll(FiltreTools.dataGridRows_CR);
-    else
-      {
-        print (" dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
-        for (int i = 0; i < FiltreTools.dataGridRows_CR.length; i++) {
-          bool isTrv = false;
-          DataGridRow dataGridRows_CR = FiltreTools.dataGridRows_CR[i];
-          for (int j = 0; j < dataGridRows_CR.getCells().length; j++) {
-            DataGridCell dataGridCell = dataGridRows_CR.getCells()[j];
+    else {
+      print(
+          " dataGridRows_CR ${FiltreTools.dataGridRows_CR.length}");
+      for (int i = 0; i < FiltreTools.dataGridRows_CR.length; i++) {
+        bool isTrv = false;
+        DataGridRow dataGridRows_CR = FiltreTools.dataGridRows_CR[i];
+        for (int j = 0; j < dataGridRows_CR.getCells().length; j++) {
+          DataGridCell dataGridCell = dataGridRows_CR.getCells()[j];
 
-            print (" dataGridCell ${dataGridCell.value}");
+          print(
+              " dataGridCell ${dataGridCell.value}");
 
-            if (dataGridCell.value.toString().toLowerCase().contains(Search_TextController.text.toLowerCase()))
-              {
-                isTrv = true;
-              }
+          if (dataGridCell.value
+              .toString()
+              .toLowerCase()
+              .contains(Search_TextController.text.toLowerCase())) {
+            isTrv = true;
           }
-          if (isTrv)
-            {
-              print (" ADD");
-              FiltreTools.dataGridRows_CR_Filtre.add(dataGridRows_CR);
-            }
         }
-
+        if (isTrv) {
+          print(" ADD");
+          FiltreTools.dataGridRows_CR_Filtre.add(dataGridRows_CR);
+        }
       }
+    }
     parc_EntInfoDataGridSource.handleRefresh();
 
-    parc_EntInfoDataGridSource.sortedColumns.add(SortColumnDetails(name: 'ordre', sortDirection: DataGridSortDirection.ascending));
+    parc_EntInfoDataGridSource.sortedColumns.add(SortColumnDetails(
+        name: 'ordre', sortDirection: DataGridSortDirection.ascending));
     parc_EntInfoDataGridSource.sort();
-
-
   }
 
   List<GridColumn> getColumns() {
     List<GridColumn> wGridColumn = [
-      FiltreTools.SfGridColumn('id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
-      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth[1], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn(
+          'id', 'ID', dColumnWidth[0], dColumnWidth[1], Alignment.centerLeft),
+      FiltreTools.SfGridColumn('ordre', 'Ordre', dColumnWidth[1],
+          dColumnWidth[1], Alignment.centerLeft),
     ];
 
     return wGridColumn;
@@ -282,14 +309,14 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
 
   void Resize(ColumnResizeUpdateDetails args) {
     setState(() {
-      if (args.column.columnName == 'id') dColumnWidth[0] = args.width;
+      if (args.column.columnName == 'id')
+        dColumnWidth[0] = args.width;
       else if (args.column.columnName == 'ordre') dColumnWidth[1] = args.width;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     param_SaisieDataGridSource.handleRefresh();
 
     screenWidth = MediaQuery.of(context).size.width;
@@ -314,9 +341,7 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
           color: Colors.black26,
         ),
       ),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
+      child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         Container(
           width: MediaQuery.of(context).size.width - 10,
           height: MediaQuery.of(context).size.height - 412,
@@ -356,23 +381,24 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                             columnResizeMode: ColumnResizeMode.onResize,
                             selectionMode: SelectionMode.none,
                             controller: dataGridController,
-                            onColumnResizeUpdate: (ColumnResizeUpdateDetails args) {
+                            onColumnResizeUpdate:
+                                (ColumnResizeUpdateDetails args) {
                               Resize(args);
                               return true;
                             },
                             gridLinesVisibility: GridLinesVisibility.both,
                             columnWidthMode: ColumnWidthMode.fill,
                           ))),
-                  Container(width: 5,),
-                  ListOrganes( context),
-
+                  Container(
+                    width: 5,
+                  ),
+                  ListOrganes(context),
                 ],
               )),
         ),
       ]),
     );
   }
-
 
   //******************************************
   //******************************************
@@ -382,7 +408,6 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
           ToolsBar(context),
           SizedBox(
@@ -397,8 +422,10 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                     //*********************************
 
                     onFilterChanged: (DataGridFilterChangeDetails details) {
-                      countfilterConditions = parc_EntInfoDataGridSource.filterConditions.length;
-                      print("onFilterChanged  countfilterConditions ${countfilterConditions}");
+                      countfilterConditions =
+                          parc_EntInfoDataGridSource.filterConditions.length;
+                      print(
+                          "onFilterChanged  countfilterConditions ${countfilterConditions}");
                       setState(() {});
                     },
 
@@ -407,11 +434,12 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                       if (wRowSel == 0) return;
 
                       wColSel = details.rowColumnIndex.columnIndex;
-                      DataGridRow wDataGridRow = parc_EntInfoDataGridSource.effectiveRows[details.rowColumnIndex.rowIndex - 1];
-                      FiltreTools.Selindex = parc_EntInfoDataGridSource.rows.indexOf(wDataGridRow);
+                      DataGridRow wDataGridRow = parc_EntInfoDataGridSource
+                          .effectiveRows[details.rowColumnIndex.rowIndex - 1];
+                      FiltreTools.Selindex =
+                          parc_EntInfoDataGridSource.rows.indexOf(wDataGridRow);
                       DbTools.gParc_Ent = DbTools.ListParc_Ent[FiltreTools.Selindex];
-                      if (wColSel == 0)
-                      {
+                      if (wColSel == 0) {
                         widget.onMaj();
                       }
                     },
@@ -436,29 +464,31 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                     headerGridLinesVisibility: GridLinesVisibility.both,
                     columnWidthMode: ColumnWidthMode.fill,
                   ))),
-
-
-
           Container(
             height: 10,
           ),
         ]);
-
   }
 
   Widget ToolsBar(BuildContext context) {
-    return
-
-
-      Container(
+    return Container(
         color: Colors.white,
         padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
         child: Column(
           children: [
             Row(
               children: [
-                CommonAppBar.SquareRoundIcon(context, 30, 8, countfilterConditions <= 0 ? Colors.black12 : gColors.secondarytxt, Colors.white, Icons.filter_list, ToolsBarSupprFilter, tooltip: "Supprimer les filtres"),
-
+                CommonAppBar.SquareRoundIcon(
+                    context,
+                    30,
+                    8,
+                    countfilterConditions <= 0
+                        ? Colors.black12
+                        : gColors.secondarytxt,
+                    Colors.white,
+                    Icons.filter_list,
+                    ToolsBarSupprFilter,
+                    tooltip: "Supprimer les filtres"),
                 Container(
                   width: 20,
                 ),
@@ -471,8 +501,7 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                   width: 10,
                 ),
                 Container(
-                  width :MediaQuery.of(context).size.width - 800,
-
+                  width: MediaQuery.of(context).size.width - 800,
                   child: TextFormField(
                     controller: Search_TextController,
                     decoration: gColors.wRechInputDecoration,
@@ -498,12 +527,7 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
                 Container(
                   width: 20,
                 ),
-
-
               ],
-
-
-
             ),
           ],
         ));
@@ -514,6 +538,4 @@ class _Organe_EquipDialogState extends State<Organe_EquipDialog> with SingleTick
     countfilterConditions = 0;
     setState(() {});
   }
-
-
 }

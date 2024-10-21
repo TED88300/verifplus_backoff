@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:desktop_drop/desktop_drop.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cross_file/cross_file.dart';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:davi/davi.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -130,6 +130,7 @@ class _Client_SitState extends State<Client_Sit> {
   Uint8List pic = Uint8List.fromList([0]);
   late Image wImage;
   bool imageisload = false;
+  bool imageisonload = false;
 
   final Search_TextController = TextEditingController();
 
@@ -167,7 +168,6 @@ class _Client_SitState extends State<Client_Sit> {
 
     print(" Reload  selectedUserInter ${selectedUserInter} ${selectedUserInterID}");
 
-
     await DbTools.getAdresseClientType(DbTools.gClient.ClientId, "LIVR");
     DbTools.gAdresseLivr = DbTools.ListAdresse[0];
 
@@ -188,13 +188,10 @@ class _Client_SitState extends State<Client_Sit> {
       List_GrpStr.add(Elt.Groupe_Nom);
     }
 
-
     await DbTools.getSitesClient(DbTools.gClient.ClientId);
     print(" Reload  getSitesClient ${DbTools.ListSite.length}");
 
-    if (DbTools.ListSite.length > 0)
-        DbTools.gSite = DbTools.ListSite[0];
-
+    if (DbTools.ListSite.length > 0) DbTools.gSite = DbTools.ListSite[0];
 
     await Filtre();
   }
@@ -277,11 +274,10 @@ class _Client_SitState extends State<Client_Sit> {
       }
     }
 
-
     selectedUserInter = DbTools.List_UserInter[0];
     selectedUserInterID = DbTools.List_UserInterID[0];
     if (DbTools.gSite.Site_ResourceId > 0) {
-      DbTools.getUserMat("${DbTools.gSite.Site_ResourceId!}");
+      DbTools.getUserMat("${DbTools.gSite.Site_ResourceId}");
       selectedUserInter = "${DbTools.gUser.User_Nom} ${DbTools.gUser.User_Prenom}";
       selectedUserInterID = DbTools.gUser.User_Matricule;
     }
@@ -372,9 +368,9 @@ class _Client_SitState extends State<Client_Sit> {
                     child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.white, Colors.blue, "ico_Save", ToolsBarSave, tooltip: "Sauvegarder"),
                   ),
                   Container(
-                          padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                          child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter site"),
-                        ),
+                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                    child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Add", ToolsBarAdd, tooltip: "Ajouter site"),
+                  ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     child: CommonAppBar.SquareRoundPng(context, 30, 8, Colors.green, Colors.white, "ico_Copy", ToolsBarCpy, tooltip: "Copier adresse Livraison"),
@@ -556,13 +552,10 @@ class _Client_SitState extends State<Client_Sit> {
     setState(() {});
   }
 
-
   void Tools2() async {
     await ParamSite_Dialog2.ParamSite_Dialog(context);
     setState(() {});
   }
-
-
 
   void ToolsBarSave() async {
     print("ToolsBarSave");
@@ -587,10 +580,7 @@ class _Client_SitState extends State<Client_Sit> {
     print("ToolsBarSave ${DbTools.gSite.SiteId} $GrpID $Grp");
     await DbTools.setSite(DbTools.gSite);
 
-
     print("ToolsBarSave getSitesClient ${DbTools.ListSite.length}  ${DbTools.gSite.Site_GroupeId} ${Selindex}");
-
-
 
     Reload();
     setState(() {});
@@ -645,8 +635,8 @@ class _Client_SitState extends State<Client_Sit> {
         Container(
             width: wWidth,
             child: TypeAheadField(
-              animationStart: 0,
               animationDuration: Duration.zero,
+/*
               textFieldConfiguration: TextFieldConfiguration(
                 controller: textEditingController,
                 decoration: InputDecoration(
@@ -656,6 +646,7 @@ class _Client_SitState extends State<Client_Sit> {
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 color: Colors.white,
               ),
+*/
               suggestionsCallback: (pattern) async {
                 await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
                 List<String> matches = <String>[];
@@ -671,7 +662,7 @@ class _Client_SitState extends State<Client_Sit> {
                   child: Text(sone.toString()),
                 ));
               },
-              onSuggestionSelected: (suggestion) {
+              onSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
                   if (propertie.label!.compareTo(suggestion) == 0) {
                     Api_Gouv.gProperties = propertie;
@@ -843,11 +834,7 @@ class _Client_SitState extends State<Client_Sit> {
       "DREAL (Direction régionale de l'environnement, de l'aménagement et du logement)",
       "Autres",
     ];
-    List<bool> itemlistApp = [
-
-
-    ];
-
+    List<bool> itemlistApp = [];
 
     print("Regles A");
 
@@ -865,7 +852,6 @@ class _Client_SitState extends State<Client_Sit> {
 
     print("Regles B");
 
-
     List<String> listAPSAD = [
       "APSAD N1 / Sprinkleurs",
       "APSAD N2 / Brouillard d'eau",
@@ -877,13 +863,9 @@ class _Client_SitState extends State<Client_Sit> {
       "APSAD N13 / Extinction automatique à gaz",
       "APSAD N16 / Compartimentage",
       "APSAD N17 / Désenfumage naturel",
-
     ];
 
-    List<bool> itemlistAPSAD = [
-    ];
-
-
+    List<bool> itemlistAPSAD = [];
 
     String siteAPSAD = DbTools.gSite.Site_APSAD!;
     if (siteAPSAD.isNotEmpty) {
@@ -895,8 +877,6 @@ class _Client_SitState extends State<Client_Sit> {
         }
       }
     }
-
-
 
     return FocusTraversalGroup(
         policy: OrderedTraversalPolicy(),
@@ -969,6 +949,14 @@ class _Client_SitState extends State<Client_Sit> {
     AlimSaisie();
   }
 
+  var spinkit = SpinKitRing(
+    color: gColors.primary,
+    size: 30.0,
+    lineWidth: 4,
+  );
+
+
+
   Widget Photo() {
     String wImgPath = "${DbTools.SrvImg}Site_${DbTools.gSite.SiteId}.jpg";
 //    print("wImgPath $wImgPath");
@@ -986,7 +974,16 @@ class _Client_SitState extends State<Client_Sit> {
                     child: Image.asset("assets/images/ico_Photo.png"),
                   ),
                   onTap: () async {
+                    setState(() {
+                      imageisonload = true;
+                    });
+
                     await _startFilePicker(onSetState);
+                    setState(() {
+                      imageisonload = false;
+
+                    });
+
                   },
                 )),
             Container(width: 10),
@@ -1001,6 +998,7 @@ class _Client_SitState extends State<Client_Sit> {
                   print('onDragDone ${await file.lastModified()} ${await file.length()}  ${file.mimeType}');
 
                   Uint8List bytes = await file.readAsBytes();
+
                   IMG.Image? img = await IMG.decodeImage(bytes);
                   IMG.Image resized = await IMG.copyResize(img!, width: 940, maintainAspect: true);
                   List<int> stream2 = await IMG.encodeJpg(resized);
@@ -1021,6 +1019,12 @@ class _Client_SitState extends State<Client_Sit> {
                     print("value " + value);
                     print("Fin");
                     DbTools.notif.BroadCast();
+                    wImage = Image.memory(
+                      bytes,
+                      fit: BoxFit.scaleDown,
+                      width: 200,
+                      height: 200,
+                    );
                     onSetState();
                   });
                 }
@@ -1042,8 +1046,14 @@ class _Client_SitState extends State<Client_Sit> {
                   offset = null;
                 });
               },
-              child: (imageisload)
-                  ? wImage
+              child:
+
+
+              (imageisload)
+                  ? Container(
+                      color: _dragging ? Colors.blue.withOpacity(0.4) : imageisonload ? Colors.red : Colors.white,
+                      child: wImage,
+                    )
                   : Container(
                       height: 200,
                       width: 200,
@@ -1075,10 +1085,6 @@ class _Client_SitState extends State<Client_Sit> {
   }
 
   Widget ContentSite(BuildContext context) {
-
-
-
-
     print(" ContentSite  selectedUserInter ${selectedUserInter} ${selectedUserInterID}");
 
     return FocusTraversalGroup(
@@ -1408,6 +1414,4 @@ class _Client_SitState extends State<Client_Sit> {
       ),
     ]);
   }
-
-
 }

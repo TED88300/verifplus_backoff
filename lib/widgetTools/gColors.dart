@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +35,9 @@ class gColors {
   static const Color secondary = Color(0xFFe3ebfa);
 
   static const Color primaryGreen = Color(0xFF2e942b);
+  static const Color primaryRed = Color(0xFFb33333);
+
+
   static const Color secondarytxt = Color(0xFFa9b5da);
 
   static const Color secondaryF = Color(0xFF0c5302);
@@ -823,6 +825,13 @@ class gColors {
                         Text(DbTools.gUserLoginTypeUser),
                       ],
                     ),
+                    Row(
+                      children: [
+                        Text('Agence : '),
+                        Spacer(),
+                        Text(DbTools.gUserLogin.User_Depot),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -1238,6 +1247,9 @@ class gColors {
   }
 
   static Widget Txt2(double lWidth, String wLabel, String wValue, {double tWidth = -1}) {
+
+    print("tWidth $wValue ${tWidth}");
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1254,6 +1266,7 @@ class gColors {
           style: gColors.bodyTitle1_B_Gr,
         ),
         Container(
+//          color: Colors.red,
           width: tWidth > 0 ? tWidth : null,
           padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
           child: Text(
@@ -1262,6 +1275,57 @@ class gColors {
             overflow: tWidth > 0 ? TextOverflow.ellipsis : TextOverflow.clip,
           ),
         ),
+      ],
+    );
+  }
+
+
+  static Widget DescText(BuildContext context, double wWidth,  String wText, int Ligne) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+//          color: Colors.red,
+            width: wWidth,
+            child: Text(wText,
+              maxLines : Ligne,
+
+            ))
+
+
+      ],
+    );
+  }
+  static Widget DescField(BuildContext context, double wWidth, TextEditingController textEditingController, {TextInputType wTextInputType = TextInputType.none, String wErrorText = "", int Ligne = 1, int maxChar = -1}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+//          color: Colors.red,
+            width: wWidth,
+            child: TextFormField(
+              keyboardType: wTextInputType,
+              minLines: Ligne,
+              maxLines: Ligne,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,                errorText: wErrorText.isEmpty ? null : wErrorText,
+                isDense: true,
+
+              ),
+              inputFormatters: [
+                if (maxChar > 0) LengthLimitingTextInputFormatter(maxChar),
+              ],
+              controller: textEditingController,
+              maxLength: maxChar,
+              style: gColors.bodySaisie_B_B,
+            )),
+
       ],
     );
   }

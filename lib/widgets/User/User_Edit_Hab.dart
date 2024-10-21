@@ -2,7 +2,6 @@
 import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Srv_User_Hab.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -255,7 +254,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
           cellBuilder: (BuildContext context, DaviRow<User_Hab> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.User_Hab_MaintPrev,
@@ -276,7 +275,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
           cellBuilder: (BuildContext context, DaviRow<User_Hab> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.User_Hab_MaintCorrect,
@@ -297,7 +296,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
           cellBuilder: (BuildContext context, DaviRow<User_Hab> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.User_Hab_Install,
@@ -484,7 +483,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selPrev,
@@ -498,7 +497,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selCor,
@@ -513,7 +512,7 @@ class User_Edit_HabState extends State<User_Edit_Hab> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selInstall,

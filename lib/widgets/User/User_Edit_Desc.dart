@@ -2,7 +2,6 @@ import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:verifplus_backoff/Tools/DbTools.dart';
-import 'package:verifplus_backoff/Tools/Srv_NF074.dart';
 import 'package:verifplus_backoff/Tools/Srv_User.dart';
 import 'package:verifplus_backoff/Tools/Srv_User_Desc.dart';
 import 'package:verifplus_backoff/widgetTools/gColors.dart';
@@ -253,7 +252,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
           cellBuilder: (BuildContext context, DaviRow<User_Desc> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.User_Desc_MaintPrev,
@@ -274,7 +273,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
           cellBuilder: (BuildContext context, DaviRow<User_Desc> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.User_Desc_MaintCorrect,
@@ -295,7 +294,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
           cellBuilder: (BuildContext context, DaviRow<User_Desc> row) {
             return Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: row.data.User_Desc_Install,
@@ -485,7 +484,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selPrev,
@@ -499,7 +498,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selCor,
@@ -514,7 +513,7 @@ class User_Edit_DescState extends State<User_Edit_Desc> {
             width: 100,
             child: Checkbox(
               checkColor: Colors.white,
-              fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+              fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
                 return gColors.primary;
               }),
               value: selInstall,

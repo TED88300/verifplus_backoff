@@ -507,8 +507,8 @@ class _Zones_ZoneState extends State<Zones_Zone> {
         Container(
             width: wWidth,
             child: TypeAheadField(
-              animationStart: 0,
               animationDuration: Duration.zero,
+/*
               textFieldConfiguration: TextFieldConfiguration(
                 controller: textEditingController,
                 decoration: InputDecoration(
@@ -518,6 +518,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
                 color: Colors.white,
               ),
+*/
               suggestionsCallback: (pattern) async {
                 await Api_Gouv.ApiAdresse(textController_Adresse_Geo.text);
                 List<String> matches = <String>[];
@@ -533,13 +534,13 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                   child: Text(sone.toString()),
                 ));
               },
-              onSuggestionSelected: (suggestion) {
+              onSelected: (suggestion) {
                 Api_Gouv.properties.forEach((propertie) {
                   if (propertie.label!.compareTo(suggestion) == 0) {
                     Api_Gouv.gProperties = propertie;
                   }
                 });
-                textController_Adresse_Geo.text = suggestion;
+              textController_Adresse_Geo.text = suggestion;
               },
             )),
         Container(
@@ -975,7 +976,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       false,
     ];
 
-    String ZoneRegl = DbTools.gZone.Zone_Regle!;
+    String ZoneRegl = DbTools.gZone.Zone_Regle;
     if (ZoneRegl.isNotEmpty) {
       itemlistApp = json.decode(ZoneRegl).cast<bool>().toList();
 
@@ -1020,7 +1021,7 @@ class _Zones_ZoneState extends State<Zones_Zone> {
       false,
     ];
 
-    String ZoneAPSAD = DbTools.gZone.Zone_APSAD!;
+    String ZoneAPSAD = DbTools.gZone.Zone_APSAD;
     if (ZoneAPSAD.isNotEmpty) {
       itemlistAPSAD = json.decode(ZoneAPSAD).cast<bool>().toList();
 
@@ -1191,7 +1192,10 @@ class _Zones_ZoneState extends State<Zones_Zone> {
                 });
               },
               child: (imageisload)
-                  ? wImage
+                  ? Container(
+                color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.white,
+                child: wImage,
+              )
                   : Container(
                 height: 200,
                 width: 200,

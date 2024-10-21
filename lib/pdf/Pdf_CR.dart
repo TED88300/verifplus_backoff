@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart' show rootBundle;
@@ -54,7 +53,7 @@ class Pdf_CR {
     if (pic.length == 0)
     {
       ByteData _logo_a = await rootBundle.load('assets/images/Blank.png');
-      pic = (_logo_a)!.buffer.asUint8List();
+      pic = (_logo_a).buffer.asUint8List();
     }
 
     pw.MemoryImage wMemoryImage =    pw.MemoryImage(
@@ -87,13 +86,13 @@ class Pdf_CR {
     );
 
     final doc = pw.Document(theme: fontTheme,);    ByteData _logo_1 = await rootBundle.load('assets/Logo_1.jpg');
-    imageData_1 = (_logo_1)!.buffer.asUint8List();
+    imageData_1 = (_logo_1).buffer.asUint8List();
 
     ByteData _logo_Logo_Pied = await rootBundle.load('assets/Logo_Pied.png');
-    imageData_Logo_Pied = (_logo_Logo_Pied)!.buffer.asUint8List();
+    imageData_Logo_Pied = (_logo_Logo_Pied).buffer.asUint8List();
 
     _logo_1 = await rootBundle.load('assets/Cachet.png');
-    imageData_Cachet = (_logo_1)!.buffer.asUint8List();
+    imageData_Cachet = (_logo_1).buffer.asUint8List();
 
     for (int i = 0; i < DbTools.ListUserH.length; i++) {
       var element = DbTools.ListUserH[i];
