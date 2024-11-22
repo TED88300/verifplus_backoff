@@ -51,7 +51,7 @@ class _MenuState extends State<Menu> {
   String wTitre = "Back-Office";
 
 //  Widget wAff = Planning(bAppBar : false);
- Widget wAff = Interventions();
+  Widget wAff = Interventions();
 //  Widget wAff = Clients_screen();
 //  Widget wAff = fourns_screen();
 //  Widget wAff = User_Liste();
@@ -168,7 +168,11 @@ class _MenuState extends State<Menu> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: <Widget>[Container(height: 1,color: Colors.white,),
+          children: <Widget>[
+            Container(
+              height: 1,
+              color: Colors.white,
+            ),
             wPlutoMenuBar,
             wAff,
           ],
@@ -199,7 +203,6 @@ class _MenuState extends State<Menu> {
           });
         },
       ),
-
       PlutoMenuItem(
         title: 'Planning',
         icon: Icons.calendar_month,
@@ -207,7 +210,7 @@ class _MenuState extends State<Menu> {
           wTitre = "Planning";
           setState(() {
 //        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Planning()));
-            wAff = Planning(bAppBar : false);
+            wAff = Planning(bAppBar: false);
           });
         },
       ),
@@ -294,7 +297,6 @@ class _MenuState extends State<Menu> {
           ),
         ],
       ),
-
       PlutoMenuItem(
         title: 'Fournisseurs',
         icon: Icons.list_outlined,
@@ -305,8 +307,6 @@ class _MenuState extends State<Menu> {
           });
         },
       ),
-
-
       PlutoMenuItem(
         title: 'Articles',
         icon: Icons.widgets,
@@ -431,9 +431,6 @@ class _MenuState extends State<Menu> {
           ],
         ),
       ]),
-
-
-
       PlutoMenuItem(
         title: 'Paramètres',
         icon: Icons.settings,
@@ -565,6 +562,141 @@ class _MenuState extends State<Menu> {
             ],
           ),
           PlutoMenuItem(
+            title: 'Gestion Commerciale',
+            children: [
+
+              PlutoMenuItem(
+                title: "Etat Devis",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Etat Devis";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Etat_Devis", wTitle: "Etat Devis");
+                  });
+                },
+              ),
+
+              PlutoMenuItem(
+                title: "Etat Commandes",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Etat Commandes";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Etat_Commandes", wTitle: "Etat Commandes");
+                  });
+                },
+              ),
+
+
+              PlutoMenuItem(
+                title: "Etat Livraison",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Etat Livraison";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Etat_Livraison", wTitle: "Etat Livraison");
+                  });
+                },
+              ),
+
+              PlutoMenuItem.divider(height: 10, color: Colors.white),
+
+              PlutoMenuItem(
+                title: "Validité du devis",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Validité du devis";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Validite_devis", wTitle: "Validité du devis");
+                  });
+                },
+              ),
+
+              PlutoMenuItem(
+                title: "Livraison prévisionnelle",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Livraison prévisionnelle";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Livraison_prev", wTitle: "Livraison prévisionnelle");
+                  });
+                },
+              ),
+
+              PlutoMenuItem(
+                title: "Mode de règlement",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Mode de règlement";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Mode_rglt", wTitle: "Mode de règlement");
+                  });
+                },
+              ),
+
+              PlutoMenuItem(
+                title: "Moyen de paiement",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Moyen de paiement";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Moyen_paiement", wTitle: "Moyen de paiement");
+                  });
+                },
+              ),
+
+              PlutoMenuItem(
+                title: "Préférence d'affichage",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Préférence d'affichage";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Pref_Aff", wTitle: "Préférence d'affichage");
+                  });
+                },
+              ),
+
+
+              PlutoMenuItem(
+                title: "Relance client auto",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Relance client auto";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Rel_Auto", wTitle: "Relance client auto");
+                  });
+                },
+              ),
+
+
+              PlutoMenuItem(
+                title: "Relance anniversaire",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Relance anniversaire";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Rel_Anniv", wTitle: "Relance anniversaire");
+                  });
+                },
+              ),
+
+
+
+
+
+            ],
+          ),
+          PlutoMenuItem(
             title: 'Paramètres de saisie',
             icon: Icons.settings,
             onTap: () {
@@ -590,13 +722,11 @@ class _MenuState extends State<Menu> {
             icon: Icons.settings,
             onTap: () {
               wTitre = "Habilitations";
-              setState(()  {
+              setState(() {
                 wAff = Param_Hab_screen();
               });
             },
           ),
-
-
           PlutoMenuItem(
             title: "Avertissements",
             icon: Icons.settings,
@@ -607,94 +737,90 @@ class _MenuState extends State<Menu> {
               });
             },
           ),
-
-
           PlutoMenuItem.divider(height: 10, color: Colors.white),
-          PlutoMenuItem(title: 'NF074',
+          PlutoMenuItem(title: 'NF074', icon: Icons.logo_dev, children: [
+            PlutoMenuItem(
+              title: "Contrôles Articles",
               icon: Icons.logo_dev,
-              children: [
-                PlutoMenuItem(
-                  title: "Contrôles Articles",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Contrôles Base de données NF074 : ARTICLES";
-                    setState(() {
-                      wAff = NF074_Ctrl_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem(
-                  title: "Contrôles Gammes",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Contrôles Base de données NF074 : Gammes";
-                    setState(() {
-                      wAff = NF074_Ctrl2_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem.divider(height: 10, color: Colors.white),
-                PlutoMenuItem(
-                  title: "Gammes",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Gammes";
-                    setState(() {
-                      wAff = NF074_Gammes_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem(
-                  title: "Historique Norme",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Historique Norme";
-                    setState(() {
-                      wAff = NF074_Histo_Normes_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem(
-                  title: "Produits Actions",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Produits Actions";
-                    setState(() {
-                      wAff = NF074_Pieces_Actions_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem(
-                  title: "Pièces détachées",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Pièces détachées";
-                    setState(() {
-                      wAff = NF074_Pieces_Det_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem(
-                  title: "Pièces dét. Inconnus",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Pièces détachées Inconnus";
-                    setState(() {
-                      wAff = NF074_Pieces_Det_Inc_screen();
-                    });
-                  },
-                ),
-                PlutoMenuItem(
-                  title: "Mixte Produit",
-                  icon: Icons.logo_dev,
-                  onTap: () {
-                    wTitre = "Mixte Produit";
-                    setState(() {
-                      wAff = NF074_Mixte_Produit_screen();
-                    });
-                  },
-                ),
-              ]),
+              onTap: () {
+                wTitre = "Contrôles Base de données NF074 : ARTICLES";
+                setState(() {
+                  wAff = NF074_Ctrl_screen();
+                });
+              },
+            ),
+            PlutoMenuItem(
+              title: "Contrôles Gammes",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Contrôles Base de données NF074 : Gammes";
+                setState(() {
+                  wAff = NF074_Ctrl2_screen();
+                });
+              },
+            ),
+            PlutoMenuItem.divider(height: 10, color: Colors.white),
+            PlutoMenuItem(
+              title: "Gammes",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Gammes";
+                setState(() {
+                  wAff = NF074_Gammes_screen();
+                });
+              },
+            ),
+            PlutoMenuItem(
+              title: "Historique Norme",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Historique Norme";
+                setState(() {
+                  wAff = NF074_Histo_Normes_screen();
+                });
+              },
+            ),
+            PlutoMenuItem(
+              title: "Produits Actions",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Produits Actions";
+                setState(() {
+                  wAff = NF074_Pieces_Actions_screen();
+                });
+              },
+            ),
+            PlutoMenuItem(
+              title: "Pièces détachées",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Pièces détachées";
+                setState(() {
+                  wAff = NF074_Pieces_Det_screen();
+                });
+              },
+            ),
+            PlutoMenuItem(
+              title: "Pièces dét. Inconnus",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Pièces détachées Inconnus";
+                setState(() {
+                  wAff = NF074_Pieces_Det_Inc_screen();
+                });
+              },
+            ),
+            PlutoMenuItem(
+              title: "Mixte Produit",
+              icon: Icons.logo_dev,
+              onTap: () {
+                wTitre = "Mixte Produit";
+                setState(() {
+                  wAff = NF074_Mixte_Produit_screen();
+                });
+              },
+            ),
+          ]),
         ],
       ),
     ];

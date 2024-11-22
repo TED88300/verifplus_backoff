@@ -63,10 +63,10 @@ class Articles_Link_Ebp {
   String Desc() {
     return '$Articles_LinkId, '
         '$Articles_LinkId          , '
-
         '$Articles_Link_ParentID   , '
         '$Articles_Link_TypeChildID, '
         '$Articles_Link_ChildID    , '
+        '$Articles_Link_ChildID_Lib    , '
         '$Articles_Link_Qte    , '
         '$Articles_Link_MoID	      , '
         '$Articles_Link_Tps	      , '

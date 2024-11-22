@@ -4157,13 +4157,21 @@ class DbTools {
     return false;
   }
 
+
+
   static Future<bool> setArticle_Ebp(Article_Ebp artEbp) async {
     artEbp.Article_Notes.replaceAll('"', "“");
+    artEbp.Article_Offres.replaceAll('"', "“");
+    artEbp.Article_Liens.replaceAll('"', "“");
 
     String wSlq = "UPDATE Articles_Ebp SET "
             "Article_descriptionCommercialeEnClair = \"${artEbp.Article_descriptionCommercialeEnClair}\", " +
         "Article_Libelle = \"${artEbp.Article_Libelle}\", " +
         "Article_Notes = \"${artEbp.Article_Notes}\", " +
+        "Article_Offres = \"${artEbp.Article_Offres}\", " +
+        "Article_Liens = \"${artEbp.Article_Liens}\", " +
+        "Article_Pousse = ${artEbp.Article_Pousse.toString()}, "
+        "Article_New = ${artEbp.Article_New.toString()}, "
         "Article_Promo_PVHT = ${artEbp.Article_Promo_PVHT.toString()} "
             "WHERE ArticleID = ${artEbp.ArticleID.toString()}";
     gColors.printWrapped("setArt " + wSlq);

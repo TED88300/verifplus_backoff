@@ -32,6 +32,8 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
   TextEditingController tec_Article_Libelle = TextEditingController();
   TextEditingController tec_Article_descriptionCommerciale = TextEditingController();
   TextEditingController tec_Article_Notes = TextEditingController();
+  TextEditingController tec_Article_Offres = TextEditingController();
+  TextEditingController tec_Article_Liens = TextEditingController();
   TextEditingController tec_Article_Promo_PVHT = TextEditingController();
 
   void onSetState() async {
@@ -47,7 +49,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
 
     widgetChildren = [
       ArtEdit(),
-      Articles_Ebp_Link_Verif(),
+//      Articles_Ebp_Link_Verif(),
       Articles_Ebp_Link(),
     ];
 
@@ -78,12 +80,11 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
 
 
 
-
-
   Widget taBarContainer() {
     return TabContainer(
       tabDuration : Duration(milliseconds: 600),
-      color: Colors.black26,
+      color: gColors.primary,
+
       children: widgetChildren,
 
       selectedTextStyle: gColors.bodyTitle1_B_W,
@@ -92,7 +93,6 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
 
       tabs: [
         Text('Description'),
-        Text('Articles liés à la Vérif'),
         Text('Articles liés'),
 
       ],
@@ -107,6 +107,8 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     tec_Article_Libelle.text = widget.article_Ebp.Article_Libelle;
     tec_Article_descriptionCommerciale.text = widget.article_Ebp.Article_descriptionCommercialeEnClair;
     tec_Article_Notes.text = widget.article_Ebp.Article_Notes;
+    tec_Article_Offres.text = widget.article_Ebp.Article_Offres;
+    tec_Article_Liens.text = widget.article_Ebp.Article_Liens;
 
     tec_Article_Promo_PVHT.text = widget.article_Ebp.Article_Promo_PVHT.toString();
 
@@ -188,7 +190,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                 Spacer(),
                 gColors.BtnAffUser(context),
                 Container(
-                  width: 150,
+                  width: 120,
                   child: Text(
                     "Version : ${DbTools.gVersion}",
                     style: gColors.bodySaisie_N_W,
@@ -225,6 +227,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     print("ArtEdit dWidth $dWidth");
 
     return Container(
+      color: Colors.white,
         child: Column(
       children: [
         Container(
@@ -238,7 +241,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
         Container(
           child: Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
             Container(
-              width: 280,
+              width: 250,
               child: EditArt3(),
             ),
             Container(
@@ -327,6 +330,8 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     widget.article_Ebp.Article_Libelle = tec_Article_Libelle.text;
     widget.article_Ebp.Article_descriptionCommercialeEnClair = tec_Article_descriptionCommerciale.text ;
     widget.article_Ebp.Article_Notes = tec_Article_Notes.text;
+    widget.article_Ebp.Article_Offres = tec_Article_Offres.text;
+    widget.article_Ebp.Article_Liens = tec_Article_Liens.text;
     widget.article_Ebp.Article_Promo_PVHT = double.parse(tec_Article_Promo_PVHT.text) ;
     await DbTools.setArticle_Ebp(widget.article_Ebp);
 
@@ -353,7 +358,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
 
-                  CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave),
+                  CommonAppBar.SquareRoundIcon(context, 30, 8, Colors.white, Colors.blue, Icons.save, ToolsBarSave, tooltip: "Sauvegarder"),
                   _buildField("Description", tec_Article_descriptionCommerciale, nbLigne: 10),
 
               Container(
@@ -365,7 +370,11 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                   Container(
                     width: 8,
                   ),
-                  InkWell(
+                  Tooltip(
+                    textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+                    decoration: BoxDecoration(color: Colors.orange),
+                    message: "Copie Sélection",
+                    child: InkWell(
                     child: Icon(
                       Icons.copy_all,
                       color: Colors.blue,
@@ -386,11 +395,15 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                       }
                       setState(() {});
                     },
-                  ),
+                  ),),
                   Container(
                     width: 8,
                   ),
-                  InkWell(
+                  Tooltip(
+                    textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+                    decoration: BoxDecoration(color: Colors.orange),
+                    message: "Copie tout",
+                    child: InkWell(
                     child: Icon(
                       Icons.copy_rounded,
                       color: Colors.blue,
@@ -400,7 +413,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
                       tec_Article_Libelle.text = tec_Article_descriptionCommerciale.text;
                       setState(() {});
                     },
-                  ),
+                  ),),
                 ],
               ),
               Container(
@@ -416,7 +429,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     return Container(
         padding: const EdgeInsets.all(5.0),
         child: Container(
-          height: 70,
+          height: 73,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           decoration: BoxDecoration(
@@ -428,9 +441,9 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
           ),
           child: Column(
             children: [
-              _buildTextw("Prix de vente HT", widget.article_Ebp.Article_PVHT.toString(), 150, 80, wpb: 3),
-              _buildTextw("Taux de TVA", widget.article_Ebp.Article_tauxTVA.toString(), 150, 80, wpb: 3),
-              _buildTextw("Prix de vente TTC", widget.article_Ebp.Article_PVTTC.toString(), 150, 80, wpb: 3),
+              _buildTextw("Prix de vente HT", widget.article_Ebp.Article_PVHT.toString(), 120, 80, wpb: 3),
+              _buildTextw("Taux de TVA", widget.article_Ebp.Article_tauxTVA.toString(), 120, 80, wpb: 3),
+              _buildTextw("Prix de vente TTC", widget.article_Ebp.Article_PVTTC.toString(), 120, 80, wpb: 3),
             ],
           ),
         ));
@@ -440,7 +453,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     return Container(
         padding: const EdgeInsets.all(5.0),
         child: Container(
-          height: 70,
+          height: 73,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           decoration: BoxDecoration(
@@ -466,7 +479,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     return Container(
         padding: const EdgeInsets.all(5.0),
         child: Container(
-          height: 70,
+          height: 73,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           padding: const EdgeInsets.fromLTRB(8, 2, 5, 5),
           decoration: BoxDecoration(
@@ -479,6 +492,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
           child: Column(
             children: [
               gColors.CheckBoxField(100, 8, "Article Poussé", widget.article_Ebp.Article_Pousse, (sts) => setState(() => widget.article_Ebp.Article_Pousse = sts!)),
+              gColors.CheckBoxField(100, 8, "Article Nouveau", widget.article_Ebp.Article_New, (sts) => setState(() => widget.article_Ebp.Article_New = sts!)),
             ],
           ),
         ));
@@ -488,7 +502,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     return Container(
         padding: const EdgeInsets.all(5.0),
         child: Container(
-          height: 70,
+          height: 73,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           decoration: BoxDecoration(
@@ -511,7 +525,7 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
     return Container(
         padding: const EdgeInsets.all(5.0),
         child: Container(
-          height: 260,
+          height: 520,
           margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           decoration: BoxDecoration(
@@ -523,7 +537,9 @@ class Articles_Ebp_EditState extends State<Articles_Ebp_Edit> {
           ),
           child: Column(
             children: [
-              _buildField("Note", tec_Article_Notes, nbLigne: 15),
+              _buildField("Détail", tec_Article_Notes, nbLigne: 15),
+              _buildField("Offres", tec_Article_Offres, nbLigne: 10),
+              _buildField("Liens", tec_Article_Liens, nbLigne: 5),
             ],
           ),
         ));

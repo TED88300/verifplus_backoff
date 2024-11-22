@@ -23,9 +23,7 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
   List<String> ListParam_FiltreType =     ["Tous", "V",     "P",      "S" ,   "ES", "Serv"];
   List<String> ListParam_FiltreTypeLib =  ["Tous", "Vérif", "Pièce",  "Sign" ,"Ech Std", "Serv."];
 
-
   bool bReload = true;
-
   Article_Ebp getArticle(String articleCodearticle){
     Article_Ebp warticleEbp = Article_Ebp.Article_EbpInit();
     try {
@@ -123,6 +121,7 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
 
     print("build");
     return Container(
+      color: Colors.white,
       padding: const EdgeInsets.all(0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -148,16 +147,16 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
   Widget Article_EbpGridWidget() {
     List<DaviColumn<Articles_Link_Ebp>> wColumns = [
       new DaviColumn(name: 'Id', width : 60, stringValue: (row) => "${row.Articles_LinkId}"),
-      new DaviColumn(name: 'Type', width : 90, stringValue: (row) => "${row.Articles_Link_TypeChildID}"),
+//      new DaviColumn(name: 'Type', width : 90, stringValue: (row) => "${row.Articles_Link_TypeChildID}"),
       new DaviColumn(name: 'Code', width : 120, stringValue: (row) => "${row.Articles_Link_ChildID}"),
       new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_ChildID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
+/*
       new DaviColumn(name: "Main d'Œuvre", width : 120, stringValue: (row) => "${row.Articles_Link_MoID}"),
       new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_MoID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
       new DaviColumn(name: 'Temps', width : 100,  stringValue: (row) => row.Articles_Link_Tps, cellAlignment : Alignment.centerRight),
-
-
       new DaviColumn(name: "Dénaturation", width : 120, stringValue: (row) => "${row.Articles_Link_DnID}"),
       new DaviColumn(name: 'Description', grow : 100,  stringValue: (row) => row.Articles_Link_DnID_Lib.replaceAll("\n", "").replaceAll("\r", "")),
+*/
 
 
     ];
@@ -240,7 +239,7 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
             Container(
               width: 10,
             ),
-            IconButton(
+        /*    IconButton(
               icon: Icon(
                 Icons.cancel,
                 size: 20.0,
@@ -256,7 +255,7 @@ class Articles_Ebp_LinkState extends State<Articles_Ebp_Link> {
             DropdownFiltreType(),
             Container(
               width: 10,
-            ),
+            ),*/
           ],
         ));
   }
