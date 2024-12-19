@@ -1,0 +1,27 @@
+
+
+SELECT * FROM Param_Saisie WHERE Param_Saisie.Param_Saisie_Organe = "Base" AND Param_Saisie.Param_Saisie_Type = "Audit";
+SELECT * FROM Param_Saisie WHERE Param_Saisie.Param_Saisie_Organe = "Ext" AND Param_Saisie.Param_Saisie_Type = "Audit";
+UPDATE Param_Saisie SET Param_Saisie_Organe = "Ext"  WHERE Param_Saisie.Param_Saisie_Organe = "Base" AND Param_Saisie.Param_Saisie_Type = "Audit";
+
+UPDATE Param_Saisie SET Param_Saisie_Organe = "Ext"  WHERE Param_Saisie.Param_Saisie_Organe = "Base" AND Param_Saisie.Param_Saisie_Type = "Verif";
+
+
+
+
+
+
+INSERT INTO Param_Saisie (Param_Saisie_Organe, Param_Saisie_Type, Param_Saisie_ID, Param_Saisie_Label, Param_Saisie_Aide, Param_Saisie_Controle, Param_Saisie_Ordre, Param_Saisie_Affichage, Param_Saisie_Ordre_Affichage, Param_Saisie_Affichage_Titre, Param_Saisie_Affichage_L1, Param_Saisie_Affichage_L1_Ordre, Param_Saisie_Affichage_L2, Param_Saisie_Affichage_L2_Ordre, Param_Saisie_Icon, Param_Saisie_Triger)
+SELECT "Ria", Param_Saisie_Type, Param_Saisie_ID, Param_Saisie_Label, Param_Saisie_Aide, Param_Saisie_Controle, Param_Saisie_Ordre, Param_Saisie_Affichage, Param_Saisie_Ordre_Affichage, Param_Saisie_Affichage_Titre, Param_Saisie_Affichage_L1, Param_Saisie_Affichage_L1_Ordre, Param_Saisie_Affichage_L2, Param_Saisie_Affichage_L2_Ordre, Param_Saisie_Icon, Param_Saisie_Triger FROM Param_Saisie WHERE Param_Saisie.Param_Saisie_Organe = "Ext" AND Param_Saisie.Param_Saisie_Type = "Verif";
+
+SELECT Param_Saisie_Organe, Param_Saisie_Type, Param_Saisie_ID, Param_Saisie_Label, Param_Saisie_Aide, Param_Saisie_Controle, Param_Saisie_Ordre, Param_Saisie_Affichage, Param_Saisie_Ordre_Affichage, Param_Saisie_Affichage_Titre, Param_Saisie_Affichage_L1, Param_Saisie_Affichage_L1_Ordre, Param_Saisie_Affichage_L2, Param_Saisie_Affichage_L2_Ordre, Param_Saisie_Icon, Param_Saisie_Triger FROM Param_Saisie WHERE 1
+
+
+
+
+SELECT * FROM Param_Saisie_Param WHERE Param_Saisie_Param_Id = "EtatGen2"
+SELECT * FROM Param_Saisie_Param WHERE Param_Saisie_Param_Id = "EtatGen";
+
+
+INSERT INTO Param_Saisie_Param(Param_Saisie_Param_Id, Param_Saisie_Param_Ordre, Param_Saisie_Param_Label, Param_Saisie_Param_Abrev, Param_Saisie_Param_Aide, Param_Saisie_Param_Default, Param_Saisie_Param_Init, Param_Saisie_Param_Color)
+SELECT "Fix2", Param_Saisie_Param_Ordre, Param_Saisie_Param_Label, Param_Saisie_Param_Abrev, Param_Saisie_Param_Aide, Param_Saisie_Param_Default, Param_Saisie_Param_Init, Param_Saisie_Param_Color FROM Param_Saisie_Param WHERE Param_Saisie_Param_Id = "Fix";

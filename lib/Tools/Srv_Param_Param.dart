@@ -8,12 +8,13 @@ class Param_Param {
   int Param_Param_Int = 0;
   double Param_Param_Double = 0;
   int Param_Param_Ordre = 0;
+  bool Param_Param_Default = false;
   String Param_Param_Color = "Noir";
 
 
   static Param_ParamInit() {
     return Param_Param(
-        0, "",  "", "", 0,0,0, "");
+        0, "",  "", "", 0,0,0, false, "");
   }
 
 
@@ -25,6 +26,7 @@ class Param_Param {
   int Param_Param_Int,
   double Param_Param_Double,
       int Param_Param_Ordre,
+      bool Param_Param_Default,
       String Param_Param_Color,
       ) {
     this.Param_ParamId = Param_ParamId;
@@ -34,6 +36,7 @@ class Param_Param {
     this.Param_Param_Int = Param_Param_Int;
     this.Param_Param_Double = Param_Param_Double;
     this.Param_Param_Ordre = Param_Param_Ordre;
+    this.Param_Param_Default = Param_Param_Default;
     this.Param_Param_Color = Param_Param_Color;
   }
 
@@ -49,6 +52,7 @@ class Param_Param {
       int.parse(json['Param_Param_Int']),
       double.parse(json['Param_Param_Double']),
       int.parse(json['Param_Param_Ordre']),
+      int.parse(json['Param_Param_Default']) == 1,
       json['Param_Param_Color'],
     );
 
@@ -56,7 +60,7 @@ class Param_Param {
   }
 
   String Desc() {
-    return '$Param_ParamId $Param_Param_Type $Param_Param_ID $Param_Param_Text $Param_Param_Int $Param_Param_Double $Param_Param_Ordre $Param_Param_Color';
+    return '$Param_ParamId $Param_Param_Type $Param_Param_ID $Param_Param_Text $Param_Param_Int $Param_Param_Double $Param_Param_Ordre $Param_Param_Ordre $Param_Param_Color';
   }
 
 

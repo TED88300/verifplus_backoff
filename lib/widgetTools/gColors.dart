@@ -51,6 +51,7 @@ class gColors {
   static const Color TextColor3 = Color(0xFFFFFFFF);
   static const Color white = Colors.white;
   static const Color grey = Colors.black;
+  static const Color black = Colors.black;
   static const Color greyLight = Color(0xFFf1f1f1);
   static const Color transparent = Colors.transparent;
   static const Color trspWhite = Color(0xFFEEEEEE);
@@ -224,42 +225,42 @@ class gColors {
                 title: "Paramètres divers",
                 icon: Icons.list,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Param_Div", wTitle: "Paramètres divers")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Param_Div", wTitle: "Paramètres divers", wDef: false,)));
                 },
               ),
               PlutoMenuItem(
                 title: "Types d'organe",
                 icon: Icons.list,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Organe", wTitle: "Types d'organe")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Organe", wTitle: "Types d'organe", wDef: false,)));
                 },
               ),
               PlutoMenuItem(
                 title: "Types de saisie",
                 icon: Icons.list,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Saisie", wTitle: "Types de saisie")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Saisie", wTitle: "Types de saisie", wDef: false,)));
                 },
               ),
               PlutoMenuItem(
                 title: "Contrôles de saisie",
                 icon: Icons.list,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Ctrl_Saisie", wTitle: "Contrôles de saisie")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Ctrl_Saisie", wTitle: "Contrôles de saisie", wDef: false,)));
                 },
               ),
               PlutoMenuItem(
                 title: "Mode Affichage Liste",
                 icon: Icons.list,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Aff_Liste", wTitle: "Mode Affichage Liste")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Aff_Liste", wTitle: "Mode Affichage Liste", wDef: false,)));
                 },
               ),
               PlutoMenuItem(
                 title: "Couleurs",
                 icon: Icons.list,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Color", wTitle: "Couleurs")));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Color", wTitle: "Couleurs", wDef: false,)));
                 },
               ),
               PlutoMenuItem(
@@ -529,6 +530,21 @@ class gColors {
         fontSize: wNorm,
         fontWeight: FontWeight.bold,
       );
+
+
+  static TextStyle get bodyTitle1_B_W24 => TextStyle(
+    color: white,
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+
+  static TextStyle get bodyTitle1_B_G_20 => TextStyle(
+    color: grey,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
+
+
 
   static Widget wLabel(var aIcon, String aLabel, String aData) {
     return Row(

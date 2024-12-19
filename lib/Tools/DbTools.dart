@@ -64,7 +64,10 @@ class DbTools {
   static bool EdtTicket = false;
   static bool gIsIntroPass = false;
   static bool gIsRememberLogin = true;
+
   static int gCurrentIndex = 0;
+  static int gCurrentIndex4 = 0;
+
   static var database;
   static String gViewAdr = "";
   static String gViewCtact = "";
@@ -777,6 +780,11 @@ class DbTools {
         "Param_Param_Ordre = " +
         paramParam.Param_Param_Ordre.toString() +
         ", " +
+
+        "Param_Param_Default = " +
+        paramParam.Param_Param_Default.toString() +
+        ", " +
+
         "Param_Param_Double = " +
         paramParam.Param_Param_Double.toString() +
         " WHERE Param_ParamId = " +

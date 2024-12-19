@@ -669,7 +669,7 @@ class User_EditState extends State<User_Edit> {
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Service", wTitle: "Paramètres Services")));
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Service", wTitle: "Paramètres Services", wDef: false,)));
           await Reload();
         },
       ),
@@ -733,7 +733,7 @@ class User_EditState extends State<User_Edit> {
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Fonction", wTitle: "Paramètres Fonctions")));
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Fonction", wTitle: "Paramètres Fonctions", wDef: false)));
           await Reload();
         },
       ),
@@ -797,7 +797,7 @@ class User_EditState extends State<User_Edit> {
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "NivHab", wTitle: "Paramètres Niveaux")));
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "NivHab", wTitle: "Paramètres Niveaux", wDef: false)));
           await Reload();
         },
       ),
@@ -925,7 +925,7 @@ class User_EditState extends State<User_Edit> {
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Famille", wTitle: "Paramètres Familles")));
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Famille", wTitle: "Paramètres Familles", wDef: false)));
           await Reload();
         },
       ),
@@ -986,7 +986,7 @@ class User_EditState extends State<User_Edit> {
       IconButton(
         icon: Icon(Icons.settings),
         onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Depot", wTitle: "Paramètres Depots")));
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "Type_Depot", wTitle: "Paramètres Depots", wDef: false)));
           await Reload();
         },
       ),

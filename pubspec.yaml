@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.169+169
+version: 1.0.172+172
 environment:
   sdk: '>=2.18.2 <3.0.0'
 
@@ -78,6 +78,9 @@ dependencies:
   pointer_interceptor: ^0.10.1+1
   file_picker: ^8.0.3
   flutter_typeahead: ^5.2.0
+
+  group_button: ^5.3.4
+  flutter_svg: ^2.0.14
 
 
 dependency_overrides:

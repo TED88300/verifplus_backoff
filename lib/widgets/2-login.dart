@@ -83,10 +83,7 @@ class _LoginState extends State<Login> {
               cm.addToCookie("emailLogin", emailController.text);
               cm.addToCookie("passwordLogin", passwordController.text);
               cm.addToCookie("IsRememberLogin", "X");
-
-
             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => Menu()));
-
           }
         },
         style: ElevatedButton.styleFrom(

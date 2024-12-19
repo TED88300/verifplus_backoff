@@ -24,6 +24,8 @@ import 'package:verifplus_backoff/widgets/NF074/NF074_Pieces_Actions.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Pieces_Det.dart';
 import 'package:verifplus_backoff/widgets/NF074/NF074_Pieces_Det_Inc.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Av.dart';
+
+
 import 'package:verifplus_backoff/widgets/Param/Param_Fam_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Hab.dart';
 import 'package:verifplus_backoff/widgets/Planning/Planning.dart';
@@ -32,8 +34,6 @@ import 'package:verifplus_backoff/widgets/User/Niv_Hab.dart';
 import 'package:verifplus_backoff/widgets/User/User_Liste.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Gamme_Dialog.dart';
 import 'package:verifplus_backoff/widgets/Param/Param_Param_Abrev_Dialog.dart';
-import 'package:flutter_quill_test/flutter_quill_test.dart';
-
 import 'Param/Param_Param_Dialog.dart';
 import 'Param/Param_Saisie_Dialog.dart';
 
@@ -445,7 +445,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Paramètres divers";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Param_Div", wTitle: "Paramètres divers");
+                    wAff = Param_Param_screen(wType: "Param_Div", wTitle: "Paramètres divers", wDef: false,);
                   });
                 },
               ),
@@ -456,7 +456,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Types d'organe";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Type_Organe", wTitle: "Types d'organe");
+                    wAff = Param_Param_screen(wType: "Type_Organe", wTitle: "Types d'organe", wDef: false,);
                   });
                 },
               ),
@@ -467,7 +467,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Types de saisie";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Type_Saisie", wTitle: "Types de saisie");
+                    wAff = Param_Param_screen(wType: "Type_Saisie", wTitle: "Types de saisie", wDef: false,);
                   });
                 },
               ),
@@ -478,7 +478,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Types d'intervention";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Type_Interv", wTitle: "Types d'intervention");
+                    wAff = Param_Param_screen(wType: "Type_Interv", wTitle: "Types d'intervention", wDef: false,);
                   });
                 },
               ),
@@ -489,7 +489,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Missions";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Missions", wTitle: "Missions");
+                    wAff = Param_Param_screen(wType: "Missions", wTitle: "Missions", wDef: false,);
                   });
                 },
               ),
@@ -500,7 +500,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Statuts des interventions";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Status_Interv", wTitle: "Statuts des interventions");
+                    wAff = Param_Param_screen(wType: "Status_Interv", wTitle: "Statuts des interventions", wDef: false,);
                   });
                 },
               ),
@@ -511,7 +511,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Type de Facturation";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Type_Fact", wTitle: "Type de Facturation");
+                    wAff = Param_Param_screen(wType: "Type_Fact", wTitle: "Type de Facturation" , wDef: false,);
                   });
                 },
               ),
@@ -522,7 +522,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Contrôles de saisie";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Ctrl_Saisie", wTitle: "Contrôles de saisie");
+                    wAff = Param_Param_screen(wType: "Ctrl_Saisie", wTitle: "Contrôles de saisie", wDef: false,);
                   });
                 },
               ),
@@ -533,7 +533,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Mode Affichage Liste";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Aff_Liste", wTitle: "Mode Affichage Liste");
+                    wAff = Param_Param_screen(wType: "Aff_Liste", wTitle: "Mode Affichage Liste", wDef: false,);
                   });
                 },
               ),
@@ -544,7 +544,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Couleurs";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Color", wTitle: "Couleurs");
+                    wAff = Param_Param_screen(wType: "Color", wTitle: "Couleurs", wDef: false,);
                   });
                 },
               ),
@@ -572,7 +572,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Etat Devis";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Etat_Devis", wTitle: "Etat Devis");
+                    wAff = Param_Param_screen(wType: "Etat_Devis", wTitle: "Etat Devis", wDef: false,);
                   });
                 },
               ),
@@ -584,7 +584,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Etat Commandes";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Etat_Commandes", wTitle: "Etat Commandes");
+                    wAff = Param_Param_screen(wType: "Etat_Commandes", wTitle: "Etat Commandes", wDef: false,);
                   });
                 },
               ),
@@ -597,7 +597,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Etat Livraison";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Etat_Livraison", wTitle: "Etat Livraison");
+                    wAff = Param_Param_screen(wType: "Etat_Livraison", wTitle: "Etat Livraison", wDef: false,);
                   });
                 },
               ),
@@ -611,7 +611,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Validité du devis";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Validite_devis", wTitle: "Validité du devis");
+                    wAff = Param_Param_screen(wType: "Validite_devis", wTitle: "Validité du devis", wDef: true,);
                   });
                 },
               ),
@@ -623,7 +623,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Livraison prévisionnelle";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Livraison_prev", wTitle: "Livraison prévisionnelle");
+                    wAff = Param_Param_screen(wType: "Livraison_prev", wTitle: "Livraison prévisionnelle", wDef: true,);
                   });
                 },
               ),
@@ -635,7 +635,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Mode de règlement";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Mode_rglt", wTitle: "Mode de règlement");
+                    wAff = Param_Param_screen(wType: "Mode_rglt", wTitle: "Mode de règlement", wDef: true,);
                   });
                 },
               ),
@@ -647,7 +647,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Moyen de paiement";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Moyen_paiement", wTitle: "Moyen de paiement");
+                    wAff = Param_Param_screen(wType: "Moyen_paiement", wTitle: "Moyen de paiement", wDef: true,);
                   });
                 },
               ),
@@ -659,10 +659,23 @@ class _MenuState extends State<Menu> {
                   wTitre = "Préférence d'affichage";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Pref_Aff", wTitle: "Préférence d'affichage");
+                    wAff = Param_Param_screen(wType: "Pref_Aff", wTitle: "Préférence d'affichage", wDef: true,);
                   });
                 },
               ),
+
+              PlutoMenuItem(
+                title: "Non-valorisé/Valorisé",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Non-valorisé/Valorisé";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Valo", wTitle: "Non-valorisé/Valorisé", wDef: true,);
+                  });
+                },
+              ),
+
 
 
               PlutoMenuItem(
@@ -672,7 +685,7 @@ class _MenuState extends State<Menu> {
                   wTitre = "Relance client auto";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Rel_Auto", wTitle: "Relance client auto");
+                    wAff = Param_Param_screen(wType: "Rel_Auto", wTitle: "Relance client auto", wDef: true,);
                   });
                 },
               ),
@@ -685,11 +698,38 @@ class _MenuState extends State<Menu> {
                   wTitre = "Relance anniversaire";
                   setState(() {
                     DbTools.gDemndeReload = true;
-                    wAff = Param_Param_screen(wType: "Rel_Anniv", wTitle: "Relance anniversaire");
+                    wAff = Param_Param_screen(wType: "Rel_Anniv", wTitle: "Relance anniversaire", wDef: true,);
                   });
                 },
               ),
 
+              PlutoMenuItem(
+                title: "Copie des relances",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Copie des relances";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "CopRel", wTitle: "Copie des relances", wDef: true,);
+                  });
+                },
+              ),
+
+
+              PlutoMenuItem(
+                title: "Titres Devis",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Titres Devis";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "TitresRel", wTitle: "Titres Devis", wDef: true,);
+                  });
+                },
+              ),
+
+
+              PlutoMenuItem.divider(height: 10, color: Colors.white),
 
 
 

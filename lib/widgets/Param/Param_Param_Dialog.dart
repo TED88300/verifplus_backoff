@@ -13,12 +13,15 @@ class Param_Param_Dialog {
     BuildContext context,
     String wType,
     String wTitle,
+    bool  wDef,
   ) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) => new Param_Param_screen(
         wType: wType,
         wTitle: wTitle,
+          wDef : wDef,
+
       ),
     );
   }
@@ -26,9 +29,10 @@ class Param_Param_Dialog {
 
 class Param_Param_screen extends StatefulWidget {
   final String wType;
-  final String wTitle;
+  final  String wTitle;
+  final bool  wDef;
 
-  const Param_Param_screen({Key? key, required this.wType, required this.wTitle}) : super(key: key);
+  const Param_Param_screen({Key? key, required this.wType, required this.wTitle, required this.wDef}) : super(key: key);
 
   @override
   _Param_Param_screenState createState() => _Param_Param_screenState();
@@ -208,6 +212,25 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                     width: 10,
                   ),
                   DropdownButtonColor(),
+
+
+                  if (widget.wDef)
+                    Text(
+                    'Défaut : ',
+                    style: gColors.bodySaisie_B_B,
+                  ),
+                  if (widget.wDef)
+                  Checkbox(
+                    checkColor: Colors.white,
+                    value: wParam_Param.Param_Param_Default,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        wParam_Param.Param_Param_Default = value!;
+                      });
+                    },
+                  ),
+
+
                   Container(
                     width: 1,
                   ),
@@ -223,6 +246,20 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                         wParam_Param.Param_Param_Color = selectedValueColor;
                         wParam_Param.Param_Param_ID = Param_Param_IDController.text;
                         await DbTools.setParam_Param(wParam_Param);
+
+
+                        if (widget.wDef)
+                          if (wParam_Param.Param_Param_Default) {
+                          DbTools.ListParam_Param.forEach((element) async {
+                            if (wParam_Param.Param_ParamId != element.Param_ParamId) {
+                              element.Param_Param_Default = false;
+                              await DbTools.setParam_Param(element);
+                            }
+                          });
+                        }
+
+
+
                         await Reload();
                         wParam_Param = Param_Param.Param_ParamInit();
                       }
@@ -290,6 +327,23 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
               ""),
       new DaviColumn(name: 'Libellé', grow: 18, stringValue: (row) => row.Param_Param_Text),
       new DaviColumn(name: 'Couleur', grow: 2, stringValue: (row) => row.Param_Param_Color),
+
+      if (widget.wDef)
+      DaviColumn(
+          name: 'Défaut',
+          cellBuilder: (BuildContext context, DaviRow<Param_Param> data) {
+            return Checkbox(
+              checkColor: Colors.white,
+              value: data.data.Param_Param_Default,
+              onChanged: (bool? value) {
+
+                print("   Défaut");
+
+                setState(() {});
+              },
+            );
+          }),
+
     ];
 
     print("Param_Param_Dialog Param_ParamGridWidget");

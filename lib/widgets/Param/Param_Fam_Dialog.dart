@@ -464,7 +464,7 @@ class _Param_Fam_screenState extends State<Param_Fam_screen> {
             return InkWell(
               child: const Icon(Icons.list_alt, size: 16),
               onTap: () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "${data.data.Param_Param_ID}", wTitle: "Sous Familles d'article : ${data.data.Param_Param_Text}")));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Param_Param_screen(wType: "${data.data.Param_Param_ID}", wTitle: "Sous Familles d'article : ${data.data.Param_Param_Text}", wDef: false,)));
               },
             );
           }),
