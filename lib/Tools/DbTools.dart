@@ -679,7 +679,6 @@ class DbTools {
     List_UserInterID.clear();
     List_ValueItem_User.clear();
 
-
     for (int i = 0; i < DbTools.ListUser.length; i++) {
       var element = DbTools.ListUser[i];
       List_UserInter.add("${element.User_Nom} ${element.User_Prenom}");
@@ -5078,7 +5077,10 @@ class DbTools {
     print("removephoto_API_Post " + response.statusCode.toString());
 
     if (response.statusCode == 200) {
-      var parsedJson = json.decode(await response.stream.bytesToString());
+      return true;
+      String wTmp = await response.stream.bytesToString();
+      print("wTmp $wTmp");
+      var parsedJson = json.decode(wTmp);
       var success = parsedJson['success'];
       if (success == 1) {
         return true;

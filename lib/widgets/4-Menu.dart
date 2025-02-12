@@ -605,6 +605,20 @@ class _MenuState extends State<Menu> {
               PlutoMenuItem.divider(height: 10, color: Colors.white),
 
               PlutoMenuItem(
+                title: "Affaire",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Affaire";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Affaire", wTitle: "Affaire", wDef: true,);
+                  });
+                },
+              ),
+
+
+
+              PlutoMenuItem(
                 title: "Validité du devis",
                 icon: Icons.settings,
                 onTap: () {
@@ -728,7 +742,17 @@ class _MenuState extends State<Menu> {
                 },
               ),
 
-
+              PlutoMenuItem(
+                title: "Probabilités d'acceptation",
+                icon: Icons.settings,
+                onTap: () {
+                  wTitre = "Probabilités d'acceptation";
+                  setState(() {
+                    DbTools.gDemndeReload = true;
+                    wAff = Param_Param_screen(wType: "Proba", wTitle: "Probabilités d'acceptation", wDef: true,);
+                  });
+                },
+              ),
               PlutoMenuItem.divider(height: 10, color: Colors.white),
 
 

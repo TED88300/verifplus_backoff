@@ -67,7 +67,7 @@ class _PhotosState extends State<Photos> {
       String wUserImg = "Intervention_${DbTools.gIntervention.InterventionId}_${DbTools.gInterMission.InterMissionId}_$i.jpg";
       try {
         Uint8List? pic = await gColors.getImage(wUserImg);
-        if (pic.length > 0) {
+        if (pic.length > 300) {
           print("pic ${pic.length}");
           _images.add(pic);
         }
