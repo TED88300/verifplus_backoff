@@ -728,8 +728,7 @@ class _MenuState extends State<Menu> {
                   });
                 },
               ),
-
-
+              
               PlutoMenuItem(
                 title: "Titres Devis",
                 icon: Icons.settings,
@@ -754,10 +753,6 @@ class _MenuState extends State<Menu> {
                 },
               ),
               PlutoMenuItem.divider(height: 10, color: Colors.white),
-
-
-
-
             ],
           ),
           PlutoMenuItem(

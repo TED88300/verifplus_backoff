@@ -31,9 +31,7 @@ class Param_Param_screen extends StatefulWidget {
   final String wType;
   final  String wTitle;
   final bool  wDef;
-
   const Param_Param_screen({Key? key, required this.wType, required this.wTitle, required this.wDef}) : super(key: key);
-
   @override
   _Param_Param_screenState createState() => _Param_Param_screenState();
 }
@@ -41,7 +39,6 @@ class Param_Param_screen extends StatefulWidget {
 class _Param_Param_screenState extends State<Param_Param_screen> {
   Param_Param wParam_Param = Param_Param.Param_ParamInit();
   String Title = "Paramètres ";
-
   static List<String> ListParam_ParamColor = [];
   static List<String> ListParam_ParamColorID = [];
   String selectedValueColor = "";
@@ -54,9 +51,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
     await DbTools.getParam_Param(widget.wType, bReload);
     bReload = false;
     print("getParam_Param ${DbTools.ListParam_Param.length}");
-
     await Filtre();
-
   }
 
   Future Filtre() async {
@@ -79,19 +74,16 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
     });
 
     print("ListParam_ParamColor ${ListParam_ParamColor.length}");
-
     selectedValueColor = ListParam_ParamColor[0];
     selectedValueColorID = ListParam_ParamColorID[0];
 
     print("selectedValueColor $selectedValueColorID $selectedValueColor");
-
     Reload();
   }
 
   void initState() {
     super.initState();
     initLib();
-
     Title = "Paramètres - ${widget.wTitle}";
   }
 
@@ -163,14 +155,12 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                     onTap: () async {
                       if (wParam_Param.Param_Param_Ordre < DbTools.ListParam_Paramsearchresult.length) {
                         Param_Param tmpparamParam = Param_Param.Param_ParamInit();
-
                         DbTools.ListParam_Paramsearchresult.forEach((element) {
                           print("AVANT ${element.Param_Param_ID}  ${element.Param_Param_Ordre}");
                         });
 
                         for (int i = DbTools.ListParam_Paramsearchresult.length - 1; i >= 0; i--) {
                           Param_Param element = DbTools.ListParam_Paramsearchresult[i];
-
                           if (element.Param_Param_Ordre == wParam_Param.Param_Param_Ordre) {
                             element.Param_Param_Ordre = wParam_Param.Param_Param_Ordre + 1;
                             DbTools.setParam_Param(element);
@@ -184,7 +174,7 @@ class _Param_Param_screenState extends State<Param_Param_screen> {
                         DbTools.ListParam_Paramsearchresult.forEach((element) {
                           print("APRES ${element.Param_Param_ID} ${element.Param_Param_Ordre}");
                         });
-                        //wParam_Param.Param_Param_Ordre = wParam_Param.Param_Param_Ordre - 1;
+
                         Reload();
                         setState(() {});
                         wParam_Param = tmpparamParam;
